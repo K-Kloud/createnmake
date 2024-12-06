@@ -3,7 +3,7 @@ import {
   Apple,
   Mail,
   Github,
-  Google,
+  Chrome,
   Facebook,
 } from "lucide-react";
 
@@ -12,6 +12,6 @@ export const Icons = {
   apple: Apple,
   mail: Mail,
   github: Github,
-  google: Google,
+  google: Chrome, // Using Chrome icon as a replacement for Google
   facebook: Facebook,
 };
