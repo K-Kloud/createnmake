@@ -1,12 +1,14 @@
-import { Star, Quote, ChevronDown, Image } from "lucide-react";
+import { Star, Quote, Image } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface Review {
   id: number;
@@ -88,33 +90,59 @@ export const ManufacturerCard = ({
             </div>
             
             {producedItems.length > 0 && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+              <Dialog>
+                <DialogTrigger asChild>
                   <Button variant="outline" className="flex items-center gap-2">
                     <Image className="w-4 h-4" />
-                    <span>Previous Work</span>
-                    <ChevronDown className="w-4 h-4" />
+                    Portfolio
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-80 p-2">
-                  <div className="grid grid-cols-2 gap-2">
-                    {producedItems.map((item) => (
-                      <div key={item.id} className="relative group">
-                        <img
-                          src={item.image}
-                          alt={item.description}
-                          className="w-full h-32 object-cover rounded-md"
-                        />
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
-                          <p className="text-xs text-white p-2">
-                            {item.description}
-                          </p>
-                        </div>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl">
+                  <DialogHeader>
+                    <DialogTitle>{name}'s Portfolio</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    <div className="space-y-4">
+                      <h3 className="font-semibold">Generated Designs</h3>
+                      <div className="grid gap-4">
+                        {producedItems.slice(0, Math.ceil(producedItems.length / 2)).map((item) => (
+                          <div key={item.id} className="relative group">
+                            <img
+                              src={item.image}
+                              alt={item.description}
+                              className="w-full h-48 object-cover rounded-md"
+                            />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
+                              <p className="text-sm text-white p-3">
+                                {item.description}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
+                    <div className="space-y-4">
+                      <h3 className="font-semibold">Manufactured Items</h3>
+                      <div className="grid gap-4">
+                        {producedItems.slice(Math.ceil(producedItems.length / 2)).map((item) => (
+                          <div key={item.id} className="relative group">
+                            <img
+                              src={item.image}
+                              alt={item.description}
+                              className="w-full h-48 object-cover rounded-md"
+                            />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
+                              <p className="text-sm text-white p-3">
+                                {item.description}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                </DialogContent>
+              </Dialog>
             )}
           </div>
           
