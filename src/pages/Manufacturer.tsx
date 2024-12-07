@@ -9,9 +9,9 @@ const Manufacturer = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const handleOrder = (deliveryDetails: any, productSpecs: any) => {
+  const handleOrder = (deliveryDetails: any) => {
     // This would connect to your order processing system
-    console.log("Order placed:", { deliveryDetails, productSpecs });
+    console.log("Order placed:", { deliveryDetails, selectedImage });
     toast({
       title: "Order Placed Successfully!",
       description: "We'll notify you when your order ships.",

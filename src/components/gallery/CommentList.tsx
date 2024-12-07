@@ -78,7 +78,6 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
                 onChange={(e) => setReplyText(prev => ({ ...prev, [comment.id]: e.target.value }))}
                 placeholder="Write a reply..."
                 className="flex-1"
-                size="sm"
               />
               <Button size="sm" onClick={() => handleReply(comment.id)}>
                 Post
