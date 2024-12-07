@@ -73,13 +73,13 @@ const Manufacturer = () => {
               <Button
                 key={category.id}
                 variant="outline"
-                className="h-auto p-6 flex flex-col items-center gap-4 hover:bg-primary/5"
+                className="relative h-auto p-6 flex flex-col items-center gap-4 hover:bg-primary/5 before:absolute before:inset-0 before:rounded-lg before:border before:border-primary/50 before:opacity-0 hover:before:opacity-100 before:transition-opacity after:absolute after:inset-0 after:rounded-lg after:border after:border-primary/50 after:opacity-0 hover:after:opacity-100 after:transition-opacity after:animate-pulse group"
                 onClick={() => {
                   setSelectedCategory(category.name);
                   setDialogOpen(true);
                 }}
               >
-                {IconComponent && <IconComponent className="w-12 h-12" />}
+                {IconComponent && <IconComponent className="w-12 h-12 transition-transform group-hover:scale-110" />}
                 <div className="text-center">
                   <h3 className="font-semibold text-lg">{category.name}</h3>
                   <p className="text-sm text-muted-foreground">{category.description}</p>
