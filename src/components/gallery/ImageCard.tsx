@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ThumbsUp, Eye, Package } from "lucide-react";
+import { Heart, Eye, Package } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Comments } from "./Comments";
 import { useNavigate } from "react-router-dom";
@@ -81,7 +81,9 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
                 className="space-x-1"
                 onClick={() => onLike(image.id)}
               >
-                <ThumbsUp className="h-4 w-4" />
+                <Heart 
+                  className={`h-4 w-4 ${image.hasLiked ? 'fill-red-500 text-red-500' : ''}`} 
+                />
                 <span>{image.likes}</span>
               </Button>
               <Button 
