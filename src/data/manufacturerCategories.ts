@@ -9,7 +9,7 @@ export const manufacturerCategories = [
     id: 2,
     name: "Cobbler",
     description: "Shoe crafting and repair",
-    icon: "Shoe"
+    icon: "Footprints"
   },
   {
     id: 3,

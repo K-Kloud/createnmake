@@ -5,7 +5,7 @@ import { manufacturers } from "@/data/manufacturers";
 import { manufacturerCategories } from "@/data/manufacturerCategories";
 import { 
   Scissors,
-  Shoe,
+  Footprints,
   Printer,
   Gem,
   Briefcase,
@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 // Create an icon mapping object
 const iconMap: Record<string, LucideIcon> = {
   Scissors,
-  Shoe,
+  Footprints,
   Printer,
   Gem,
   Briefcase,
