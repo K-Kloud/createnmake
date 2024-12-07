@@ -79,7 +79,7 @@ const Manufacturer = () => {
                   setDialogOpen(true);
                 }}
               >
-                {IconComponent && <IconComponent className="w-12 h-12 transition-transform group-hover:scale-110 text-primary" />}
+                {IconComponent && <IconComponent className="w-16 h-16 transition-transform group-hover:scale-110 text-primary" />}
                 <div className="text-center">
                   <h3 className="font-semibold text-lg">{category.name}</h3>
                   <p className="text-sm text-muted-foreground">{category.description}</p>
