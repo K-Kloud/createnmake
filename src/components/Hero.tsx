@@ -26,9 +26,9 @@ export const Hero = () => {
             size="lg" 
             variant="outline" 
             className="text-lg"
-            onClick={() => navigate("/gallery")}
+            onClick={() => navigate("/marketplace")}
           >
-            View Gallery
+            View Marketplace
           </Button>
         </div>
       </div>

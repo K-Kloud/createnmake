@@ -33,8 +33,8 @@ export const Header = () => {
             </h1>
           </div>
           <nav className="flex items-center space-x-4">
-            <Button variant="ghost" onClick={() => navigate("/gallery")}>
-              Gallery
+            <Button variant="ghost" onClick={() => navigate("/marketplace")}>
+              Marketplace
             </Button>
             <Button variant="ghost" onClick={() => navigate("/create")}>
               Create
