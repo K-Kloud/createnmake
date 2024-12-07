@@ -8,6 +8,10 @@ import Gallery from "./pages/Gallery";
 import Create from "./pages/Create";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
+import Features from "./pages/Features";
+import FAQ from "./pages/FAQ";
+import Contact from "./pages/Contact";
+import Testimonials from "./pages/Testimonials";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +28,10 @@ const App = () => (
             <Route path="/create" element={<Create />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/features" element={<Features />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/testimonials" element={<Testimonials />} />
           </Routes>
         </BrowserRouter>
       </div>
