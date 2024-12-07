@@ -20,7 +20,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const iconMap: Record<string, LucideIcon> = {
   Scissors,
@@ -31,20 +30,9 @@ const iconMap: Record<string, LucideIcon> = {
   Armchair,
 };
 
-// Map categories to relevant Unsplash images
-const categoryImages: Record<string, string> = {
-  "Tailor": "photo-1517022812141-23620dba5c23",
-  "Cobbler": "photo-1452960962994-acf4fd70b632",
-  "Printer": "photo-1562408590-e32931084e23",
-  "Goldsmith": "photo-1515562141207-7a88fb7ce338",
-  "Leather Worker": "photo-1473188588951-666fce8e7c68",
-  "Furniture Maker": "photo-1449247709967-d4461a6a6103"
-};
-
 const Manufacturer = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const navigate = useNavigate();
   
   const selectedImage = localStorage.getItem('selectedManufacturerImage');
   const imageDetails = selectedImage ? JSON.parse(selectedImage) : null;
@@ -78,37 +66,25 @@ const Manufacturer = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
           {manufacturerCategories.map((category) => {
             const IconComponent = iconMap[category.icon];
-            const imageId = categoryImages[category.name];
-            
             return (
-              <div
+              <Button
                 key={category.id}
-                className="group relative overflow-hidden rounded-lg cursor-pointer hover-scale"
+                variant="outline"
+                className="h-auto p-6 flex flex-col items-center gap-4 hover:bg-primary/5"
                 onClick={() => {
                   setSelectedCategory(category.name);
                   setDialogOpen(true);
                 }}
               >
-                <div className="relative h-64 w-full">
-                  <img
-                    src={`https://images.unsplash.com/${imageId}`}
-                    alt={category.name}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <div className="flex items-center gap-3 mb-2">
-                      {IconComponent && <IconComponent className="w-6 h-6" />}
-                      <h3 className="text-xl font-semibold">{category.name}</h3>
-                    </div>
-                    <p className="text-sm text-gray-200">{category.description}</p>
-                  </div>
+                {IconComponent && <IconComponent className="w-12 h-12" />}
+                <div className="text-center">
+                  <h3 className="font-semibold text-lg">{category.name}</h3>
+                  <p className="text-sm text-muted-foreground">{category.description}</p>
                 </div>
-                <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
+              </Button>
             );
           })}
         </div>
@@ -120,16 +96,10 @@ const Manufacturer = () => {
             </DialogHeader>
             <div className="grid grid-cols-1 gap-6 mt-4">
               {filteredManufacturers.map((manufacturer) => (
-                <div 
+                <ManufacturerCard
                   key={manufacturer.id}
-                  onClick={() => {
-                    setDialogOpen(false);
-                    navigate(`/manufacturer/${manufacturer.id}`);
-                  }}
-                  className="cursor-pointer"
-                >
-                  <ManufacturerCard {...manufacturer} />
-                </div>
+                  {...manufacturer}
+                />
               ))}
               {filteredManufacturers.length === 0 && (
                 <p className="text-center text-muted-foreground py-8">
@@ -139,6 +109,16 @@ const Manufacturer = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        <h2 className="text-2xl font-semibold mb-6">All Manufacturers</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {manufacturers.map((manufacturer) => (
+            <ManufacturerCard
+              key={manufacturer.id}
+              {...manufacturer}
+            />
+          ))}
+        </div>
       </main>
       <Footer />
     </div>
