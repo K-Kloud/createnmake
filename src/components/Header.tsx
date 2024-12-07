@@ -34,7 +34,7 @@ export const Header = () => {
           </div>
           <nav className="flex items-center space-x-4">
             <Button variant="ghost" onClick={() => navigate("/marketplace")}>
-              Open-market
+              OpenMarket
             </Button>
             <Button variant="ghost" onClick={() => navigate("/create")}>
               Create
