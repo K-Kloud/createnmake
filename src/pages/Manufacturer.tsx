@@ -1,9 +1,10 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ManufacturerCard } from "@/components/manufacturer/ManufacturerCard";
-
-// Move manufacturers data to a separate file to reduce file size
 import { manufacturers } from "@/data/manufacturers";
+import { manufacturerCategories } from "@/data/manufacturerCategories";
+import * as Icons from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Manufacturer = () => {
   const selectedImage = localStorage.getItem('selectedManufacturerImage');
@@ -14,7 +15,7 @@ const Manufacturer = () => {
       <Header />
       <main className="container px-4 py-24">
         <h1 className="text-4xl font-bold mb-8 gradient-text">
-          Our Manufacturers
+          Manufacturing Categories
         </h1>
         
         {imageDetails && (
@@ -34,6 +35,32 @@ const Manufacturer = () => {
           </div>
         )}
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+          {manufacturerCategories.map((category) => {
+            const Icon = Icons[category.icon as keyof typeof Icons];
+            return (
+              <Button
+                key={category.id}
+                variant="outline"
+                className="h-auto p-6 flex flex-col items-center gap-4 hover:bg-primary/5"
+                onClick={() => {
+                  const filteredManufacturers = manufacturers.filter(
+                    m => m.type === category.name
+                  );
+                  // You can implement filtering logic here
+                }}
+              >
+                {Icon && <Icon className="w-12 h-12" />}
+                <div className="text-center">
+                  <h3 className="font-semibold text-lg">{category.name}</h3>
+                  <p className="text-sm text-muted-foreground">{category.description}</p>
+                </div>
+              </Button>
+            );
+          })}
+        </div>
+
+        <h2 className="text-2xl font-semibold mb-6">All Manufacturers</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {manufacturers.map((manufacturer) => (
             <ManufacturerCard
