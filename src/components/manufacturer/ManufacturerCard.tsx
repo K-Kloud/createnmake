@@ -1,5 +1,12 @@
-import { Star } from "lucide-react";
+import { Star, Quote, ChevronDown, Image } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Review {
   id: number;
@@ -18,6 +25,7 @@ interface ManufacturerCardProps {
   image: string;
   location: string;
   specialties: string[];
+  producedItems?: { id: number; image: string; description: string }[];
 }
 
 export const ManufacturerCard = ({
@@ -29,7 +37,17 @@ export const ManufacturerCard = ({
   image,
   location,
   specialties,
+  producedItems = [],
 }: ManufacturerCardProps) => {
+  const { toast } = useToast();
+
+  const handleQuoteRequest = () => {
+    toast({
+      title: "Quote Requested",
+      description: `Your quote request has been sent to ${name}. They will contact you shortly.`,
+    });
+  };
+
   return (
     <Card className="glass-card hover:scale-[1.02] transition-transform">
       <CardHeader>
@@ -39,26 +57,65 @@ export const ManufacturerCard = ({
             alt={name}
             className="w-16 h-16 rounded-full object-cover"
           />
-          <div>
+          <div className="flex-1">
             <CardTitle className="text-xl">{name}</CardTitle>
             <p className="text-sm text-muted-foreground">{type}</p>
           </div>
+          <Button 
+            onClick={handleQuoteRequest}
+            className="flex items-center gap-2"
+          >
+            <Quote className="w-4 h-4" />
+            Request Quote
+          </Button>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-4 h-4 ${
-                    i < rating ? "fill-yellow-500 text-yellow-500" : "text-gray-300"
-                  }`}
-                />
-              ))}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`w-4 h-4 ${
+                      i < rating ? "fill-yellow-500 text-yellow-500" : "text-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="text-sm">({reviews.length} reviews)</span>
             </div>
-            <span className="text-sm">({reviews.length} reviews)</span>
+            
+            {producedItems.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <Image className="w-4 h-4" />
+                    <span>Previous Work</span>
+                    <ChevronDown className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-80 p-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    {producedItems.map((item) => (
+                      <div key={item.id} className="relative group">
+                        <img
+                          src={item.image}
+                          alt={item.description}
+                          className="w-full h-32 object-cover rounded-md"
+                        />
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
+                          <p className="text-xs text-white p-2">
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
           
           <p className="text-sm">{description}</p>
