@@ -28,7 +28,7 @@ export const Hero = () => {
             className="text-lg"
             onClick={() => navigate("/marketplace")}
           >
-            View Marketplace
+            View Open-market
           </Button>
         </div>
       </div>
