@@ -11,11 +11,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/components/ui/use-toast";
 
 export const ImageGenerator = () => {
   const [prompt, setPrompt] = useState("");
   const [selectedItem, setSelectedItem] = useState("");
+  const [width, setWidth] = useState([512]);
+  const [height, setHeight] = useState([512]);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const { toast } = useToast();
 
   const handleGenerate = () => {
@@ -38,6 +49,7 @@ export const ImageGenerator = () => {
     }
 
     // Generation logic here
+    setPreviewOpen(true);
   };
 
   return (
@@ -99,15 +111,50 @@ export const ImageGenerator = () => {
         />
       </div>
 
-      <Button 
-        onClick={handleGenerate} 
-        className="w-full"
-        disabled={!prompt || !selectedItem}
-      >
-        Generate
-      </Button>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Width: {width}px</label>
+          <Slider
+            value={width}
+            onValueChange={setWidth}
+            min={256}
+            max={1024}
+            step={64}
+            className="w-full"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Height: {height}px</label>
+          <Slider
+            value={height}
+            onValueChange={setHeight}
+            min={256}
+            max={1024}
+            step={64}
+            className="w-full"
+          />
+        </div>
+      </div>
 
-      {/* Results display logic here */}
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <DialogTrigger asChild>
+          <Button 
+            onClick={handleGenerate} 
+            className="w-full"
+            disabled={!prompt || !selectedItem}
+          >
+            Generate
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Generated Image Preview</DialogTitle>
+          </DialogHeader>
+          <div className="aspect-square bg-card/50 rounded-lg flex items-center justify-center">
+            <p className="text-muted-foreground">Preview will appear here</p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
