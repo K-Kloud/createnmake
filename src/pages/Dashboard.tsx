@@ -1,4 +1,5 @@
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -16,9 +17,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <div className="container px-4 py-24">
+      <div className="container px-4 py-24 flex-grow">
         <div className="flex flex-col md:flex-row gap-8">
           {/* User Profile Section */}
           <Card className="flex-1 glass-card">
@@ -78,7 +79,7 @@ const Dashboard = () => {
                     <Image className="mr-2 h-4 w-4" />
                     Create New Image
                   </Button>
-                  <Button variant="outline" onClick={() => navigate("/gallery")}>
+                  <Button variant="outline" onClick={() => navigate("/marketplace")}>
                     <History className="mr-2 h-4 w-4" />
                     View Gallery
                   </Button>
@@ -88,6 +89,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

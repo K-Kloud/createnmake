@@ -1,4 +1,5 @@
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,7 +18,6 @@ const Settings = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual profile update
     toast({
       title: "Profile Updated",
       description: "Your profile has been updated successfully.",
@@ -25,9 +25,9 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <div className="container px-4 py-24">
+      <div className="container px-4 py-24 flex-grow">
         <h1 className="text-4xl font-bold mb-8 gradient-text">Settings</h1>
         
         <div className="max-w-2xl mx-auto">
@@ -80,6 +80,7 @@ const Settings = () => {
           </Card>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
