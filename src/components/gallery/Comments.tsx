@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { MessageSquare } from "lucide-react";
 import { CommentList } from "./CommentList";
 
-interface Comment {
+interface Reply {
   id: number;
   text: string;
   user: {
@@ -14,13 +14,25 @@ interface Comment {
   createdAt: Date;
 }
 
+interface Comment {
+  id: number;
+  text: string;
+  user: {
+    name: string;
+    avatar: string;
+  };
+  createdAt: Date;
+  replies?: Reply[];
+}
+
 interface CommentsProps {
   imageId: number;
   comments: Comment[];
   onAddComment: (imageId: number, comment: string) => void;
+  onAddReply: (imageId: number, commentId: number, reply: string) => void;
 }
 
-export const Comments = ({ imageId, comments, onAddComment }: CommentsProps) => {
+export const Comments = ({ imageId, comments, onAddComment, onAddReply }: CommentsProps) => {
   const [newComment, setNewComment] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -29,6 +41,10 @@ export const Comments = ({ imageId, comments, onAddComment }: CommentsProps) => 
       onAddComment(imageId, newComment);
       setNewComment("");
     }
+  };
+
+  const handleAddReply = (commentId: number, replyText: string) => {
+    onAddReply(imageId, commentId, replyText);
   };
 
   return (
@@ -50,7 +66,7 @@ export const Comments = ({ imageId, comments, onAddComment }: CommentsProps) => 
         </Button>
       </form>
 
-      <CommentList comments={comments} />
+      <CommentList comments={comments} onAddReply={handleAddReply} />
     </div>
   );
 };

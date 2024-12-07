@@ -146,11 +146,40 @@ const Gallery = () => {
             id: Date.now(),
             text: commentText,
             user: currentUser,
-            createdAt: new Date()
+            createdAt: new Date(),
+            replies: []
           };
           return {
             ...image,
             comments: [...image.comments, newComment]
+          };
+        }
+        return image;
+      })
+    );
+  };
+
+  const handleAddReply = (imageId: number, commentId: number, replyText: string) => {
+    setGalleryImages(prevImages =>
+      prevImages.map(image => {
+        if (image.id === imageId) {
+          return {
+            ...image,
+            comments: image.comments.map(comment => {
+              if (comment.id === commentId) {
+                const newReply = {
+                  id: Date.now(),
+                  text: replyText,
+                  user: currentUser,
+                  createdAt: new Date()
+                };
+                return {
+                  ...comment,
+                  replies: [...(comment.replies || []), newReply]
+                };
+              }
+              return comment;
+            })
           };
         }
         return image;
@@ -171,6 +200,7 @@ const Gallery = () => {
               onLike={handleLike}
               onView={handleView}
               onAddComment={handleAddComment}
+              onAddReply={handleAddReply}
             />
           ))}
         </div>

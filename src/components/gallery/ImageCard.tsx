@@ -24,9 +24,10 @@ interface ImageCardProps {
   onLike: (imageId: number) => void;
   onView: (imageId: number) => void;
   onAddComment: (imageId: number, comment: string) => void;
+  onAddReply: (imageId: number, commentId: number, reply: string) => void;
 }
 
-export const ImageCard = ({ image, onLike, onView, onAddComment }: ImageCardProps) => {
+export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: ImageCardProps) => {
   const [showComments, setShowComments] = useState(false);
 
   return (
@@ -86,6 +87,7 @@ export const ImageCard = ({ image, onLike, onView, onAddComment }: ImageCardProp
               imageId={image.id}
               comments={image.comments}
               onAddComment={onAddComment}
+              onAddReply={onAddReply}
             />
           )}
         </div>
