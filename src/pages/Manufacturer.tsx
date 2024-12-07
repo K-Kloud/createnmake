@@ -3,8 +3,26 @@ import { Footer } from "@/components/Footer";
 import { ManufacturerCard } from "@/components/manufacturer/ManufacturerCard";
 import { manufacturers } from "@/data/manufacturers";
 import { manufacturerCategories } from "@/data/manufacturerCategories";
-import * as Icons from "lucide-react";
+import { 
+  Scissors,
+  Boot,
+  Printer,
+  Gem,
+  Briefcase,
+  Armchair,
+  LucideIcon
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+// Create an icon mapping object
+const iconMap: Record<string, LucideIcon> = {
+  Scissors,
+  Boot,
+  Printer,
+  Gem,
+  Briefcase,
+  Armchair,
+};
 
 const Manufacturer = () => {
   const selectedImage = localStorage.getItem('selectedManufacturerImage');
@@ -37,7 +55,7 @@ const Manufacturer = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
           {manufacturerCategories.map((category) => {
-            const Icon = Icons[category.icon as keyof typeof Icons];
+            const IconComponent = iconMap[category.icon];
             return (
               <Button
                 key={category.id}
@@ -50,7 +68,7 @@ const Manufacturer = () => {
                   // You can implement filtering logic here
                 }}
               >
-                {Icon && <Icon className="w-12 h-12" />}
+                {IconComponent && <IconComponent className="w-12 h-12" />}
                 <div className="text-center">
                   <h3 className="font-semibold text-lg">{category.name}</h3>
                   <p className="text-sm text-muted-foreground">{category.description}</p>
