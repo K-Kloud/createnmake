@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { Header } from "@/components/Header";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ThumbsUp, MessageSquare, Eye, Package } from "lucide-react";
 import { Footer } from "@/components/Footer";
-import { formatDistanceToNow } from "date-fns";
+import { ImageCard } from "@/components/gallery/ImageCard";
 
 // Mock user data - in a real app this would come from auth
 const currentUser = {
@@ -13,13 +10,13 @@ const currentUser = {
   avatar: "https://github.com/shadcn.png"
 };
 
-const images = [
+const initialImages = [
   {
     id: 1,
     url: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
     prompt: "A woman sitting on a bed using a laptop",
     likes: 234,
-    comments: 45,
+    comments: [],
     views: 1289,
     produced: 67,
     creator: {
@@ -34,7 +31,7 @@ const images = [
     url: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
     prompt: "Turned on gray laptop computer",
     likes: 189,
-    comments: 23,
+    comments: [],
     views: 876,
     produced: 34,
     creator: {
@@ -49,7 +46,7 @@ const images = [
     url: "https://images.unsplash.com/photo-1518770660439-4636190af475",
     prompt: "Macro photography of black circuit board",
     likes: 567,
-    comments: 89,
+    comments: [],
     views: 2345,
     produced: 156,
     creator: {
@@ -64,7 +61,7 @@ const images = [
     url: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
     prompt: "Monitor showing Java programming",
     likes: 432,
-    comments: 67,
+    comments: [],
     views: 1567,
     produced: 89,
     creator: {
@@ -79,7 +76,7 @@ const images = [
     url: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
     prompt: "Person using MacBook Pro",
     likes: 345,
-    comments: 56,
+    comments: [],
     views: 1789,
     produced: 45,
     creator: {
@@ -94,7 +91,7 @@ const images = [
     url: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
     prompt: "Woman in white long sleeve shirt using black laptop computer",
     likes: 678,
-    comments: 98,
+    comments: [],
     views: 3456,
     produced: 234,
     creator: {
@@ -107,7 +104,10 @@ const images = [
 ];
 
 const Gallery = () => {
-  const [galleryImages, setGalleryImages] = useState(images);
+  const [galleryImages, setGalleryImages] = useState(initialImages.map(img => ({
+    ...img,
+    comments: []
+  })));
 
   const handleLike = (imageId: number) => {
     setGalleryImages(prevImages =>
@@ -138,6 +138,26 @@ const Gallery = () => {
     );
   };
 
+  const handleAddComment = (imageId: number, commentText: string) => {
+    setGalleryImages(prevImages =>
+      prevImages.map(image => {
+        if (image.id === imageId) {
+          const newComment = {
+            id: Date.now(),
+            text: commentText,
+            user: currentUser,
+            createdAt: new Date()
+          };
+          return {
+            ...image,
+            comments: [...image.comments, newComment]
+          };
+        }
+        return image;
+      })
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
@@ -145,55 +165,13 @@ const Gallery = () => {
         <h1 className="text-4xl font-bold mb-8 gradient-text">Image Gallery</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {galleryImages.map((image) => (
-            <Card key={image.id} className="overflow-hidden glass-card hover:scale-[1.02] transition-transform">
-              <CardContent className="p-0">
-                <img
-                  src={image.url}
-                  alt={image.prompt}
-                  className="w-full h-64 object-cover"
-                  onClick={() => handleView(image.id)}
-                />
-                <div className="p-4 space-y-3">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <img
-                      src={image.creator.avatar}
-                      alt={image.creator.name}
-                      className="w-6 h-6 rounded-full"
-                    />
-                    <span className="text-sm font-medium">{image.creator.name}</span>
-                    <span className="text-sm text-gray-400">
-                      {formatDistanceToNow(image.createdAt, { addSuffix: true })}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-300">{image.prompt}</p>
-                  <div className="flex justify-between items-center">
-                    <div className="flex space-x-4">
-                      <Button 
-                        variant={image.hasLiked ? "default" : "ghost"} 
-                        size="sm" 
-                        className="space-x-1"
-                        onClick={() => handleLike(image.id)}
-                      >
-                        <ThumbsUp className="h-4 w-4" />
-                        <span>{image.likes}</span>
-                      </Button>
-                      <Button variant="ghost" size="sm" className="space-x-1">
-                        <MessageSquare className="h-4 w-4" />
-                        <span>{image.comments}</span>
-                      </Button>
-                      <Button variant="ghost" size="sm" className="space-x-1">
-                        <Eye className="h-4 w-4" />
-                        <span>{image.views}</span>
-                      </Button>
-                    </div>
-                    <Button size="sm" className="space-x-1">
-                      <Package className="h-4 w-4" />
-                      <span>{image.produced}</span>
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <ImageCard
+              key={image.id}
+              image={image}
+              onLike={handleLike}
+              onView={handleView}
+              onAddComment={handleAddComment}
+            />
           ))}
         </div>
       </div>
