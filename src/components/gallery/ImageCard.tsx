@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { ThumbsUp, Eye, Package } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Comments } from "./Comments";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ImageCardProps {
   image: {
@@ -29,6 +31,25 @@ interface ImageCardProps {
 
 export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: ImageCardProps) => {
   const [showComments, setShowComments] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleSendToManufacturer = () => {
+    // Store the selected image details in localStorage for the manufacturer page
+    localStorage.setItem('selectedManufacturerImage', JSON.stringify({
+      url: image.url,
+      prompt: image.prompt,
+      id: image.id
+    }));
+    
+    toast({
+      title: "Image Selected for Manufacturing",
+      description: "Redirecting to manufacturing options...",
+    });
+
+    // Navigate to the manufacturer page
+    navigate('/manufacturer');
+  };
 
   return (
     <Card className="overflow-hidden glass-card hover:scale-[1.02] transition-transform">
@@ -76,9 +97,13 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
                 <span>{image.views}</span>
               </Button>
             </div>
-            <Button size="sm" className="space-x-1">
+            <Button 
+              size="sm" 
+              className="space-x-1"
+              onClick={handleSendToManufacturer}
+            >
               <Package className="h-4 w-4" />
-              <span>{image.produced}</span>
+              <span>Manufacture</span>
             </Button>
           </div>
           
