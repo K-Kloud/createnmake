@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Plus } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -35,6 +36,7 @@ export const ImageGenerator = () => {
   const [selectedItem, setSelectedItem] = useState("");
   const [selectedRatio, setSelectedRatio] = useState("square");
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [referenceImage, setReferenceImage] = useState<File | null>(null);
   const { toast } = useToast();
 
   const handleGenerate = () => {
@@ -57,6 +59,35 @@ export const ImageGenerator = () => {
     }
 
     setPreviewOpen(true);
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast({
+          title: "File too large",
+          description: "Please upload an image smaller than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload an image file",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setReferenceImage(file);
+      toast({
+        title: "Image uploaded",
+        description: "Your reference image has been uploaded successfully",
+      });
+    }
   };
 
   return (
@@ -110,13 +141,33 @@ export const ImageGenerator = () => {
           </Select>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 relative">
           <Textarea
             placeholder="Describe what you want to generate..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             className="min-h-[100px] bg-card/30 border-white/10 placeholder:text-white/50"
           />
+          <div className="absolute bottom-3 right-3">
+            <input
+              type="file"
+              id="imageUpload"
+              className="hidden"
+              accept="image/*"
+              onChange={handleImageUpload}
+            />
+            <label
+              htmlFor="imageUpload"
+              className="inline-flex items-center justify-center size-8 rounded-full bg-primary hover:bg-primary-hover text-white cursor-pointer transition-colors"
+            >
+              <Plus className="size-4" />
+            </label>
+          </div>
+          {referenceImage && (
+            <p className="text-sm text-white/70">
+              Reference image: {referenceImage.name}
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">
