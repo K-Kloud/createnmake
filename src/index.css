@@ -4,14 +4,14 @@
 
 @layer base {
   :root {
-    --background: 261 18% 14%;
-    --foreground: 0 0% 98%;
-    --card: 261 18% 18%;
-    --card-foreground: 0 0% 98%;
-    --border: 261 16% 24%;
-    --input: 261 16% 24%;
-    --ring: 261 91% 76%;
-    --radius: 0.75rem;
+    --background: 168 100% 3%;
+    --foreground: 156 100% 50%;
+    --card: 168 100% 5%;
+    --card-foreground: 156 100% 50%;
+    --border: 168 70% 10%;
+    --input: 168 70% 10%;
+    --ring: 156 100% 50%;
+    --radius: 0.5rem;
   }
 
   * {
@@ -21,13 +21,23 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background-image: radial-gradient(circle at 50% 50%, rgba(0, 255, 157, 0.15) 0%, transparent 50%);
   }
 }
 
 .glass-card {
-  @apply bg-card/30 backdrop-blur-md border border-white/10 shadow-xl;
+  @apply bg-card/30 backdrop-blur-md border border-primary/20 shadow-xl;
+  box-shadow: 0 0 15px rgba(0, 255, 157, 0.1);
 }
 
 .gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary animate-glow;
+}
+
+.button-glow {
+  @apply hover:shadow-[0_0_15px_rgba(0,255,157,0.5)] transition-shadow duration-300;
+}
+
+.input-glow {
+  @apply focus:shadow-[0_0_10px_rgba(0,255,157,0.3)] transition-shadow duration-300;
 }
