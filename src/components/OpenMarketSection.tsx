@@ -76,7 +76,7 @@ export const OpenMarketSection = () => {
   return (
     <section className="py-16">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold gradient-text">OpenMarket</h2>
+        <h2 className="text-3xl font-bold gradient-text rounded-lg">OpenMarket</h2>
         <Button 
           onClick={() => navigate("/marketplace")}
           variant="outline"
