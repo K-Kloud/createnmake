@@ -35,7 +35,7 @@ export const Header = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <h1 
-              className="text-2xl font-bold text-primary hover:brightness-125 transition-all duration-300 rounded-lg cursor-pointer" 
+              className="text-2xl font-bold text-primary animate-glow rounded-lg cursor-pointer" 
               onClick={() => navigate("/")}
             >
               OpenT
