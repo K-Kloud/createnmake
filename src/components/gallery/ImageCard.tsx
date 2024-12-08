@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart, Eye, Package } from "lucide-react";
+import { Heart, Eye, Package, ShoppingCart } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Comments } from "./Comments";
 import { useNavigate } from "react-router-dom";
@@ -35,7 +35,6 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
   const { toast } = useToast();
 
   const handleSendToManufacturer = () => {
-    // Store the selected image details in localStorage for the manufacturer page
     localStorage.setItem('selectedManufacturerImage', JSON.stringify({
       url: image.url,
       prompt: image.prompt,
@@ -47,8 +46,14 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
       description: "Redirecting to manufacturing options...",
     });
 
-    // Navigate to the manufacturer page
     navigate('/manufacturer');
+  };
+
+  const handleBuyPrompt = () => {
+    toast({
+      title: "Coming Soon!",
+      description: "The ability to purchase prompts will be available soon.",
+    });
   };
 
   return (
@@ -99,14 +104,25 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
                 <span>{image.views}</span>
               </Button>
             </div>
-            <Button 
-              size="sm" 
-              className="space-x-1"
-              onClick={handleSendToManufacturer}
-            >
-              <Package className="h-4 w-4" />
-              <span>Manufacture</span>
-            </Button>
+            <div className="flex space-x-2">
+              <Button 
+                size="sm" 
+                variant="ghost"
+                className="space-x-1"
+                onClick={handleBuyPrompt}
+              >
+                <ShoppingCart className="h-4 w-4" />
+                <span>Buy Prompt</span>
+              </Button>
+              <Button 
+                size="sm" 
+                className="space-x-1"
+                onClick={handleSendToManufacturer}
+              >
+                <Package className="h-4 w-4" />
+                <span>Manufacture</span>
+              </Button>
+            </div>
           </div>
           
           {showComments && (
