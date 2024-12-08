@@ -3,6 +3,7 @@ import { Hero } from "@/components/Hero";
 import { ImageGenerator } from "@/components/ImageGenerator";
 import { Footer } from "@/components/Footer";
 import { OpenMarketSection } from "@/components/OpenMarketSection";
+import { ChatBot } from "@/components/ChatBot";
 
 const Index = () => {
   return (
@@ -13,6 +14,7 @@ const Index = () => {
         <ImageGenerator />
         <OpenMarketSection />
       </div>
+      <ChatBot />
       <Footer />
     </div>
   );
