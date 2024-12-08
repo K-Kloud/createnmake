@@ -7,7 +7,9 @@ const Create = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <div className="container px-4 py-24 flex-grow">
-        <h1 className="text-4xl font-bold mb-8 gradient-text">Create New Image</h1>
+        <h1 className="text-4xl font-bold mb-8 text-primary hover:brightness-125 transition-all duration-300 rounded-lg">
+          Create New Image
+        </h1>
         <ImageGenerator />
       </div>
       <Footer />

@@ -10,7 +10,7 @@ export const Footer = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold gradient-text">OpenT</h3>
+            <h3 className="text-lg font-semibold text-primary hover:brightness-125 transition-all duration-300 rounded-lg">OpenT</h3>
             <p className="text-sm text-gray-400">
               Create stunning AI-generated images with our cutting-edge technology.
             </p>

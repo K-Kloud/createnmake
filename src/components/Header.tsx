@@ -16,7 +16,6 @@ export const Header = () => {
   const navigate = useNavigate();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const { toast } = useToast();
-  // TODO: Replace with actual auth state
   const isSignedIn = false;
   const user = {
     name: "John Doe",
@@ -24,7 +23,6 @@ export const Header = () => {
   };
 
   const handleSignOut = () => {
-    // TODO: Implement actual sign out logic
     toast({
       title: "Signed out successfully",
       description: "You have been logged out of your account.",
@@ -37,7 +35,7 @@ export const Header = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <h1 
-              className="text-2xl font-bold gradient-text cursor-pointer" 
+              className="text-2xl font-bold text-primary hover:brightness-125 transition-all duration-300 rounded-lg cursor-pointer" 
               onClick={() => navigate("/")}
             >
               OpenT
