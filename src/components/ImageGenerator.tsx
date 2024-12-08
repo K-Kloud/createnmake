@@ -61,7 +61,7 @@ export const ImageGenerator = () => {
 
   return (
     <div className="space-y-8 animate-float">
-      <div className="glass-card p-6 rounded-xl space-y-6">
+      <div className="glass-card p-6 rounded-xl space-y-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(110,89,165,0.5)] hover:border-primary/50">
         <div className="space-y-2">
           <Select onValueChange={setSelectedItem} value={selectedItem}>
             <SelectTrigger className="w-full bg-card/30 border-white/10">
@@ -79,33 +79,33 @@ export const ImageGenerator = () => {
                 <SelectItem value="skirt">Skirt</SelectItem>
                 <SelectItem value="coat">Coat</SelectItem>
               </SelectGroup>
-            <SelectGroup>
-              <SelectLabel>Cobbler Items</SelectLabel>
-              <SelectItem value="dress-shoes">Dress Shoes</SelectItem>
-              <SelectItem value="boots">Boots</SelectItem>
-              <SelectItem value="sneakers">Sneakers</SelectItem>
-              <SelectItem value="sandals">Sandals</SelectItem>
-              <SelectItem value="loafers">Loafers</SelectItem>
-              <SelectItem value="oxford-shoes">Oxford Shoes</SelectItem>
-              <SelectItem value="heels">Heels</SelectItem>
-            </SelectGroup>
-            <SelectGroup>
-              <SelectLabel>Leather Goods</SelectLabel>
-              <SelectItem value="leather-bag">Leather Bag</SelectItem>
-              <SelectItem value="wallet">Wallet</SelectItem>
-              <SelectItem value="belt">Belt</SelectItem>
-              <SelectItem value="briefcase">Briefcase</SelectItem>
-              <SelectItem value="backpack">Backpack</SelectItem>
-              <SelectItem value="messenger-bag">Messenger Bag</SelectItem>
-            </SelectGroup>
-            <SelectGroup>
-              <SelectLabel>Accessories</SelectLabel>
-              <SelectItem value="tie">Tie</SelectItem>
-              <SelectItem value="bow-tie">Bow Tie</SelectItem>
-              <SelectItem value="scarf">Scarf</SelectItem>
-              <SelectItem value="gloves">Gloves</SelectItem>
-              <SelectItem value="hat">Hat</SelectItem>
-            </SelectGroup>
+              <SelectGroup>
+                <SelectLabel>Cobbler Items</SelectLabel>
+                <SelectItem value="dress-shoes">Dress Shoes</SelectItem>
+                <SelectItem value="boots">Boots</SelectItem>
+                <SelectItem value="sneakers">Sneakers</SelectItem>
+                <SelectItem value="sandals">Sandals</SelectItem>
+                <SelectItem value="loafers">Loafers</SelectItem>
+                <SelectItem value="oxford-shoes">Oxford Shoes</SelectItem>
+                <SelectItem value="heels">Heels</SelectItem>
+              </SelectGroup>
+              <SelectGroup>
+                <SelectLabel>Leather Goods</SelectLabel>
+                <SelectItem value="leather-bag">Leather Bag</SelectItem>
+                <SelectItem value="wallet">Wallet</SelectItem>
+                <SelectItem value="belt">Belt</SelectItem>
+                <SelectItem value="briefcase">Briefcase</SelectItem>
+                <SelectItem value="backpack">Backpack</SelectItem>
+                <SelectItem value="messenger-bag">Messenger Bag</SelectItem>
+              </SelectGroup>
+              <SelectGroup>
+                <SelectLabel>Accessories</SelectLabel>
+                <SelectItem value="tie">Tie</SelectItem>
+                <SelectItem value="bow-tie">Bow Tie</SelectItem>
+                <SelectItem value="scarf">Scarf</SelectItem>
+                <SelectItem value="gloves">Gloves</SelectItem>
+                <SelectItem value="hat">Hat</SelectItem>
+              </SelectGroup>
             </SelectContent>
           </Select>
         </div>
