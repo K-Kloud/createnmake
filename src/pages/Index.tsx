@@ -2,6 +2,7 @@ import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { ImageGenerator } from "@/components/ImageGenerator";
 import { Footer } from "@/components/Footer";
+import { OpenMarketSection } from "@/components/OpenMarketSection";
 
 const Index = () => {
   return (
@@ -10,6 +11,7 @@ const Index = () => {
       <Hero />
       <div className="container px-4 py-16 flex-grow">
         <ImageGenerator />
+        <OpenMarketSection />
       </div>
       <Footer />
     </div>
