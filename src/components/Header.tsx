@@ -8,16 +8,27 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { useToast } from "./ui/use-toast";
 
 export const Header = () => {
   const navigate = useNavigate();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const { toast } = useToast();
   // TODO: Replace with actual auth state
   const isSignedIn = false;
   const user = {
     name: "John Doe",
     avatar: "https://github.com/shadcn.png",
+  };
+
+  const handleSignOut = () => {
+    // TODO: Implement actual sign out logic
+    toast({
+      title: "Signed out successfully",
+      description: "You have been logged out of your account.",
+    });
   };
 
   return (
@@ -47,14 +58,18 @@ export const Header = () => {
                     <AvatarFallback>{user.name[0]}</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                     Dashboard
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/settings")}>
                     Settings
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={handleSignOut}
+                    className="text-red-500 focus:text-red-500"
+                  >
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -64,7 +79,7 @@ export const Header = () => {
                 className="bg-primary hover:bg-primary-hover"
                 onClick={() => setShowAuthDialog(true)}
               >
-                Sign In
+                Sign In / Sign Up
               </Button>
             )}
           </nav>
