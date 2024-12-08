@@ -103,7 +103,7 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
               onClick={handleSendToManufacturer}
             >
               <Package className="h-4 w-4" />
-              <span>Manufacture</span>
+              <span>Make</span>
             </Button>
           </div>
           
