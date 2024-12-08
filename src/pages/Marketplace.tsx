@@ -47,7 +47,10 @@ const Gallery = () => {
           const newComment = {
             id: Date.now(),
             text: commentText,
-            user: currentUser,
+            user: {
+              name: "Anonymous User",
+              avatar: "https://github.com/shadcn.png"
+            },
             createdAt: new Date(),
             replies: []
           };
@@ -72,7 +75,10 @@ const Gallery = () => {
                 const newReply = {
                   id: Date.now(),
                   text: replyText,
-                  user: currentUser,
+                  user: {
+                    name: "Anonymous User",
+                    avatar: "https://github.com/shadcn.png"
+                  },
                   createdAt: new Date()
                 };
                 return {

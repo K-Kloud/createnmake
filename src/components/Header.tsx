@@ -11,10 +11,13 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "./ui/use-toast";
+import { Switch } from "@/components/ui/switch";
+import { ToggleLeft, ToggleRight } from "lucide-react";
 
 export const Header = () => {
   const navigate = useNavigate();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const { toast } = useToast();
   const isSignedIn = false;
   const user = {
@@ -26,6 +29,14 @@ export const Header = () => {
     toast({
       title: "Signed out successfully",
       description: "You have been logged out of your account.",
+    });
+  };
+
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+    toast({
+      title: `${isDarkMode ? 'Light' : 'Dark'} mode activated`,
+      description: `Switched to ${isDarkMode ? 'light' : 'dark'} theme.`,
     });
   };
 
@@ -42,6 +53,18 @@ export const Header = () => {
             </h1>
           </div>
           <nav className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 mr-2">
+              <Switch
+                checked={isDarkMode}
+                onCheckedChange={toggleTheme}
+                className="data-[state=checked]:bg-secondary"
+              />
+              {isDarkMode ? (
+                <ToggleRight className="h-4 w-4 text-primary" />
+              ) : (
+                <ToggleLeft className="h-4 w-4 text-primary" />
+              )}
+            </div>
             <Button variant="ghost" onClick={() => navigate("/marketplace")}>
               OpenMarket
             </Button>
