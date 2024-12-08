@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -18,14 +17,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/components/ui/use-toast";
+
+const aspectRatios = {
+  "square": { width: 1080, height: 1080, label: "Square (1:1)" },
+  "portrait": { width: 1080, height: 1350, label: "Portrait (4:5)" },
+  "landscape": { width: 1920, height: 1080, label: "Landscape (16:9)" },
+  "story": { width: 1080, height: 1920, label: "Story (9:16)" },
+  "youtube": { width: 2560, height: 1440, label: "YouTube (16:9)" },
+  "facebook": { width: 1200, height: 630, label: "Facebook (1.91:1)" },
+  "twitter": { width: 1600, height: 900, label: "Twitter (16:9)" },
+  "linkedin": { width: 1200, height: 627, label: "LinkedIn (1.91:1)" }
+};
 
 export const ImageGenerator = () => {
   const [prompt, setPrompt] = useState("");
   const [selectedItem, setSelectedItem] = useState("");
-  const [width, setWidth] = useState([512]);
-  const [height, setHeight] = useState([512]);
+  const [selectedRatio, setSelectedRatio] = useState("square");
   const [previewOpen, setPreviewOpen] = useState(false);
   const { toast } = useToast();
 
@@ -48,29 +56,29 @@ export const ImageGenerator = () => {
       return;
     }
 
-    // Generation logic here
     setPreviewOpen(true);
   };
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <Select onValueChange={setSelectedItem} value={selectedItem}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select what you want to create" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Tailor Items</SelectLabel>
-              <SelectItem value="suit">Suit</SelectItem>
-              <SelectItem value="dress-shirt">Dress Shirt</SelectItem>
-              <SelectItem value="trousers">Trousers</SelectItem>
-              <SelectItem value="dress">Dress</SelectItem>
-              <SelectItem value="blazer">Blazer</SelectItem>
-              <SelectItem value="waistcoat">Waistcoat</SelectItem>
-              <SelectItem value="skirt">Skirt</SelectItem>
-              <SelectItem value="coat">Coat</SelectItem>
-            </SelectGroup>
+    <div className="space-y-8 animate-float">
+      <div className="glass-card p-6 rounded-xl space-y-6">
+        <div className="space-y-2">
+          <Select onValueChange={setSelectedItem} value={selectedItem}>
+            <SelectTrigger className="w-full bg-card/30 border-white/10">
+              <SelectValue placeholder="Select what you want to create" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Tailor Items</SelectLabel>
+                <SelectItem value="suit">Suit</SelectItem>
+                <SelectItem value="dress-shirt">Dress Shirt</SelectItem>
+                <SelectItem value="trousers">Trousers</SelectItem>
+                <SelectItem value="dress">Dress</SelectItem>
+                <SelectItem value="blazer">Blazer</SelectItem>
+                <SelectItem value="waistcoat">Waistcoat</SelectItem>
+                <SelectItem value="skirt">Skirt</SelectItem>
+                <SelectItem value="coat">Coat</SelectItem>
+              </SelectGroup>
             <SelectGroup>
               <SelectLabel>Cobbler Items</SelectLabel>
               <SelectItem value="dress-shoes">Dress Shoes</SelectItem>
@@ -98,63 +106,66 @@ export const ImageGenerator = () => {
               <SelectItem value="gloves">Gloves</SelectItem>
               <SelectItem value="hat">Hat</SelectItem>
             </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
+            </SelectContent>
+          </Select>
+        </div>
 
-      <div className="space-y-2">
-        <Textarea
-          placeholder="Describe what you want to generate..."
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          className="min-h-[100px]"
-        />
-      </div>
-
-      <div className="space-y-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Width: {width}px</label>
-          <Slider
-            value={width}
-            onValueChange={setWidth}
-            min={256}
-            max={1024}
-            step={64}
-            className="w-full"
+          <Textarea
+            placeholder="Describe what you want to generate..."
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            className="min-h-[100px] bg-card/30 border-white/10 placeholder:text-white/50"
           />
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Height: {height}px</label>
-          <Slider
-            value={height}
-            onValueChange={setHeight}
-            min={256}
-            max={1024}
-            step={64}
-            className="w-full"
-          />
-        </div>
-      </div>
 
-      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-        <DialogTrigger asChild>
-          <Button 
-            onClick={handleGenerate} 
-            className="w-full"
-            disabled={!prompt || !selectedItem}
-          >
-            Generate
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>Generated Image Preview</DialogTitle>
-          </DialogHeader>
-          <div className="aspect-square bg-card/50 rounded-lg flex items-center justify-center">
-            <p className="text-muted-foreground">Preview will appear here</p>
-          </div>
-        </DialogContent>
-      </Dialog>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Output Size</label>
+          <Select onValueChange={setSelectedRatio} value={selectedRatio}>
+            <SelectTrigger className="w-full bg-card/30 border-white/10">
+              <SelectValue placeholder="Choose aspect ratio" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Common Sizes</SelectLabel>
+                {Object.entries(aspectRatios).map(([key, { label }]) => (
+                  <SelectItem key={key} value={key}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <p className="text-sm text-white/60">
+            Size: {aspectRatios[selectedRatio].width}x{aspectRatios[selectedRatio].height}px
+          </p>
+        </div>
+
+        <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+          <DialogTrigger asChild>
+            <Button 
+              onClick={handleGenerate} 
+              className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity"
+              disabled={!prompt || !selectedItem}
+            >
+              Generate
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>Generated Image Preview</DialogTitle>
+            </DialogHeader>
+            <div 
+              className="bg-card/50 rounded-lg flex items-center justify-center"
+              style={{
+                aspectRatio: `${aspectRatios[selectedRatio].width} / ${aspectRatios[selectedRatio].height}`
+              }}
+            >
+              <p className="text-muted-foreground">Preview will appear here</p>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 };
