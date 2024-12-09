@@ -76,6 +76,13 @@ export const ImageGenerator = () => {
           onChange={setSelectedRatio}
         />
 
+        <Textarea
+          placeholder="Describe what you want to generate..."
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          className="min-h-[100px]"
+        />
+
         <PreviewDialog
           open={previewOpen}
           onOpenChange={setPreviewOpen}
