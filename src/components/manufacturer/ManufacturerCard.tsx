@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { PortfolioGrid } from "./PortfolioGrid";
 
 interface Review {
   id: number;
@@ -44,26 +45,7 @@ export const ManufacturerCard = ({
   image,
   location,
   specialties,
-  producedItems = [
-    {
-      id: 1,
-      generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
-      productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
-      description: "Custom tailored suit"
-    },
-    {
-      id: 2,
-      generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
-      productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
-      description: "Bespoke dress shirt"
-    },
-    {
-      id: 3,
-      generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
-      productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
-      description: "Custom leather shoes"
-    }
-  ],
+  producedItems = [],
 }: ManufacturerCardProps) => {
   const { toast } = useToast();
 
@@ -125,36 +107,8 @@ export const ManufacturerCard = ({
                   <DialogHeader>
                     <DialogTitle>{name}'s Portfolio</DialogTitle>
                   </DialogHeader>
-                  <div className="grid gap-6 mt-4">
-                    {producedItems.map((item) => (
-                      <div key={item.id} className="grid grid-cols-2 gap-4 p-4 glass-card">
-                        <div className="space-y-2">
-                          <h3 className="font-semibold">Generated Design</h3>
-                          <div className="relative aspect-video">
-                            <img
-                              src={item.generatedImage}
-                              alt="Generated design"
-                              className="absolute inset-0 w-full h-full object-cover rounded-md"
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <h3 className="font-semibold">Manufactured Product</h3>
-                          <div className="relative aspect-video">
-                            <img
-                              src={item.productImage}
-                              alt="Manufactured product"
-                              className="absolute inset-0 w-full h-full object-cover rounded-md"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-span-2">
-                          <p className="text-sm text-center text-muted-foreground">
-                            {item.description}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                  <div className="mt-4">
+                    <PortfolioGrid items={producedItems} manufacturerName={name} />
                   </div>
                 </DialogContent>
               </Dialog>
