@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import * as fal from '@fal-ai/serverless-client'
+import { fal } from "npm:@fal-ai/client"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -28,12 +28,21 @@ serve(async (req) => {
     // Initialize the Fal AI client
     fal.config({ credentials: FAL_KEY });
 
-    const result = await fal.run('stable-diffusion-xl', {
+    const result = await fal.subscribe("stable-diffusion-xl", {
       input: {
         prompt,
         image_size: { width, height },
         num_images: 1,
         negative_prompt: "blurry, low quality, distorted",
+        num_inference_steps: 28,
+        guidance_scale: 3.5,
+        enable_safety_checker: true
+      },
+      logs: true,
+      onQueueUpdate: (update) => {
+        if (update.status === "IN_PROGRESS") {
+          update.logs.map((log) => log.message).forEach(console.log);
+        }
       },
     });
 
@@ -45,7 +54,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error:', error.message)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: `Error communicating with Fal AI API: ${error.message}` }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
