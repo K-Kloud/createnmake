@@ -16,35 +16,45 @@ serve(async (req) => {
       throw new Error('Missing Fal API key')
     }
 
-    const { prompt } = await req.json()
+    const { prompt, width = 1024, height = 1024 } = await req.json()
     if (!prompt) {
       throw new Error('Prompt is required')
     }
 
     console.log('Generating image with prompt:', prompt)
+    console.log('Image dimensions:', width, 'x', height)
 
-    const response = await fetch('https://api.fal.ai/text-to-image', {
+    const response = await fetch('https://api.fal.ai/v1/text-to-image', {
       method: 'POST',
       headers: {
         'Authorization': `Key ${FAL_KEY}`,
         'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
       body: JSON.stringify({
         prompt,
         model: 'stable-diffusion-xl',
-        height: 1024,
-        width: 1024,
+        height,
+        width,
+        num_images: 1,
+        negative_prompt: "blurry, low quality, distorted",
       }),
     })
 
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Fal AI API error:', errorText)
+      throw new Error(`Fal AI API error: ${response.status} ${response.statusText}`)
+    }
+
     const data = await response.json()
-    console.log('Fal AI response:', data)
+    console.log('Fal AI response received:', data)
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error:', error.message)
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
