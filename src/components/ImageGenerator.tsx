@@ -2,34 +2,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { AspectRatioSelect } from "./generator/AspectRatioSelect";
+import { ItemSelect } from "./generator/ItemSelect";
+import { ReferenceImageUpload } from "./generator/ReferenceImageUpload";
+import { PreviewDialog } from "./generator/PreviewDialog";
 import { useToast } from "@/components/ui/use-toast";
-
-const aspectRatios = {
-  "square": { width: 1080, height: 1080, label: "Square (1:1)" },
-  "portrait": { width: 1080, height: 1350, label: "Portrait (4:5)" },
-  "landscape": { width: 1920, height: 1080, label: "Landscape (16:9)" },
-  "story": { width: 1080, height: 1920, label: "Story (9:16)" },
-  "youtube": { width: 2560, height: 1440, label: "YouTube (16:9)" },
-  "facebook": { width: 1200, height: 630, label: "Facebook (1.91:1)" },
-  "twitter": { width: 1600, height: 900, label: "Twitter (16:9)" },
-  "linkedin": { width: 1200, height: 627, label: "LinkedIn (1.91:1)" }
-};
+import { generateImage } from "@/services/imageGeneration";
 
 export const ImageGenerator = () => {
   const [prompt, setPrompt] = useState("");
@@ -37,185 +15,81 @@ export const ImageGenerator = () => {
   const [selectedRatio, setSelectedRatio] = useState("square");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
-  const handleGenerate = () => {
-    if (!selectedItem) {
+  const handleGenerate = async () => {
+    if (!selectedItem || !prompt) {
       toast({
-        title: "Item Required",
-        description: "Please select an item to generate",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (!prompt) {
-      toast({
-        title: "Prompt Required",
-        description: "Please enter a description of what you want to generate",
+        title: !selectedItem ? "Item Required" : "Prompt Required",
+        description: !selectedItem 
+          ? "Please select an item to generate"
+          : "Please enter a description of what you want to generate",
         variant: "destructive",
       });
       return;
     }
 
+    setIsGenerating(true);
     setPreviewOpen(true);
-  };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        toast({
-          title: "File too large",
-          description: "Please upload an image smaller than 5MB",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      if (!file.type.startsWith('image/')) {
-        toast({
-          title: "Invalid file type",
-          description: "Please upload an image file",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setReferenceImage(file);
-      toast({
-        title: "Image uploaded",
-        description: "Your reference image has been uploaded successfully",
+    try {
+      const result = await generateImage({
+        prompt: `${selectedItem}: ${prompt}`,
+        width: 1024,
+        height: 1024
       });
+      
+      console.log('Generation result:', result);
+      
+      toast({
+        title: "Image Generated",
+        description: "Your image has been generated successfully",
+      });
+    } catch (error) {
+      console.error('Generation error:', error);
+      toast({
+        title: "Generation Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
   return (
     <div className="space-y-8 animate-float">
       <div className="glass-card p-6 rounded-xl space-y-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(110,89,165,0.5)] hover:border-primary/50">
-        <div className="space-y-2">
-          <Select onValueChange={setSelectedItem} value={selectedItem}>
-            <SelectTrigger className="w-full bg-card/30 border-white/10">
-              <SelectValue placeholder="Select what you want to create" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Tailor Items</SelectLabel>
-                <SelectItem value="suit">Suit</SelectItem>
-                <SelectItem value="dress-shirt">Dress Shirt</SelectItem>
-                <SelectItem value="trousers">Trousers</SelectItem>
-                <SelectItem value="dress">Dress</SelectItem>
-                <SelectItem value="blazer">Blazer</SelectItem>
-                <SelectItem value="waistcoat">Waistcoat</SelectItem>
-                <SelectItem value="skirt">Skirt</SelectItem>
-                <SelectItem value="coat">Coat</SelectItem>
-              </SelectGroup>
-              <SelectGroup>
-                <SelectLabel>Cobbler Items</SelectLabel>
-                <SelectItem value="dress-shoes">Dress Shoes</SelectItem>
-                <SelectItem value="boots">Boots</SelectItem>
-                <SelectItem value="sneakers">Sneakers</SelectItem>
-                <SelectItem value="sandals">Sandals</SelectItem>
-                <SelectItem value="loafers">Loafers</SelectItem>
-                <SelectItem value="oxford-shoes">Oxford Shoes</SelectItem>
-                <SelectItem value="heels">Heels</SelectItem>
-              </SelectGroup>
-              <SelectGroup>
-                <SelectLabel>Leather Goods</SelectLabel>
-                <SelectItem value="leather-bag">Leather Bag</SelectItem>
-                <SelectItem value="wallet">Wallet</SelectItem>
-                <SelectItem value="belt">Belt</SelectItem>
-                <SelectItem value="briefcase">Briefcase</SelectItem>
-                <SelectItem value="backpack">Backpack</SelectItem>
-                <SelectItem value="messenger-bag">Messenger Bag</SelectItem>
-              </SelectGroup>
-              <SelectGroup>
-                <SelectLabel>Accessories</SelectLabel>
-                <SelectItem value="tie">Tie</SelectItem>
-                <SelectItem value="bow-tie">Bow Tie</SelectItem>
-                <SelectItem value="scarf">Scarf</SelectItem>
-                <SelectItem value="gloves">Gloves</SelectItem>
-                <SelectItem value="hat">Hat</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
+        <ItemSelect 
+          value={selectedItem} 
+          onChange={setSelectedItem} 
+        />
 
-        <div className="space-y-2 relative">
-          <Textarea
-            placeholder="Describe what you want to generate..."
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            className="min-h-[100px] bg-card/30 border-white/10 placeholder:text-white/50"
-          />
-          <div className="absolute bottom-3 right-3">
-            <input
-              type="file"
-              id="imageUpload"
-              className="hidden"
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
-            <label
-              htmlFor="imageUpload"
-              className="inline-flex items-center justify-center size-8 rounded-full bg-primary hover:bg-primary-hover text-white cursor-pointer transition-colors"
-            >
-              <Plus className="size-4" />
-            </label>
-          </div>
-          {referenceImage && (
-            <p className="text-sm text-white/70">
-              Reference image: {referenceImage.name}
-            </p>
-          )}
-        </div>
+        <ReferenceImageUpload
+          referenceImage={referenceImage}
+          onUpload={setReferenceImage}
+        />
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Output Size</label>
-          <Select onValueChange={setSelectedRatio} value={selectedRatio}>
-            <SelectTrigger className="w-full bg-card/30 border-white/10">
-              <SelectValue placeholder="Choose aspect ratio" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Common Sizes</SelectLabel>
-                {Object.entries(aspectRatios).map(([key, { label }]) => (
-                  <SelectItem key={key} value={key}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <p className="text-sm text-white/60">
-            Size: {aspectRatios[selectedRatio].width}x{aspectRatios[selectedRatio].height}px
-          </p>
-        </div>
+        <AspectRatioSelect
+          value={selectedRatio}
+          onChange={setSelectedRatio}
+        />
 
-        <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-          <DialogTrigger asChild>
-            <Button 
-              onClick={handleGenerate} 
-              className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity"
-              disabled={!prompt || !selectedItem}
-            >
-              Generate
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-4xl">
-            <DialogHeader>
-              <DialogTitle>Generated Image Preview</DialogTitle>
-            </DialogHeader>
-            <div 
-              className="bg-card/50 rounded-lg flex items-center justify-center"
-              style={{
-                aspectRatio: `${aspectRatios[selectedRatio].width} / ${aspectRatios[selectedRatio].height}`
-              }}
-            >
-              <p className="text-muted-foreground">Preview will appear here</p>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <PreviewDialog
+          open={previewOpen}
+          onOpenChange={setPreviewOpen}
+          isGenerating={isGenerating}
+          selectedRatio={selectedRatio}
+        />
+
+        <Button 
+          onClick={handleGenerate} 
+          className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity"
+          disabled={!prompt || !selectedItem || isGenerating}
+        >
+          Generate
+        </Button>
       </div>
     </div>
   );
