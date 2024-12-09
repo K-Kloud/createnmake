@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { AuthDialog } from "./auth/AuthDialog";
@@ -17,13 +17,29 @@ import { ToggleLeft, ToggleRight } from "lucide-react";
 export const Header = () => {
   const navigate = useNavigate();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Initialize from localStorage or system preference
+    const stored = localStorage.getItem("theme");
+    if (stored) return stored === "dark";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
   const { toast } = useToast();
   const isSignedIn = false;
   const user = {
     name: "John Doe",
     avatar: "https://github.com/shadcn.png",
   };
+
+  useEffect(() => {
+    // Update the HTML class and localStorage when theme changes
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDarkMode]);
 
   const handleSignOut = () => {
     toast({
