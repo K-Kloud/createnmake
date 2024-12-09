@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import * as fal from '@fal-ai/serverless-client'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,33 +25,21 @@ serve(async (req) => {
     console.log('Generating image with prompt:', prompt)
     console.log('Image dimensions:', width, 'x', height)
 
-    const response = await fetch('https://api.fal.ai/v1/text-to-image', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Key ${FAL_KEY}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
+    // Initialize the Fal AI client
+    fal.config({ credentials: FAL_KEY });
+
+    const result = await fal.run('stable-diffusion-xl', {
+      input: {
         prompt,
-        model: 'stable-diffusion-xl',
-        height,
-        width,
+        image_size: { width, height },
         num_images: 1,
         negative_prompt: "blurry, low quality, distorted",
-      }),
-    })
+      },
+    });
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Fal AI API error:', errorText)
-      throw new Error(`Fal AI API error: ${response.status} ${response.statusText}`)
-    }
+    console.log('Fal AI response received:', result)
 
-    const data = await response.json()
-    console.log('Fal AI response received:', data)
-
-    return new Response(JSON.stringify(data), {
+    return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {
