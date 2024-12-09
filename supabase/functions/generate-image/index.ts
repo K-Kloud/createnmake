@@ -22,8 +22,7 @@ serve(async (req) => {
       throw new Error('Prompt is required')
     }
 
-    console.log('Generating image with prompt:', prompt)
-    console.log('Image dimensions:', width, 'x', height)
+    console.log('Received request with params:', { prompt, width, height });
 
     // Initialize the Fal AI client
     fal.config({ credentials: FAL_KEY });
@@ -32,13 +31,12 @@ serve(async (req) => {
     const result = await fal.subscribe("fal-ai/fast-sdxl", {
       input: {
         prompt,
-        image_size: { width, height },
+        width: Number(width),
+        height: Number(height),
         num_images: 1,
         negative_prompt: "blurry, low quality, distorted",
-        num_inference_steps: 50,
-        guidance_scale: 8.5,
-        enable_safety_checker: true,
-        scheduler: "K_EULER",
+        num_inference_steps: 30,
+        guidance_scale: 7.5,
       },
       logs: true,
       onQueueUpdate: (update) => {
