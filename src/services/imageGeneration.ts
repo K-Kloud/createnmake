@@ -18,15 +18,11 @@ export const generateImage = async (params: GenerateImageParams) => {
     throw error;
   }
 
-  // The new client returns data in a different format
-  const imageUrl = data?.images?.[0]?.url;
-  if (!imageUrl) {
+  if (!data?.url) {
+    console.error('Invalid response:', data);
     throw new Error('No image URL in response');
   }
 
   console.log('Generation result:', data);
-  return {
-    ...data,
-    url: imageUrl
-  };
+  return data;
 };

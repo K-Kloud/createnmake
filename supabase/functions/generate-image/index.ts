@@ -35,26 +35,34 @@ serve(async (req) => {
         num_images: 1,
         negative_prompt: "blurry, low quality, distorted",
         num_inference_steps: 28,
-        guidance_scale: 3.5,
+        guidance_scale: 7.5,
         enable_safety_checker: true
       },
       logs: true,
       onQueueUpdate: (update) => {
         if (update.status === "IN_PROGRESS") {
-          update.logs.map((log) => log.message).forEach(console.log);
+          console.log('Generation progress:', update.logs);
         }
       },
     });
 
-    console.log('Fal AI response received:', result)
+    console.log('Fal AI response:', result);
 
-    return new Response(JSON.stringify(result), {
+    if (!result.images?.[0]?.url) {
+      throw new Error('No image URL in response from Fal AI');
+    }
+
+    return new Response(JSON.stringify({
+      url: result.images[0].url,
+      seed: result.seed,
+      images: result.images
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {
     console.error('Error:', error.message)
     return new Response(
-      JSON.stringify({ error: `Error communicating with Fal AI API: ${error.message}` }),
+      JSON.stringify({ error: error.message }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
