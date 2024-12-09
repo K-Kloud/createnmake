@@ -27,12 +27,14 @@ export const manufacturers = [
     producedItems: [
       {
         id: 1,
-        image: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
         description: "Custom tailored wedding suit"
       },
       {
         id: 2,
-        image: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
+        generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
         description: "Bespoke business suit"
       }
     ]
@@ -65,12 +67,14 @@ export const manufacturers = [
     producedItems: [
       {
         id: 1,
-        image: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
         description: "Handcrafted leather boots"
       },
       {
         id: 2,
-        image: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
+        generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
         description: "Custom designed shoes"
       }
     ]
@@ -103,12 +107,14 @@ export const manufacturers = [
     producedItems: [
       {
         id: 1,
-        image: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
         description: "Custom business cards"
       },
       {
         id: 2,
-        image: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
+        generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
         description: "High-quality posters"
       }
     ]
@@ -141,12 +147,14 @@ export const manufacturers = [
     producedItems: [
       {
         id: 1,
-        image: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
         description: "Custom engagement ring"
       },
       {
         id: 2,
-        image: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
+        generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
         description: "Handcrafted necklace"
       }
     ]
@@ -179,12 +187,14 @@ export const manufacturers = [
     producedItems: [
       {
         id: 1,
-        image: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
         description: "Handcrafted leather backpack"
       },
       {
         id: 2,
-        image: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
+        generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
         description: "Custom leather wallet"
       }
     ]
@@ -217,12 +227,14 @@ export const manufacturers = [
     producedItems: [
       {
         id: 1,
-        image: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
         description: "Custom dining table"
       },
       {
         id: 2,
-        image: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
+        generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+        productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
         description: "Handcrafted chairs"
       }
     ]
