@@ -28,27 +28,42 @@ serve(async (req) => {
       ? "You are a helpful manufacturing expert assistant."
       : "You are a helpful customer service representative.";
 
-    const response = await fetch('https://api.xai-foundation.org/v1/chat', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${XAI_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: message }
-        ],
-        model: 'xai-chat-v1',
-      }),
-    })
+    try {
+      const response = await fetch('https://api.xai-foundation.org/v1/chat', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${XAI_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: message }
+          ],
+          model: 'xai-chat-v1',
+        }),
+      })
 
-    const data = await response.json()
-    console.log('XAI response:', data)
+      if (!response.ok) {
+        const errorData = await response.text()
+        console.error('XAI API error:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorData
+        })
+        throw new Error(`XAI API error: ${response.status} ${response.statusText}`)
+      }
 
-    return new Response(JSON.stringify(data), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+      const data = await response.json()
+      console.log('XAI response:', data)
+
+      return new Response(JSON.stringify(data), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    } catch (error) {
+      console.error('XAI API request error:', error)
+      throw new Error(`Error communicating with XAI API: ${error.message}`)
+    }
   } catch (error) {
     console.error('Error:', error)
     return new Response(
