@@ -17,6 +17,8 @@ import {
   CardTitle,
 } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "./ui/use-toast";
 
 type ChatMode = "customer" | "manufacturer";
 
@@ -32,31 +34,46 @@ export const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [chatMode, setChatMode] = useState<ChatMode>("customer");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleSend = () => {
-    if (!inputMessage.trim()) return;
+  const handleSend = async () => {
+    if (!inputMessage.trim() || isLoading) return;
 
-    const newMessage: Message = {
+    const userMessage: Message = {
       text: inputMessage,
       sender: "user",
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, newMessage]);
+    setMessages(prev => [...prev, userMessage]);
+    setInputMessage("");
+    setIsLoading(true);
 
-    // Simulate bot response
-    setTimeout(() => {
-      const botResponse: Message = {
-        text: `This is a simulated response from ${
-          chatMode === "customer" ? "customer care" : "manufacturer"
-        }. Real responses would be integrated here.`,
+    try {
+      const { data, error } = await supabase.functions.invoke('chat', {
+        body: { message: inputMessage, chatMode }
+      });
+
+      if (error) throw error;
+
+      const botMessage: Message = {
+        text: data.choices?.[0]?.message?.content || "I'm sorry, I couldn't process that request.",
         sender: "bot",
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, botResponse]);
-    }, 1000);
 
-    setInputMessage("");
+      setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Chat error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to get response. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!isOpen) {
@@ -152,12 +169,14 @@ export const ChatBot = () => {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={(e) => {
-                  if (e.key === "Enter") {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
                     handleSend();
                   }
                 }}
+                disabled={isLoading}
               />
-              <Button size="icon" onClick={handleSend}>
+              <Button size="icon" onClick={handleSend} disabled={isLoading}>
                 <Send className="h-4 w-4" />
               </Button>
             </div>

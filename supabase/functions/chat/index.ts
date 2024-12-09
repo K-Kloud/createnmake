@@ -11,34 +11,40 @@ serve(async (req) => {
   }
 
   try {
-    const FAL_KEY = Deno.env.get('Fal_Api_Key')
-    if (!FAL_KEY) {
-      throw new Error('Missing Fal API key')
+    const XAI_KEY = Deno.env.get('Xai_Api_Key')
+    if (!XAI_KEY) {
+      throw new Error('Missing XAI API key')
     }
 
-    const { prompt } = await req.json()
-    if (!prompt) {
-      throw new Error('Prompt is required')
+    const { message, chatMode } = await req.json()
+    if (!message) {
+      throw new Error('Message is required')
     }
 
-    console.log('Generating image with prompt:', prompt)
+    console.log('Processing chat message:', { message, chatMode })
 
-    const response = await fetch('https://api.fal.ai/text-to-image', {
+    // Customize the system prompt based on chat mode
+    const systemPrompt = chatMode === 'manufacturer' 
+      ? "You are a helpful manufacturing expert assistant."
+      : "You are a helpful customer service representative.";
+
+    const response = await fetch('https://api.xai-foundation.org/v1/chat', {
       method: 'POST',
       headers: {
-        'Authorization': `Key ${FAL_KEY}`,
+        'Authorization': `Bearer ${XAI_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        prompt,
-        model: 'stable-diffusion-xl',
-        height: 1024,
-        width: 1024,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: message }
+        ],
+        model: 'xai-chat-v1',
       }),
     })
 
     const data = await response.json()
-    console.log('Fal AI response:', data)
+    console.log('XAI response:', data)
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
