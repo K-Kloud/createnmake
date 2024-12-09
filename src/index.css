@@ -5,13 +5,13 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 156 100% 20%;
+    --foreground: 0 0% 0%;  /* Changed to black */
     --card: 0 0% 98%;
-    --card-foreground: 156 100% 20%;
+    --card-foreground: 0 0% 0%;  /* Changed to black */
     --border: 168 70% 90%;
     --input: 168 70% 90%;
     --ring: 156 100% 50%;
-    --radius: 0.5rem;
+    --radius: 1rem;  /* Increased border radius */
   }
 
   .dark {
@@ -29,7 +29,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground text-center;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
@@ -39,18 +39,18 @@
 }
 
 .glass-card {
-  @apply bg-card/30 backdrop-blur-md border border-primary/20 shadow-xl;
+  @apply bg-card/30 backdrop-blur-md border border-primary/20 shadow-xl rounded-[var(--radius)];
   box-shadow: 0 0 15px rgba(0, 255, 157, 0.1);
 }
 
 .gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary animate-glow;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary animate-glow rounded-[var(--radius)];
 }
 
 .button-glow {
-  @apply hover:shadow-[0_0_15px_rgba(0,255,157,0.5)] transition-shadow duration-300;
+  @apply hover:shadow-[0_0_15px_rgba(0,255,157,0.5)] transition-shadow duration-300 rounded-[var(--radius)];
 }
 
 .input-glow {
-  @apply focus:shadow-[0_0_10px_rgba(0,255,157,0.3)] transition-shadow duration-300;
+  @apply focus:shadow-[0_0_10px_rgba(0,255,157,0.3)] transition-shadow duration-300 rounded-[var(--radius)];
 }
