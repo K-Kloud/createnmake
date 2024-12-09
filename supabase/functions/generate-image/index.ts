@@ -28,7 +28,7 @@ serve(async (req) => {
     // Initialize the Fal AI client
     fal.config({ credentials: FAL_KEY });
 
-    const result = await fal.subscribe("stable-diffusion-xl", {
+    const result = await fal.subscribe("fal-ai/fast-sdxl", {
       input: {
         prompt,
         image_size: { width, height },
