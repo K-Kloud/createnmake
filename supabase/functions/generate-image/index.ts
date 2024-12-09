@@ -28,15 +28,17 @@ serve(async (req) => {
     // Initialize the Fal AI client
     fal.config({ credentials: FAL_KEY });
 
+    console.log('Making request to Fal AI...');
     const result = await fal.subscribe("fal-ai/fast-sdxl", {
       input: {
         prompt,
         image_size: { width, height },
         num_images: 1,
         negative_prompt: "blurry, low quality, distorted",
-        num_inference_steps: 28,
-        guidance_scale: 7.5,
-        enable_safety_checker: true
+        num_inference_steps: 50,
+        guidance_scale: 8.5,
+        enable_safety_checker: true,
+        scheduler: "K_EULER",
       },
       logs: true,
       onQueueUpdate: (update) => {
@@ -46,23 +48,31 @@ serve(async (req) => {
       },
     });
 
-    console.log('Fal AI response:', result);
+    console.log('Raw Fal AI response:', JSON.stringify(result, null, 2));
 
-    if (!result.images?.[0]?.url) {
-      throw new Error('No image URL in response from Fal AI');
+    if (!result || !result.images || !Array.isArray(result.images) || result.images.length === 0) {
+      throw new Error('Invalid response structure from Fal AI');
+    }
+
+    const imageUrl = result.images[0]?.url;
+    if (!imageUrl) {
+      throw new Error('No image URL in Fal AI response');
     }
 
     return new Response(JSON.stringify({
-      url: result.images[0].url,
+      url: imageUrl,
       seed: result.seed,
       images: result.images
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {
-    console.error('Error:', error.message)
+    console.error('Error details:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        details: error.stack
+      }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,

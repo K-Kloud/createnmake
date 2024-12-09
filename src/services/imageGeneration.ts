@@ -9,20 +9,31 @@ export interface GenerateImageParams {
 export const generateImage = async (params: GenerateImageParams) => {
   console.log('Calling generate-image function with params:', params);
   
-  const { data, error } = await supabase.functions.invoke('generate-image', {
-    body: params
-  });
+  try {
+    const { data, error } = await supabase.functions.invoke('generate-image', {
+      body: params
+    });
 
-  if (error) {
+    if (error) {
+      console.error('Supabase function error:', error);
+      throw new Error(`Failed to generate image: ${error.message}`);
+    }
+
+    if (!data) {
+      console.error('No data received from function');
+      throw new Error('No response data received');
+    }
+
+    console.log('Function response:', data);
+
+    if (!data.url) {
+      console.error('Invalid response structure:', data);
+      throw new Error('No image URL in response');
+    }
+
+    return data;
+  } catch (error) {
     console.error('Generation error:', error);
     throw error;
   }
-
-  if (!data?.url) {
-    console.error('Invalid response:', data);
-    throw new Error('No image URL in response');
-  }
-
-  console.log('Generation result:', data);
-  return data;
 };
