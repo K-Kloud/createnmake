@@ -27,7 +27,12 @@ interface ManufacturerCardProps {
   image: string;
   location: string;
   specialties: string[];
-  producedItems?: { id: number; image: string; description: string }[];
+  producedItems?: {
+    id: number;
+    generatedImage: string;
+    productImage: string;
+    description: string;
+  }[];
 }
 
 export const ManufacturerCard = ({
@@ -39,7 +44,26 @@ export const ManufacturerCard = ({
   image,
   location,
   specialties,
-  producedItems = [],
+  producedItems = [
+    {
+      id: 1,
+      generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+      productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
+      description: "Custom tailored suit"
+    },
+    {
+      id: 2,
+      generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+      productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
+      description: "Bespoke dress shirt"
+    },
+    {
+      id: 3,
+      generatedImage: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35",
+      productImage: "https://images.unsplash.com/photo-1598808503746-f34c53b9323e",
+      description: "Custom leather shoes"
+    }
+  ],
 }: ManufacturerCardProps) => {
   const { toast } = useToast();
 
@@ -97,49 +121,40 @@ export const ManufacturerCard = ({
                     Portfolio
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl">
+                <DialogContent className="max-w-6xl">
                   <DialogHeader>
                     <DialogTitle>{name}'s Portfolio</DialogTitle>
                   </DialogHeader>
-                  <div className="grid grid-cols-2 gap-4 mt-4">
-                    <div className="space-y-4">
-                      <h3 className="font-semibold">Generated Designs</h3>
-                      <div className="grid gap-4">
-                        {producedItems.slice(0, Math.ceil(producedItems.length / 2)).map((item) => (
-                          <div key={item.id} className="relative group">
+                  <div className="grid gap-6 mt-4">
+                    {producedItems.map((item) => (
+                      <div key={item.id} className="grid grid-cols-2 gap-4 p-4 glass-card">
+                        <div className="space-y-2">
+                          <h3 className="font-semibold">Generated Design</h3>
+                          <div className="relative aspect-video">
                             <img
-                              src={item.image}
-                              alt={item.description}
-                              className="w-full h-48 object-cover rounded-md"
+                              src={item.generatedImage}
+                              alt="Generated design"
+                              className="absolute inset-0 w-full h-full object-cover rounded-md"
                             />
-                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
-                              <p className="text-sm text-white p-3">
-                                {item.description}
-                              </p>
-                            </div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <h3 className="font-semibold">Manufactured Items</h3>
-                      <div className="grid gap-4">
-                        {producedItems.slice(Math.ceil(producedItems.length / 2)).map((item) => (
-                          <div key={item.id} className="relative group">
+                        </div>
+                        <div className="space-y-2">
+                          <h3 className="font-semibold">Manufactured Product</h3>
+                          <div className="relative aspect-video">
                             <img
-                              src={item.image}
-                              alt={item.description}
-                              className="w-full h-48 object-cover rounded-md"
+                              src={item.productImage}
+                              alt="Manufactured product"
+                              className="absolute inset-0 w-full h-full object-cover rounded-md"
                             />
-                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
-                              <p className="text-sm text-white p-3">
-                                {item.description}
-                              </p>
-                            </div>
                           </div>
-                        ))}
+                        </div>
+                        <div className="col-span-2">
+                          <p className="text-sm text-center text-muted-foreground">
+                            {item.description}
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
                 </DialogContent>
               </Dialog>
