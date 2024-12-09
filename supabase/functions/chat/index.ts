@@ -29,18 +29,23 @@ serve(async (req) => {
       : "You are a helpful customer service representative.";
 
     try {
-      const response = await fetch('https://api.xai-foundation.org/v1/chat', {
+      console.log('Sending request to XAI API...')
+      
+      const response = await fetch('https://api.xai-foundation.org/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${XAI_KEY}`,
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify({
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: message }
           ],
-          model: 'xai-chat-v1',
+          model: 'gpt-4',
+          temperature: 0.7,
+          max_tokens: 500
         }),
       })
 
