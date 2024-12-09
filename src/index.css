@@ -4,6 +4,17 @@
 
 @layer base {
   :root {
+    --background: 0 0% 100%;
+    --foreground: 156 100% 20%;
+    --card: 0 0% 98%;
+    --card-foreground: 156 100% 20%;
+    --border: 168 70% 90%;
+    --input: 168 70% 90%;
+    --ring: 156 100% 50%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
     --background: 168 100% 3%;
     --foreground: 156 100% 50%;
     --card: 168 100% 5%;
@@ -11,7 +22,6 @@
     --border: 168 70% 10%;
     --input: 168 70% 10%;
     --ring: 156 100% 50%;
-    --radius: 0.5rem;
   }
 
   * {
@@ -21,6 +31,9 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  .dark body {
     background-image: radial-gradient(circle at 50% 50%, rgba(0, 255, 157, 0.15) 0%, transparent 50%);
   }
 }
