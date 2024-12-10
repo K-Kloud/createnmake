@@ -19,49 +19,45 @@ serve(async (req) => {
       throw new Error('Prompt is required')
     }
 
-    const FAL_KEY = Deno.env.get('Fal_Api_Key')
-    if (!FAL_KEY) {
-      throw new Error('Missing Fal API key')
+    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY')
+    if (!OPENAI_API_KEY) {
+      throw new Error('Missing OpenAI API key')
     }
 
-    // Make request to Fal AI API
-    const response = await fetch('https://api.fal.ai/text-to-image', {
+    // Make request to OpenAI API
+    const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Key ${FAL_KEY}`,
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
+        model: "dall-e-3",
         prompt,
-        model: 'fal-ai/fast-sdxl',
-        width,
-        height,
-        num_images: 1,
-        negative_prompt: "blurry, low quality, distorted",
-        num_inference_steps: 30,
-        guidance_scale: 7.5,
+        n: 1,
+        size: "1024x1024",
+        quality: "standard",
       }),
     })
 
     if (!response.ok) {
       const error = await response.text()
-      console.error('Fal AI API error:', error)
-      throw new Error(`Fal AI API error: ${error}`)
+      console.error('OpenAI API error:', error)
+      throw new Error(`OpenAI API error: ${error}`)
     }
 
     const result = await response.json()
-    console.log('Fal AI API response:', result)
+    console.log('OpenAI API response:', result)
 
-    if (!result.images || !result.images[0] || !result.images[0].url) {
+    if (!result.data || !result.data[0] || !result.data[0].url) {
       console.error('Invalid response structure:', result)
       throw new Error('Invalid response from image generation service')
     }
 
     return new Response(
       JSON.stringify({ 
-        url: result.images[0].url,
-        seed: result.seed,
-        images: result.images
+        url: result.data[0].url,
+        images: result.data
       }),
       { 
         headers: { 
