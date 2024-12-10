@@ -9,7 +9,57 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      adminpages: {
+        Row: {
+          created_at: string | null
+          id: number
+          is_active: boolean | null
+          page_name: string
+          page_url: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: never
+          is_active?: boolean | null
+          page_name: string
+          page_url: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: never
+          is_active?: boolean | null
+          page_name?: string
+          page_url?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      useractions: {
+        Row: {
+          action_details: Json | null
+          action_type: string
+          created_at: string | null
+          id: number
+          user_id: string | null
+        }
+        Insert: {
+          action_details?: Json | null
+          action_type: string
+          created_at?: string | null
+          id?: never
+          user_id?: string | null
+        }
+        Update: {
+          action_details?: Json | null
+          action_type?: string
+          created_at?: string | null
+          id?: never
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

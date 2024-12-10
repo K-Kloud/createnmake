@@ -46,26 +46,36 @@ serve(async (req) => {
       },
     });
 
-    console.log('Raw Fal AI response:', JSON.stringify(result, null, 2));
+    console.log('Raw Fal AI response:', result);
 
-    if (!result || !result.images || !Array.isArray(result.images) || result.images.length === 0) {
-      throw new Error('Invalid response structure from Fal AI');
+    // Validate the response structure
+    if (!result || !result.images || !Array.isArray(result.images)) {
+      console.error('Invalid response structure:', result);
+      throw new Error('Invalid response from image generation service');
     }
 
-    const imageUrl = result.images[0]?.url;
-    if (!imageUrl) {
-      throw new Error('No image URL in Fal AI response');
+    const image = result.images[0];
+    if (!image || !image.url) {
+      console.error('No valid image in response:', image);
+      throw new Error('No valid image generated');
     }
 
-    return new Response(JSON.stringify({
-      url: imageUrl,
-      seed: result.seed,
-      images: result.images
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    return new Response(
+      JSON.stringify({
+        url: image.url,
+        seed: result.seed,
+        images: result.images
+      }), 
+      {
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        },
+      }
+    );
   } catch (error) {
     console.error('Error details:', error);
+    
     return new Response(
       JSON.stringify({ 
         error: error.message,
@@ -75,6 +85,6 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
       }
-    )
+    );
   }
 })
