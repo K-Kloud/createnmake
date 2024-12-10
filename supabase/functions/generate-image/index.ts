@@ -7,6 +7,7 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -22,12 +23,12 @@ serve(async (req) => {
       throw new Error('Prompt is required')
     }
 
-    console.log('Received request with params:', { prompt, width, height });
+    console.log('Received request with params:', { prompt, width, height })
 
     // Initialize the Fal AI client
-    fal.config({ credentials: FAL_KEY });
+    fal.config({ credentials: FAL_KEY })
 
-    console.log('Making request to Fal AI...');
+    console.log('Making request to Fal AI...')
     const result = await fal.subscribe("fal-ai/fast-sdxl", {
       input: {
         prompt,
@@ -41,23 +42,23 @@ serve(async (req) => {
       logs: true,
       onQueueUpdate: (update) => {
         if (update.status === "IN_PROGRESS") {
-          console.log('Generation progress:', update.logs);
+          console.log('Generation progress:', update.logs)
         }
       },
-    });
+    })
 
-    console.log('Raw Fal AI response:', result);
+    console.log('Raw Fal AI response:', result)
 
     // Validate the response structure
-    if (!result || !result.images || !Array.isArray(result.images)) {
-      console.error('Invalid response structure:', result);
-      throw new Error('Invalid response from image generation service');
+    if (!result || !result.images || !Array.isArray(result.images) || result.images.length === 0) {
+      console.error('Invalid response structure:', result)
+      throw new Error('Invalid response from image generation service')
     }
 
-    const image = result.images[0];
+    const image = result.images[0]
     if (!image || !image.url) {
-      console.error('No valid image in response:', image);
-      throw new Error('No valid image generated');
+      console.error('No valid image URL in response:', image)
+      throw new Error('No valid image URL in response')
     }
 
     return new Response(
@@ -72,9 +73,9 @@ serve(async (req) => {
           'Content-Type': 'application/json' 
         },
       }
-    );
+    )
   } catch (error) {
-    console.error('Error details:', error);
+    console.error('Error details:', error)
     
     return new Response(
       JSON.stringify({ 
@@ -85,6 +86,6 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
       }
-    );
+    )
   }
 })
