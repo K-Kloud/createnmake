@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart, Eye, Package } from "lucide-react";
+import { Heart, Eye, Package, MessageSquare } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Comments } from "./Comments";
 import { useNavigate } from "react-router-dom";
@@ -34,6 +34,10 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const handleImageClick = () => {
+    onView(image.id);
+  };
+
   const handleSendToManufacturer = () => {
     localStorage.setItem('selectedManufacturerImage', JSON.stringify({
       url: image.url,
@@ -56,7 +60,7 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
           src={image.url}
           alt={image.prompt}
           className="w-full h-64 object-cover cursor-pointer"
-          onClick={() => onView(image.id)}
+          onClick={handleImageClick}
         />
         <div className="p-4 space-y-3">
           <div className="flex items-center space-x-2 mb-2">
@@ -90,6 +94,7 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
                 className="space-x-1"
                 onClick={() => setShowComments(!showComments)}
               >
+                <MessageSquare className="h-4 w-4" />
                 <span>{image.comments.length}</span>
               </Button>
               <Button variant="ghost" size="sm" className="space-x-1">

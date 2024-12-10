@@ -22,7 +22,6 @@ export const OpenMarketSection = () => {
   const { data: images, isLoading } = useQuery({
     queryKey: ['marketplaceImages'],
     queryFn: async () => {
-      // First get the images with user_ids and likes
       const { data: imagesData, error: imagesError } = await supabase
         .from('generated_images')
         .select(`
@@ -33,6 +32,7 @@ export const OpenMarketSection = () => {
           views,
           created_at,
           user_id,
+          is_public,
           image_likes (user_id)
         `)
         .eq('is_public', true)
@@ -41,7 +41,6 @@ export const OpenMarketSection = () => {
 
       if (imagesError) throw imagesError;
 
-      // Then get the profiles for those user_ids
       const userIds = imagesData.map(image => image.user_id).filter(Boolean);
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
@@ -50,7 +49,6 @@ export const OpenMarketSection = () => {
 
       if (profilesError) throw profilesError;
 
-      // Map profiles to images
       return imagesData.map(image => ({
         id: image.id,
         url: image.image_url,
@@ -77,7 +75,6 @@ export const OpenMarketSection = () => {
       }
 
       if (hasLiked) {
-        // Unlike
         await supabase
           .from('image_likes')
           .delete()
@@ -89,7 +86,6 @@ export const OpenMarketSection = () => {
           .update({ likes: images?.find(img => img.id === imageId)?.likes - 1 || 0 })
           .eq('id', imageId);
       } else {
-        // Like
         await supabase
           .from('image_likes')
           .insert({ image_id: imageId, user_id: session.user.id });
@@ -114,15 +110,23 @@ export const OpenMarketSection = () => {
 
   const viewMutation = useMutation({
     mutationFn: async (imageId: number) => {
+      const currentViews = images?.find(img => img.id === imageId)?.views || 0;
       const { error } = await supabase
         .from('generated_images')
-        .update({ views: images?.find(img => img.id === imageId)?.views + 1 || 1 })
+        .update({ views: currentViews + 1 })
         .eq('id', imageId);
 
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['marketplaceImages'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update view count",
+        variant: "destructive",
+      });
     },
   });
 
@@ -147,12 +151,26 @@ export const OpenMarketSection = () => {
   };
 
   const handleAddComment = (imageId: number, commentText: string) => {
-    // Placeholder for comment functionality
+    if (!session?.user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to comment",
+        variant: "destructive",
+      });
+      return;
+    }
     console.log('Comment added to image:', imageId, commentText);
   };
 
   const handleAddReply = (imageId: number, commentId: number, replyText: string) => {
-    // Placeholder for reply functionality
+    if (!session?.user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to reply",
+        variant: "destructive",
+      });
+      return;
+    }
     console.log('Reply added to comment:', commentId, replyText);
   };
 
