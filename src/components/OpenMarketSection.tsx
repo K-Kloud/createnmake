@@ -26,8 +26,13 @@ export const OpenMarketSection = () => {
         .from('generated_images')
         .select(`
           *,
-          profiles:user_id(id, username),
-          image_likes(user_id)
+          profiles (
+            id,
+            username
+          ),
+          image_likes (
+            user_id
+          )
         `)
         .eq('is_public', true)
         .order('created_at', { ascending: false })
