@@ -42,38 +42,82 @@ export type Database = {
           created_at: string | null
           id: number
           image_url: string | null
+          is_public: boolean | null
           item_type: string
+          likes: number | null
           prompt: string
           reference_image_url: string | null
           status: string
+          tags: string[] | null
+          title: string | null
           updated_at: string | null
           user_id: string | null
+          views: number | null
         }
         Insert: {
           aspect_ratio?: string
           created_at?: string | null
           id?: never
           image_url?: string | null
+          is_public?: boolean | null
           item_type: string
+          likes?: number | null
           prompt: string
           reference_image_url?: string | null
           status?: string
+          tags?: string[] | null
+          title?: string | null
           updated_at?: string | null
           user_id?: string | null
+          views?: number | null
         }
         Update: {
           aspect_ratio?: string
           created_at?: string | null
           id?: never
           image_url?: string | null
+          is_public?: boolean | null
           item_type?: string
+          likes?: number | null
           prompt?: string
           reference_image_url?: string | null
           status?: string
+          tags?: string[] | null
+          title?: string | null
           updated_at?: string | null
           user_id?: string | null
+          views?: number | null
         }
         Relationships: []
+      }
+      image_likes: {
+        Row: {
+          created_at: string
+          id: number
+          image_id: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          image_id?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          image_id?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "image_likes_image_id_fkey"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "generated_images"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {

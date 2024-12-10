@@ -53,7 +53,9 @@ export const useImageGeneration = () => {
           prompt: `${selectedItem}: ${prompt}`,
           item_type: selectedItem,
           aspect_ratio: selectedRatio,
-          status: 'pending'
+          status: 'pending',
+          is_public: true,
+          title: prompt.slice(0, 100)
         })
         .select()
         .single();

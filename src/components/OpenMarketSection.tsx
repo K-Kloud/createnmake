@@ -1,66 +1,136 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ImageCard } from "@/components/gallery/ImageCard";
-
-const featuredImages = [
-  {
-    id: 1,
-    url: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
-    prompt: "A woman sitting on a bed using a laptop",
-    likes: 234,
-    comments: [],
-    views: 1289,
-    produced: 67,
-    creator: {
-      name: "Alice Johnson",
-      avatar: "https://github.com/shadcn.png"
-    },
-    createdAt: new Date(2024, 2, 15, 14, 30),
-    hasLiked: false
-  },
-  {
-    id: 2,
-    url: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
-    prompt: "Turned on gray laptop computer",
-    likes: 189,
-    comments: [],
-    views: 876,
-    produced: 34,
-    creator: {
-      name: "Bob Smith",
-      avatar: "https://github.com/shadcn.png"
-    },
-    createdAt: new Date(2024, 2, 14, 9, 15),
-    hasLiked: false
-  },
-  {
-    id: 3,
-    url: "https://images.unsplash.com/photo-1518770660439-4636190af475",
-    prompt: "Macro photography of black circuit board",
-    likes: 567,
-    comments: [],
-    views: 2345,
-    produced: 156,
-    creator: {
-      name: "Charlie Brown",
-      avatar: "https://github.com/shadcn.png"
-    },
-    createdAt: new Date(2024, 2, 13, 11, 0),
-    hasLiked: false
-  }
-];
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
 
 export const OpenMarketSection = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: session } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getSession();
+      return data.session;
+    },
+  });
+
+  const { data: images, isLoading } = useQuery({
+    queryKey: ['marketplaceImages'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('generated_images')
+        .select(`
+          *,
+          creator:user_id(
+            id,
+            email
+          ),
+          image_likes(user_id)
+        `)
+        .eq('is_public', true)
+        .order('created_at', { ascending: false })
+        .limit(6);
+
+      if (error) throw error;
+      
+      return data.map(image => ({
+        id: image.id,
+        url: image.image_url,
+        prompt: image.prompt,
+        likes: image.likes || 0,
+        comments: [],
+        views: image.views || 0,
+        produced: 0,
+        creator: {
+          name: image.creator?.email?.split('@')[0] || 'Anonymous',
+          avatar: "https://github.com/shadcn.png"
+        },
+        createdAt: new Date(image.created_at),
+        hasLiked: image.image_likes.some(like => like.user_id === session?.user?.id)
+      }));
+    },
+    enabled: true,
+  });
+
+  const likeMutation = useMutation({
+    mutationFn: async ({ imageId, hasLiked }: { imageId: number; hasLiked: boolean }) => {
+      if (!session?.user) {
+        throw new Error('Must be logged in to like images');
+      }
+
+      if (hasLiked) {
+        // Unlike
+        await supabase
+          .from('image_likes')
+          .delete()
+          .eq('image_id', imageId)
+          .eq('user_id', session.user.id);
+
+        await supabase
+          .from('generated_images')
+          .update({ likes: images?.find(img => img.id === imageId)?.likes - 1 || 0 })
+          .eq('id', imageId);
+      } else {
+        // Like
+        await supabase
+          .from('image_likes')
+          .insert({ image_id: imageId, user_id: session.user.id });
+
+        await supabase
+          .from('generated_images')
+          .update({ likes: images?.find(img => img.id === imageId)?.likes + 1 || 1 })
+          .eq('id', imageId);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['marketplaceImages'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const viewMutation = useMutation({
+    mutationFn: async (imageId: number) => {
+      const { error } = await supabase
+        .from('generated_images')
+        .update({ views: images?.find(img => img.id === imageId)?.views + 1 || 1 })
+        .eq('id', imageId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['marketplaceImages'] });
+    },
+  });
 
   const handleLike = (imageId: number) => {
-    // Placeholder for like functionality
-    console.log('Like clicked for image:', imageId);
+    const image = images?.find(img => img.id === imageId);
+    if (!image) return;
+
+    if (!session?.user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to like images",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    likeMutation.mutate({ imageId, hasLiked: image.hasLiked });
   };
 
   const handleView = (imageId: number) => {
-    // Placeholder for view functionality
-    console.log('View clicked for image:', imageId);
+    viewMutation.mutate(imageId);
   };
 
   const handleAddComment = (imageId: number, commentText: string) => {
@@ -72,6 +142,14 @@ export const OpenMarketSection = () => {
     // Placeholder for reply functionality
     console.log('Reply added to comment:', commentId, replyText);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-16">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <section className="py-16">
@@ -85,7 +163,7 @@ export const OpenMarketSection = () => {
         </Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {featuredImages.map((image) => (
+        {images?.map((image) => (
           <ImageCard
             key={image.id}
             image={image}
