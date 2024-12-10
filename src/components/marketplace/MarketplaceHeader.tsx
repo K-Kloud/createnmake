@@ -1,11 +1,18 @@
-import React from 'react';
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export const MarketplaceHeader = () => {
+  const navigate = useNavigate();
+  
   return (
-    <h1 className="text-4xl font-bold mb-8 text-center">
-      <span className="gradient-text rounded-lg px-4 py-2 inline-block">
-        OpenMarket
-      </span>
-    </h1>
+    <div className="flex justify-between items-center mb-8">
+      <h2 className="text-3xl font-bold gradient-text rounded-lg">OpenMarket</h2>
+      <Button 
+        onClick={() => navigate("/marketplace")}
+        variant="outline"
+      >
+        View All
+      </Button>
+    </div>
   );
 };
