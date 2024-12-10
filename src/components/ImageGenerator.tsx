@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus } from "lucide-react";
 import { AspectRatioSelect } from "./generator/AspectRatioSelect";
 import { ItemSelect } from "./generator/ItemSelect";
 import { ReferenceImageUpload } from "./generator/ReferenceImageUpload";
@@ -10,6 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { generateImage } from "@/services/imageGeneration";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { AuthDialog } from "./auth/AuthDialog";
 
 export const ImageGenerator = () => {
   const [prompt, setPrompt] = useState("");
@@ -18,6 +18,7 @@ export const ImageGenerator = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const { toast } = useToast();
 
   const { data: session } = useQuery({
@@ -30,11 +31,7 @@ export const ImageGenerator = () => {
 
   const handleGenerate = async () => {
     if (!session?.user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to generate images",
-        variant: "destructive",
-      });
+      setAuthDialogOpen(true);
       return;
     }
 
@@ -147,9 +144,14 @@ export const ImageGenerator = () => {
           className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity"
           disabled={!prompt || !selectedItem || isGenerating}
         >
-          Generate
+          {!session?.user ? "Sign in to Generate" : "Generate"}
         </Button>
       </div>
+
+      <AuthDialog 
+        isOpen={authDialogOpen} 
+        onClose={() => setAuthDialogOpen(false)} 
+      />
     </div>
   );
 };

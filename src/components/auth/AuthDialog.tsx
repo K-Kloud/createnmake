@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/Icons";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from "@/integrations/supabase/client";
 
 export function AuthDialog({
   isOpen,
@@ -29,20 +30,44 @@ export function AuthDialog({
   const handleSubmit = async (e: React.FormEvent, mode: 'signin' | 'signup') => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // TODO: Implement actual authentication
-    console.log(`${mode === 'signin' ? 'Signing in' : 'Signing up'} with:`, { email, password, ...(mode === 'signup' && { name }) });
-    
-    setTimeout(() => {
-      toast({
-        title: "Success!",
-        description: mode === 'signin' 
-          ? "You have successfully logged in."
-          : "Your account has been created successfully.",
-      });
-      setIsLoading(false);
+
+    try {
+      if (mode === 'signup') {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              username: name,
+            },
+          },
+        });
+        if (error) throw error;
+        toast({
+          title: "Account created!",
+          description: "Please check your email to verify your account.",
+        });
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully signed in.",
+        });
+      }
       onClose();
-    }, 1000);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
