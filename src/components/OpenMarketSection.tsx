@@ -22,14 +22,11 @@ export const OpenMarketSection = () => {
   const { data: images, isLoading } = useQuery({
     queryKey: ['marketplaceImages'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First get the images with user_ids
+      const { data: imagesData, error: imagesError } = await supabase
         .from('generated_images')
         .select(`
           *,
-          profiles!generated_images_user_id_fkey (
-            id,
-            username
-          ),
           image_likes (
             user_id
           )
@@ -38,9 +35,19 @@ export const OpenMarketSection = () => {
         .order('created_at', { ascending: false })
         .limit(6);
 
-      if (error) throw error;
-      
-      return data.map(image => ({
+      if (imagesError) throw imagesError;
+
+      // Then get the profiles for those user_ids
+      const userIds = imagesData.map(image => image.user_id).filter(Boolean);
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, username')
+        .in('id', userIds);
+
+      if (profilesError) throw profilesError;
+
+      // Map profiles to images
+      return imagesData.map(image => ({
         id: image.id,
         url: image.image_url,
         prompt: image.prompt,
@@ -49,7 +56,7 @@ export const OpenMarketSection = () => {
         views: image.views || 0,
         produced: 0,
         creator: {
-          name: image.profiles?.username || 'Anonymous',
+          name: profilesData?.find(profile => profile.id === image.user_id)?.username || 'Anonymous',
           avatar: "https://github.com/shadcn.png"
         },
         createdAt: new Date(image.created_at),
