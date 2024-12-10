@@ -26,7 +26,7 @@ export const OpenMarketSection = () => {
         .from('generated_images')
         .select(`
           *,
-          profiles (
+          profiles!generated_images_user_id_fkey (
             id,
             username
           ),
