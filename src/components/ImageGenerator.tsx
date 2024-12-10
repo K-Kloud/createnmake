@@ -19,6 +19,7 @@ export const ImageGenerator = () => {
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | undefined>();
   const { toast } = useToast();
 
   const { data: session } = useQuery({
@@ -48,6 +49,7 @@ export const ImageGenerator = () => {
 
     setIsGenerating(true);
     setPreviewOpen(true);
+    setGeneratedImageUrl(undefined);
 
     try {
       // Create a record in the database
@@ -71,6 +73,9 @@ export const ImageGenerator = () => {
         width: 1024,
         height: 1024
       });
+      
+      // Set the generated image URL
+      setGeneratedImageUrl(result.url);
       
       // Update the record with the generated image URL
       const { error: updateError } = await supabase
@@ -137,6 +142,7 @@ export const ImageGenerator = () => {
           onOpenChange={setPreviewOpen}
           isGenerating={isGenerating}
           selectedRatio={selectedRatio}
+          generatedImageUrl={generatedImageUrl}
         />
 
         <Button 

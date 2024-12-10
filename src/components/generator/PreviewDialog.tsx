@@ -11,13 +11,15 @@ interface PreviewDialogProps {
   onOpenChange: (open: boolean) => void;
   isGenerating: boolean;
   selectedRatio: string;
+  generatedImageUrl?: string;
 }
 
 export const PreviewDialog = ({ 
   open, 
   onOpenChange, 
   isGenerating,
-  selectedRatio 
+  selectedRatio,
+  generatedImageUrl 
 }: PreviewDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -33,6 +35,12 @@ export const PreviewDialog = ({
               <Loader2 className="h-8 w-8 animate-spin" />
               <p className="text-muted-foreground">Generating your image...</p>
             </div>
+          ) : generatedImageUrl ? (
+            <img 
+              src={generatedImageUrl} 
+              alt="Generated preview" 
+              className="rounded-lg max-h-[600px] object-contain"
+            />
           ) : (
             <p className="text-muted-foreground">Preview will appear here</p>
           )}
