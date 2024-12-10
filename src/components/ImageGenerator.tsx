@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, CornerDownRight } from "lucide-react";
+import { Plus } from "lucide-react";
 import { AspectRatioSelect } from "./generator/AspectRatioSelect";
 import { ItemSelect } from "./generator/ItemSelect";
 import { ReferenceImageUpload } from "./generator/ReferenceImageUpload";
@@ -76,15 +76,12 @@ export const ImageGenerator = () => {
           onChange={setSelectedRatio}
         />
 
-        <div className="relative">
-          <Textarea
-            placeholder="Describe what you want to generate..."
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            className="min-h-[100px]"
-          />
-          <CornerDownRight className="absolute bottom-2 right-2 text-muted-foreground h-4 w-4" />
-        </div>
+        <Textarea
+          placeholder="Describe what you want to generate..."
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          className="min-h-[100px]"
+        />
 
         <PreviewDialog
           open={previewOpen}
