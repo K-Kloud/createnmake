@@ -74,26 +74,41 @@ export const OpenMarketSection = () => {
         throw new Error('Must be logged in to like images');
       }
 
-      if (hasLiked) {
-        await supabase
-          .from('image_likes')
-          .delete()
-          .eq('image_id', imageId)
-          .eq('user_id', session.user.id);
+      try {
+        if (hasLiked) {
+          // If already liked, remove the like
+          await supabase
+            .from('image_likes')
+            .delete()
+            .eq('image_id', imageId)
+            .eq('user_id', session.user.id);
 
-        await supabase
-          .from('generated_images')
-          .update({ likes: images?.find(img => img.id === imageId)?.likes - 1 || 0 })
-          .eq('id', imageId);
-      } else {
-        await supabase
-          .from('image_likes')
-          .insert({ image_id: imageId, user_id: session.user.id });
+          await supabase
+            .from('generated_images')
+            .update({ likes: images?.find(img => img.id === imageId)?.likes - 1 || 0 })
+            .eq('id', imageId);
+        } else {
+          // If not liked, add the like
+          await supabase
+            .from('image_likes')
+            .insert({ image_id: imageId, user_id: session.user.id });
 
-        await supabase
-          .from('generated_images')
-          .update({ likes: images?.find(img => img.id === imageId)?.likes + 1 || 1 })
-          .eq('id', imageId);
+          await supabase
+            .from('generated_images')
+            .update({ likes: images?.find(img => img.id === imageId)?.likes + 1 || 1 })
+            .eq('id', imageId);
+        }
+      } catch (error: any) {
+        // If we get a duplicate key error, it means the user has already liked the image
+        if (error.message?.includes('duplicate key value')) {
+          toast({
+            title: "Already Liked",
+            description: "You have already liked this image",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw error;
       }
     },
     onSuccess: () => {
