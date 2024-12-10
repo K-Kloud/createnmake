@@ -8,6 +8,8 @@ import { ReferenceImageUpload } from "./generator/ReferenceImageUpload";
 import { PreviewDialog } from "./generator/PreviewDialog";
 import { useToast } from "@/components/ui/use-toast";
 import { generateImage } from "@/services/imageGeneration";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 export const ImageGenerator = () => {
   const [prompt, setPrompt] = useState("");
@@ -18,7 +20,24 @@ export const ImageGenerator = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
+  const { data: session } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getSession();
+      return data.session;
+    },
+  });
+
   const handleGenerate = async () => {
+    if (!session?.user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to generate images",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!selectedItem || !prompt) {
       toast({
         title: !selectedItem ? "Item Required" : "Prompt Required",
@@ -34,13 +53,38 @@ export const ImageGenerator = () => {
     setPreviewOpen(true);
 
     try {
+      // Create a record in the database
+      const { data: dbRecord, error: dbError } = await supabase
+        .from('generated_images')
+        .insert({
+          user_id: session.user.id,
+          prompt: `${selectedItem}: ${prompt}`,
+          item_type: selectedItem,
+          aspect_ratio: selectedRatio,
+          status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (dbError) throw dbError;
+
+      // Generate the image
       const result = await generateImage({
         prompt: `${selectedItem}: ${prompt}`,
         width: 1024,
         height: 1024
       });
       
-      console.log('Generation result:', result);
+      // Update the record with the generated image URL
+      const { error: updateError } = await supabase
+        .from('generated_images')
+        .update({ 
+          image_url: result.url,
+          status: 'completed'
+        })
+        .eq('id', dbRecord.id);
+
+      if (updateError) throw updateError;
       
       toast({
         title: "Image Generated",
@@ -53,6 +97,14 @@ export const ImageGenerator = () => {
         description: error.message,
         variant: "destructive",
       });
+
+      // Update status to failed if we have a database record
+      if (error.id) {
+        await supabase
+          .from('generated_images')
+          .update({ status: 'failed' })
+          .eq('id', error.id);
+      }
     } finally {
       setIsGenerating(false);
     }

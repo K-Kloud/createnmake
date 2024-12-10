@@ -36,6 +36,45 @@ export type Database = {
         }
         Relationships: []
       }
+      generated_images: {
+        Row: {
+          aspect_ratio: string
+          created_at: string | null
+          id: number
+          image_url: string | null
+          item_type: string
+          prompt: string
+          reference_image_url: string | null
+          status: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          aspect_ratio?: string
+          created_at?: string | null
+          id?: never
+          image_url?: string | null
+          item_type: string
+          prompt: string
+          reference_image_url?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          aspect_ratio?: string
+          created_at?: string | null
+          id?: never
+          image_url?: string | null
+          item_type?: string
+          prompt?: string
+          reference_image_url?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       useractions: {
         Row: {
           action_details: Json | null
