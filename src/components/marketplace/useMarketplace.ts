@@ -71,35 +71,55 @@ export const useMarketplace = () => {
 
       try {
         if (hasLiked) {
-          await supabase
+          // If already liked, remove the like
+          const { error: deleteLikeError } = await supabase
             .from('image_likes')
             .delete()
             .eq('image_id', imageId)
             .eq('user_id', session.user.id);
 
-          await supabase
+          if (deleteLikeError) throw deleteLikeError;
+
+          const { error: updateLikesError } = await supabase
             .from('generated_images')
             .update({ likes: images?.find(img => img.id === imageId)?.likes - 1 || 0 })
             .eq('id', imageId);
+
+          if (updateLikesError) throw updateLikesError;
         } else {
-          await supabase
+          // Check if like already exists
+          const { data: existingLike } = await supabase
+            .from('image_likes')
+            .select()
+            .eq('image_id', imageId)
+            .eq('user_id', session.user.id)
+            .single();
+
+          if (existingLike) {
+            toast({
+              title: "Already Liked",
+              description: "You have already liked this image",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          // If not liked, add the like
+          const { error: insertLikeError } = await supabase
             .from('image_likes')
             .insert({ image_id: imageId, user_id: session.user.id });
 
-          await supabase
+          if (insertLikeError) throw insertLikeError;
+
+          const { error: updateLikesError } = await supabase
             .from('generated_images')
             .update({ likes: images?.find(img => img.id === imageId)?.likes + 1 || 1 })
             .eq('id', imageId);
+
+          if (updateLikesError) throw updateLikesError;
         }
       } catch (error: any) {
-        if (error.message?.includes('duplicate key value')) {
-          toast({
-            title: "Already Liked",
-            description: "You have already liked this image",
-            variant: "destructive",
-          });
-          return;
-        }
+        console.error('Like mutation error:', error);
         throw error;
       }
     },
