@@ -22,14 +22,18 @@ export const OpenMarketSection = () => {
   const { data: images, isLoading } = useQuery({
     queryKey: ['marketplaceImages'],
     queryFn: async () => {
-      // First get the images with user_ids
+      // First get the images with user_ids and likes
       const { data: imagesData, error: imagesError } = await supabase
         .from('generated_images')
         .select(`
-          *,
-          image_likes (
-            user_id
-          )
+          id,
+          image_url,
+          prompt,
+          likes,
+          views,
+          created_at,
+          user_id,
+          image_likes (user_id)
         `)
         .eq('is_public', true)
         .order('created_at', { ascending: false })
@@ -60,7 +64,7 @@ export const OpenMarketSection = () => {
           avatar: "https://github.com/shadcn.png"
         },
         createdAt: new Date(image.created_at),
-        hasLiked: image.image_likes.some(like => like.user_id === session?.user?.id)
+        hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id) || false
       }));
     },
     enabled: true,
@@ -99,7 +103,7 @@ export const OpenMarketSection = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['marketplaceImages'] });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
         description: error.message,
