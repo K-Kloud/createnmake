@@ -26,10 +26,7 @@ export const OpenMarketSection = () => {
         .from('generated_images')
         .select(`
           *,
-          creator:user_id(
-            id,
-            email
-          ),
+          profiles:user_id(id, username),
           image_likes(user_id)
         `)
         .eq('is_public', true)
@@ -47,7 +44,7 @@ export const OpenMarketSection = () => {
         views: image.views || 0,
         produced: 0,
         creator: {
-          name: image.creator?.email?.split('@')[0] || 'Anonymous',
+          name: image.profiles?.username || 'Anonymous',
           avatar: "https://github.com/shadcn.png"
         },
         createdAt: new Date(image.created_at),
