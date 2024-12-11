@@ -13,6 +13,7 @@ import { Icons } from "@/components/Icons";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 export function AuthDialog({
   isOpen,
@@ -24,8 +25,9 @@ export function AuthDialog({
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent, mode: 'signin' | 'signup') => {
     e.preventDefault();
@@ -33,20 +35,34 @@ export function AuthDialog({
 
     try {
       if (mode === 'signup') {
-        const { error } = await supabase.auth.signUp({
+        const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
             data: {
-              username: name,
+              username,
             },
           },
         });
-        if (error) throw error;
+        
+        if (signUpError) throw signUpError;
+
+        // Create profile
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({
+            id: (await supabase.auth.getUser()).data.user?.id,
+            username,
+            updated_at: new Date().toISOString(),
+          });
+
+        if (profileError) throw profileError;
+
         toast({
           title: "Account created!",
           description: "Please check your email to verify your account.",
         });
+        navigate('/dashboard');
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -57,6 +73,7 @@ export function AuthDialog({
           title: "Welcome back!",
           description: "You have successfully signed in.",
         });
+        navigate('/dashboard');
       }
       onClose();
     } catch (error) {
@@ -126,13 +143,13 @@ export function AuthDialog({
           <TabsContent value="signup">
             <form onSubmit={(e) => handleSubmit(e, 'signup')} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="signup-name">Full Name</Label>
+                <Label htmlFor="signup-username">Username</Label>
                 <Input
-                  id="signup-name"
+                  id="signup-username"
                   type="text"
-                  placeholder="Enter your full name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Choose a username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                 />
               </div>
@@ -170,27 +187,6 @@ export function AuthDialog({
               </Button>
             </form>
           </TabsContent>
-
-          <div className="relative mt-4">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Or continue with
-              </span>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <Button variant="outline" type="button" disabled={isLoading}>
-              <Icons.google className="mr-2 h-4 w-4" />
-              Google
-            </Button>
-            <Button variant="outline" type="button" disabled={isLoading}>
-              <Icons.apple className="mr-2 h-4 w-4" />
-              Apple
-            </Button>
-          </div>
         </Tabs>
       </DialogContent>
     </Dialog>

@@ -3,17 +3,115 @@ import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Settings, Image, History } from "lucide-react";
+import { Settings, Image, History, Upload } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
+import { useEffect } from "react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const user = {
-    name: "John Doe",
-    email: "john@example.com",
-    avatar: "https://github.com/shadcn.png",
-    credits: 100,
-    imagesGenerated: 25,
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: session } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getSession();
+      return data.session;
+    },
+  });
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+      return data;
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  const uploadAvatarMutation = useMutation({
+    mutationFn: async (file: File) => {
+      if (!session?.user?.id) throw new Error("Not authenticated");
+      
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${session.user.id}-${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+      
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', session.user.id);
+
+      if (updateError) throw updateError;
+
+      return publicUrl;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      toast({
+        title: "Avatar Updated",
+        description: "Your profile picture has been updated successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  useEffect(() => {
+    if (!session) {
+      navigate('/');
+    }
+  }, [session, navigate]);
+
+  if (!session || !profile) {
+    return null;
+  }
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please upload an image smaller than 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    uploadAvatarMutation.mutate(file);
   };
 
   return (
@@ -28,12 +126,27 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="flex flex-col items-center gap-4">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback>{user.name[0]}</AvatarFallback>
-                </Avatar>
-                <h2 className="text-2xl font-bold">{user.name}</h2>
-                <p className="text-gray-400">{user.email}</p>
+                <div className="relative">
+                  <Avatar className="h-24 w-24">
+                    <AvatarImage src={profile.avatar_url} alt={profile.username} />
+                    <AvatarFallback>{profile.username?.[0]?.toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <label
+                    htmlFor="avatar-upload"
+                    className="absolute bottom-0 right-0 p-1 bg-primary rounded-full cursor-pointer hover:bg-primary/90 transition-colors"
+                  >
+                    <Upload className="h-4 w-4 text-white" />
+                  </label>
+                  <input
+                    type="file"
+                    id="avatar-upload"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                  />
+                </div>
+                <h2 className="text-2xl font-bold">{profile.username}</h2>
+                <p className="text-gray-400">{session.user.email}</p>
                 <Button 
                   variant="outline" 
                   className="w-full"
@@ -50,22 +163,19 @@ const Dashboard = () => {
           <div className="flex-[2] grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="glass-card">
               <CardHeader>
-                <CardTitle>Credits</CardTitle>
+                <CardTitle>Images Generated</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-between">
-                  <p className="text-4xl font-bold">{user.credits}</p>
-                  <Button variant="outline">Buy More</Button>
-                </div>
+                <p className="text-4xl font-bold">0</p>
               </CardContent>
             </Card>
 
             <Card className="glass-card">
               <CardHeader>
-                <CardTitle>Images Generated</CardTitle>
+                <CardTitle>Images Liked</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-4xl font-bold">{user.imagesGenerated}</p>
+                <p className="text-4xl font-bold">0</p>
               </CardContent>
             </Card>
 

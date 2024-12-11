@@ -13,25 +13,42 @@ import {
 import { useToast } from "./ui/use-toast";
 import { Switch } from "@/components/ui/switch";
 import { ToggleLeft, ToggleRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Header = () => {
   const navigate = useNavigate();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Initialize from localStorage or system preference
     const stored = localStorage.getItem("theme");
     if (stored) return stored === "dark";
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
   const { toast } = useToast();
-  const isSignedIn = false;
-  const user = {
-    name: "John Doe",
-    avatar: "https://github.com/shadcn.png",
-  };
+
+  const { data: session } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getSession();
+      return data.session;
+    },
+  });
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+      return data;
+    },
+    enabled: !!session?.user?.id,
+  });
 
   useEffect(() => {
-    // Update the HTML class and localStorage when theme changes
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
       localStorage.setItem("theme", "dark");
@@ -41,11 +58,13 @@ export const Header = () => {
     }
   }, [isDarkMode]);
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
     toast({
       title: "Signed out successfully",
       description: "You have been logged out of your account.",
     });
+    navigate('/');
   };
 
   const toggleTheme = () => {
@@ -87,12 +106,12 @@ export const Header = () => {
             <Button variant="ghost" onClick={() => navigate("/create")}>
               Create
             </Button>
-            {isSignedIn ? (
+            {session?.user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Avatar className="h-8 w-8 cursor-pointer">
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback>{user.name[0]}</AvatarFallback>
+                    <AvatarImage src={profile?.avatar_url} alt={profile?.username || session.user.email} />
+                    <AvatarFallback>{(profile?.username?.[0] || session.user.email?.[0])?.toUpperCase()}</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
