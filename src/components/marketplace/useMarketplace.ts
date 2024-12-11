@@ -88,12 +88,14 @@ export const useMarketplace = () => {
           if (updateLikesError) throw updateLikesError;
         } else {
           // Check if like already exists
-          const { data: existingLike } = await supabase
+          const { data: existingLike, error: checkError } = await supabase
             .from('image_likes')
             .select()
             .eq('image_id', imageId)
             .eq('user_id', session.user.id)
-            .single();
+            .maybeSingle();
+
+          if (checkError) throw checkError;
 
           if (existingLike) {
             toast({
