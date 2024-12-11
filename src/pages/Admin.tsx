@@ -5,14 +5,46 @@ import { ImageStats } from "@/components/admin/ImageStats";
 import { ImageFilters } from "@/components/admin/ImageFilters";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Database, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  // Check if user is admin
+  const { data: isAdmin, isLoading: checkingAdmin } = useQuery({
+    queryKey: ['isAdmin'],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return false;
+
+      const { data } = await supabase
+        .from('admin_roles')
+        .select('role')
+        .eq('user_id', session.user.id)
+        .eq('role', 'admin')
+        .single();
+
+      return !!data;
+    },
+  });
+
+  // Redirect non-admin users
+  useEffect(() => {
+    if (!checkingAdmin && !isAdmin) {
+      toast({
+        title: "Access Denied",
+        description: "You don't have permission to access this page.",
+        variant: "destructive",
+      });
+      navigate('/');
+    }
+  }, [isAdmin, checkingAdmin, navigate, toast]);
 
   const { data: images, isLoading } = useQuery({
     queryKey: ['adminImages'],
@@ -22,18 +54,32 @@ const Admin = () => {
         .select(`
           *,
           profiles (
-            username
+            username,
+            avatar_url
           )
         `)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
       return data;
-    }
+    },
+    enabled: !!isAdmin,
   });
 
   const deleteImageMutation = useMutation({
     mutationFn: async (id: number) => {
+      // First, delete the image from storage if it exists
+      const imageToDelete = images?.find(img => img.id === id);
+      if (imageToDelete?.image_url) {
+        const path = imageToDelete.image_url.split('/').pop();
+        if (path) {
+          await supabase.storage
+            .from('opent')
+            .remove([path]);
+        }
+      }
+
+      // Then delete the database record
       const { error } = await supabase
         .from('generated_images')
         .delete()
@@ -64,13 +110,13 @@ const Admin = () => {
   };
 
   const handleView = (id: number) => {
-    // Implement view functionality
-    console.log('Viewing image:', id);
+    window.open(`/marketplace?image=${id}`, '_blank');
   };
 
   const filteredImages = images?.filter(image => 
     image.prompt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    image.title?.toLowerCase().includes(searchTerm.toLowerCase())
+    image.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    image.profiles?.username?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
   const stats = {
@@ -79,7 +125,7 @@ const Admin = () => {
     totalViews: images?.reduce((sum, img) => sum + (img.views || 0), 0) || 0,
   };
 
-  if (isLoading) {
+  if (checkingAdmin || isLoading) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <Header />
@@ -89,6 +135,10 @@ const Admin = () => {
         <Footer />
       </div>
     );
+  }
+
+  if (!isAdmin) {
+    return null;
   }
 
   return (

@@ -2,6 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Eye, Trash } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ImageListProps {
   images: any[];
@@ -32,8 +33,25 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
                 className="w-16 h-16 object-cover rounded"
               />
             </TableCell>
-            <TableCell>{image.title || image.prompt}</TableCell>
-            <TableCell>{image.profiles?.username || 'Anonymous'}</TableCell>
+            <TableCell>
+              <div className="space-y-1">
+                <div className="font-medium">{image.title || 'Untitled'}</div>
+                <div className="text-sm text-muted-foreground line-clamp-2">
+                  {image.prompt}
+                </div>
+              </div>
+            </TableCell>
+            <TableCell>
+              <div className="flex items-center space-x-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={image.profiles?.avatar_url} />
+                  <AvatarFallback>
+                    {image.profiles?.username?.[0]?.toUpperCase() || '?'}
+                  </AvatarFallback>
+                </Avatar>
+                <span>{image.profiles?.username || 'Anonymous'}</span>
+              </div>
+            </TableCell>
             <TableCell>
               <div className="space-y-1 text-sm">
                 <div>Likes: {image.likes || 0}</div>
@@ -56,7 +74,7 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
                   variant="outline"
                   size="icon"
                   onClick={() => onDelete(image.id)}
-                  className="text-red-600 hover:text-red-700"
+                  className="text-destructive hover:text-destructive"
                 >
                   <Trash className="h-4 w-4" />
                 </Button>
@@ -64,6 +82,13 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
             </TableCell>
           </TableRow>
         ))}
+        {images.length === 0 && (
+          <TableRow>
+            <TableCell colSpan={6} className="text-center py-8">
+              No images found
+            </TableCell>
+          </TableRow>
+        )}
       </TableBody>
     </Table>
   );
