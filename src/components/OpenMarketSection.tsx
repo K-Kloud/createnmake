@@ -26,7 +26,11 @@ export const OpenMarketSection = () => {
       return;
     }
 
-    likeMutation.mutate({ imageId, hasLiked: image.hasLiked });
+    likeMutation.mutate({ 
+      imageId, 
+      hasLiked: image.hasLiked,
+      userId: session.user.id 
+    });
   };
 
   const handleView = (imageId: number) => {
