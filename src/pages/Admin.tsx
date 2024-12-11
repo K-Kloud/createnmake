@@ -23,14 +23,18 @@ const Admin = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return false;
 
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('admin_roles')
         .select('role')
         .eq('user_id', session.user.id)
-        .eq('role', 'admin')
-        .single();
+        .eq('role', 'admin');
 
-      return !!data;
+      if (error) {
+        console.error('Error checking admin status:', error);
+        return false;
+      }
+
+      return data && data.length > 0;
     },
   });
 
