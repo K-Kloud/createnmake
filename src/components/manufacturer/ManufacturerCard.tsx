@@ -1,4 +1,4 @@
-import { Star, Quote, Image } from "lucide-react";
+import { Star, Quote, Image, CreditCard } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -56,6 +56,10 @@ export const ManufacturerCard = ({
     });
   };
 
+  const handlePayment = () => {
+    window.open('https://buy.stripe.com/test_6oE4hBawn3AL2MU9AA', '_blank');
+  };
+
   return (
     <Card className="glass-card hover:scale-[1.02] transition-transform">
       <CardHeader>
@@ -69,13 +73,23 @@ export const ManufacturerCard = ({
             <CardTitle className="text-xl">{name}</CardTitle>
             <p className="text-sm text-muted-foreground">{type}</p>
           </div>
-          <Button 
-            onClick={handleQuoteRequest}
-            className="flex items-center gap-2"
-          >
-            <Quote className="w-4 h-4" />
-            Request Quote
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleQuoteRequest}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Quote className="w-4 h-4" />
+              Request Quote
+            </Button>
+            <Button 
+              onClick={handlePayment}
+              className="flex items-center gap-2"
+            >
+              <CreditCard className="w-4 h-4" />
+              Pay Now
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
