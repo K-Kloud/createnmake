@@ -9,6 +9,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      activity_metrics: {
+        Row: {
+          metric_id: number
+          metric_type: string
+          metric_value: number
+          recorded_at: string
+          user_id: string | null
+        }
+        Insert: {
+          metric_id?: number
+          metric_type: string
+          metric_value: number
+          recorded_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          metric_id?: number
+          metric_type?: string
+          metric_value?: number
+          recorded_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       admin_roles: {
         Row: {
           created_at: string
@@ -57,6 +81,164 @@ export type Database = {
           page_name?: string
           page_url?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ai_agent: {
+        Row: {
+          active: boolean | null
+          agent_id: number
+          created_at: string
+          description: string | null
+          name: string
+        }
+        Insert: {
+          active?: boolean | null
+          agent_id?: number
+          created_at?: string
+          description?: string | null
+          name: string
+        }
+        Update: {
+          active?: boolean | null
+          agent_id?: number
+          created_at?: string
+          description?: string | null
+          name?: string
+        }
+        Relationships: []
+      }
+      ai_agent_queries: {
+        Row: {
+          agent_id: number
+          executed_at: string
+          query_id: number
+          query_result: Json | null
+          query_text: string
+          user_id: string | null
+        }
+        Insert: {
+          agent_id: number
+          executed_at?: string
+          query_id?: number
+          query_result?: Json | null
+          query_text: string
+          user_id?: string | null
+        }
+        Update: {
+          agent_id?: number
+          executed_at?: string
+          query_id?: number
+          query_result?: Json | null
+          query_text?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_agent_queries_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agent"
+            referencedColumns: ["agent_id"]
+          },
+        ]
+      }
+      api_keys: {
+        Row: {
+          api_key: string
+          api_key_id: number
+          created_at: string
+          expires_at: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          api_key: string
+          api_key_id?: number
+          created_at?: string
+          expires_at?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          api_key?: string
+          api_key_id?: number
+          created_at?: string
+          expires_at?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      audit_logs: {
+        Row: {
+          action: string
+          action_details: Json | null
+          action_time: string
+          log_id: number
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          action_details?: Json | null
+          action_time?: string
+          log_id?: number
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          action_details?: Json | null
+          action_time?: string
+          log_id?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      dashboard_settings: {
+        Row: {
+          layout: Json | null
+          setting_id: number
+          theme: string | null
+          user_id: string
+          widgets: Json | null
+        }
+        Insert: {
+          layout?: Json | null
+          setting_id?: number
+          theme?: string | null
+          user_id: string
+          widgets?: Json | null
+        }
+        Update: {
+          layout?: Json | null
+          setting_id?: number
+          theme?: string | null
+          user_id?: string
+          widgets?: Json | null
+        }
+        Relationships: []
+      }
+      generated_contents: {
+        Row: {
+          content_data: Json
+          content_id: number
+          content_type: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          content_data: Json
+          content_id?: number
+          content_type: string
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          content_data?: Json
+          content_id?: number
+          content_type?: string
+          created_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -151,6 +333,33 @@ export type Database = {
           },
         ]
       }
+      payments: {
+        Row: {
+          amount: number
+          currency: string | null
+          payment_date: string
+          payment_id: number
+          payment_status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          currency?: string | null
+          payment_date?: string
+          payment_id?: number
+          payment_status: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          currency?: string | null
+          payment_date?: string
+          payment_id?: number
+          payment_status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -172,6 +381,39 @@ export type Database = {
           id?: string
           updated_at?: string | null
           username?: string | null
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          auto_renew: boolean | null
+          created_at: string
+          end_date: string | null
+          plan_name: string
+          start_date: string
+          status: string
+          subscription_id: number
+          user_id: string
+        }
+        Insert: {
+          auto_renew?: boolean | null
+          created_at?: string
+          end_date?: string | null
+          plan_name: string
+          start_date: string
+          status: string
+          subscription_id?: number
+          user_id: string
+        }
+        Update: {
+          auto_renew?: boolean | null
+          created_at?: string
+          end_date?: string | null
+          plan_name?: string
+          start_date?: string
+          status?: string
+          subscription_id?: number
+          user_id?: string
         }
         Relationships: []
       }
