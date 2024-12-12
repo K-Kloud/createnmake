@@ -5,13 +5,13 @@ import { CategoryCard } from "@/components/manufacturer/CategoryCard";
 import { manufacturers } from "@/data/manufacturers";
 import { manufacturerCategories } from "@/data/manufacturerCategories";
 import { 
-  Scissors,
-  Footprints,
-  Printer,
-  Gem,
-  Briefcase,
+  Scissors, 
+  Footprints, 
+  Printer, 
+  Gem, 
+  Briefcase, 
   Armchair,
-  LucideIcon
+  type LucideIcon 
 } from "lucide-react";
 import {
   Dialog,
@@ -35,8 +35,8 @@ const categoryImages = {
   "Cobbler": "https://images.unsplash.com/photo-1449247709967-d4461a6a6103",
   "Printer": "https://images.unsplash.com/photo-1485833077593-4278bba3f11f",
   "Goldsmith": "https://images.unsplash.com/photo-1441057206919-63d19fac2369",
-  "Bag Maker": "https://images.unsplash.com/photo-1469041797191-50ace28483c3",
-  "Furniture": "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2",
+  "Leather Worker": "https://images.unsplash.com/photo-1469041797191-50ace28483c3",
+  "Furniture Maker": "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2",
 };
 
 const Manufacturer = () => {
@@ -87,7 +87,7 @@ const Manufacturer = () => {
                 key={category.id}
                 name={category.name}
                 description={category.description}
-                icon={IconComponent || Briefcase}
+                icon={IconComponent}
                 image={categoryImages[category.name] || ""}
                 count={getCategoryCount(category.name)}
                 onClick={() => {

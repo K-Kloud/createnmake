@@ -1,4 +1,4 @@
-import { LucideIcon } from "lucide-react";
+import { type LucideIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface CategoryCardProps {
@@ -31,7 +31,7 @@ export const CategoryCard = ({
             className="w-full h-full object-cover transition-transform group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          <Icon className="absolute bottom-4 right-4 w-8 h-8 text-white" />
+          {Icon && <Icon className="absolute bottom-4 right-4 w-8 h-8 text-white" />}
         </div>
         
         <div className="text-center">
