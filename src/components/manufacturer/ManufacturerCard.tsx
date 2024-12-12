@@ -1,15 +1,8 @@
-import { Star, Quote, Image, CreditCard } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { PortfolioGrid } from "./PortfolioGrid";
+import { Card, CardContent } from "@/components/ui/card";
+import { ManufacturerHeader } from "./ManufacturerHeader";
+import { ManufacturerRating } from "./ManufacturerRating";
+import { PortfolioButton } from "./PortfolioButton";
+import { ManufacturerReviews } from "./ManufacturerReviews";
 
 interface Review {
   id: number;
@@ -47,86 +40,14 @@ export const ManufacturerCard = ({
   specialties,
   producedItems = [],
 }: ManufacturerCardProps) => {
-  const { toast } = useToast();
-
-  const handleQuoteRequest = () => {
-    toast({
-      title: "Quote Requested",
-      description: `Your quote request has been sent to ${name}. They will contact you shortly.`,
-    });
-  };
-
-  const handlePayment = () => {
-    window.open('https://buy.stripe.com/test_6oE4hBawn3AL2MU9AA', '_blank');
-  };
-
   return (
     <Card className="glass-card hover:scale-[1.02] transition-transform">
-      <CardHeader>
-        <div className="flex items-center gap-4">
-          <img
-            src={image}
-            alt={name}
-            className="w-16 h-16 rounded-full object-cover"
-          />
-          <div className="flex-1">
-            <CardTitle className="text-xl">{name}</CardTitle>
-            <p className="text-sm text-muted-foreground">{type}</p>
-          </div>
-          <div className="flex gap-2">
-            <Button 
-              onClick={handleQuoteRequest}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Quote className="w-4 h-4" />
-              Request Quote
-            </Button>
-            <Button 
-              onClick={handlePayment}
-              className="flex items-center gap-2"
-            >
-              <CreditCard className="w-4 h-4" />
-              Pay Now
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
+      <ManufacturerHeader name={name} type={type} image={image} />
       <CardContent>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-4 h-4 ${
-                      i < rating ? "fill-yellow-500 text-yellow-500" : "text-gray-300"
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className="text-sm">({reviews.length} reviews)</span>
-            </div>
-            
-            {producedItems.length > 0 && (
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Image className="w-4 h-4" />
-                    Portfolio
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-6xl">
-                  <DialogHeader>
-                    <DialogTitle>{name}'s Portfolio</DialogTitle>
-                  </DialogHeader>
-                  <div className="mt-4">
-                    <PortfolioGrid items={producedItems} manufacturerName={name} />
-                  </div>
-                </DialogContent>
-              </Dialog>
-            )}
+            <ManufacturerRating rating={rating} reviewCount={reviews.length} />
+            <PortfolioButton name={name} producedItems={producedItems} />
           </div>
           
           <p className="text-sm">{description}</p>
@@ -148,28 +69,7 @@ export const ManufacturerCard = ({
             </div>
           </div>
 
-          <div className="space-y-3">
-            <h4 className="font-medium">Recent Reviews</h4>
-            {reviews.slice(0, 2).map((review) => (
-              <div key={review.id} className="border-t pt-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">{review.user}</span>
-                  <span className="text-sm text-muted-foreground">{review.date}</span>
-                </div>
-                <div className="flex items-center mt-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-3 h-3 ${
-                        i < review.rating ? "fill-yellow-500 text-yellow-500" : "text-gray-300"
-                      }`}
-                    />
-                  ))}
-                </div>
-                <p className="text-sm mt-1">{review.comment}</p>
-              </div>
-            ))}
-          </div>
+          <ManufacturerReviews reviews={reviews} />
         </div>
       </CardContent>
     </Card>
