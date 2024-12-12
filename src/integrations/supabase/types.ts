@@ -446,6 +446,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      analyze_user_activity: {
+        Args: {
+          lookback_days?: number
+          usage_threshold?: number
+        }
+        Returns: {
+          user_id: string
+          total_usage: number
+        }[]
+      }
       cleanup_expired_api_keys: {
         Args: Record<PropertyKey, never>
         Returns: undefined
