@@ -259,6 +259,56 @@ export type Database = {
         }
         Relationships: []
       }
+      error_logs: {
+        Row: {
+          agent_id: number | null
+          error_details: Json | null
+          error_id: number
+          error_message: string
+          error_type: string
+          occurred_at: string | null
+          resolution_details: string | null
+          resolved: boolean | null
+          resolved_at: string | null
+          resolved_by: string | null
+          user_id: string | null
+        }
+        Insert: {
+          agent_id?: number | null
+          error_details?: Json | null
+          error_id?: number
+          error_message: string
+          error_type: string
+          occurred_at?: string | null
+          resolution_details?: string | null
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          agent_id?: number | null
+          error_details?: Json | null
+          error_id?: number
+          error_message?: string
+          error_type?: string
+          occurred_at?: string | null
+          resolution_details?: string | null
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "error_logs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agent"
+            referencedColumns: ["agent_id"]
+          },
+        ]
+      }
       generated_contents: {
         Row: {
           content_data: Json
