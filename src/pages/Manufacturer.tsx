@@ -1,18 +1,8 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ManufacturerCard } from "@/components/manufacturer/ManufacturerCard";
+import { CategoryList } from "@/components/manufacturer/CategoryList";
 import { manufacturers } from "@/data/manufacturers";
-import { manufacturerCategories } from "@/data/manufacturerCategories";
-import { 
-  Scissors,
-  Footprints,
-  Printer,
-  Gem,
-  Briefcase,
-  Armchair,
-  LucideIcon
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -20,15 +10,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useState } from "react";
-
-const iconMap: Record<string, LucideIcon> = {
-  Scissors,
-  Footprints,
-  Printer,
-  Gem,
-  Briefcase,
-  Armchair,
-};
 
 const Manufacturer = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -40,6 +21,11 @@ const Manufacturer = () => {
   const filteredManufacturers = selectedCategory
     ? manufacturers.filter(m => m.type === selectedCategory)
     : [];
+
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category);
+    setDialogOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -66,28 +52,7 @@ const Manufacturer = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
-          {manufacturerCategories.map((category) => {
-            const IconComponent = iconMap[category.icon];
-            return (
-              <Button
-                key={category.id}
-                variant="outline"
-                className="relative h-auto p-6 flex flex-col items-center gap-4 hover:bg-primary/5 before:absolute before:inset-0 before:rounded-lg before:border before:border-primary before:opacity-0 hover:before:opacity-100 before:transition-opacity after:absolute after:inset-0 after:rounded-lg after:border after:border-primary after:opacity-0 hover:after:opacity-100 after:transition-opacity after:animate-pulse after:shadow-[0_0_15px_rgba(110,89,165,0.5)] group"
-                onClick={() => {
-                  setSelectedCategory(category.name);
-                  setDialogOpen(true);
-                }}
-              >
-                {IconComponent && <IconComponent className="w-16 h-16 transition-transform group-hover:scale-110 text-primary" />}
-                <div className="text-center">
-                  <h3 className="font-semibold text-lg">{category.name}</h3>
-                  <p className="text-sm text-muted-foreground">{category.description}</p>
-                </div>
-              </Button>
-            );
-          })}
-        </div>
+        <CategoryList onSelectCategory={handleCategorySelect} />
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
@@ -109,16 +74,6 @@ const Manufacturer = () => {
             </div>
           </DialogContent>
         </Dialog>
-
-        <h2 className="text-2xl font-semibold mb-6">All Manufacturers</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {manufacturers.map((manufacturer) => (
-            <ManufacturerCard
-              key={manufacturer.id}
-              {...manufacturer}
-            />
-          ))}
-        </div>
       </main>
       <Footer />
     </div>
