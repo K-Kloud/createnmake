@@ -143,6 +143,47 @@ export type Database = {
           },
         ]
       }
+      ai_agent_tasks: {
+        Row: {
+          agent_id: number
+          assigned_at: string | null
+          completed_at: string | null
+          created_at: string | null
+          status: string | null
+          task_details: Json | null
+          task_id: number
+          task_name: string
+        }
+        Insert: {
+          agent_id: number
+          assigned_at?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          status?: string | null
+          task_details?: Json | null
+          task_id?: number
+          task_name: string
+        }
+        Update: {
+          agent_id?: number
+          assigned_at?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          status?: string | null
+          task_details?: Json | null
+          task_id?: number
+          task_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_agent_tasks_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agent"
+            referencedColumns: ["agent_id"]
+          },
+        ]
+      }
       api_keys: {
         Row: {
           api_key: string
