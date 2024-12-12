@@ -1,7 +1,6 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ManufacturerCard } from "@/components/manufacturer/ManufacturerCard";
-import { CategoryCard } from "@/components/manufacturer/CategoryCard";
 import { manufacturers } from "@/data/manufacturers";
 import { manufacturerCategories } from "@/data/manufacturerCategories";
 import { 
@@ -13,6 +12,7 @@ import {
   Armchair,
   LucideIcon
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -30,15 +30,6 @@ const iconMap: Record<string, LucideIcon> = {
   Armchair,
 };
 
-const categoryImages = {
-  "Tailor": "https://images.unsplash.com/photo-1452960962994-acf4fd70b632",
-  "Cobbler": "https://images.unsplash.com/photo-1449247709967-d4461a6a6103",
-  "Printer": "https://images.unsplash.com/photo-1485833077593-4278bba3f11f",
-  "Goldsmith": "https://images.unsplash.com/photo-1441057206919-63d19fac2369",
-  "Bag Maker": "https://images.unsplash.com/photo-1469041797191-50ace28483c3",
-  "Furniture": "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2",
-};
-
 const Manufacturer = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -49,10 +40,6 @@ const Manufacturer = () => {
   const filteredManufacturers = selectedCategory
     ? manufacturers.filter(m => m.type === selectedCategory)
     : [];
-
-  const getCategoryCount = (categoryName: string) => {
-    return manufacturers.filter(m => m.type === categoryName).length;
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -79,22 +66,25 @@ const Manufacturer = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
           {manufacturerCategories.map((category) => {
             const IconComponent = iconMap[category.icon];
             return (
-              <CategoryCard
+              <Button
                 key={category.id}
-                name={category.name}
-                description={category.description}
-                icon={IconComponent || Briefcase}
-                image={categoryImages[category.name] || ""}
-                count={getCategoryCount(category.name)}
+                variant="outline"
+                className="relative h-auto p-6 flex flex-col items-center gap-4 hover:bg-primary/5 before:absolute before:inset-0 before:rounded-lg before:border before:border-primary before:opacity-0 hover:before:opacity-100 before:transition-opacity after:absolute after:inset-0 after:rounded-lg after:border after:border-primary after:opacity-0 hover:after:opacity-100 after:transition-opacity after:animate-pulse after:shadow-[0_0_15px_rgba(110,89,165,0.5)] group"
                 onClick={() => {
                   setSelectedCategory(category.name);
                   setDialogOpen(true);
                 }}
-              />
+              >
+                {IconComponent && <IconComponent className="w-16 h-16 transition-transform group-hover:scale-110 text-primary" />}
+                <div className="text-center">
+                  <h3 className="font-semibold text-lg">{category.name}</h3>
+                  <p className="text-sm text-muted-foreground">{category.description}</p>
+                </div>
+              </Button>
             );
           })}
         </div>
