@@ -5,8 +5,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Download, Share2 } from "lucide-react";
-import { Loader2 } from "lucide-react";
+import { Download, Share2, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface PreviewDialogProps {
@@ -27,38 +26,50 @@ export const PreviewDialog = ({
   const { toast } = useToast();
 
   const handleDownload = async () => {
-    if (!generatedImageUrl) return;
+    if (!generatedImageUrl) {
+      toast({
+        title: "Error",
+        description: "No image available to download",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
-      const response = await fetch(generatedImageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      // Create a temporary anchor element
       const link = document.createElement('a');
-      link.href = url;
+      link.href = generatedImageUrl;
       link.download = `generated-image-${Date.now()}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
 
       toast({
         title: "Success",
         description: "Image downloaded successfully",
       });
     } catch (error) {
+      console.error('Download error:', error);
       toast({
         title: "Error",
-        description: "Failed to download image",
+        description: "Failed to download image. Please try again.",
         variant: "destructive",
       });
     }
   };
 
   const handleShare = async () => {
-    if (!generatedImageUrl) return;
+    if (!generatedImageUrl) {
+      toast({
+        title: "Error",
+        description: "No image available to share",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    if (navigator.share) {
-      try {
+    try {
+      if (navigator.share) {
         await navigator.share({
           title: 'Check out my generated image!',
           text: 'I created this image using AI',
@@ -69,29 +80,28 @@ export const PreviewDialog = ({
           title: "Success",
           description: "Image shared successfully",
         });
-      } catch (error) {
-        if (error.name !== 'AbortError') {
-          toast({
-            title: "Error",
-            description: "Failed to share image",
-            variant: "destructive",
-          });
-        }
-      }
-    } else {
-      // Fallback for browsers that don't support Web Share API
-      try {
+      } else {
+        // Fallback to copying URL
         await navigator.clipboard.writeText(generatedImageUrl);
         toast({
           title: "Success",
           description: "Image URL copied to clipboard",
         });
-      } catch (error) {
+      }
+    } catch (error) {
+      console.error('Share error:', error);
+      if (error.name !== 'AbortError') {
         toast({
           title: "Error",
-          description: "Failed to copy image URL",
+          description: "Failed to share image. URL copied to clipboard instead.",
           variant: "destructive",
         });
+        // Attempt to copy URL as fallback
+        try {
+          await navigator.clipboard.writeText(generatedImageUrl);
+        } catch (clipboardError) {
+          console.error('Clipboard error:', clipboardError);
+        }
       }
     }
   };
@@ -116,12 +126,21 @@ export const PreviewDialog = ({
                 src={generatedImageUrl} 
                 alt="Generated preview" 
                 className="rounded-lg max-h-[500px] object-contain"
+                onError={(e) => {
+                  e.currentTarget.src = '/placeholder.svg';
+                  toast({
+                    title: "Error",
+                    description: "Failed to load image",
+                    variant: "destructive",
+                  });
+                }}
               />
               <div className="flex gap-2 mt-4">
                 <Button
                   onClick={handleDownload}
                   variant="outline"
                   className="flex items-center gap-2"
+                  disabled={!generatedImageUrl}
                 >
                   <Download className="w-4 h-4" />
                   Download
@@ -130,6 +149,7 @@ export const PreviewDialog = ({
                   onClick={handleShare}
                   variant="outline"
                   className="flex items-center gap-2"
+                  disabled={!generatedImageUrl}
                 >
                   <Share2 className="w-4 h-4" />
                   Share
