@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Select,
   SelectContent,
@@ -28,18 +29,19 @@ export const AspectRatioSelect = ({ value, onChange }: AspectRatioSelectProps) =
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium">Output Size</label>
-      <div className="grid grid-cols-4 gap-2">
+      <div className="flex overflow-x-auto space-x-2 pb-2">
         {Object.entries(aspectRatios).map(([key, { label, icon: Icon }]) => (
           <button
             key={key}
             onClick={() => onChange(key)}
-            className={`flex flex-col items-center justify-center p-3 rounded-lg transition-colors ${
-              value === key 
-                ? 'bg-primary text-primary-foreground' 
-                : 'bg-card/30 hover:bg-card/50'
-            }`}
+            className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors min-w-[70px] 
+              ${
+                value === key 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'bg-card/30 hover:bg-card/50'
+              }`}
           >
-            <Icon className="w-6 h-6 mb-1" />
+            <Icon className="w-4 h-4 mb-1" />
             <span className="text-xs text-center">{key}</span>
           </button>
         ))}
