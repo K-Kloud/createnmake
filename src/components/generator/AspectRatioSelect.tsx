@@ -29,7 +29,7 @@ export const AspectRatioSelect = ({ value, onChange }: AspectRatioSelectProps) =
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium">Output Size</label>
-      <div className="flex overflow-x-auto space-x-2 pb-2">
+      <div className="flex justify-center overflow-x-auto space-x-2 pb-2">
         {Object.entries(aspectRatios).map(([key, { label, icon: Icon }]) => (
           <button
             key={key}
@@ -46,7 +46,7 @@ export const AspectRatioSelect = ({ value, onChange }: AspectRatioSelectProps) =
           </button>
         ))}
       </div>
-      <p className="text-sm text-white/60">
+      <p className="text-sm text-center text-white/60">
         Size: {aspectRatios[value].width}x{aspectRatios[value].height}px
       </p>
     </div>
