@@ -10,14 +10,14 @@ import {
 import { Square, Smartphone, Monitor, LayoutGrid, Image } from "lucide-react";
 
 const aspectRatios = {
-  "square": { width: 1080, height: 1080, label: "Square (1:1)", icon: Square },
-  "portrait": { width: 1080, height: 1350, label: "Portrait (4:5)", icon: Image },
-  "landscape": { width: 1920, height: 1080, label: "Landscape (16:9)", icon: Monitor },
-  "story": { width: 1080, height: 1920, label: "Story (9:16)", icon: Smartphone },
-  "youtube": { width: 2560, height: 1440, label: "YouTube (16:9)", icon: Monitor },
-  "facebook": { width: 1200, height: 630, label: "Facebook (1.91:1)", icon: LayoutGrid },
-  "twitter": { width: 1600, height: 900, label: "Twitter (16:9)", icon: Monitor },
-  "linkedin": { width: 1200, height: 627, label: "LinkedIn (1.91:1)", icon: LayoutGrid }
+  "square": { width: 1080, height: 1080, label: "1:1", icon: Square },
+  "portrait": { width: 1080, height: 1350, label: "4:5", icon: Image },
+  "landscape": { width: 1920, height: 1080, label: "16:9", icon: Monitor },
+  "story": { width: 1080, height: 1920, label: "9:16", icon: Smartphone },
+  "youtube": { width: 2560, height: 1440, label: "16:9", icon: Monitor },
+  "facebook": { width: 1200, height: 630, label: "1.91:1", icon: LayoutGrid },
+  "twitter": { width: 1600, height: 900, label: "16:9", icon: Monitor },
+  "linkedin": { width: 1200, height: 627, label: "1.91:1", icon: LayoutGrid }
 };
 
 interface AspectRatioSelectProps {
@@ -42,7 +42,7 @@ export const AspectRatioSelect = ({ value, onChange }: AspectRatioSelectProps) =
               }`}
           >
             <Icon className="w-4 h-4 mb-1" />
-            <span className="text-xs text-center">{key}</span>
+            <span className="text-xs text-center">{label}</span>
           </button>
         ))}
       </div>

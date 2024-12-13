@@ -43,11 +43,6 @@ export const GenerationForm = ({
         onUpload={onReferenceImageUpload}
       />
 
-      <AspectRatioSelect
-        value={selectedRatio}
-        onChange={onRatioChange}
-      />
-
       <Textarea
         placeholder="Describe what you want to generate..."
         value={prompt}
@@ -62,6 +57,11 @@ export const GenerationForm = ({
       >
         {!isSignedIn ? "Sign in to Generate" : "Generate"}
       </Button>
+
+      <AspectRatioSelect
+        value={selectedRatio}
+        onChange={onRatioChange}
+      />
     </div>
   );
 };
