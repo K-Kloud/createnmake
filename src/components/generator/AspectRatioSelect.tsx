@@ -6,17 +6,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AspectRatio, Rectangle, Square, Smartphone, Monitor, Layout } from "lucide-react";
+import { Square, Smartphone, Monitor, LayoutGrid, Image } from "lucide-react";
 
 const aspectRatios = {
   "square": { width: 1080, height: 1080, label: "Square (1:1)", icon: Square },
-  "portrait": { width: 1080, height: 1350, label: "Portrait (4:5)", icon: Rectangle },
-  "landscape": { width: 1920, height: 1080, label: "Landscape (16:9)", icon: AspectRatio },
+  "portrait": { width: 1080, height: 1350, label: "Portrait (4:5)", icon: Image },
+  "landscape": { width: 1920, height: 1080, label: "Landscape (16:9)", icon: Monitor },
   "story": { width: 1080, height: 1920, label: "Story (9:16)", icon: Smartphone },
   "youtube": { width: 2560, height: 1440, label: "YouTube (16:9)", icon: Monitor },
-  "facebook": { width: 1200, height: 630, label: "Facebook (1.91:1)", icon: Layout },
+  "facebook": { width: 1200, height: 630, label: "Facebook (1.91:1)", icon: LayoutGrid },
   "twitter": { width: 1600, height: 900, label: "Twitter (16:9)", icon: Monitor },
-  "linkedin": { width: 1200, height: 627, label: "LinkedIn (1.91:1)", icon: Layout }
+  "linkedin": { width: 1200, height: 627, label: "LinkedIn (1.91:1)", icon: LayoutGrid }
 };
 
 interface AspectRatioSelectProps {
