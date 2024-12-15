@@ -11,8 +11,8 @@ export const Hero = () => {
           Create-2-Make with AI
         </h1>
         <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto">
-          Transform your ideas into stunning visuals using our advanced AI image generation platform.
-          Start creating unique, high-quality images with just a text prompt.
+          Transform your imaginary visual creations into reality using our Advanced Create-2-Make AI platform. 
+          Start creating your unique items and get them delivered to your doorstep.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button 
