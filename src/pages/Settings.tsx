@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Upload } from "lucide-react";
 
 const Settings = () => {
   const { toast } = useToast();
@@ -15,6 +17,48 @@ const Settings = () => {
     email: "john@example.com",
     avatar: "https://github.com/shadcn.png",
   });
+  const [uploading, setUploading] = useState(false);
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true);
+      
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error('You must select an image to upload.');
+      }
+
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${Math.random()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setFormData(prev => ({ ...prev, avatar: publicUrl }));
+      
+      toast({
+        title: "Avatar Updated",
+        description: "Your profile picture has been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,11 +81,33 @@ const Settings = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="flex justify-center mb-6">
+                <div className="flex flex-col items-center mb-6 space-y-4">
                   <Avatar className="h-24 w-24">
                     <AvatarImage src={formData.avatar} alt={formData.name} />
                     <AvatarFallback>{formData.name[0]}</AvatarFallback>
                   </Avatar>
+                  
+                  <div className="flex items-center">
+                    <input
+                      type="file"
+                      id="avatar"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleAvatarUpload}
+                      disabled={uploading}
+                    />
+                    <label htmlFor="avatar">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        disabled={uploading}
+                        className="cursor-pointer"
+                      >
+                        <Upload className="w-4 h-4 mr-2" />
+                        {uploading ? "Uploading..." : "Upload Picture"}
+                      </Button>
+                    </label>
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
@@ -60,15 +126,6 @@ const Settings = () => {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="avatar">Avatar URL</Label>
-                  <Input
-                    id="avatar"
-                    value={formData.avatar}
-                    onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
                   />
                 </div>
 
