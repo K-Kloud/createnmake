@@ -5,19 +5,51 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Upload } from "lucide-react";
 
 const Settings = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    name: "John Doe",
-    email: "john@example.com",
-    avatar: "https://github.com/shadcn.png",
+    name: "",
+    email: "",
+    avatar: "",
   });
   const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) throw new Error('No user found');
+
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('username, avatar_url')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+
+      setFormData({
+        name: profile?.username || user.email?.split('@')[0] || '',
+        email: user.email || '',
+        avatar: profile?.avatar_url || '',
+      });
+    } catch (error) {
+      toast({
+        title: "Error fetching profile",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -27,9 +59,12 @@ const Settings = () => {
         throw new Error('You must select an image to upload.');
       }
 
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const filePath = `${Math.random()}.${fileExt}`;
+      const filePath = `${user.id}-${Math.random()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
@@ -42,6 +77,13 @@ const Settings = () => {
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
 
       setFormData(prev => ({ ...prev, avatar: publicUrl }));
       
@@ -60,12 +102,33 @@ const Settings = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Profile Updated",
-      description: "Your profile has been updated successfully.",
-    });
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          username: formData.name,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -126,6 +189,7 @@ const Settings = () => {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    disabled
                   />
                 </div>
 
