@@ -8,12 +8,15 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { StatsCard } from "@/components/dashboard/StatsCard";
+import { UserImages } from "@/components/dashboard/UserImages";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [showImages, setShowImages] = useState(false);
 
   const { data: session } = useQuery({
     queryKey: ['session'],
@@ -117,31 +120,6 @@ const Dashboard = () => {
     return null;
   }
 
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast({
-        title: "File too large",
-        description: "Please upload an image smaller than 5MB",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Invalid file type",
-        description: "Please upload an image file",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    uploadAvatarMutation.mutate(file);
-  };
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
@@ -189,23 +167,19 @@ const Dashboard = () => {
 
           {/* Stats Section */}
           <div className="flex-[2] grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle>Images Generated</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-4xl font-bold">{generatedImagesCount}</p>
-              </CardContent>
-            </Card>
+            <StatsCard
+              title="Images Generated"
+              value={generatedImagesCount}
+              onClick={() => setShowImages(!showImages)}
+            />
+            <StatsCard
+              title="Images Liked"
+              value={likesCount}
+            />
 
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle>Images Liked</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-4xl font-bold">{likesCount}</p>
-              </CardContent>
-            </Card>
+            {showImages && session.user && (
+              <UserImages userId={session.user.id} />
+            )}
 
             <Card className="glass-card col-span-full">
               <CardHeader>
