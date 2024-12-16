@@ -80,26 +80,26 @@ export const useMarketplace = () => {
             .eq('user_id', userId);
           if (error) throw error;
         } else {
-          // First check if the like already exists
-          const { data: existingLike } = await supabase
+          // Check for existing like using select instead of single
+          const { data: existingLikes, error: checkError } = await supabase
             .from('image_likes')
-            .select()
+            .select('*')
             .eq('image_id', imageId)
-            .eq('user_id', userId)
-            .single();
+            .eq('user_id', userId);
 
-          if (!existingLike) {
-            const { error } = await supabase
+          if (checkError) throw checkError;
+
+          // Only insert if no like exists
+          if (!existingLikes || existingLikes.length === 0) {
+            const { error: insertError } = await supabase
               .from('image_likes')
               .insert({ image_id: imageId, user_id: userId });
-            if (error) throw error;
+            if (insertError) throw insertError;
           }
         }
       } catch (error: any) {
-        // If it's not a duplicate error, rethrow it
-        if (!error.message?.includes('duplicate key value')) {
-          throw error;
-        }
+        console.error('Like mutation error:', error);
+        throw error;
       }
     },
     onSuccess: () => {
