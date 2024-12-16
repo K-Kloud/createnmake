@@ -12,6 +12,7 @@ export interface GalleryImage {
   };
   createdAt: Date;
   hasLiked: boolean;
+  image_likes: { user_id: string }[];
 }
 
 export interface Comment {
@@ -35,4 +36,22 @@ export interface Reply {
     avatar: string;
   };
   createdAt: Date;
+}
+
+export interface LikeMutationParams {
+  imageId: number;
+  hasLiked: boolean;
+  userId: string;
+}
+
+export interface CommentMutationParams {
+  imageId: number;
+  text: string;
+  userId: string;
+}
+
+export interface ReplyMutationParams {
+  commentId: number;
+  text: string;
+  userId: string;
 }

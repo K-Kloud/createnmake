@@ -82,7 +82,21 @@ export const OpenMarketSection = () => {
         {images?.map((image) => (
           <ImageCard
             key={image.id}
-            image={image}
+            image={{
+              id: image.id,
+              url: image.image_url,
+              prompt: image.prompt,
+              likes: image.likes,
+              views: image.views,
+              comments: image.comments,
+              produced: image.produced || 0,
+              creator: {
+                name: image.user_id || 'Anonymous',
+                avatar: '/placeholder.svg'
+              },
+              createdAt: new Date(image.created_at),
+              hasLiked: image.hasLiked
+            }}
             onLike={handleLike}
             onView={handleView}
             onAddComment={handleAddComment}

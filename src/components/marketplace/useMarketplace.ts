@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
+import { LikeMutationParams, CommentMutationParams, ReplyMutationParams } from "@/types/gallery";
 
 export const useMarketplace = () => {
   const { toast } = useToast();
@@ -69,7 +70,7 @@ export const useMarketplace = () => {
   });
 
   const likeMutation = useMutation({
-    mutationFn: async ({ imageId, hasLiked, userId }) => {
+    mutationFn: async ({ imageId, hasLiked, userId }: LikeMutationParams) => {
       if (hasLiked) {
         const { error } = await supabase
           .from('image_likes')
@@ -87,7 +88,7 @@ export const useMarketplace = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
         description: error.message,
@@ -105,7 +106,7 @@ export const useMarketplace = () => {
   });
 
   const commentMutation = useMutation({
-    mutationFn: async ({ imageId, text, userId }) => {
+    mutationFn: async ({ imageId, text, userId }: CommentMutationParams) => {
       const { error } = await supabase
         .from('comments')
         .insert({ image_id: imageId, text, user_id: userId });
@@ -118,7 +119,7 @@ export const useMarketplace = () => {
         description: "Comment posted successfully",
       });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
         description: error.message,
@@ -128,7 +129,7 @@ export const useMarketplace = () => {
   });
 
   const replyMutation = useMutation({
-    mutationFn: async ({ commentId, text, userId }) => {
+    mutationFn: async ({ commentId, text, userId }: ReplyMutationParams) => {
       const { error } = await supabase
         .from('comment_replies')
         .insert({ comment_id: commentId, text, user_id: userId });
@@ -141,7 +142,7 @@ export const useMarketplace = () => {
         description: "Reply posted successfully",
       });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
         description: error.message,

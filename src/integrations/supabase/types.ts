@@ -265,6 +265,13 @@ export type Database = {
             referencedRelation: "comments"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "comment_replies_user_profile_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       comments: {
@@ -295,6 +302,13 @@ export type Database = {
             columns: ["image_id"]
             isOneToOne: false
             referencedRelation: "generated_images"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_user_profile_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -613,6 +627,12 @@ export type Database = {
       }
       cleanup_expired_api_keys: {
         Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      increment_views: {
+        Args: {
+          image_id: number
+        }
         Returns: undefined
       }
     }
