@@ -22,6 +22,10 @@ export const useMarketplace = () => {
         .from('generated_images')
         .select(`
           *,
+          profiles (
+            username,
+            avatar_url
+          ),
           image_likes(user_id),
           comments(
             id,

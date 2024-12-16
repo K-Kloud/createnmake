@@ -89,10 +89,10 @@ export const OpenMarketSection = () => {
               likes: image.likes || 0,
               views: image.views || 0,
               comments: image.comments || [],
-              produced: 0, // Default to 0 since this field isn't in the database
+              produced: 0,
               creator: {
-                name: image.user_id || 'Anonymous',
-                avatar: '/placeholder.svg'
+                name: image.profiles?.username || 'Anonymous',
+                avatar: image.profiles?.avatar_url || '/placeholder.svg'
               },
               createdAt: new Date(image.created_at),
               hasLiked: image.hasLiked,
