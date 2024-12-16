@@ -12,7 +12,11 @@ export interface GalleryImage {
   };
   createdAt: Date;
   hasLiked: boolean;
-  image_likes: { user_id: string }[];
+  image_likes: ImageLike[];
+}
+
+export interface ImageLike {
+  user_id: string;
 }
 
 export interface Comment {

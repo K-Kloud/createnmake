@@ -71,18 +71,35 @@ export const useMarketplace = () => {
 
   const likeMutation = useMutation({
     mutationFn: async ({ imageId, hasLiked, userId }: LikeMutationParams) => {
-      if (hasLiked) {
-        const { error } = await supabase
-          .from('image_likes')
-          .delete()
-          .eq('image_id', imageId)
-          .eq('user_id', userId);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('image_likes')
-          .insert({ image_id: imageId, user_id: userId });
-        if (error) throw error;
+      try {
+        if (hasLiked) {
+          const { error } = await supabase
+            .from('image_likes')
+            .delete()
+            .eq('image_id', imageId)
+            .eq('user_id', userId);
+          if (error) throw error;
+        } else {
+          // First check if the like already exists
+          const { data: existingLike } = await supabase
+            .from('image_likes')
+            .select()
+            .eq('image_id', imageId)
+            .eq('user_id', userId)
+            .single();
+
+          if (!existingLike) {
+            const { error } = await supabase
+              .from('image_likes')
+              .insert({ image_id: imageId, user_id: userId });
+            if (error) throw error;
+          }
+        }
+      } catch (error: any) {
+        // If it's not a duplicate error, rethrow it
+        if (!error.message?.includes('duplicate key value')) {
+          throw error;
+        }
       }
     },
     onSuccess: () => {
