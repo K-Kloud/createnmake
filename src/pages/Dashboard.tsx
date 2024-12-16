@@ -110,6 +110,13 @@ const Dashboard = () => {
     },
   });
 
+  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      uploadAvatarMutation.mutate(file);
+    }
+  };
+
   useEffect(() => {
     if (!session) {
       navigate('/');
