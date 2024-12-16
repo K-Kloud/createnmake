@@ -26,6 +26,7 @@ interface ImageCardProps {
     };
     createdAt: Date;
     hasLiked: boolean;
+    image_likes: { user_id: string }[]; // Add this line
   };
   onLike: (imageId: number) => void;
   onView: (imageId: number) => void;
