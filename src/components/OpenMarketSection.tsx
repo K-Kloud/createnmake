@@ -10,6 +10,8 @@ export const OpenMarketSection = () => {
     isLoading,
     likeMutation,
     viewMutation,
+    commentMutation,
+    replyMutation,
     toast
   } = useMarketplace();
 
@@ -46,7 +48,11 @@ export const OpenMarketSection = () => {
       });
       return;
     }
-    console.log('Comment added to image:', imageId, commentText);
+    commentMutation.mutate({
+      imageId,
+      text: commentText,
+      userId: session.user.id
+    });
   };
 
   const handleAddReply = (imageId: number, commentId: number, replyText: string) => {
@@ -58,7 +64,11 @@ export const OpenMarketSection = () => {
       });
       return;
     }
-    console.log('Reply added to comment:', commentId, replyText);
+    replyMutation.mutate({
+      commentId,
+      text: replyText,
+      userId: session.user.id
+    });
   };
 
   if (isLoading) {

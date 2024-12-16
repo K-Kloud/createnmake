@@ -235,6 +235,70 @@ export type Database = {
         }
         Relationships: []
       }
+      comment_replies: {
+        Row: {
+          comment_id: number | null
+          created_at: string
+          id: number
+          text: string
+          user_id: string | null
+        }
+        Insert: {
+          comment_id?: number | null
+          created_at?: string
+          id?: never
+          text: string
+          user_id?: string | null
+        }
+        Update: {
+          comment_id?: number | null
+          created_at?: string
+          id?: never
+          text?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_replies_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comments: {
+        Row: {
+          created_at: string
+          id: number
+          image_id: number | null
+          text: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          image_id?: number | null
+          text: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          image_id?: number | null
+          text?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_image_id_fkey"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "generated_images"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dashboard_settings: {
         Row: {
           layout: Json | null
