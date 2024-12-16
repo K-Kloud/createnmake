@@ -19,6 +19,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useState } from "react";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -42,6 +49,7 @@ const categoryImages = {
 const Manufacturer = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedManufacturer, setSelectedManufacturer] = useState<string | null>(null);
   
   const selectedImage = localStorage.getItem('selectedManufacturerImage');
   const imageDetails = selectedImage ? JSON.parse(selectedImage) : null;
@@ -49,6 +57,8 @@ const Manufacturer = () => {
   const filteredManufacturers = selectedCategory
     ? manufacturers.filter(m => m.type === selectedCategory)
     : [];
+
+  const selectedManufacturerDetails = manufacturers.find(m => m.name === selectedManufacturer);
 
   const getCategoryCount = (categoryName: string) => {
     return manufacturers.filter(m => m.type === categoryName).length;
@@ -76,6 +86,28 @@ const Manufacturer = () => {
                 <p className="mt-2">{imageDetails.prompt}</p>
               </div>
             </div>
+          </div>
+        )}
+
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Find a Manufacturer</h2>
+          <Select onValueChange={setSelectedManufacturer} value={selectedManufacturer || ""}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a manufacturer" />
+            </SelectTrigger>
+            <SelectContent>
+              {manufacturers.map((manufacturer) => (
+                <SelectItem key={manufacturer.id} value={manufacturer.name}>
+                  {manufacturer.name} - {manufacturer.type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {selectedManufacturerDetails && (
+          <div className="mb-12">
+            <ManufacturerCard {...selectedManufacturerDetails} />
           </div>
         )}
 
