@@ -86,16 +86,17 @@ export const OpenMarketSection = () => {
               id: image.id,
               url: image.image_url,
               prompt: image.prompt,
-              likes: image.likes,
-              views: image.views,
-              comments: image.comments,
-              produced: image.produced || 0,
+              likes: image.likes || 0,
+              views: image.views || 0,
+              comments: image.comments || [],
+              produced: 0, // Default to 0 since this field isn't in the database
               creator: {
                 name: image.user_id || 'Anonymous',
                 avatar: '/placeholder.svg'
               },
               createdAt: new Date(image.created_at),
-              hasLiked: image.hasLiked
+              hasLiked: image.hasLiked,
+              image_likes: image.image_likes || []
             }}
             onLike={handleLike}
             onView={handleView}

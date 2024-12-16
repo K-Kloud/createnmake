@@ -20,7 +20,8 @@ export const initialImages: GalleryImage[] = [
       avatar: "https://github.com/shadcn.png"
     },
     createdAt: new Date(2024, 2, 15, 14, 30),
-    hasLiked: false
+    hasLiked: false,
+    image_likes: []
   },
   {
     id: 2,
@@ -35,7 +36,8 @@ export const initialImages: GalleryImage[] = [
       avatar: "https://github.com/shadcn.png"
     },
     createdAt: new Date(2024, 2, 14, 9, 15),
-    hasLiked: false
+    hasLiked: false,
+    image_likes: []
   },
   {
     id: 3,
@@ -50,7 +52,8 @@ export const initialImages: GalleryImage[] = [
       avatar: "https://github.com/shadcn.png"
     },
     createdAt: new Date(2024, 2, 13, 11, 0),
-    hasLiked: false
+    hasLiked: false,
+    image_likes: []
   },
   {
     id: 4,
@@ -65,7 +68,8 @@ export const initialImages: GalleryImage[] = [
       avatar: "https://github.com/shadcn.png"
     },
     createdAt: new Date(2024, 2, 12, 16, 45),
-    hasLiked: false
+    hasLiked: false,
+    image_likes: []
   },
   {
     id: 5,
@@ -80,7 +84,8 @@ export const initialImages: GalleryImage[] = [
       avatar: "https://github.com/shadcn.png"
     },
     createdAt: new Date(2024, 2, 11, 8, 30),
-    hasLiked: false
+    hasLiked: false,
+    image_likes: []
   },
   {
     id: 6,
@@ -95,6 +100,7 @@ export const initialImages: GalleryImage[] = [
       avatar: "https://github.com/shadcn.png"
     },
     createdAt: new Date(2024, 2, 10, 12, 15),
-    hasLiked: false
+    hasLiked: false,
+    image_likes: []
   },
 ];
