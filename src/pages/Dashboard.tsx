@@ -37,6 +37,34 @@ const Dashboard = () => {
     enabled: !!session?.user?.id,
   });
 
+  // Query for generated images count
+  const { data: generatedImagesCount = 0 } = useQuery({
+    queryKey: ['generatedImagesCount', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return 0;
+      const { count } = await supabase
+        .from('generated_images')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', session.user.id);
+      return count || 0;
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  // Query for likes count
+  const { data: likesCount = 0 } = useQuery({
+    queryKey: ['likesCount', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return 0;
+      const { count } = await supabase
+        .from('image_likes')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', session.user.id);
+      return count || 0;
+    },
+    enabled: !!session?.user?.id,
+  });
+
   const uploadAvatarMutation = useMutation({
     mutationFn: async (file: File) => {
       if (!session?.user?.id) throw new Error("Not authenticated");
@@ -166,7 +194,7 @@ const Dashboard = () => {
                 <CardTitle>Images Generated</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-4xl font-bold">0</p>
+                <p className="text-4xl font-bold">{generatedImagesCount}</p>
               </CardContent>
             </Card>
 
@@ -175,7 +203,7 @@ const Dashboard = () => {
                 <CardTitle>Images Liked</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-4xl font-bold">0</p>
+                <p className="text-4xl font-bold">{likesCount}</p>
               </CardContent>
             </Card>
 
