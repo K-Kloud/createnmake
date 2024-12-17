@@ -81,10 +81,10 @@ export const Header = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <h1 
-              className="text-xl font-bold text-primary animate-glow rounded-lg cursor-pointer" 
+              className="text-xl font-bold text-primary rounded-lg cursor-pointer" 
               onClick={() => navigate("/")}
             >
-              openteknologies
+              open teknologies
             </h1>
           </div>
           <nav className="flex items-center space-x-4">
