@@ -73,17 +73,20 @@ export const GenerationForm = ({
         onChange={onItemChange} 
       />
 
-      <ReferenceImageUpload
-        referenceImage={referenceImage}
-        onUpload={onReferenceImageUpload}
-      />
-
-      <Textarea
-        placeholder="Describe what you want to generate..."
-        value={prompt}
-        onChange={(e) => onPromptChange(e.target.value)}
-        className="min-h-[100px]"
-      />
+      <div className="relative">
+        <Textarea
+          placeholder="Describe what you want to generate..."
+          value={prompt}
+          onChange={(e) => onPromptChange(e.target.value)}
+          className="min-h-[100px]"
+        />
+        <div className="absolute bottom-2 right-2">
+          <ReferenceImageUpload
+            referenceImage={referenceImage}
+            onUpload={onReferenceImageUpload}
+          />
+        </div>
+      </div>
 
       <Button 
         onClick={onGenerate} 
