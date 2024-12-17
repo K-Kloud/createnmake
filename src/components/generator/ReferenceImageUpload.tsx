@@ -39,7 +39,7 @@ export const ReferenceImageUpload = ({ referenceImage, onUpload }: ReferenceImag
   };
 
   return (
-    <div className="space-y-2 relative">
+    <div className="relative">
       <input
         type="file"
         id="imageUpload"
@@ -49,13 +49,13 @@ export const ReferenceImageUpload = ({ referenceImage, onUpload }: ReferenceImag
       />
       <label
         htmlFor="imageUpload"
-        className="inline-flex items-center justify-center size-8 rounded-full bg-primary hover:bg-primary-hover text-white cursor-pointer transition-colors"
+        className="absolute -bottom-3 right-2 inline-flex items-center justify-center size-8 rounded-full bg-primary hover:bg-primary-hover text-white cursor-pointer transition-colors hover:scale-110 animate-bounce-slow"
       >
         <Plus className="size-4" />
       </label>
       {referenceImage && (
-        <p className="text-sm text-white/70">
-          Reference image: {referenceImage.name}
+        <p className="text-sm text-white/70 absolute -bottom-8 right-12">
+          {referenceImage.name}
         </p>
       )}
     </div>
