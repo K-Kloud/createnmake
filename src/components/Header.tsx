@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "./ui/use-toast";
 import { Switch } from "@/components/ui/switch";
-import { ToggleLeft, ToggleRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -94,11 +93,6 @@ export const Header = () => {
                 onCheckedChange={toggleTheme}
                 className="data-[state=checked]:bg-secondary"
               />
-              {isDarkMode ? (
-                <ToggleRight className="h-4 w-4 text-primary" />
-              ) : (
-                <ToggleLeft className="h-4 w-4 text-primary" />
-              )}
             </div>
             <Button variant="ghost" onClick={() => navigate("/marketplace")}>
               OpenMarket
