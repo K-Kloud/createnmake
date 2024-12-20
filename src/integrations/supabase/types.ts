@@ -211,6 +211,60 @@ export type Database = {
         }
         Relationships: []
       }
+      artisan_quotes: {
+        Row: {
+          amount: number | null
+          artisan_id: string | null
+          created_at: string
+          id: number
+          payment_status: string | null
+          product_details: string
+          status: string | null
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          artisan_id?: string | null
+          created_at?: string
+          id?: number
+          payment_status?: string | null
+          product_details: string
+          status?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          artisan_id?: string | null
+          created_at?: string
+          id?: number
+          payment_status?: string | null
+          product_details?: string
+          status?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artisan_quotes_artisan_id_fkey"
+            columns: ["artisan_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artisan_quotes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
