@@ -35,6 +35,12 @@ export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps)
     setEditData({});
   };
 
+  const handleSaveEdit = (id: number) => {
+    onUpdate(id, editData);
+    setEditingId(null);
+    setEditData({});
+  };
+
   const handleAddNew = async (newItem: any) => {
     try {
       const { data, error } = await supabase
@@ -122,7 +128,7 @@ export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps)
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => handleUpdate(item.id)}
+                        onClick={() => handleSaveEdit(item.id)}
                       >
                         <Check className="h-4 w-4" />
                       </Button>
