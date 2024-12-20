@@ -7,8 +7,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast"; // Import the useToast hook
 
 const Manufacturer = () => {
+  const { toast } = useToast(); // Add this line to use toast
+
   const { data: session } = useQuery({
     queryKey: ['session'],
     queryFn: async () => {
