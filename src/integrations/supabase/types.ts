@@ -594,6 +594,44 @@ export type Database = {
           },
         ]
       }
+      manufacturer_portfolios: {
+        Row: {
+          created_at: string
+          description: string
+          generatedimage: string | null
+          id: number
+          manufacturer_id: string | null
+          productimage: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          generatedimage?: string | null
+          id?: number
+          manufacturer_id?: string | null
+          productimage?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          generatedimage?: string | null
+          id?: number
+          manufacturer_id?: string | null
+          productimage?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manufacturer_portfolios_manufacturer_id_fkey"
+            columns: ["manufacturer_id"]
+            isOneToOne: false
+            referencedRelation: "manufacturers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       manufacturers: {
         Row: {
           address: string | null

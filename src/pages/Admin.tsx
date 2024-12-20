@@ -6,7 +6,7 @@ import { ImageFilters } from "@/components/admin/ImageFilters";
 import { PortfolioList } from "@/components/admin/PortfolioList";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Database, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
