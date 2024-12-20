@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Admin = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [filteredImages, setFilteredImages] = useState([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -39,16 +40,25 @@ const Admin = () => {
     },
   });
 
-  useEffect(() => {
-    if (!checkingAdmin && !isAdmin) {
-      toast({
-        title: "Access Denied",
-        description: "You don't have permission to access this page.",
-        variant: "destructive",
-      });
-      navigate('/');
-    }
-  }, [isAdmin, checkingAdmin, navigate, toast]);
+  const { data: imageStats } = useQuery({
+    queryKey: ['imageStats'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('generated_images')
+        .select('status, count(*)')
+        .group('status');
+      
+      if (error) throw error;
+      
+      return {
+        total: data.reduce((acc, curr) => acc + Number(curr.count), 0),
+        pending: data.find(s => s.status === 'pending')?.count || 0,
+        completed: data.find(s => s.status === 'completed')?.count || 0,
+        failed: data.find(s => s.status === 'failed')?.count || 0
+      };
+    },
+    enabled: !!isAdmin,
+  });
 
   const { data: portfolios, isLoading: portfoliosLoading } = useQuery({
     queryKey: ['adminPortfolios'],
@@ -124,6 +134,22 @@ const Admin = () => {
     updatePortfolioMutation.mutate({ id, data });
   };
 
+  const handleView = (id: number) => {
+    // Implement view functionality if needed
+    console.log('Viewing item:', id);
+  };
+
+  useEffect(() => {
+    if (!checkingAdmin && !isAdmin) {
+      toast({
+        title: "Access Denied",
+        description: "You don't have permission to access this page.",
+        variant: "destructive",
+      });
+      navigate('/');
+    }
+  }, [isAdmin, checkingAdmin, navigate, toast]);
+
   if (checkingAdmin || portfoliosLoading) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
@@ -167,7 +193,7 @@ const Admin = () => {
 
           <TabsContent value="images">
             <div className="space-y-8">
-              <ImageStats {...stats} />
+              <ImageStats {...imageStats} />
               <ImageFilters 
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
