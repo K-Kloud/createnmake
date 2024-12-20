@@ -1,44 +1,14 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { ManufacturerCard } from "@/components/manufacturer/ManufacturerCard";
-import { CategoryCard } from "@/components/manufacturer/CategoryCard";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/use-toast";
+import { ManufacturerCategoriesGrid } from "@/components/manufacturer/ManufacturerCategoriesGrid";
+import { ManufacturerList } from "@/components/manufacturer/ManufacturerList";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { 
-  Scissors, 
-  Footprints, 
-  Printer, 
-  Gem, 
-  Briefcase, 
-  Armchair,
-  Bell,
-  type LucideIcon 
-} from "lucide-react";
-
-const iconMap: Record<string, LucideIcon> = {
-  Scissors,
-  Footprints,
-  Printer,
-  Gem,
-  Briefcase,
-  Armchair,
-};
-
-const categoryImages = {
-  "Tailor": "https://images.unsplash.com/photo-1452960962994-acf4fd70b632",
-  "Cobbler": "https://images.unsplash.com/photo-1449247709967-d4461a6a6103",
-  "Printer": "https://images.unsplash.com/photo-1485833077593-4278bba3f11f",
-  "Goldsmith": "https://images.unsplash.com/photo-1441057206919-63d19fac2369",
-  "Leather Worker": "https://images.unsplash.com/photo-1469041797191-50ace28483c3",
-  "Furniture Maker": "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2",
-};
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Bell } from "lucide-react";
 
 const Manufacturer = () => {
-  const { toast } = useToast();
-
   const { data: session } = useQuery({
     queryKey: ['session'],
     queryFn: async () => {
@@ -206,56 +176,8 @@ const Manufacturer = () => {
           Manufacturing Categories
         </h1>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {manufacturerCategories.map((category) => {
-            const IconComponent = iconMap[category.icon];
-            return (
-              <CategoryCard
-                key={category.id}
-                name={category.name}
-                description={category.description}
-                icon={IconComponent}
-                image={categoryImages[category.name] || ""}
-                count={getCategoryCount(category.name)}
-                onClick={() => {
-                  setSelectedCategory(category.name);
-                  setDialogOpen(true);
-                }}
-              />
-            );
-          })}
-        </div>
-
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{selectedCategory} Manufacturers</DialogTitle>
-            </DialogHeader>
-            <div className="grid grid-cols-1 gap-6 mt-4">
-              {filteredManufacturers.map((manufacturer) => (
-                <ManufacturerCard
-                  key={manufacturer.id}
-                  {...manufacturer}
-                />
-              ))}
-              {filteredManufacturers.length === 0 && (
-                <p className="text-center text-muted-foreground py-8">
-                  No manufacturers found for this category.
-                </p>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        <h2 className="text-2xl font-semibold mb-6">All Manufacturers</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {manufacturers.map((manufacturer) => (
-            <ManufacturerCard
-              key={manufacturer.id}
-              {...manufacturer}
-            />
-          ))}
-        </div>
+        <ManufacturerCategoriesGrid />
+        <ManufacturerList />
       </main>
       <Footer />
     </div>
