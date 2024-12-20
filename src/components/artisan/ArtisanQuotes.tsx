@@ -16,17 +16,22 @@ export const ArtisanQuotes = ({ artisanId }: ArtisanQuotesProps) => {
   const { data: quotes, refetch } = useQuery({
     queryKey: ['artisan-quotes', artisanId],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('artisan_quotes')
         .select(`
           *,
           profiles:user_id (
-            username,
-            email
+            username
           )
         `)
         .eq('artisan_id', artisanId)
         .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching quotes:', error);
+        throw error;
+      }
+      
       return data;
     },
   });
