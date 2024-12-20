@@ -7,10 +7,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast"; // Import the useToast hook
+import { useToast } from "@/components/ui/use-toast";
 
 const Manufacturer = () => {
-  const { toast } = useToast(); // Add this line to use toast
+  const { toast } = useToast();
 
   const { data: session } = useQuery({
     queryKey: ['session'],
@@ -24,11 +24,16 @@ const Manufacturer = () => {
     queryKey: ['manufacturer', session?.user?.id],
     queryFn: async () => {
       if (!session?.user?.id) return null;
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('manufacturers')
         .select('*')
         .eq('id', session.user.id)
-        .single();
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error fetching manufacturer:', error);
+        return null;
+      }
       return data;
     },
     enabled: !!session?.user?.id,
@@ -38,11 +43,16 @@ const Manufacturer = () => {
     queryKey: ['notifications', session?.user?.id],
     queryFn: async () => {
       if (!session?.user?.id) return null;
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('manufacturer_notifications')
         .select('*')
         .eq('manufacturer_id', session.user.id)
         .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching notifications:', error);
+        return null;
+      }
       return data;
     },
     enabled: !!session?.user?.id,
@@ -52,15 +62,43 @@ const Manufacturer = () => {
     queryKey: ['quotes', session?.user?.id],
     queryFn: async () => {
       if (!session?.user?.id) return null;
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('quote_requests')
-        .select('*, profiles(username)')
+        .select(`
+          *,
+          profiles (
+            username
+          )
+        `)
         .eq('manufacturer_id', session.user.id)
         .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching quotes:', error);
+        return null;
+      }
       return data;
     },
     enabled: !!session?.user?.id,
   });
+
+  // If user is logged in but not a manufacturer, show message
+  if (session?.user && !manufacturerProfile) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container px-4 py-24">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Not a Manufacturer</h1>
+            <p className="text-muted-foreground">
+              You need to be registered as a manufacturer to access this page.
+            </p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (manufacturerProfile) {
     return (
@@ -136,7 +174,6 @@ const Manufacturer = () => {
                     <Button
                       variant="outline"
                       onClick={() => {
-                        // Handle quote response
                         toast({
                           title: "Quote response sent",
                           description: "The customer will be notified of your response.",
@@ -148,6 +185,11 @@ const Manufacturer = () => {
                   </div>
                 </div>
               ))}
+              {(!quoteRequests || quoteRequests.length === 0) && (
+                <div className="text-center py-8 text-muted-foreground">
+                  No quote requests yet.
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="notifications" className="space-y-4">
@@ -163,6 +205,11 @@ const Manufacturer = () => {
                   <p className="mt-2">{notification.message}</p>
                 </div>
               ))}
+              {(!notifications || notifications.length === 0) && (
+                <div className="text-center py-8 text-muted-foreground">
+                  No notifications yet.
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </main>
