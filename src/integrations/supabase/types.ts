@@ -502,6 +502,83 @@ export type Database = {
           },
         ]
       }
+      manufacturer_notifications: {
+        Row: {
+          created_at: string
+          id: number
+          is_read: boolean | null
+          manufacturer_id: string | null
+          message: string
+          title: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          is_read?: boolean | null
+          manufacturer_id?: string | null
+          message: string
+          title: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          is_read?: boolean | null
+          manufacturer_id?: string | null
+          message?: string
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manufacturer_notifications_manufacturer_id_fkey"
+            columns: ["manufacturer_id"]
+            isOneToOne: false
+            referencedRelation: "manufacturers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      manufacturers: {
+        Row: {
+          address: string | null
+          business_name: string
+          business_type: string
+          contact_email: string
+          created_at: string
+          id: string
+          is_verified: boolean | null
+          phone: string | null
+          specialties: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          business_name: string
+          business_type: string
+          contact_email: string
+          created_at?: string
+          id: string
+          is_verified?: boolean | null
+          phone?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          business_name?: string
+          business_type?: string
+          contact_email?: string
+          created_at?: string
+          id?: string
+          is_verified?: boolean | null
+          phone?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -552,6 +629,44 @@ export type Database = {
           username?: string | null
         }
         Relationships: []
+      }
+      quote_requests: {
+        Row: {
+          created_at: string
+          id: number
+          manufacturer_id: string | null
+          product_details: string
+          status: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          manufacturer_id?: string | null
+          product_details: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          manufacturer_id?: string | null
+          product_details?: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_requests_manufacturer_id_fkey"
+            columns: ["manufacturer_id"]
+            isOneToOne: false
+            referencedRelation: "manufacturers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscriptions: {
         Row: {

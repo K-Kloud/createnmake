@@ -2,8 +2,11 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ManufacturerCard } from "@/components/manufacturer/ManufacturerCard";
 import { CategoryCard } from "@/components/manufacturer/CategoryCard";
-import { manufacturers } from "@/data/manufacturers";
-import { manufacturerCategories } from "@/data/manufacturerCategories";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/components/ui/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Scissors, 
   Footprints, 
@@ -11,22 +14,9 @@ import {
   Gem, 
   Briefcase, 
   Armchair,
+  Bell,
   type LucideIcon 
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useState } from "react";
 
 const iconMap: Record<string, LucideIcon> = {
   Scissors,
@@ -47,22 +37,166 @@ const categoryImages = {
 };
 
 const Manufacturer = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedManufacturer, setSelectedManufacturer] = useState<string | null>(null);
-  
-  const selectedImage = localStorage.getItem('selectedManufacturerImage');
-  const imageDetails = selectedImage ? JSON.parse(selectedImage) : null;
+  const { toast } = useToast();
 
-  const filteredManufacturers = selectedCategory
-    ? manufacturers.filter(m => m.type === selectedCategory)
-    : [];
+  const { data: session } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getSession();
+      return data.session;
+    },
+  });
 
-  const selectedManufacturerDetails = manufacturers.find(m => m.name === selectedManufacturer);
+  const { data: manufacturerProfile } = useQuery({
+    queryKey: ['manufacturer', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return null;
+      const { data } = await supabase
+        .from('manufacturers')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+      return data;
+    },
+    enabled: !!session?.user?.id,
+  });
 
-  const getCategoryCount = (categoryName: string) => {
-    return manufacturers.filter(m => m.type === categoryName).length;
-  };
+  const { data: notifications } = useQuery({
+    queryKey: ['notifications', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return null;
+      const { data } = await supabase
+        .from('manufacturer_notifications')
+        .select('*')
+        .eq('manufacturer_id', session.user.id)
+        .order('created_at', { ascending: false });
+      return data;
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  const { data: quoteRequests } = useQuery({
+    queryKey: ['quotes', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return null;
+      const { data } = await supabase
+        .from('quote_requests')
+        .select('*, profiles(username)')
+        .eq('manufacturer_id', session.user.id)
+        .order('created_at', { ascending: false });
+      return data;
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  if (manufacturerProfile) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container px-4 py-24">
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-4xl font-bold gradient-text">
+              Manufacturer Dashboard
+            </h1>
+            <div className="flex items-center gap-4">
+              <Button variant="outline" className="flex items-center gap-2">
+                <Bell className="w-4 h-4" />
+                {notifications?.filter(n => !n.is_read).length || 0}
+              </Button>
+            </div>
+          </div>
+
+          <Tabs defaultValue="overview" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="quotes">Quote Requests</TabsTrigger>
+              <TabsTrigger value="notifications">Notifications</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview" className="space-y-4">
+              <div className="glass-card p-6">
+                <h2 className="text-2xl font-semibold mb-4">{manufacturerProfile.business_name}</h2>
+                <div className="grid gap-4">
+                  <p><strong>Type:</strong> {manufacturerProfile.business_type}</p>
+                  <p><strong>Email:</strong> {manufacturerProfile.contact_email}</p>
+                  <p><strong>Phone:</strong> {manufacturerProfile.phone}</p>
+                  <p><strong>Address:</strong> {manufacturerProfile.address}</p>
+                  <div>
+                    <strong>Specialties:</strong>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {manufacturerProfile.specialties?.map((specialty: string) => (
+                        <span
+                          key={specialty}
+                          className="px-2 py-1 text-sm rounded-full bg-primary/10 text-primary"
+                        >
+                          {specialty}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="quotes" className="space-y-4">
+              {quoteRequests?.map((quote: any) => (
+                <div key={quote.id} className="glass-card p-6">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold">
+                        Request from {quote.profiles?.username || 'Anonymous'}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(quote.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-sm ${
+                      quote.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500' :
+                      quote.status === 'accepted' ? 'bg-green-500/10 text-green-500' :
+                      'bg-red-500/10 text-red-500'
+                    }`}>
+                      {quote.status}
+                    </span>
+                  </div>
+                  <p className="mt-4">{quote.product_details}</p>
+                  <div className="flex gap-2 mt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        // Handle quote response
+                        toast({
+                          title: "Quote response sent",
+                          description: "The customer will be notified of your response.",
+                        });
+                      }}
+                    >
+                      Respond
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </TabsContent>
+
+            <TabsContent value="notifications" className="space-y-4">
+              {notifications?.map((notification: any) => (
+                <div
+                  key={notification.id}
+                  className={`glass-card p-6 ${!notification.is_read ? 'border-primary' : ''}`}
+                >
+                  <h3 className="font-semibold">{notification.title}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(notification.created_at).toLocaleDateString()}
+                  </p>
+                  <p className="mt-2">{notification.message}</p>
+                </div>
+              ))}
+            </TabsContent>
+          </Tabs>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -72,45 +206,6 @@ const Manufacturer = () => {
           Manufacturing Categories
         </h1>
         
-        {imageDetails && (
-          <div className="mb-8 p-4 glass-card">
-            <h2 className="text-xl font-semibold mb-4">Selected Design</h2>
-            <div className="flex items-center gap-4">
-              <img
-                src={imageDetails.url}
-                alt={imageDetails.prompt}
-                className="w-32 h-32 object-cover rounded"
-              />
-              <div>
-                <p className="text-sm text-muted-foreground">Design ID: {imageDetails.id}</p>
-                <p className="mt-2">{imageDetails.prompt}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Find a Manufacturer</h2>
-          <Select onValueChange={setSelectedManufacturer} value={selectedManufacturer || ""}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a manufacturer" />
-            </SelectTrigger>
-            <SelectContent>
-              {manufacturers.map((manufacturer) => (
-                <SelectItem key={manufacturer.id} value={manufacturer.name}>
-                  {manufacturer.name} - {manufacturer.type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {selectedManufacturerDetails && (
-          <div className="mb-12">
-            <ManufacturerCard {...selectedManufacturerDetails} />
-          </div>
-        )}
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {manufacturerCategories.map((category) => {
             const IconComponent = iconMap[category.icon];
