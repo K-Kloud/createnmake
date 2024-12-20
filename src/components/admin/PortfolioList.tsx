@@ -5,10 +5,9 @@ import { formatDistanceToNow } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { toast } from "@/components/ui/use-toast";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { AddPortfolioDialog } from "./portfolio/AddPortfolioDialog";
+import { PortfolioPreviewDialog } from "./portfolio/PortfolioPreviewDialog";
 
 interface PortfolioListProps {
   items: any[];
@@ -21,11 +20,6 @@ export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps)
   const [editData, setEditData] = useState<any>({});
   const [previewItem, setPreviewItem] = useState<any>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
-  const [newItem, setNewItem] = useState({
-    description: '',
-    generatedImage: '',
-    productImage: ''
-  });
 
   const startEditing = (item: any) => {
     setEditingId(item.id);
@@ -41,28 +35,15 @@ export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps)
     setEditData({});
   };
 
-  const handleUpdate = async (id: number) => {
-    try {
-      await onUpdate(id, editData);
-      toast({
-        title: "Success",
-        description: "Portfolio item updated successfully",
-      });
-      setEditingId(null);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update portfolio item",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleAddNew = async () => {
+  const handleAddNew = async (newItem: any) => {
     try {
       const { data, error } = await supabase
         .from('manufacturer_portfolios')
-        .insert([newItem])
+        .insert([{
+          description: newItem.description,
+          generatedimage: newItem.generatedImage,
+          productimage: newItem.productImage
+        }])
         .select()
         .single();
 
@@ -73,11 +54,6 @@ export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps)
         description: "New portfolio item added successfully",
       });
       setIsAddingNew(false);
-      setNewItem({
-        description: '',
-        generatedImage: '',
-        productImage: ''
-      });
     } catch (error) {
       toast({
         title: "Error",
@@ -90,10 +66,7 @@ export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps)
   return (
     <>
       <div className="p-4">
-        <Button 
-          onClick={() => setIsAddingNew(true)}
-          className="mb-4"
-        >
+        <Button onClick={() => setIsAddingNew(true)} className="mb-4">
           <Plus className="h-4 w-4 mr-2" />
           Add New Portfolio Item
         </Button>
@@ -187,74 +160,16 @@ export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps)
         </TableBody>
       </Table>
 
-      <Dialog open={!!previewItem} onOpenChange={() => setPreviewItem(null)}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>Portfolio Item Preview</DialogTitle>
-          </DialogHeader>
-          {previewItem && (
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <h3 className="font-medium mb-2">Generated Design</h3>
-                <img
-                  src={previewItem.generatedimage}
-                  alt="Generated design"
-                  className="w-full aspect-square object-cover rounded-lg"
-                />
-              </div>
-              <div>
-                <h3 className="font-medium mb-2">Made Product</h3>
-                <img
-                  src={previewItem.productimage}
-                  alt="Made product"
-                  className="w-full aspect-square object-cover rounded-lg"
-                />
-              </div>
-              <div className="col-span-2">
-                <p className="text-muted-foreground">{previewItem.description}</p>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <AddPortfolioDialog
+        isOpen={isAddingNew}
+        onClose={() => setIsAddingNew(false)}
+        onAdd={handleAddNew}
+      />
 
-      <Dialog open={isAddingNew} onOpenChange={setIsAddingNew}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add New Portfolio Item</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="generatedImage">Generated Design Image URL</Label>
-              <Input
-                id="generatedImage"
-                value={newItem.generatedImage}
-                onChange={(e) => setNewItem({ ...newItem, generatedImage: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label htmlFor="productImage">Made Product Image URL</Label>
-              <Input
-                id="productImage"
-                value={newItem.productImage}
-                onChange={(e) => setNewItem({ ...newItem, productImage: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={newItem.description}
-                onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddingNew(false)}>Cancel</Button>
-            <Button onClick={handleAddNew}>Add Portfolio Item</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <PortfolioPreviewDialog
+        item={previewItem}
+        onClose={() => setPreviewItem(null)}
+      />
     </>
   );
 };
