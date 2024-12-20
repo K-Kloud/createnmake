@@ -1,12 +1,13 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Eye, Trash, Check, X } from "lucide-react";
+import { Eye, Trash, Check, X, Plus } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { toast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 interface PortfolioListProps {
   items: any[];
@@ -18,13 +19,19 @@ export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps)
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editData, setEditData] = useState<any>({});
   const [previewItem, setPreviewItem] = useState<any>(null);
+  const [isAddingNew, setIsAddingNew] = useState(false);
+  const [newItem, setNewItem] = useState({
+    description: '',
+    generatedImage: '',
+    productImage: ''
+  });
 
   const startEditing = (item: any) => {
     setEditingId(item.id);
     setEditData({
       description: item.description || '',
-      generatedImage: item.generatedImage || '',
-      productImage: item.productImage || ''
+      generatedImage: item.generatedimage || '',
+      productImage: item.productimage || ''
     });
   };
 
@@ -50,8 +57,47 @@ export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps)
     }
   };
 
+  const handleAddNew = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('manufacturer_portfolios')
+        .insert([newItem])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "New portfolio item added successfully",
+      });
+      setIsAddingNew(false);
+      setNewItem({
+        description: '',
+        generatedImage: '',
+        productImage: ''
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add new portfolio item",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <>
+      <div className="p-4">
+        <Button 
+          onClick={() => setIsAddingNew(true)}
+          className="mb-4"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add New Portfolio Item
+        </Button>
+      </div>
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -67,17 +113,17 @@ export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps)
             <TableRow key={item.id}>
               <TableCell>
                 <img
-                  src={item.generatedImage}
+                  src={item.generatedimage}
                   alt="Generated design"
-                  className="w-16 h-16 object-cover rounded"
+                  className="w-16 h-16 object-cover rounded cursor-pointer"
                   onClick={() => setPreviewItem(item)}
                 />
               </TableCell>
               <TableCell>
                 <img
-                  src={item.productImage}
+                  src={item.productimage}
                   alt="Made product"
-                  className="w-16 h-16 object-cover rounded"
+                  className="w-16 h-16 object-cover rounded cursor-pointer"
                   onClick={() => setPreviewItem(item)}
                 />
               </TableCell>
@@ -150,7 +196,7 @@ export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps)
               <div>
                 <h3 className="font-medium mb-2">Generated Design</h3>
                 <img
-                  src={previewItem.generatedImage}
+                  src={previewItem.generatedimage}
                   alt="Generated design"
                   className="w-full aspect-square object-cover rounded-lg"
                 />
@@ -158,7 +204,7 @@ export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps)
               <div>
                 <h3 className="font-medium mb-2">Made Product</h3>
                 <img
-                  src={previewItem.productImage}
+                  src={previewItem.productimage}
                   alt="Made product"
                   className="w-full aspect-square object-cover rounded-lg"
                 />
@@ -168,6 +214,44 @@ export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps)
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isAddingNew} onOpenChange={setIsAddingNew}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Portfolio Item</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="generatedImage">Generated Design Image URL</Label>
+              <Input
+                id="generatedImage"
+                value={newItem.generatedImage}
+                onChange={(e) => setNewItem({ ...newItem, generatedImage: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label htmlFor="productImage">Made Product Image URL</Label>
+              <Input
+                id="productImage"
+                value={newItem.productImage}
+                onChange={(e) => setNewItem({ ...newItem, productImage: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={newItem.description}
+                onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddingNew(false)}>Cancel</Button>
+            <Button onClick={handleAddNew}>Add Portfolio Item</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

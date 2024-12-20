@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ImageList } from "@/components/admin/ImageList";
@@ -6,7 +7,6 @@ import { ImageFilters } from "@/components/admin/ImageFilters";
 import { PortfolioList } from "@/components/admin/PortfolioList";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Database, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -39,7 +39,6 @@ const Admin = () => {
     },
   });
 
-  // Redirect non-admin users
   useEffect(() => {
     if (!checkingAdmin && !isAdmin) {
       toast({
@@ -50,26 +49,6 @@ const Admin = () => {
       navigate('/');
     }
   }, [isAdmin, checkingAdmin, navigate, toast]);
-
-  const { data: images, isLoading: imagesLoading } = useQuery({
-    queryKey: ['adminImages'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('generated_images')
-        .select(`
-          *,
-          profiles (
-            username,
-            avatar_url
-          )
-        `)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!isAdmin,
-  });
 
   const { data: portfolios, isLoading: portfoliosLoading } = useQuery({
     queryKey: ['adminPortfolios'],
@@ -135,76 +114,17 @@ const Admin = () => {
     }
   });
 
-  const deleteImageMutation = useMutation({
-    mutationFn: async (id: number) => {
-      // First, delete the image from storage if it exists
-      const imageToDelete = images?.find(img => img.id === id);
-      if (imageToDelete?.image_url) {
-        const path = imageToDelete.image_url.split('/').pop();
-        if (path) {
-          await supabase.storage
-            .from('opent')
-            .remove([path]);
-        }
-      }
-
-      // Then delete the database record
-      const { error } = await supabase
-        .from('generated_images')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminImages'] });
-      toast({
-        title: "Success",
-        description: "Image deleted successfully",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: "Failed to delete image: " + error.message,
-        variant: "destructive",
-      });
-    }
-  });
-
   const handleDelete = (id: number) => {
-    if (window.confirm('Are you sure you want to delete this image?')) {
-      deleteImageMutation.mutate(id);
-    }
-  };
-
-  const handleView = (id: number) => {
-    window.open(`/marketplace?image=${id}`, '_blank');
-  };
-
-  const filteredImages = images?.filter(image => 
-    image.prompt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    image.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    image.profiles?.username?.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
-
-  const stats = {
-    totalImages: images?.length || 0,
-    totalLikes: images?.reduce((sum, img) => sum + (img.likes || 0), 0) || 0,
-    totalViews: images?.reduce((sum, img) => sum + (img.views || 0), 0) || 0,
-  };
-
-  const handleDeletePortfolio = (id: number) => {
     if (window.confirm('Are you sure you want to delete this portfolio item?')) {
       deletePortfolioMutation.mutate(id);
     }
   };
 
-  const handleUpdatePortfolio = (id: number, data: any) => {
+  const handleUpdate = (id: number, data: any) => {
     updatePortfolioMutation.mutate({ id, data });
   };
 
-  if (checkingAdmin || imagesLoading || portfoliosLoading) {
+  if (checkingAdmin || portfoliosLoading) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <Header />
@@ -229,11 +149,21 @@ const Admin = () => {
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         </div>
 
-        <Tabs defaultValue="images" className="space-y-8">
+        <Tabs defaultValue="portfolios" className="space-y-8">
           <TabsList>
-            <TabsTrigger value="images">Images</TabsTrigger>
             <TabsTrigger value="portfolios">Portfolios</TabsTrigger>
+            <TabsTrigger value="images">Images</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="portfolios">
+            <div className="rounded-lg border bg-card">
+              <PortfolioList
+                items={portfolios || []}
+                onDelete={handleDelete}
+                onUpdate={handleUpdate}
+              />
+            </div>
+          </TabsContent>
 
           <TabsContent value="images">
             <div className="space-y-8">
@@ -249,16 +179,6 @@ const Admin = () => {
                   onView={handleView}
                 />
               </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="portfolios">
-            <div className="rounded-lg border bg-card">
-              <PortfolioList
-                items={portfolios || []}
-                onDelete={handleDeletePortfolio}
-                onUpdate={handleUpdatePortfolio}
-              />
             </div>
           </TabsContent>
         </Tabs>
