@@ -666,6 +666,13 @@ export type Database = {
             referencedRelation: "manufacturers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "quote_requests_user_profile_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       subscriptions: {
