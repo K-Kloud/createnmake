@@ -26,7 +26,12 @@ interface ImageCardProps {
     };
     createdAt: Date;
     hasLiked: boolean;
-    image_likes: { user_id: string }[]; // Add this line
+    image_likes: { user_id: string }[];
+    metrics?: {
+      like: number;
+      comment: number;
+      view: number;
+    };
   };
   onLike: (imageId: number) => void;
   onView: (imageId: number) => void;
@@ -103,7 +108,7 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
                   <Heart 
                     className={`h-4 w-4 ${image.hasLiked ? 'fill-red-500 text-red-500' : ''}`} 
                   />
-                  <span>{image.likes}</span>
+                  <span>{image.metrics?.like || 0}</span>
                 </Button>
                 <Button 
                   variant={showComments ? "default" : "ghost"} 
@@ -112,11 +117,11 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
                   onClick={() => setShowComments(!showComments)}
                 >
                   <MessageSquare className="h-4 w-4" />
-                  <span>{image.comments.length}</span>
+                  <span>{image.metrics?.comment || 0}</span>
                 </Button>
                 <Button variant="ghost" size="sm" className="space-x-1">
                   <Eye className="h-4 w-4" />
-                  <span>{image.views}</span>
+                  <span>{image.metrics?.view || 0}</span>
                 </Button>
               </div>
               <Button 

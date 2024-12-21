@@ -671,6 +671,38 @@ export type Database = {
         }
         Relationships: []
       }
+      marketplace_metrics: {
+        Row: {
+          id: number
+          image_id: number | null
+          metric_type: string
+          metric_value: number | null
+          recorded_at: string | null
+        }
+        Insert: {
+          id?: number
+          image_id?: number | null
+          metric_type: string
+          metric_value?: number | null
+          recorded_at?: string | null
+        }
+        Update: {
+          id?: number
+          image_id?: number | null
+          metric_type?: string
+          metric_value?: number | null
+          recorded_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_metrics_image_id_fkey"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "generated_images"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
@@ -842,6 +874,15 @@ export type Database = {
       cleanup_expired_api_keys: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      get_image_metrics: {
+        Args: {
+          p_image_id: number
+        }
+        Returns: {
+          metric_type: string
+          total_value: number
+        }[]
       }
       increment_views: {
         Args: {

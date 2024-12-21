@@ -18,6 +18,7 @@ export const useMarketplace = () => {
   const { data: images, isLoading } = useQuery({
     queryKey: ['marketplace-images'],
     queryFn: async () => {
+      // First get the images with their basic info
       const { data: images, error } = await supabase
         .from('generated_images')
         .select(`
@@ -46,32 +47,65 @@ export const useMarketplace = () => {
 
       if (error) throw error;
 
-      return images.map(image => ({
-        ...image,
-        hasLiked: image.image_likes.some(like => like.user_id === session?.user?.id),
-        comments: image.comments.map(comment => ({
-          id: comment.id,
-          text: comment.text,
-          createdAt: new Date(comment.created_at),
-          user: {
-            id: comment.user_id,
-            name: comment.profiles.username,
-            avatar: comment.profiles.avatar_url
-          },
-          replies: comment.comment_replies.map(reply => ({
-            id: reply.id,
-            text: reply.text,
-            createdAt: new Date(reply.created_at),
-            user: {
-              id: reply.user_id,
-              name: reply.profiles.username,
-              avatar: reply.profiles.avatar_url
-            }
-          }))
-        }))
-      }));
+      // Get metrics for each image
+      const imagesWithMetrics = await Promise.all(
+        images.map(async (image) => {
+          const { data: metrics, error: metricsError } = await supabase
+            .rpc('get_image_metrics', { p_image_id: image.id });
+
+          if (metricsError) console.error('Error fetching metrics:', metricsError);
+
+          const metricsMap = (metrics || []).reduce((acc, metric) => {
+            acc[metric.metric_type] = metric.total_value;
+            return acc;
+          }, {});
+
+          return {
+            ...image,
+            hasLiked: image.image_likes.some(like => like.user_id === session?.user?.id),
+            comments: image.comments.map(comment => ({
+              id: comment.id,
+              text: comment.text,
+              createdAt: new Date(comment.created_at),
+              user: {
+                id: comment.user_id,
+                name: comment.profiles.username,
+                avatar: comment.profiles.avatar_url
+              },
+              replies: comment.comment_replies.map(reply => ({
+                id: reply.id,
+                text: reply.text,
+                createdAt: new Date(reply.created_at),
+                user: {
+                  id: reply.user_id,
+                  name: reply.profiles.username,
+                  avatar: reply.profiles.avatar_url
+                }
+              }))
+            })),
+            metrics: metricsMap
+          };
+        })
+      );
+
+      return imagesWithMetrics;
     }
   });
+
+  const recordMetric = async (imageId: number, metricType: string, value: number = 1) => {
+    const { error } = await supabase
+      .from('marketplace_metrics')
+      .insert({
+        image_id: imageId,
+        metric_type: metricType,
+        metric_value: value
+      });
+
+    if (error) {
+      console.error('Error recording metric:', error);
+      throw error;
+    }
+  };
 
   const likeMutation = useMutation({
     mutationFn: async ({ imageId, hasLiked, userId }: LikeMutationParams) => {
@@ -83,8 +117,9 @@ export const useMarketplace = () => {
             .eq('image_id', imageId)
             .eq('user_id', userId);
           if (error) throw error;
+
+          await recordMetric(imageId, 'like', -1);
         } else {
-          // Check for existing like using select instead of single
           const { data: existingLikes, error: checkError } = await supabase
             .from('image_likes')
             .select('*')
@@ -93,12 +128,13 @@ export const useMarketplace = () => {
 
           if (checkError) throw checkError;
 
-          // Only insert if no like exists
           if (!existingLikes || existingLikes.length === 0) {
             const { error: insertError } = await supabase
               .from('image_likes')
               .insert({ image_id: imageId, user_id: userId });
             if (insertError) throw insertError;
+
+            await recordMetric(imageId, 'like', 1);
           }
         }
       } catch (error: any) {
@@ -120,6 +156,7 @@ export const useMarketplace = () => {
 
   const viewMutation = useMutation({
     mutationFn: async (imageId: number) => {
+      await recordMetric(imageId, 'view', 1);
       const { error } = await supabase
         .rpc('increment_views', { image_id: imageId });
       if (error) throw error;
@@ -132,6 +169,8 @@ export const useMarketplace = () => {
         .from('comments')
         .insert({ image_id: imageId, text, user_id: userId });
       if (error) throw error;
+
+      await recordMetric(imageId, 'comment', 1);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
