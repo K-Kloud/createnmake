@@ -1,24 +1,35 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
-import { LikeMutationParams, CommentMutationParams, ReplyMutationParams } from "@/types/gallery";
+import { useLikeImage } from "./hooks/useLikeImage";
+import { useViewImage } from "./hooks/useViewImage";
+import { useCommentImage } from "./hooks/useCommentImage";
 
 export const useMarketplace = () => {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [session, setSession] = useState(null);
+  const likeMutation = useLikeImage();
+  const viewMutation = useViewImage();
+  const { commentMutation, replyMutation } = useCommentImage();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
     });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const { data: images, isLoading } = useQuery({
     queryKey: ['marketplace-images'],
     queryFn: async () => {
-      // First get the images with their basic info
       const { data: images, error } = await supabase
         .from('generated_images')
         .select(`
@@ -47,7 +58,6 @@ export const useMarketplace = () => {
 
       if (error) throw error;
 
-      // Get metrics for each image
       const imagesWithMetrics = await Promise.all(
         images.map(async (image) => {
           const { data: metrics, error: metricsError } = await supabase
@@ -89,125 +99,6 @@ export const useMarketplace = () => {
       );
 
       return imagesWithMetrics;
-    }
-  });
-
-  const recordMetric = async (imageId: number, metricType: string, value: number = 1) => {
-    const { error } = await supabase
-      .from('marketplace_metrics')
-      .insert({
-        image_id: imageId,
-        metric_type: metricType,
-        metric_value: value
-      });
-
-    if (error) {
-      console.error('Error recording metric:', error);
-      throw error;
-    }
-  };
-
-  const likeMutation = useMutation({
-    mutationFn: async ({ imageId, hasLiked, userId }: LikeMutationParams) => {
-      try {
-        if (hasLiked) {
-          const { error } = await supabase
-            .from('image_likes')
-            .delete()
-            .eq('image_id', imageId)
-            .eq('user_id', userId);
-          if (error) throw error;
-
-          await recordMetric(imageId, 'like', -1);
-        } else {
-          const { data: existingLikes, error: checkError } = await supabase
-            .from('image_likes')
-            .select('*')
-            .eq('image_id', imageId)
-            .eq('user_id', userId);
-
-          if (checkError) throw checkError;
-
-          if (!existingLikes || existingLikes.length === 0) {
-            const { error: insertError } = await supabase
-              .from('image_likes')
-              .insert({ image_id: imageId, user_id: userId });
-            if (insertError) throw insertError;
-
-            await recordMetric(imageId, 'like', 1);
-          }
-        }
-      } catch (error: any) {
-        console.error('Like mutation error:', error);
-        throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  });
-
-  const viewMutation = useMutation({
-    mutationFn: async (imageId: number) => {
-      await recordMetric(imageId, 'view', 1);
-      const { error } = await supabase
-        .rpc('increment_views', { image_id: imageId });
-      if (error) throw error;
-    }
-  });
-
-  const commentMutation = useMutation({
-    mutationFn: async ({ imageId, text, userId }: CommentMutationParams) => {
-      const { error } = await supabase
-        .from('comments')
-        .insert({ image_id: imageId, text, user_id: userId });
-      if (error) throw error;
-
-      await recordMetric(imageId, 'comment', 1);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
-      toast({
-        title: "Success",
-        description: "Comment posted successfully",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  });
-
-  const replyMutation = useMutation({
-    mutationFn: async ({ commentId, text, userId }: ReplyMutationParams) => {
-      const { error } = await supabase
-        .from('comment_replies')
-        .insert({ comment_id: commentId, text, user_id: userId });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
-      toast({
-        title: "Success",
-        description: "Reply posted successfully",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
     }
   });
 
