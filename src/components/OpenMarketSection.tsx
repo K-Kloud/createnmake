@@ -17,7 +17,7 @@ export const OpenMarketSection = () => {
   } = useMarketplace();
 
   const handleLike = (imageId: number) => {
-    const image = images?.find(img => img.id === imageId);
+    const image = images?.find(img => img.id === imageId) as GalleryImage | undefined;
     if (!image) return;
 
     if (!session?.user) {
@@ -80,36 +80,40 @@ export const OpenMarketSection = () => {
     <section className="py-16">
       <MarketplaceHeader />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {images?.map((image) => (
-          <ImageCard
-            key={image.id}
-            image={{
-              id: image.id,
-              url: image.image_url || '',
-              prompt: image.prompt,
-              likes: image.likes || 0,
-              views: image.views || 0,
-              comments: image.comments || [],
-              produced: 0,
-              creator: {
-                name: image.profiles?.username || 'Anonymous',
-                avatar: image.profiles?.avatar_url || '/placeholder.svg'
-              },
-              createdAt: new Date(image.created_at || ''),
-              hasLiked: Boolean(image.hasLiked),
-              image_likes: image.image_likes || [],
-              metrics: {
-                like: image.metrics?.like || 0,
-                comment: image.metrics?.comment || 0,
-                view: image.metrics?.view || 0
-              }
-            }}
-            onLike={handleLike}
-            onView={handleView}
-            onAddComment={handleAddComment}
-            onAddReply={handleAddReply}
-          />
-        ))}
+        {images?.map((image) => {
+          const galleryImage: GalleryImage = {
+            id: image.id,
+            url: image.image_url || '',
+            prompt: image.prompt,
+            likes: image.likes || 0,
+            views: image.views || 0,
+            comments: image.comments || [],
+            produced: 0,
+            creator: {
+              name: image.profiles?.username || 'Anonymous',
+              avatar: image.profiles?.avatar_url || '/placeholder.svg'
+            },
+            createdAt: new Date(image.created_at || ''),
+            hasLiked: Boolean(image.hasLiked),
+            image_likes: image.image_likes || [],
+            metrics: {
+              like: image.metrics?.like || 0,
+              comment: image.metrics?.comment || 0,
+              view: image.metrics?.view || 0
+            }
+          };
+
+          return (
+            <ImageCard
+              key={image.id}
+              image={galleryImage}
+              onLike={handleLike}
+              onView={handleView}
+              onAddComment={handleAddComment}
+              onAddReply={handleAddReply}
+            />
+          );
+        })}
       </div>
     </section>
   );

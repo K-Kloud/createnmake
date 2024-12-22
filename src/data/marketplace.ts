@@ -21,7 +21,12 @@ export const initialImages: GalleryImage[] = [
     },
     createdAt: new Date(2024, 2, 15, 14, 30),
     hasLiked: false,
-    image_likes: []
+    image_likes: [],
+    metrics: {
+      like: 234,
+      comment: 0,
+      view: 1289
+    }
   },
   {
     id: 2,
@@ -37,7 +42,12 @@ export const initialImages: GalleryImage[] = [
     },
     createdAt: new Date(2024, 2, 14, 9, 15),
     hasLiked: false,
-    image_likes: []
+    image_likes: [],
+    metrics: {
+      like: 189,
+      comment: 0,
+      view: 876
+    }
   },
   {
     id: 3,
@@ -53,7 +63,12 @@ export const initialImages: GalleryImage[] = [
     },
     createdAt: new Date(2024, 2, 13, 11, 0),
     hasLiked: false,
-    image_likes: []
+    image_likes: [],
+    metrics: {
+      like: 567,
+      comment: 0,
+      view: 2345
+    }
   },
   {
     id: 4,
@@ -69,7 +84,12 @@ export const initialImages: GalleryImage[] = [
     },
     createdAt: new Date(2024, 2, 12, 16, 45),
     hasLiked: false,
-    image_likes: []
+    image_likes: [],
+    metrics: {
+      like: 432,
+      comment: 0,
+      view: 1567
+    }
   },
   {
     id: 5,
@@ -85,7 +105,12 @@ export const initialImages: GalleryImage[] = [
     },
     createdAt: new Date(2024, 2, 11, 8, 30),
     hasLiked: false,
-    image_likes: []
+    image_likes: [],
+    metrics: {
+      like: 345,
+      comment: 0,
+      view: 1789
+    }
   },
   {
     id: 6,
@@ -101,6 +126,11 @@ export const initialImages: GalleryImage[] = [
     },
     createdAt: new Date(2024, 2, 10, 12, 15),
     hasLiked: false,
-    image_likes: []
+    image_likes: [],
+    metrics: {
+      like: 678,
+      comment: 0,
+      view: 3456
+    }
   },
 ];
