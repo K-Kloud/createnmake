@@ -1,13 +1,12 @@
-import React from 'react';
-import { ImageCard } from '@/components/gallery/ImageCard';
-import { GalleryImage } from '@/types/gallery';
+import { ImageCard } from "@/components/gallery/ImageCard";
+import { GalleryImage } from "@/types/gallery";
 
 interface MarketplaceGridProps {
   images: GalleryImage[];
   onLike: (imageId: number) => void;
   onView: (imageId: number) => void;
-  onAddComment: (imageId: number, commentText: string) => void;
-  onAddReply: (imageId: number, commentId: number, replyText: string) => void;
+  onAddComment: (imageId: number, comment: string) => void;
+  onAddReply: (imageId: number, commentId: number, reply: string) => void;
 }
 
 export const MarketplaceGrid = ({
