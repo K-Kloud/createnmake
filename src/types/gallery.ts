@@ -13,6 +13,7 @@ export interface GalleryImage {
   createdAt: Date;
   hasLiked: boolean;
   image_likes: ImageLike[];
+  // Database fields
   aspect_ratio?: string;
   image_url?: string;
   is_public?: boolean;
@@ -22,10 +23,11 @@ export interface GalleryImage {
   tags?: string[];
   title?: string;
   user_id?: string;
+  created_at?: string;
   metrics?: {
-    like?: number;
-    comment?: number;
-    view?: number;
+    like: number;
+    comment: number;
+    view: number;
   };
   profiles?: {
     username?: string;

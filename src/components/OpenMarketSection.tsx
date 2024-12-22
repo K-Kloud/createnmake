@@ -17,7 +17,7 @@ export const OpenMarketSection = () => {
   } = useMarketplace();
 
   const handleLike = (imageId: number) => {
-    const image = images?.find(img => img.id === imageId) as GalleryImage;
+    const image = images?.find(img => img.id === imageId);
     if (!image) return;
 
     if (!session?.user) {
@@ -95,9 +95,14 @@ export const OpenMarketSection = () => {
                 name: image.profiles?.username || 'Anonymous',
                 avatar: image.profiles?.avatar_url || '/placeholder.svg'
               },
-              createdAt: new Date(image.created_at),
+              createdAt: new Date(image.created_at || ''),
               hasLiked: image.hasLiked || false,
-              image_likes: image.image_likes || []
+              image_likes: image.image_likes || [],
+              metrics: {
+                like: image.metrics?.like || 0,
+                comment: image.metrics?.comment || 0,
+                view: image.metrics?.view || 0
+              }
             }}
             onLike={handleLike}
             onView={handleView}
