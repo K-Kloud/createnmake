@@ -31,7 +31,7 @@ export const OpenMarketSection = () => {
 
     likeMutation.mutate({ 
       imageId, 
-      hasLiked: Boolean(image.hasLiked), 
+      hasLiked: Boolean(image.image_likes?.some(like => like.user_id === session.user.id)), 
       userId: session.user.id 
     });
   };
@@ -117,12 +117,12 @@ export const OpenMarketSection = () => {
               avatar: image.profiles?.avatar_url || '/placeholder.svg'
             },
             createdAt: new Date(image.created_at || ''),
-            hasLiked: Boolean(image.hasLiked),
+            hasLiked: Boolean(image.image_likes?.some(like => like.user_id === session?.user?.id)),
             image_likes: image.image_likes || [],
             metrics: {
-              like: image.metrics?.like || 0,
-              comment: image.metrics?.comment || 0,
-              view: image.metrics?.view || 0
+              like: image.likes || 0,
+              comment: (image.comments || []).length,
+              view: image.views || 0
             }
           };
 

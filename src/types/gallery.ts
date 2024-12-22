@@ -18,21 +18,6 @@ export interface GalleryImage {
     comment: number;
     view: number;
   };
-  // Database fields
-  aspect_ratio?: string;
-  image_url?: string;
-  is_public?: boolean;
-  item_type?: string;
-  reference_image_url?: string;
-  status?: string;
-  tags?: string[];
-  title?: string;
-  user_id?: string;
-  created_at?: string;
-  profiles?: {
-    username?: string;
-    avatar_url?: string;
-  };
 }
 
 export interface ImageLike {
