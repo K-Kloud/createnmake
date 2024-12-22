@@ -2,6 +2,7 @@ import { ImageCard } from "@/components/gallery/ImageCard";
 import { MarketplaceHeader } from "@/components/marketplace/MarketplaceHeader";
 import { MarketplaceLoader } from "@/components/marketplace/MarketplaceLoader";
 import { useMarketplace } from "@/components/marketplace/useMarketplace";
+import { GalleryImage } from "@/types/gallery";
 
 export const OpenMarketSection = () => {
   const {
@@ -16,7 +17,7 @@ export const OpenMarketSection = () => {
   } = useMarketplace();
 
   const handleLike = (imageId: number) => {
-    const image = images?.find(img => img.id === imageId);
+    const image = images?.find(img => img.id === imageId) as GalleryImage;
     if (!image) return;
 
     if (!session?.user) {
@@ -30,7 +31,7 @@ export const OpenMarketSection = () => {
 
     likeMutation.mutate({ 
       imageId, 
-      hasLiked: image.hasLiked,
+      hasLiked: image.hasLiked || false,
       userId: session.user.id 
     });
   };
@@ -84,7 +85,7 @@ export const OpenMarketSection = () => {
             key={image.id}
             image={{
               id: image.id,
-              url: image.image_url,
+              url: image.image_url || '',
               prompt: image.prompt,
               likes: image.likes || 0,
               views: image.views || 0,
@@ -95,7 +96,7 @@ export const OpenMarketSection = () => {
                 avatar: image.profiles?.avatar_url || '/placeholder.svg'
               },
               createdAt: new Date(image.created_at),
-              hasLiked: image.hasLiked,
+              hasLiked: image.hasLiked || false,
               image_likes: image.image_likes || []
             }}
             onLike={handleLike}
