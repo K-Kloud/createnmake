@@ -2,7 +2,7 @@ import { ImageCard } from "@/components/gallery/ImageCard";
 import { MarketplaceHeader } from "@/components/marketplace/MarketplaceHeader";
 import { MarketplaceLoader } from "@/components/marketplace/MarketplaceLoader";
 import { useMarketplace } from "@/components/marketplace/useMarketplace";
-import { GalleryImage } from "@/types/gallery";
+import { GalleryImage, Comment, Reply } from "@/types/gallery";
 
 export const OpenMarketSection = () => {
   const {
@@ -17,7 +17,7 @@ export const OpenMarketSection = () => {
   } = useMarketplace();
 
   const handleLike = (imageId: number) => {
-    const image = images?.find(img => img.id === imageId) as GalleryImage | undefined;
+    const image = images?.find(img => img.id === imageId);
     if (!image) return;
 
     if (!session?.user) {
@@ -72,6 +72,29 @@ export const OpenMarketSection = () => {
     });
   };
 
+  const transformComments = (comments: any[]): Comment[] => {
+    return comments.map(comment => ({
+      id: comment.id,
+      text: comment.text,
+      user: {
+        id: comment.user_id,
+        name: comment.profiles?.username || 'Anonymous',
+        avatar: comment.profiles?.avatar_url || '/placeholder.svg'
+      },
+      createdAt: new Date(comment.created_at),
+      replies: comment.comment_replies?.map((reply: any): Reply => ({
+        id: reply.id,
+        text: reply.text,
+        user: {
+          id: reply.user_id,
+          name: reply.profiles?.username || 'Anonymous',
+          avatar: reply.profiles?.avatar_url || '/placeholder.svg'
+        },
+        createdAt: new Date(reply.created_at)
+      })) || []
+    }));
+  };
+
   if (isLoading) {
     return <MarketplaceLoader />;
   }
@@ -87,7 +110,7 @@ export const OpenMarketSection = () => {
             prompt: image.prompt,
             likes: image.likes || 0,
             views: image.views || 0,
-            comments: image.comments || [],
+            comments: transformComments(image.comments || []),
             produced: 0,
             creator: {
               name: image.profiles?.username || 'Anonymous',
