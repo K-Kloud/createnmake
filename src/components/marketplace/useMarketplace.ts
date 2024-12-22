@@ -14,14 +14,17 @@ export const useMarketplace = () => {
   const { commentMutation, replyMutation } = useCommentImage();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+    const getSession = async () => {
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      setSession(currentSession);
+    };
+
+    getSession();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      setSession(currentSession);
     });
 
     return () => subscription.unsubscribe();
@@ -30,76 +33,90 @@ export const useMarketplace = () => {
   const { data: images, isLoading } = useQuery({
     queryKey: ['marketplace-images'],
     queryFn: async () => {
-      const { data: images, error } = await supabase
-        .from('generated_images')
-        .select(`
-          *,
-          profiles (
-            username,
-            avatar_url
-          ),
-          image_likes(user_id),
-          comments(
-            id,
-            text,
-            created_at,
-            user_id,
-            profiles(username, avatar_url),
-            comment_replies(
+      try {
+        const { data: images, error } = await supabase
+          .from('generated_images')
+          .select(`
+            *,
+            profiles (
+              username,
+              avatar_url
+            ),
+            image_likes(user_id),
+            comments(
               id,
               text,
               created_at,
               user_id,
-              profiles(username, avatar_url)
+              profiles(username, avatar_url),
+              comment_replies(
+                id,
+                text,
+                created_at,
+                user_id,
+                profiles(username, avatar_url)
+              )
             )
-          )
-        `)
-        .order('created_at', { ascending: false });
+          `)
+          .order('created_at', { ascending: false });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      const imagesWithMetrics = await Promise.all(
-        images.map(async (image) => {
-          const { data: metrics, error: metricsError } = await supabase
-            .rpc('get_image_metrics', { p_image_id: image.id });
+        const imagesWithMetrics = await Promise.all(
+          images.map(async (image) => {
+            const { data: metrics, error: metricsError } = await supabase
+              .rpc('get_image_metrics', { p_image_id: image.id });
 
-          if (metricsError) console.error('Error fetching metrics:', metricsError);
+            if (metricsError) {
+              console.error('Error fetching metrics:', metricsError);
+              return image;
+            }
 
-          const metricsMap = (metrics || []).reduce((acc, metric) => {
-            acc[metric.metric_type] = metric.total_value;
-            return acc;
-          }, {});
+            const metricsMap = (metrics || []).reduce((acc, metric) => {
+              acc[metric.metric_type] = metric.total_value;
+              return acc;
+            }, {});
 
-          return {
-            ...image,
-            hasLiked: image.image_likes.some(like => like.user_id === session?.user?.id),
-            comments: image.comments.map(comment => ({
-              id: comment.id,
-              text: comment.text,
-              createdAt: new Date(comment.created_at),
-              user: {
-                id: comment.user_id,
-                name: comment.profiles.username,
-                avatar: comment.profiles.avatar_url
-              },
-              replies: comment.comment_replies.map(reply => ({
-                id: reply.id,
-                text: reply.text,
-                createdAt: new Date(reply.created_at),
+            return {
+              ...image,
+              hasLiked: image.image_likes.some(like => like.user_id === session?.user?.id),
+              comments: image.comments.map(comment => ({
+                id: comment.id,
+                text: comment.text,
+                createdAt: new Date(comment.created_at),
                 user: {
-                  id: reply.user_id,
-                  name: reply.profiles.username,
-                  avatar: reply.profiles.avatar_url
-                }
-              }))
-            })),
-            metrics: metricsMap
-          };
-        })
-      );
+                  id: comment.user_id,
+                  name: comment.profiles.username,
+                  avatar: comment.profiles.avatar_url
+                },
+                replies: comment.comment_replies.map(reply => ({
+                  id: reply.id,
+                  text: reply.text,
+                  createdAt: new Date(reply.created_at),
+                  user: {
+                    id: reply.user_id,
+                    name: reply.profiles.username,
+                    avatar: reply.profiles.avatar_url
+                  }
+                }))
+              })),
+              metrics: metricsMap
+            };
+          })
+        );
 
-      return imagesWithMetrics;
-    }
+        return imagesWithMetrics;
+      } catch (error) {
+        console.error('Error fetching marketplace images:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load marketplace images",
+          variant: "destructive",
+        });
+        return [];
+      }
+    },
+    retry: 1,
   });
 
   return {
