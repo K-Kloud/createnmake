@@ -31,7 +31,7 @@ export const OpenMarketSection = () => {
 
     likeMutation.mutate({ 
       imageId, 
-      hasLiked: image.hasLiked || false,
+      hasLiked: Boolean(image.hasLiked), 
       userId: session.user.id 
     });
   };
@@ -96,7 +96,7 @@ export const OpenMarketSection = () => {
                 avatar: image.profiles?.avatar_url || '/placeholder.svg'
               },
               createdAt: new Date(image.created_at || ''),
-              hasLiked: image.hasLiked || false,
+              hasLiked: Boolean(image.hasLiked),
               image_likes: image.image_likes || [],
               metrics: {
                 like: image.metrics?.like || 0,

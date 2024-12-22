@@ -24,7 +24,7 @@ export interface GalleryImage {
   title?: string;
   user_id?: string;
   created_at?: string;
-  metrics?: {
+  metrics: {
     like: number;
     comment: number;
     view: number;
