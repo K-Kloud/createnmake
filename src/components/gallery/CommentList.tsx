@@ -43,6 +43,15 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
     }
   };
 
+  const formatDate = (date: Date) => {
+    try {
+      return formatDistanceToNow(date instanceof Date ? date : new Date(date), { addSuffix: true });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Invalid date';
+    }
+  };
+
   return (
     <div className="space-y-4">
       {comments.map((comment) => (
@@ -56,7 +65,7 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
               <div className="flex items-center space-x-2">
                 <span className="font-medium">{comment.user.name}</span>
                 <span className="text-sm text-gray-400">
-                  {formatDistanceToNow(comment.createdAt, { addSuffix: true })}
+                  {formatDate(comment.createdAt)}
                 </span>
               </div>
               <p className="text-sm text-gray-300 mt-1">{comment.text}</p>
@@ -103,7 +112,7 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
                       <div className="flex items-center space-x-2">
                         <span className="font-medium text-sm">{reply.user.name}</span>
                         <span className="text-xs text-gray-400">
-                          {formatDistanceToNow(reply.createdAt, { addSuffix: true })}
+                          {formatDate(reply.createdAt)}
                         </span>
                       </div>
                       <p className="text-sm text-gray-300">{reply.text}</p>

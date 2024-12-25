@@ -35,8 +35,8 @@ export const transformImage = (image: any, userId?: string): GalleryImage => ({
     name: image.profiles?.username || 'Anonymous',
     avatar: image.profiles?.avatar_url || '/placeholder.svg'
   },
-  createdAt: new Date(image.created_at || ''),
-  hasLiked: Boolean(image.image_likes?.some(like => like.user_id === userId)),
+  createdAt: new Date(image.created_at),
+  hasLiked: Boolean(image.image_likes?.some((like: any) => like.user_id === userId)),
   image_likes: image.image_likes || [],
   metrics: {
     like: image.likes || 0,
