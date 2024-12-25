@@ -24,36 +24,53 @@ serve(async (req) => {
       throw new Error('Missing OpenAI API key')
     }
 
-    // Prepare request body based on whether we have a reference image
-    const requestBody = {
-      model: "dall-e-3",
-      prompt,
-      n: 1,
-      size: "1024x1024",
-      quality: "standard",
-    }
-
+    let response;
+    
     if (referenceImage) {
-      Object.assign(requestBody, {
-        image: referenceImage,
-        model: "dall-e-3",
-      })
-    }
-
-    // Make request to OpenAI API
-    const response = await fetch(
-      referenceImage 
-        ? 'https://api.openai.com/v1/images/variations'
-        : 'https://api.openai.com/v1/images/generations', 
-      {
+      // For image variations, we need to send as form-data
+      const formData = new FormData();
+      
+      // Convert base64 to blob
+      const base64Data = referenceImage.split(',')[1];
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'image/png' });
+      
+      // Append the image file
+      formData.append('image', blob, 'image.png');
+      formData.append('n', '1');
+      formData.append('size', '1024x1024');
+      
+      response = await fetch('https://api.openai.com/v1/images/variations', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        },
+        body: formData,
+      });
+    } else {
+      // For regular image generation, we can use JSON
+      response = await fetch('https://api.openai.com/v1/images/generations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
         },
-        body: JSON.stringify(requestBody),
-      }
-    )
+        body: JSON.stringify({
+          model: "dall-e-3",
+          prompt,
+          n: 1,
+          size: "1024x1024",
+          quality: "standard",
+        }),
+      });
+    }
 
     if (!response.ok) {
       const error = await response.text()
