@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 export const Hero = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ export const Hero = () => {
           Transform your imaginary visual creations into reality using our Advanced Create-2-Make AI platform. 
           Start creating your unique items and get them delivered to your doorstep.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Button 
             size="lg" 
             className="bg-primary hover:bg-primary-hover text-lg"
@@ -29,6 +30,15 @@ export const Hero = () => {
             onClick={() => navigate("/marketplace")}
           >
             View OpenMarket
+          </Button>
+          <Button
+            size="lg"
+            variant="ghost"
+            className="text-lg group"
+            onClick={() => navigate("/features")}
+          >
+            Explore Features
+            <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
           </Button>
         </div>
       </div>
