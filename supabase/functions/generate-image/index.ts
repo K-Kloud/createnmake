@@ -12,8 +12,8 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, width = 1024, height = 1024 } = await req.json()
-    console.log('Received request with params:', { prompt, width, height })
+    const { prompt, referenceImage, width = 1024, height = 1024 } = await req.json()
+    console.log('Received request with params:', { prompt, width, height, hasReferenceImage: !!referenceImage })
 
     if (!prompt) {
       throw new Error('Prompt is required')
@@ -24,21 +24,36 @@ serve(async (req) => {
       throw new Error('Missing OpenAI API key')
     }
 
-    // Make request to OpenAI API
-    const response = await fetch('https://api.openai.com/v1/images/generations', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
+    // Prepare request body based on whether we have a reference image
+    const requestBody = {
+      model: "dall-e-3",
+      prompt,
+      n: 1,
+      size: "1024x1024",
+      quality: "standard",
+    }
+
+    if (referenceImage) {
+      Object.assign(requestBody, {
+        image: referenceImage,
         model: "dall-e-3",
-        prompt,
-        n: 1,
-        size: "1024x1024",
-        quality: "standard",
-      }),
-    })
+      })
+    }
+
+    // Make request to OpenAI API
+    const response = await fetch(
+      referenceImage 
+        ? 'https://api.openai.com/v1/images/variations'
+        : 'https://api.openai.com/v1/images/generations', 
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify(requestBody),
+      }
+    )
 
     if (!response.ok) {
       const error = await response.text()

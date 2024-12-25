@@ -4,6 +4,7 @@ export interface GenerateImageParams {
   prompt: string;
   width?: number;
   height?: number;
+  referenceImage?: string;
 }
 
 export const generateImage = async (params: GenerateImageParams) => {
@@ -34,7 +35,6 @@ export const generateImage = async (params: GenerateImageParams) => {
     return data;
   } catch (error) {
     console.error('Generation error:', error);
-    // Re-throw the error to be handled by the component
     throw error;
   }
 };

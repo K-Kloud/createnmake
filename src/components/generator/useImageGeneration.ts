@@ -45,6 +45,17 @@ export const useImageGeneration = () => {
     setGeneratedImageUrl(undefined);
 
     try {
+      // Convert reference image to base64 if it exists
+      let referenceImageBase64: string | undefined;
+      if (referenceImage) {
+        const reader = new FileReader();
+        referenceImageBase64 = await new Promise((resolve, reject) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(referenceImage);
+        });
+      }
+
       // Create a record in the database
       const { data: dbRecord, error: dbError } = await supabase
         .from('generated_images')
@@ -55,7 +66,8 @@ export const useImageGeneration = () => {
           aspect_ratio: selectedRatio,
           status: 'pending',
           is_public: true,
-          title: prompt.slice(0, 100)
+          title: prompt.slice(0, 100),
+          reference_image_url: referenceImageBase64
         })
         .select()
         .single();
@@ -66,7 +78,8 @@ export const useImageGeneration = () => {
       const result = await generateImage({
         prompt: `${selectedItem}: ${prompt}`,
         width: 1024,
-        height: 1024
+        height: 1024,
+        referenceImage: referenceImageBase64
       });
       
       setGeneratedImageUrl(result.url);
