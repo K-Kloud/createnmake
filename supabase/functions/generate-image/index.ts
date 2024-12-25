@@ -1,52 +1,55 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+};
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { prompt, referenceImage, width = 1024, height = 1024 } = await req.json()
-    console.log('Received request with params:', { prompt, width, height, hasReferenceImage: !!referenceImage })
+    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+    if (!OPENAI_API_KEY) {
+      throw new Error('Missing OpenAI API key');
+    }
+
+    let requestData;
+    let referenceImage;
+
+    // Handle both FormData and JSON requests
+    const contentType = req.headers.get('content-type') || '';
+    if (contentType.includes('multipart/form-data')) {
+      const formData = await req.formData();
+      requestData = {
+        prompt: formData.get('prompt'),
+        width: formData.get('width'),
+        height: formData.get('height'),
+      };
+      referenceImage = formData.get('referenceImage');
+    } else {
+      requestData = await req.json();
+    }
+
+    const { prompt, width = 1024, height = 1024 } = requestData;
 
     if (!prompt) {
-      throw new Error('Prompt is required')
+      throw new Error('Prompt is required');
     }
 
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY')
-    if (!OPENAI_API_KEY) {
-      throw new Error('Missing OpenAI API key')
-    }
+    console.log('Processing request with params:', { prompt, width, height, hasReferenceImage: !!referenceImage });
 
     let response;
-    
     if (referenceImage) {
-      // For image variations, we need to send as form-data
+      // For image variations
       const formData = new FormData();
-      
-      // Convert base64 to blob
-      const base64Data = referenceImage.split(',')[1];
-      const byteCharacters = atob(base64Data);
-      const byteNumbers = new Array(byteCharacters.length);
-      
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: 'image/png' });
-      
-      // Append the image file
-      formData.append('image', blob, 'image.png');
+      formData.append('image', referenceImage);
       formData.append('n', '1');
       formData.append('size', '1024x1024');
-      
+
       response = await fetch('https://api.openai.com/v1/images/variations', {
         method: 'POST',
         headers: {
@@ -55,7 +58,7 @@ serve(async (req) => {
         body: formData,
       });
     } else {
-      // For regular image generation, we can use JSON
+      // For text-to-image generation
       response = await fetch('https://api.openai.com/v1/images/generations', {
         method: 'POST',
         headers: {
@@ -73,18 +76,13 @@ serve(async (req) => {
     }
 
     if (!response.ok) {
-      const error = await response.text()
-      console.error('OpenAI API error:', error)
-      throw new Error(`OpenAI API error: ${error}`)
+      const error = await response.text();
+      console.error('OpenAI API error:', error);
+      throw new Error(`OpenAI API error: ${error}`);
     }
 
-    const result = await response.json()
-    console.log('OpenAI API response:', result)
-
-    if (!result.data || !result.data[0] || !result.data[0].url) {
-      console.error('Invalid response structure:', result)
-      throw new Error('Invalid response from image generation service')
-    }
+    const result = await response.json();
+    console.log('OpenAI API response:', result);
 
     return new Response(
       JSON.stringify({ 
@@ -97,9 +95,9 @@ serve(async (req) => {
           'Content-Type': 'application/json' 
         } 
       }
-    )
+    );
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error:', error);
     return new Response(
       JSON.stringify({ 
         error: error.message,
@@ -112,6 +110,6 @@ serve(async (req) => {
         }, 
         status: 500 
       }
-    )
+    );
   }
-})
+});
