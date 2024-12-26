@@ -5,8 +5,15 @@ import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "0.0.0.0",  // Changed from "::" to "0.0.0.0" for better compatibility
+    host: "0.0.0.0",
     port: 8080,
+    strictPort: true,
+    // Add proper CORS configuration
+    cors: true,
+    // Ensure proper headers
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    }
   },
   plugins: [
     react(),
@@ -18,4 +25,6 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Add base URL configuration
+  base: "/",
 }));
