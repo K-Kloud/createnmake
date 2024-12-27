@@ -25,8 +25,8 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      jsxRuntime: 'automatic',
-      jsxImportSource: 'react',
+      plugins: [],
+      jsxImportSource: 'react'
     }),
     mode === 'development' &&
     componentTagger(),
@@ -39,7 +39,8 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react/jsx-runtime'],
+    include: ['react', 'react-dom'],
+    exclude: ['react/jsx-runtime']
   },
   base: "/",
 }));
