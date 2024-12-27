@@ -8,23 +8,45 @@ export default defineConfig(({ mode }) => ({
     host: "0.0.0.0",
     port: 8080,
     strictPort: true,
-    // Add proper CORS configuration
     cors: true,
-    // Ensure proper headers
     headers: {
       'Access-Control-Allow-Origin': '*',
     }
   },
   plugins: [
-    react(),
-    mode === 'development' &&
-    componentTagger(),
+    react({
+      jsxRuntime: 'automatic'
+    }),
+    mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-    },
+    }
   },
-  // Add base URL configuration
   base: "/",
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react/jsx-runtime',
+      '@radix-ui/react-context',
+      '@radix-ui/react-slot',
+      '@tanstack/react-query'
+    ],
+    force: true
+  },
+  build: {
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+    rollupOptions: {
+      external: [],
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+        }
+      }
+    }
+  }
 }));
