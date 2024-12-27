@@ -14,9 +14,7 @@ export default defineConfig(({ mode }) => ({
     }
   },
   plugins: [
-    react({
-      plugins: [['@swc/plugin-react', { runtime: 'automatic' }]]
-    }),
+    react(),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
