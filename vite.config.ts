@@ -8,12 +8,17 @@ export default defineConfig(({ mode }) => ({
     host: "0.0.0.0",
     port: 8080,
     strictPort: true,
-    // Add proper CORS configuration
     cors: true,
-    // Ensure proper headers
     headers: {
       'Access-Control-Allow-Origin': '*',
     }
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    commonjsOptions: {
+      include: [],
+    },
   },
   plugins: [
     react(),
@@ -25,6 +30,5 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // Add base URL configuration
   base: "/",
 }));
