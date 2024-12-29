@@ -31,7 +31,35 @@ const keywordSuggestions = {
   "bow-tie": ["silk", "pre-tied", "self-tie", "formal", "patterned"],
   "scarf": ["silk", "wool", "cashmere", "printed", "lightweight"],
   "gloves": ["leather", "driving", "lined", "touchscreen", "formal"],
-  "hat": ["fedora", "panama", "wool", "structured", "classic"]
+  "hat": ["fedora", "panama", "wool", "structured", "classic"],
+  
+  // Furniture
+  "dining-table": ["solid wood", "extendable", "rustic", "modern", "handcrafted"],
+  "coffee-table": ["wooden", "glass-top", "storage", "minimalist", "artisanal"],
+  "bed-frame": ["platform", "four-poster", "sleigh", "storage", "traditional"],
+  "bookshelf": ["floating", "ladder", "built-in", "modular", "industrial"],
+  "cabinet": ["display", "storage", "vintage", "modern", "hand-painted"],
+  "chair": ["dining", "accent", "rocking", "upholstered", "carved"],
+  "bench": ["storage", "entryway", "garden", "dining", "decorative"],
+  "side-table": ["nesting", "round", "vintage", "modern", "hand-carved"],
+  
+  // Home Textiles
+  "quilt": ["patchwork", "modern", "traditional", "hand-stitched", "custom"],
+  "duvet-cover": ["cotton", "linen", "printed", "embroidered", "organic"],
+  "throw-pillow": ["decorative", "embroidered", "textured", "custom", "patterned"],
+  "curtains": ["blackout", "sheer", "lined", "patterned", "custom-length"],
+  "table-runner": ["embroidered", "quilted", "festive", "modern", "traditional"],
+  "area-rug": ["hand-woven", "vintage-style", "modern", "geometric", "traditional"],
+  "tapestry": ["wall-hanging", "hand-woven", "modern", "traditional", "custom"],
+  
+  // Decor & Accessories
+  "wall-art": ["mixed-media", "textile", "sculptural", "modern", "traditional"],
+  "ceramic-vase": ["hand-thrown", "glazed", "sculptural", "modern", "decorative"],
+  "decorative-bowl": ["ceramic", "wooden", "metal", "hand-crafted", "painted"],
+  "candle-holder": ["metal", "ceramic", "wooden", "modern", "traditional"],
+  "mirror-frame": ["carved", "gilded", "modern", "vintage-style", "custom"],
+  "lamp": ["table", "floor", "pendant", "ceramic", "metal"],
+  "basket": ["woven", "storage", "decorative", "natural", "custom"],
 };
 
 interface GenerationFormProps {

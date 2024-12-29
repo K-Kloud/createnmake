@@ -52,6 +52,37 @@ export const ItemSelect = ({ value, onChange }: ItemSelectProps) => {
             <SelectItem value="messenger-bag">Messenger Bag</SelectItem>
           </SelectGroup>
           <SelectGroup>
+            <SelectLabel>Furniture</SelectLabel>
+            <SelectItem value="dining-table">Dining Table</SelectItem>
+            <SelectItem value="coffee-table">Coffee Table</SelectItem>
+            <SelectItem value="bed-frame">Bed Frame</SelectItem>
+            <SelectItem value="bookshelf">Bookshelf</SelectItem>
+            <SelectItem value="cabinet">Cabinet</SelectItem>
+            <SelectItem value="chair">Chair</SelectItem>
+            <SelectItem value="bench">Bench</SelectItem>
+            <SelectItem value="side-table">Side Table</SelectItem>
+          </SelectGroup>
+          <SelectGroup>
+            <SelectLabel>Home Textiles</SelectLabel>
+            <SelectItem value="quilt">Quilt</SelectItem>
+            <SelectItem value="duvet-cover">Duvet Cover</SelectItem>
+            <SelectItem value="throw-pillow">Throw Pillow</SelectItem>
+            <SelectItem value="curtains">Curtains</SelectItem>
+            <SelectItem value="table-runner">Table Runner</SelectItem>
+            <SelectItem value="area-rug">Area Rug</SelectItem>
+            <SelectItem value="tapestry">Tapestry</SelectItem>
+          </SelectGroup>
+          <SelectGroup>
+            <SelectLabel>Decor & Accessories</SelectLabel>
+            <SelectItem value="wall-art">Wall Art</SelectItem>
+            <SelectItem value="ceramic-vase">Ceramic Vase</SelectItem>
+            <SelectItem value="decorative-bowl">Decorative Bowl</SelectItem>
+            <SelectItem value="candle-holder">Candle Holder</SelectItem>
+            <SelectItem value="mirror-frame">Mirror Frame</SelectItem>
+            <SelectItem value="lamp">Lamp</SelectItem>
+            <SelectItem value="basket">Basket</SelectItem>
+          </SelectGroup>
+          <SelectGroup>
             <SelectLabel>Accessories</SelectLabel>
             <SelectItem value="tie">Tie</SelectItem>
             <SelectItem value="bow-tie">Bow Tie</SelectItem>
