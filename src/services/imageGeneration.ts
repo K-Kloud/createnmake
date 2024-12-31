@@ -12,7 +12,10 @@ export const generateImage = async (params: GenerateImageParams) => {
   
   try {
     const { data, error } = await supabase.functions.invoke('generate-image', {
-      body: params
+      body: {
+        ...params,
+        baseUrl: window.location.origin // Add proper base URL
+      }
     });
 
     if (error) {
