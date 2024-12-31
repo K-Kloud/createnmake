@@ -79,12 +79,6 @@ export const Header = () => {
       <header className="fixed top-0 w-full z-50 glass-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <img 
-              src="/lovable-uploads/353d1c10-b5b0-4faf-b593-8bca85a1cdc8.png" 
-              alt="OpenTeknologies Logo" 
-              className="h-8 w-8 cursor-pointer"
-              onClick={() => navigate("/")}
-            />
             <h1 
               className="text-xl font-bold text-primary animate-glow rounded-lg cursor-pointer" 
               onClick={() => navigate("/")}
