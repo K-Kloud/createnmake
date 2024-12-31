@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -45,7 +45,7 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
 
   const formatDate = (date: Date) => {
     try {
-      return formatDistanceToNow(date instanceof Date ? date : new Date(date), { addSuffix: true });
+      return format(date instanceof Date ? date : new Date(date), "MMM d, yyyy 'at' h:mm a");
     } catch (error) {
       console.error('Error formatting date:', error);
       return 'Invalid date';
