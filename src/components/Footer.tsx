@@ -37,9 +37,9 @@ export const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-lg font-semibold">Contact</h4>
             <p className="text-sm text-gray-400">
-              Email: support@opent.ai<br />
-              Phone: +1 (555) 123-4567<br />
-              Address: 123 AI Street, Tech City
+              Email: support@openteknologies.com<br />
+              Phone: +447438306305<br />
+              Address: Castleford, West Yorkshire
             </p>
           </div>
           
