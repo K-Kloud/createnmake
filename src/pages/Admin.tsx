@@ -14,7 +14,6 @@ import { AdminPortfolio } from "@/components/admin/portfolio/AdminPortfolio";
 
 const Admin = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredImages, setFilteredImages] = useState([]);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -40,6 +39,56 @@ const Admin = () => {
     },
   });
 
+  const { data: images, isLoading: loadingImages, refetch } = useQuery({
+    queryKey: ['adminImages', searchTerm],
+    queryFn: async () => {
+      const query = supabase
+        .from('generated_images')
+        .select(`
+          *,
+          profiles:user_id (
+            username,
+            avatar_url
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (searchTerm) {
+        query.or(`title.ilike.%${searchTerm}%,prompt.ilike.%${searchTerm}%`);
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: isAdmin,
+  });
+
+  const handleDelete = async (id: number) => {
+    try {
+      const { error } = await supabase
+        .from('generated_images')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Image deleted",
+        description: "The image has been successfully deleted."
+      });
+
+      refetch();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete the image. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   useEffect(() => {
     if (!checkingAdmin && !isAdmin) {
       toast({
@@ -51,7 +100,7 @@ const Admin = () => {
     }
   }, [isAdmin, checkingAdmin, navigate, toast]);
 
-  if (checkingAdmin) {
+  if (checkingAdmin || loadingImages) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <Header />
@@ -76,18 +125,12 @@ const Admin = () => {
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         </div>
 
-        <Tabs defaultValue="portfolios" className="space-y-8">
+        <Tabs defaultValue="images" className="space-y-8">
           <TabsList>
-            <TabsTrigger value="portfolios">Portfolios</TabsTrigger>
             <TabsTrigger value="images">Images</TabsTrigger>
             <TabsTrigger value="stats">Stats</TabsTrigger>
+            <TabsTrigger value="portfolios">Portfolios</TabsTrigger>
           </TabsList>
-
-          <TabsContent value="portfolios">
-            <div className="rounded-lg border bg-card">
-              <AdminPortfolio />
-            </div>
-          </TabsContent>
 
           <TabsContent value="images">
             <div className="space-y-8">
@@ -97,8 +140,8 @@ const Admin = () => {
               />
               <div className="rounded-lg border bg-card">
                 <ImageList 
-                  images={filteredImages}
-                  onDelete={() => {}}
+                  images={images || []}
+                  onDelete={handleDelete}
                   onView={() => {}}
                 />
               </div>
@@ -107,6 +150,12 @@ const Admin = () => {
 
           <TabsContent value="stats">
             <AdminStats />
+          </TabsContent>
+
+          <TabsContent value="portfolios">
+            <div className="rounded-lg border bg-card">
+              <AdminPortfolio />
+            </div>
           </TabsContent>
         </Tabs>
       </main>
