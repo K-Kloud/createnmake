@@ -21,6 +21,24 @@ export const ArtisanDashboard = ({ artisanId }: ArtisanDashboardProps) => {
     },
   });
 
+  const { data: quoteStats } = useQuery({
+    queryKey: ['artisan-quote-stats', artisanId],
+    queryFn: async () => {
+      const { data: quotes } = await supabase
+        .from('artisan_quotes')
+        .select('status, payment_status')
+        .eq('artisan_id', artisanId);
+
+      if (!quotes) return { requested: 0, accepted: 0, completed: 0 };
+
+      return {
+        requested: quotes.length,
+        accepted: quotes.filter(q => q.status === 'quoted').length,
+        completed: quotes.filter(q => q.payment_status === 'paid').length,
+      };
+    },
+  });
+
   return (
     <main className="container px-4 py-24">
       <div className="flex justify-between items-center mb-8">
@@ -36,7 +54,7 @@ export const ArtisanDashboard = ({ artisanId }: ArtisanDashboardProps) => {
         </TabsList>
 
         <TabsContent value="overview">
-          <ArtisanOverview artisan={profile} />
+          <ArtisanOverview artisan={profile} stats={quoteStats} />
         </TabsContent>
 
         <TabsContent value="quotes">
