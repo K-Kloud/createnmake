@@ -60,6 +60,41 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
     }
   };
 
+  const handleDelete = async (id: number) => {
+    try {
+      // First, delete related marketplace metrics
+      const { error: metricsError } = await supabase
+        .from('marketplace_metrics')
+        .delete()
+        .eq('image_id', id);
+
+      if (metricsError) throw metricsError;
+
+      // Then, delete the image
+      const { error: imageError } = await supabase
+        .from('generated_images')
+        .delete()
+        .eq('id', id);
+
+      if (imageError) throw imageError;
+
+      // Call the parent's onDelete handler
+      onDelete(id);
+
+      toast({
+        title: "Image deleted",
+        description: "The image and its related data have been successfully deleted."
+      });
+    } catch (error: any) {
+      console.error('Delete error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete the image. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <Table>
       <ImageListHeader />
@@ -73,7 +108,7 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
             onEdit={startEditing}
             onSave={saveChanges}
             onCancel={cancelEditing}
-            onDelete={onDelete}
+            onDelete={handleDelete}
             onEditDataChange={setEditData}
           />
         ))}
