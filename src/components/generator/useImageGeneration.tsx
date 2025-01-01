@@ -77,6 +77,7 @@ export const useImageGeneration = () => {
     setLoading,
     setImage,
     setError,
+    isGenerating: loading,
     
     // Form states
     prompt,
