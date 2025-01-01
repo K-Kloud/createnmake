@@ -9,11 +9,15 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <Hero />
-      <div className="container px-4 py-16 flex-grow">
-        <ImageGenerator />
-        <OpenMarketSection />
-      </div>
+      <main className="flex-grow">
+        <Hero />
+        <div className="container px-4 py-16">
+          <div className="image-generator">
+            <ImageGenerator />
+          </div>
+          <OpenMarketSection />
+        </div>
+      </main>
       <ChatBot />
       <Footer />
     </div>
