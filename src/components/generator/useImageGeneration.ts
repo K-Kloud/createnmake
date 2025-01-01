@@ -65,7 +65,7 @@ export const useImageGeneration = () => {
           item_type: selectedItem,
           aspect_ratio: selectedRatio,
           status: 'pending',
-          is_public: true, // Explicitly set to true
+          is_public: true,
           title: prompt.slice(0, 100),
           reference_image_url: referenceImageBase64
         })
