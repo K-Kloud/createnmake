@@ -1,29 +1,24 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Index from "./pages/Index";
-import Marketplace from "./pages/Marketplace";
-import Create from "./pages/Create";
-import Dashboard from "./pages/Dashboard";
-import Settings from "./pages/Settings";
-import Features from "./pages/Features";
-import FAQ from "./pages/FAQ";
-import Contact from "./pages/Contact";
-import Testimonials from "./pages/Testimonials";
-import Manufacturer from "./pages/Manufacturer";
-import Artisan from "./pages/Artisan";
-import Admin from "./pages/Admin";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/toaster";
+import { Sonner } from "@/components/ui/sonner";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+import Index from "@/pages/Index";
+import Marketplace from "@/pages/Marketplace";
+import Create from "@/pages/Create";
+import Dashboard from "@/pages/Dashboard";
+import Settings from "@/pages/Settings";
+import Contact from "@/pages/Contact";
+import FAQ from "@/pages/FAQ";
+import Features from "@/pages/Features";
+import Testimonials from "@/pages/Testimonials";
+import Manufacturer from "@/pages/Manufacturer";
+import Artisan from "@/pages/Artisan";
+import Admin from "@/pages/Admin";
+import CRMDashboard from "@/pages/CRMDashboard";
+
+const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -38,13 +33,14 @@ const App = () => (
             <Route path="/create" element={<Create />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/features" element={<Features />} />
-            <Route path="/faq" element={<FAQ />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/features" element={<Features />} />
             <Route path="/testimonials" element={<Testimonials />} />
             <Route path="/manufacturer" element={<Manufacturer />} />
             <Route path="/artisan" element={<Artisan />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/crm" element={<CRMDashboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
