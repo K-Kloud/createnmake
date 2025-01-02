@@ -28,10 +28,10 @@ const queryClient = new QueryClient({
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <div className="min-h-screen bg-background">
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+      <BrowserRouter>
+        <div className="min-h-screen bg-background">
+          <Toaster />
+          <Sonner />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/marketplace" element={<Marketplace />} />
@@ -45,11 +45,10 @@ const App = () => (
             <Route path="/manufacturer" element={<Manufacturer />} />
             <Route path="/artisan" element={<Artisan />} />
             <Route path="/admin" element={<Admin />} />
-            {/* Add a catch-all route that redirects to home */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </BrowserRouter>
-      </div>
+        </div>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
