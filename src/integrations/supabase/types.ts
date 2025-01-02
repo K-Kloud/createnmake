@@ -367,6 +367,48 @@ export type Database = {
           },
         ]
       }
+      crm_tasks: {
+        Row: {
+          assignee_id: string | null
+          company: string
+          created_at: string | null
+          description: string
+          due_date: string
+          id: number
+          owner_id: string | null
+          priority: string
+          status: string
+          task_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          company: string
+          created_at?: string | null
+          description: string
+          due_date: string
+          id?: number
+          owner_id?: string | null
+          priority: string
+          status: string
+          task_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          company?: string
+          created_at?: string | null
+          description?: string
+          due_date?: string
+          id?: number
+          owner_id?: string | null
+          priority?: string
+          status?: string
+          task_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       dashboard_settings: {
         Row: {
           layout: Json | null

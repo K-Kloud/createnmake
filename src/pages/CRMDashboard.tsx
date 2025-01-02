@@ -5,38 +5,35 @@ import { Button } from "@/components/ui/button";
 import { Plus, Download } from "lucide-react";
 import { TaskList } from "@/components/crm/TaskList";
 import { TaskFilters } from "@/components/crm/TaskFilters";
-
-// Mock data with correct status types
-const mockTasks = [
-  {
-    id: 1,
-    description: "Prepare new quotation",
-    company: "Brainlongue",
-    taskType: "Call",
-    status: "in_progress" as const,
-    priority: "urgent" as const,
-    dueDate: "2024-02-21",
-    assignees: [
-      { initials: "AC", color: "bg-blue-500" },
-      { initials: "JD", color: "bg-green-500" },
-    ],
-  },
-  {
-    id: 2,
-    description: "6 weekly service call",
-    company: "Hugeable",
-    taskType: "Call",
-    status: "completed" as const,
-    priority: "medium" as const,
-    dueDate: "2024-02-21",
-    assignees: [
-      { initials: "MK", color: "bg-purple-500" },
-    ],
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const CRMDashboard = () => {
-  const [tasks] = useState(mockTasks);
+  const { data: tasks, isLoading } = useQuery({
+    queryKey: ['crm-tasks'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('crm_tasks')
+        .select(`
+          id,
+          description,
+          company,
+          task_type,
+          status,
+          priority,
+          due_date,
+          assignee_id,
+          owner_id
+        `)
+        .order('due_date', { ascending: true });
+
+      if (error) throw error;
+      return data.map(task => ({
+        ...task,
+        assignees: [{ initials: 'AI', color: 'bg-blue-500' }] // Default assignee for now
+      }));
+    }
+  });
 
   const handleFilterChange = (filters: any) => {
     console.log("Filters changed:", filters);
@@ -65,7 +62,11 @@ const CRMDashboard = () => {
           <TaskFilters onFilterChange={handleFilterChange} />
           
           <div className="rounded-lg border bg-card">
-            <TaskList tasks={tasks} />
+            {isLoading ? (
+              <div className="p-8 text-center">Loading tasks...</div>
+            ) : (
+              <TaskList tasks={tasks || []} />
+            )}
           </div>
         </div>
       </main>
