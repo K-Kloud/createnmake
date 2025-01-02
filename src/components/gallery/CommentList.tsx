@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -44,12 +44,10 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
   };
 
   const formatDate = (date: Date) => {
-    try {
-      return format(date instanceof Date ? date : new Date(date), "MMM d, yyyy 'at' h:mm a");
-    } catch (error) {
-      console.error('Error formatting date:', error);
+    if (!date || !isValid(new Date(date))) {
       return 'Invalid date';
     }
+    return format(new Date(date), "MMM d, yyyy 'at' h:mm a");
   };
 
   return (
