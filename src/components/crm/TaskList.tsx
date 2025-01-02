@@ -8,10 +8,10 @@ interface Task {
   id: number;
   description: string;
   company: string;
-  taskType: string;
+  task_type: string;
   status: 'not_started' | 'in_progress' | 'completed' | 'waiting';
   priority: 'low' | 'medium' | 'high' | 'urgent';
-  dueDate: string;
+  due_date: string;
   assignees: Array<{
     initials: string;
     color?: string;
@@ -69,7 +69,7 @@ export const TaskList = ({ tasks }: { tasks: Task[] }) => {
             </TableCell>
             <TableCell>{task.description}</TableCell>
             <TableCell>{task.company}</TableCell>
-            <TableCell>{task.taskType}</TableCell>
+            <TableCell>{task.task_type}</TableCell>
             <TableCell>
               <Badge 
                 variant="secondary" 
@@ -87,7 +87,7 @@ export const TaskList = ({ tasks }: { tasks: Task[] }) => {
               </Badge>
             </TableCell>
             <TableCell>
-              {formatDistanceToNow(new Date(task.dueDate), { addSuffix: true })}
+              {formatDistanceToNow(new Date(task.due_date), { addSuffix: true })}
             </TableCell>
             <TableCell>
               <div className="flex -space-x-2">

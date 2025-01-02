@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -28,9 +27,10 @@ const CRMDashboard = () => {
         .order('due_date', { ascending: true });
 
       if (error) throw error;
+      
       return data.map(task => ({
         ...task,
-        assignees: [{ initials: 'AI', color: 'bg-blue-500' }] // Default assignee for now
+        assignees: [{ initials: 'AI', color: 'bg-blue-500' }], // Default assignee for now
       }));
     }
   });
