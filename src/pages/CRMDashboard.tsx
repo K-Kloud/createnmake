@@ -6,6 +6,7 @@ import { TaskList } from "@/components/crm/TaskList";
 import { TaskFilters } from "@/components/crm/TaskFilters";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Task } from "@/components/crm/TaskList";
 
 const CRMDashboard = () => {
   const { data: tasks, isLoading } = useQuery({
@@ -28,8 +29,15 @@ const CRMDashboard = () => {
 
       if (error) throw error;
       
+      // Ensure the data matches the Task interface
       return data.map(task => ({
-        ...task,
+        id: task.id,
+        description: task.description,
+        company: task.company,
+        task_type: task.task_type,
+        status: task.status as Task['status'], // Type assertion to ensure it matches the enum
+        priority: task.priority as Task['priority'], // Type assertion to ensure it matches the enum
+        due_date: task.due_date,
         assignees: [{ initials: 'AI', color: 'bg-blue-500' }], // Default assignee for now
       }));
     }
