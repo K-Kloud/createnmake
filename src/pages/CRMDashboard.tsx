@@ -6,15 +6,15 @@ import { Plus, Download } from "lucide-react";
 import { TaskList } from "@/components/crm/TaskList";
 import { TaskFilters } from "@/components/crm/TaskFilters";
 
-// Mock data - replace with actual data from your backend
+// Mock data with correct status types
 const mockTasks = [
   {
     id: 1,
     description: "Prepare new quotation",
     company: "Brainlongue",
     taskType: "Call",
-    status: "in_progress",
-    priority: "urgent",
+    status: "in_progress" as const,
+    priority: "urgent" as const,
     dueDate: "2024-02-21",
     assignees: [
       { initials: "AC", color: "bg-blue-500" },
@@ -26,14 +26,13 @@ const mockTasks = [
     description: "6 weekly service call",
     company: "Hugeable",
     taskType: "Call",
-    status: "completed",
-    priority: "medium",
+    status: "completed" as const,
+    priority: "medium" as const,
     dueDate: "2024-02-21",
     assignees: [
       { initials: "MK", color: "bg-purple-500" },
     ],
   },
-  // Add more mock tasks as needed
 ];
 
 const CRMDashboard = () => {
