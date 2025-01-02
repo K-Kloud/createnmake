@@ -25,8 +25,8 @@ export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps)
     setEditingId(item.id);
     setEditData({
       description: item.description || '',
-      generatedImage: item.generatedimage || '',
-      productImage: item.productimage || ''
+      generatedimage: item.generatedimage || '',
+      productimage: item.productimage || ''
     });
   };
 
