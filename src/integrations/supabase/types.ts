@@ -774,23 +774,44 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
           avatar_url: string | null
+          bio: string | null
+          business_name: string | null
+          business_type: string | null
           created_at: string | null
           id: string
+          is_artisan: boolean | null
+          phone: string | null
+          specialties: string[] | null
           updated_at: string | null
           username: string | null
         }
         Insert: {
+          address?: string | null
           avatar_url?: string | null
+          bio?: string | null
+          business_name?: string | null
+          business_type?: string | null
           created_at?: string | null
           id: string
+          is_artisan?: boolean | null
+          phone?: string | null
+          specialties?: string[] | null
           updated_at?: string | null
           username?: string | null
         }
         Update: {
+          address?: string | null
           avatar_url?: string | null
+          bio?: string | null
+          business_name?: string | null
+          business_type?: string | null
           created_at?: string | null
           id?: string
+          is_artisan?: boolean | null
+          phone?: string | null
+          specialties?: string[] | null
           updated_at?: string | null
           username?: string | null
         }

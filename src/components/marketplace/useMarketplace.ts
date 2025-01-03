@@ -34,6 +34,7 @@ export const useMarketplace = () => {
     queryKey: ['marketplace-images'],
     queryFn: async () => {
       try {
+        console.log('Fetching marketplace images...');
         const { data: images, error } = await supabase
           .from('generated_images')
           .select(`
@@ -58,9 +59,20 @@ export const useMarketplace = () => {
               )
             )
           `)
+          .eq('is_public', true)
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error fetching marketplace images:', error);
+          throw error;
+        }
+
+        if (!images) {
+          console.log('No images found');
+          return [];
+        }
+
+        console.log('Successfully fetched images:', images.length);
 
         const imagesWithMetrics = await Promise.all(
           images.map(async (image) => {
@@ -79,27 +91,27 @@ export const useMarketplace = () => {
 
             return {
               ...image,
-              hasLiked: image.image_likes.some(like => like.user_id === session?.user?.id),
-              comments: image.comments.map(comment => ({
+              hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
+              comments: image.comments?.map(comment => ({
                 id: comment.id,
                 text: comment.text,
                 createdAt: new Date(comment.created_at),
                 user: {
                   id: comment.user_id,
-                  name: comment.profiles.username,
-                  avatar: comment.profiles.avatar_url
+                  name: comment.profiles?.username || 'Anonymous',
+                  avatar: comment.profiles?.avatar_url || 'https://github.com/shadcn.png'
                 },
-                replies: comment.comment_replies.map(reply => ({
+                replies: comment.comment_replies?.map(reply => ({
                   id: reply.id,
                   text: reply.text,
                   createdAt: new Date(reply.created_at),
                   user: {
                     id: reply.user_id,
-                    name: reply.profiles.username,
-                    avatar: reply.profiles.avatar_url
+                    name: reply.profiles?.username || 'Anonymous',
+                    avatar: reply.profiles?.avatar_url || 'https://github.com/shadcn.png'
                   }
-                }))
-              })),
+                })) || []
+              })) || [],
               metrics: metricsMap
             };
           })
@@ -110,7 +122,7 @@ export const useMarketplace = () => {
         console.error('Error fetching marketplace images:', error);
         toast({
           title: "Error",
-          description: "Failed to load marketplace images",
+          description: "Failed to load marketplace images. Please try again later.",
           variant: "destructive",
         });
         return [];
