@@ -22,6 +22,12 @@ export const generateImage = async (params: GenerateImageParams) => {
 
     if (error) {
       console.error('Supabase function error:', error);
+      
+      // Handle safety system rejections
+      if (error.message?.includes('safety system')) {
+        throw new Error('Your prompt was flagged by our safety system. Please try rephrasing it or use different terms.');
+      }
+      
       throw new Error(`Failed to generate image: ${error.message}`);
     }
 

@@ -16,6 +16,9 @@ serve(async (req) => {
     
     console.log('Generating image with prompt:', prompt)
 
+    // Add content filtering and prompt enhancement
+    const enhancedPrompt = `Create a professional, safe, and appropriate image of: ${prompt}`;
+
     const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
@@ -24,7 +27,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: "dall-e-3",
-        prompt,
+        prompt: enhancedPrompt,
         n: 1,
         size: "1024x1024",
         quality: "standard",
@@ -34,6 +37,24 @@ serve(async (req) => {
     if (!response.ok) {
       const error = await response.json();
       console.error('OpenAI API error:', error);
+      
+      // Handle safety system rejections specifically
+      if (error.error?.message?.includes('safety system')) {
+        return new Response(
+          JSON.stringify({
+            error: "Your prompt was flagged by our safety system. Please try rephrasing it or use different terms.",
+            details: error.error
+          }),
+          { 
+            status: 400,
+            headers: {
+              ...corsHeaders,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+      }
+      
       throw new Error(error.error?.message || 'Failed to generate image');
     }
 
@@ -41,7 +62,7 @@ serve(async (req) => {
     const imageUrl = data.data[0].url;
 
     return new Response(
-      JSON.stringify({ url: imageUrl, prompt }),
+      JSON.stringify({ url: imageUrl, prompt: enhancedPrompt }),
       { 
         headers: {
           ...corsHeaders,
@@ -52,9 +73,12 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in generate-image function:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        details: error.details || null
+      }),
       { 
-        status: 500,
+        status: error.status || 500,
         headers: {
           ...corsHeaders,
           'Content-Type': 'application/json'
