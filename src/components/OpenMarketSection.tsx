@@ -80,6 +80,8 @@ export const OpenMarketSection = () => {
     transformImage(image, session?.user?.id)
   ) || [];
 
+  console.log('Transformed images:', transformedImages); // Debug log
+
   return (
     <section className="py-16">
       <MarketplaceHeader />

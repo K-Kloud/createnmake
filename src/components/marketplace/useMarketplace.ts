@@ -67,6 +67,8 @@ export const useMarketplace = () => {
           throw error;
         }
 
+        console.log('Raw images data:', images); // Debug log
+
         if (!images) {
           console.log('No images found');
           return [];
@@ -84,6 +86,8 @@ export const useMarketplace = () => {
                 console.error('Error fetching metrics for image', image.id, ':', metricsError);
                 return image;
               }
+
+              console.log('Metrics for image', image.id, ':', metrics); // Debug log
 
               const metricsMap = (metrics || []).reduce((acc, metric) => {
                 acc[metric.metric_type] = metric.total_value;
@@ -122,6 +126,7 @@ export const useMarketplace = () => {
           })
         );
 
+        console.log('Processed images with metrics:', imagesWithMetrics); // Debug log
         return imagesWithMetrics;
       } catch (error) {
         console.error('Error in marketplace query:', error);
@@ -135,6 +140,9 @@ export const useMarketplace = () => {
     },
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchOnMount: true, // Refetch when component mounts
   });
 
   return {
