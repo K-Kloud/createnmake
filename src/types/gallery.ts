@@ -11,6 +11,7 @@ export interface GalleryImage {
     avatar: string;
   };
   createdAt: Date;
+  timeAgo: string;
   hasLiked: boolean;
   image_likes: ImageLike[];
   metrics: {

@@ -1,4 +1,5 @@
 import { GalleryImage, Comment, Reply } from "@/types/gallery";
+import { formatDistanceToNow } from "date-fns";
 
 export const transformComments = (comments: any[]): Comment[] => {
   return comments.map(comment => ({
@@ -23,24 +24,29 @@ export const transformComments = (comments: any[]): Comment[] => {
   }));
 };
 
-export const transformImage = (image: any, userId?: string): GalleryImage => ({
-  id: image.id,
-  url: image.image_url || '',
-  prompt: image.prompt,
-  likes: image.likes || 0,
-  views: image.views || 0,
-  comments: transformComments(image.comments || []),
-  produced: 0,
-  creator: {
-    name: image.profiles?.username || 'Anonymous',
-    avatar: image.profiles?.avatar_url || '/placeholder.svg'
-  },
-  createdAt: new Date(image.created_at),
-  hasLiked: Boolean(image.image_likes?.some((like: any) => like.user_id === userId)),
-  image_likes: image.image_likes || [],
-  metrics: {
-    like: image.likes || 0,
-    comment: (image.comments || []).length,
-    view: image.views || 0
-  }
-});
+export const transformImage = (image: any, userId?: string): GalleryImage => {
+  const createdAt = new Date(image.created_at);
+  
+  return {
+    id: image.id,
+    url: image.image_url || '',
+    prompt: image.prompt,
+    likes: image.likes || 0,
+    views: image.views || 0,
+    comments: transformComments(image.comments || []),
+    produced: 0,
+    creator: {
+      name: image.profiles?.username || 'Anonymous',
+      avatar: image.profiles?.avatar_url || '/placeholder.svg'
+    },
+    createdAt,
+    timeAgo: formatDistanceToNow(createdAt, { addSuffix: true }),
+    hasLiked: Boolean(image.image_likes?.some((like: any) => like.user_id === userId)),
+    image_likes: image.image_likes || [],
+    metrics: {
+      like: image.likes || 0,
+      comment: (image.comments || []).length,
+      view: image.views || 0
+    }
+  };
+};

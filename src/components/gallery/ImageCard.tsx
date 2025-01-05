@@ -25,6 +25,7 @@ interface ImageCardProps {
       avatar: string;
     };
     createdAt: Date;
+    timeAgo: string;
     hasLiked: boolean;
     image_likes: { user_id: string }[];
     metrics?: {
@@ -93,7 +94,7 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
               />
               <span className="text-sm font-medium">{image.creator.name}</span>
               <span className="text-sm text-gray-400">
-                {formatDistanceToNow(image.createdAt, { addSuffix: true })}
+                {image.timeAgo}
               </span>
             </div>
             <p className="text-sm text-gray-300">{image.prompt}</p>
