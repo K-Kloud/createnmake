@@ -9,6 +9,9 @@ import { useToast } from "@/components/ui/use-toast";
 import {
   Dialog,
   DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 
 interface ImageCardProps {
@@ -43,6 +46,7 @@ interface ImageCardProps {
 export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: ImageCardProps) => {
   const [showComments, setShowComments] = useState(false);
   const [imageOpen, setImageOpen] = useState(false);
+  const [selectionDialogOpen, setSelectionDialogOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -60,19 +64,20 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
     setZoomLevel(prev => Math.max(prev - 0.5, 1));
   };
 
-  const handleSendToManufacturer = () => {
-    localStorage.setItem('selectedManufacturerImage', JSON.stringify({
+  const handleMakeSelection = (type: 'artisan' | 'manufacturer') => {
+    localStorage.setItem('selectedDesignImage', JSON.stringify({
       url: image.url,
       prompt: image.prompt,
       id: image.id
     }));
     
     toast({
-      title: "Image Selected for Manufacturing",
-      description: "Redirecting to manufacturing options...",
+      title: "Design Selected",
+      description: `Redirecting to ${type} selection...`,
     });
 
-    navigate('/manufacturer');
+    setSelectionDialogOpen(false);
+    navigate(type === 'artisan' ? '/artisan' : '/manufacturer');
   };
 
   return (
@@ -128,7 +133,7 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
               <Button 
                 size="sm" 
                 className="space-x-1"
-                onClick={handleSendToManufacturer}
+                onClick={() => setSelectionDialogOpen(true)}
               >
                 <Package className="h-4 w-4" />
                 <span>Make</span>
@@ -174,6 +179,39 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
                 <ZoomIn className="h-4 w-4" />
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={selectionDialogOpen} onOpenChange={setSelectionDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Choose a Maker</DialogTitle>
+            <DialogDescription>
+              Select who you'd like to make this design
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <Button
+              variant="outline"
+              className="p-6 h-auto flex flex-col gap-2"
+              onClick={() => handleMakeSelection('artisan')}
+            >
+              <span className="text-lg font-semibold">Artisan</span>
+              <span className="text-sm text-muted-foreground">
+                Individual craftspeople and artists
+              </span>
+            </Button>
+            <Button
+              variant="outline"
+              className="p-6 h-auto flex flex-col gap-2"
+              onClick={() => handleMakeSelection('manufacturer')}
+            >
+              <span className="text-lg font-semibold">Manufacturer</span>
+              <span className="text-sm text-muted-foreground">
+                Professional manufacturing companies
+              </span>
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
