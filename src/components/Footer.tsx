@@ -1,9 +1,10 @@
-import { MessageSquare, Twitter, Instagram, Linkedin, Github } from "lucide-react";
+import { Whatsapp, Twitter, Instagram, Linkedin, Github } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 
 export const Footer = () => {
   const navigate = useNavigate();
+  const phoneNumber = "+447438306305";
   
   return (
     <footer className="bg-card/30 backdrop-blur-md border-t border-white/10">
@@ -38,7 +39,7 @@ export const Footer = () => {
             <h4 className="text-lg font-semibold">Contact</h4>
             <p className="text-sm text-gray-400">
               Email: support@openteknologies.com<br />
-              Phone: +447438306305<br />
+              Phone: {phoneNumber}<br />
               Address: Castleford, West Yorkshire
             </p>
           </div>
@@ -49,9 +50,9 @@ export const Footer = () => {
               <Button 
                 variant="ghost" 
                 size="icon"
-                onClick={() => window.open('https://wa.me/447438306305', '_blank')}
+                onClick={() => window.open(`https://wa.me/${phoneNumber.replace('+', '')}`, '_blank')}
               >
-                <MessageSquare className="h-5 w-5" />
+                <Whatsapp className="h-5 w-5" />
               </Button>
               <Button variant="ghost" size="icon">
                 <Twitter className="h-5 w-5" />
