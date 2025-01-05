@@ -1,10 +1,11 @@
-import { MessageCircle, Twitter, Instagram, Linkedin, Github } from "lucide-react";
+import { MessageCircle, Facebook, Twitter, Instagram, Linkedin, Github } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 
 export const Footer = () => {
   const navigate = useNavigate();
   const phoneNumber = "+447438306305";
+  const facebookPage = "https://facebook.com/openteknologies"; // Facebook page URL
   
   return (
     <footer className="bg-card/30 backdrop-blur-md border-t border-white/10">
@@ -53,6 +54,13 @@ export const Footer = () => {
                 onClick={() => window.open(`https://wa.me/${phoneNumber.replace('+', '')}`, '_blank')}
               >
                 <MessageCircle className="h-5 w-5" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => window.open(facebookPage, '_blank')}
+              >
+                <Facebook className="h-5 w-5" />
               </Button>
               <Button variant="ghost" size="icon">
                 <Twitter className="h-5 w-5" />
