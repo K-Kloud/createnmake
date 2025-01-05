@@ -76,59 +76,65 @@ export const useMarketplace = () => {
 
         const imagesWithMetrics = await Promise.all(
           images.map(async (image) => {
-            const { data: metrics, error: metricsError } = await supabase
-              .rpc('get_image_metrics', { p_image_id: image.id });
+            try {
+              const { data: metrics, error: metricsError } = await supabase
+                .rpc('get_image_metrics', { p_image_id: image.id });
 
-            if (metricsError) {
-              console.error('Error fetching metrics:', metricsError);
+              if (metricsError) {
+                console.error('Error fetching metrics for image', image.id, ':', metricsError);
+                return image;
+              }
+
+              const metricsMap = (metrics || []).reduce((acc, metric) => {
+                acc[metric.metric_type] = metric.total_value;
+                return acc;
+              }, {});
+
+              return {
+                ...image,
+                hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
+                comments: image.comments?.map(comment => ({
+                  id: comment.id,
+                  text: comment.text,
+                  createdAt: new Date(comment.created_at),
+                  user: {
+                    id: comment.user_id,
+                    name: comment.profiles?.username || 'Anonymous',
+                    avatar: comment.profiles?.avatar_url || 'https://github.com/shadcn.png'
+                  },
+                  replies: comment.comment_replies?.map(reply => ({
+                    id: reply.id,
+                    text: reply.text,
+                    createdAt: new Date(reply.created_at),
+                    user: {
+                      id: reply.user_id,
+                      name: reply.profiles?.username || 'Anonymous',
+                      avatar: reply.profiles?.avatar_url || 'https://github.com/shadcn.png'
+                    }
+                  })) || []
+                })) || [],
+                metrics: metricsMap
+              };
+            } catch (error) {
+              console.error('Error processing image metrics:', error);
               return image;
             }
-
-            const metricsMap = (metrics || []).reduce((acc, metric) => {
-              acc[metric.metric_type] = metric.total_value;
-              return acc;
-            }, {});
-
-            return {
-              ...image,
-              hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
-              comments: image.comments?.map(comment => ({
-                id: comment.id,
-                text: comment.text,
-                createdAt: new Date(comment.created_at),
-                user: {
-                  id: comment.user_id,
-                  name: comment.profiles?.username || 'Anonymous',
-                  avatar: comment.profiles?.avatar_url || 'https://github.com/shadcn.png'
-                },
-                replies: comment.comment_replies?.map(reply => ({
-                  id: reply.id,
-                  text: reply.text,
-                  createdAt: new Date(reply.created_at),
-                  user: {
-                    id: reply.user_id,
-                    name: reply.profiles?.username || 'Anonymous',
-                    avatar: reply.profiles?.avatar_url || 'https://github.com/shadcn.png'
-                  }
-                })) || []
-              })) || [],
-              metrics: metricsMap
-            };
           })
         );
 
         return imagesWithMetrics;
       } catch (error) {
-        console.error('Error fetching marketplace images:', error);
+        console.error('Error in marketplace query:', error);
         toast({
-          title: "Error",
-          description: "Failed to load marketplace images. Please try again later.",
+          title: "Error Loading Images",
+          description: "There was a problem loading the marketplace images. Please try refreshing the page.",
           variant: "destructive",
         });
         return [];
       }
     },
-    retry: 1,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   return {
