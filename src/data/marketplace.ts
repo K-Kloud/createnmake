@@ -1,4 +1,5 @@
 import { GalleryImage } from '@/types/gallery';
+import { formatDistanceToNow } from 'date-fns';
 
 export const currentUser = {
   id: "user1",
@@ -20,6 +21,7 @@ export const initialImages: GalleryImage[] = [
       avatar: "https://github.com/shadcn.png"
     },
     createdAt: new Date(2024, 2, 15, 14, 30),
+    timeAgo: formatDistanceToNow(new Date(2024, 2, 15, 14, 30), { addSuffix: true }),
     hasLiked: false,
     image_likes: [],
     metrics: {
@@ -41,6 +43,7 @@ export const initialImages: GalleryImage[] = [
       avatar: "https://github.com/shadcn.png"
     },
     createdAt: new Date(2024, 2, 14, 9, 15),
+    timeAgo: formatDistanceToNow(new Date(2024, 2, 14, 9, 15), { addSuffix: true }),
     hasLiked: false,
     image_likes: [],
     metrics: {
@@ -62,6 +65,7 @@ export const initialImages: GalleryImage[] = [
       avatar: "https://github.com/shadcn.png"
     },
     createdAt: new Date(2024, 2, 13, 11, 0),
+    timeAgo: formatDistanceToNow(new Date(2024, 2, 13, 11, 0), { addSuffix: true }),
     hasLiked: false,
     image_likes: [],
     metrics: {
@@ -83,6 +87,7 @@ export const initialImages: GalleryImage[] = [
       avatar: "https://github.com/shadcn.png"
     },
     createdAt: new Date(2024, 2, 12, 16, 45),
+    timeAgo: formatDistanceToNow(new Date(2024, 2, 12, 16, 45), { addSuffix: true }),
     hasLiked: false,
     image_likes: [],
     metrics: {
@@ -104,6 +109,7 @@ export const initialImages: GalleryImage[] = [
       avatar: "https://github.com/shadcn.png"
     },
     createdAt: new Date(2024, 2, 11, 8, 30),
+    timeAgo: formatDistanceToNow(new Date(2024, 2, 11, 8, 30), { addSuffix: true }),
     hasLiked: false,
     image_likes: [],
     metrics: {
@@ -125,6 +131,7 @@ export const initialImages: GalleryImage[] = [
       avatar: "https://github.com/shadcn.png"
     },
     createdAt: new Date(2024, 2, 10, 12, 15),
+    timeAgo: formatDistanceToNow(new Date(2024, 2, 10, 12, 15), { addSuffix: true }),
     hasLiked: false,
     image_likes: [],
     metrics: {
