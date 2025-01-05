@@ -18,8 +18,13 @@ export const useImageGeneration = () => {
   const { data: session } = useQuery({
     queryKey: ['session'],
     queryFn: async () => {
-      const { data } = await supabase.auth.getSession();
-      return data.session;
+      try {
+        const { data } = await supabase.auth.getSession();
+        return data.session;
+      } catch (error) {
+        console.error('Session fetch error:', error);
+        return null;
+      }
     },
   });
 
@@ -45,7 +50,6 @@ export const useImageGeneration = () => {
     setGeneratedImageUrl(undefined);
 
     try {
-      // Convert reference image to base64 if it exists
       let referenceImageBase64: string | undefined;
       if (referenceImage) {
         const reader = new FileReader();
@@ -56,7 +60,6 @@ export const useImageGeneration = () => {
         });
       }
 
-      // Create a record in the database
       const { data: dbRecord, error: dbError } = await supabase
         .from('generated_images')
         .insert({
@@ -72,9 +75,11 @@ export const useImageGeneration = () => {
         .select()
         .single();
 
-      if (dbError) throw dbError;
+      if (dbError) {
+        console.error('Database error:', dbError);
+        throw dbError;
+      }
 
-      // Generate the image
       const result = await generateImage({
         prompt: `${selectedItem}: ${prompt}`,
         width: 1024,
@@ -82,9 +87,12 @@ export const useImageGeneration = () => {
         referenceImage: referenceImageBase64
       });
       
+      if (!result?.url) {
+        throw new Error('No image URL received from generation service');
+      }
+
       setGeneratedImageUrl(result.url);
       
-      // Update the record with the generated image URL
       const { error: updateError } = await supabase
         .from('generated_images')
         .update({ 
@@ -93,21 +101,23 @@ export const useImageGeneration = () => {
         })
         .eq('id', dbRecord.id);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Update error:', updateError);
+        throw updateError;
+      }
       
       toast({
         title: "Image Generated",
         description: "Your image has been generated successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Generation error:', error);
       toast({
         title: "Generation Failed",
-        description: error.message,
+        description: error.message || "Failed to generate image. Please try again.",
         variant: "destructive",
       });
 
-      // Update status to failed if we have a database record
       if (error.id) {
         await supabase
           .from('generated_images')
