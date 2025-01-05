@@ -1,4 +1,4 @@
-import { Facebook, Twitter, Instagram, Linkedin, Github } from "lucide-react";
+import { MessageSquare, Twitter, Instagram, Linkedin, Github } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -46,8 +46,12 @@ export const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-lg font-semibold">Follow Us</h4>
             <div className="flex space-x-4">
-              <Button variant="ghost" size="icon">
-                <Facebook className="h-5 w-5" />
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => window.open('https://wa.me/447438306305', '_blank')}
+              >
+                <MessageSquare className="h-5 w-5" />
               </Button>
               <Button variant="ghost" size="icon">
                 <Twitter className="h-5 w-5" />
