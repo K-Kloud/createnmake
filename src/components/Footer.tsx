@@ -1,4 +1,4 @@
-import { Whatsapp, Twitter, Instagram, Linkedin, Github } from "lucide-react";
+import { MessageCircle, Twitter, Instagram, Linkedin, Github } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -52,7 +52,7 @@ export const Footer = () => {
                 size="icon"
                 onClick={() => window.open(`https://wa.me/${phoneNumber.replace('+', '')}`, '_blank')}
               >
-                <Whatsapp className="h-5 w-5" />
+                <MessageCircle className="h-5 w-5" />
               </Button>
               <Button variant="ghost" size="icon">
                 <Twitter className="h-5 w-5" />
