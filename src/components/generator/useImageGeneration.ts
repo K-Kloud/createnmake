@@ -28,39 +28,6 @@ export const useImageGeneration = () => {
     },
   });
 
-  const storeImageInSupabase = async (imageUrl: string, userId: string) => {
-    try {
-      // Fetch the image data
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      
-      // Generate a unique filename
-      const filename = `${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
-      const filePath = `${userId}/${filename}`;
-      
-      // Upload to Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('generated-images')
-        .upload(filePath, blob, {
-          contentType: 'image/png',
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-
-      // Get the public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('generated-images')
-        .getPublicUrl(filePath);
-
-      return publicUrl;
-    } catch (error) {
-      console.error('Error storing image:', error);
-      throw error;
-    }
-  };
-
   const handleGenerate = async () => {
     if (!session?.user) {
       setAuthDialogOpen(true);
@@ -93,7 +60,7 @@ export const useImageGeneration = () => {
         });
       }
 
-      // First generate the image
+      // Generate the image and get back the Supabase storage URL
       const result = await generateImage({
         prompt: `${selectedItem}: ${prompt}`,
         width: 1024,
@@ -105,10 +72,7 @@ export const useImageGeneration = () => {
         throw new Error('No image URL received from generation service');
       }
 
-      // Store the temporary image URL in Supabase storage
-      const permanentUrl = await storeImageInSupabase(result.url, session.user.id);
-
-      // Create the database record
+      // Create the database record with the permanent URL
       const { data: dbRecord, error: dbError } = await supabase
         .from('generated_images')
         .insert({
@@ -119,7 +83,7 @@ export const useImageGeneration = () => {
           status: 'completed',
           is_public: true,
           title: prompt.slice(0, 100),
-          image_url: permanentUrl,
+          image_url: result.url,
           reference_image_url: referenceImageBase64
         })
         .select()
@@ -130,7 +94,7 @@ export const useImageGeneration = () => {
         throw dbError;
       }
 
-      setGeneratedImageUrl(permanentUrl);
+      setGeneratedImageUrl(result.url);
       
       toast({
         title: "Image Generated",

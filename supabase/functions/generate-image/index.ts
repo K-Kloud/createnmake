@@ -61,8 +61,36 @@ serve(async (req) => {
     const data = await response.json();
     const imageUrl = data.data[0].url;
 
+    // Fetch the generated image
+    const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) throw new Error('Failed to fetch generated image');
+    const imageBlob = await imageResponse.blob();
+
+    // Create Supabase client
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    // Upload to Supabase Storage
+    const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
+    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+      .from('generated-images')
+      .upload(fileName, imageBlob, {
+        contentType: 'image/png',
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (uploadError) throw uploadError;
+
+    // Get the public URL
+    const { data: { publicUrl } } = supabaseClient.storage
+      .from('generated-images')
+      .getPublicUrl(fileName);
+
     return new Response(
-      JSON.stringify({ url: imageUrl, prompt: enhancedPrompt }),
+      JSON.stringify({ url: publicUrl, prompt: enhancedPrompt }),
       { 
         headers: {
           ...corsHeaders,
