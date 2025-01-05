@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLikeImage } from "./hooks/useLikeImage";
 import { useViewImage } from "./hooks/useViewImage";
 import { useCommentImage } from "./hooks/useCommentImage";
+import { formatDistanceToNow } from "date-fns";
 
 export const useMarketplace = () => {
   const { toast } = useToast();
@@ -67,14 +68,12 @@ export const useMarketplace = () => {
           throw error;
         }
 
-        console.log('Raw images data:', images); // Debug log
+        console.log('Raw images data:', images);
 
         if (!images) {
           console.log('No images found');
           return [];
         }
-
-        console.log('Successfully fetched images:', images.length);
 
         const imagesWithMetrics = await Promise.all(
           images.map(async (image) => {
@@ -84,10 +83,37 @@ export const useMarketplace = () => {
 
               if (metricsError) {
                 console.error('Error fetching metrics for image', image.id, ':', metricsError);
-                return image;
+                return {
+                  ...image,
+                  hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
+                  comments: image.comments?.map(comment => ({
+                    id: comment.id,
+                    text: comment.text,
+                    createdAt: new Date(comment.created_at),
+                    user: {
+                      id: comment.user_id,
+                      name: comment.profiles?.username || 'Anonymous',
+                      avatar: comment.profiles?.avatar_url || 'https://github.com/shadcn.png'
+                    },
+                    replies: comment.comment_replies?.map(reply => ({
+                      id: reply.id,
+                      text: reply.text,
+                      createdAt: new Date(reply.created_at),
+                      user: {
+                        id: reply.user_id,
+                        name: reply.profiles?.username || 'Anonymous',
+                        avatar: reply.profiles?.avatar_url || 'https://github.com/shadcn.png'
+                      }
+                    })) || []
+                  })) || [],
+                  metrics: {
+                    like: image.likes || 0,
+                    comment: (image.comments || []).length,
+                    view: image.views || 0
+                  },
+                  timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true })
+                };
               }
-
-              console.log('Metrics for image', image.id, ':', metrics); // Debug log
 
               const metricsMap = (metrics || []).reduce((acc, metric) => {
                 acc[metric.metric_type] = metric.total_value;
@@ -117,7 +143,8 @@ export const useMarketplace = () => {
                     }
                   })) || []
                 })) || [],
-                metrics: metricsMap
+                metrics: metricsMap,
+                timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true })
               };
             } catch (error) {
               console.error('Error processing image metrics:', error);
@@ -126,7 +153,7 @@ export const useMarketplace = () => {
           })
         );
 
-        console.log('Processed images with metrics:', imagesWithMetrics); // Debug log
+        console.log('Processed images with metrics:', imagesWithMetrics);
         return imagesWithMetrics;
       } catch (error) {
         console.error('Error in marketplace query:', error);
@@ -141,8 +168,9 @@ export const useMarketplace = () => {
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    refetchOnWindowFocus: true, // Refetch when window regains focus
-    refetchOnMount: true, // Refetch when component mounts
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
   });
 
   return {
