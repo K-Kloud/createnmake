@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, width = 1024, height = 1024 } = await req.json()
+    const { prompt, width = 1024, height = 1024, referenceImage } = await req.json()
     
     console.log('Generating image with prompt:', prompt)
 
