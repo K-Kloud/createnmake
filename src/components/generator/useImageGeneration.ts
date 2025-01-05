@@ -28,6 +28,39 @@ export const useImageGeneration = () => {
     },
   });
 
+  const storeImageInSupabase = async (imageUrl: string, userId: string) => {
+    try {
+      // Fetch the image data
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      
+      // Generate a unique filename
+      const filename = `${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
+      const filePath = `${userId}/${filename}`;
+      
+      // Upload to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('generated-images')
+        .upload(filePath, blob, {
+          contentType: 'image/png',
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('generated-images')
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Error storing image:', error);
+      throw error;
+    }
+  };
+
   const handleGenerate = async () => {
     if (!session?.user) {
       setAuthDialogOpen(true);
@@ -60,26 +93,7 @@ export const useImageGeneration = () => {
         });
       }
 
-      const { data: dbRecord, error: dbError } = await supabase
-        .from('generated_images')
-        .insert({
-          user_id: session.user.id,
-          prompt: `${selectedItem}: ${prompt}`,
-          item_type: selectedItem,
-          aspect_ratio: selectedRatio,
-          status: 'pending',
-          is_public: true,
-          title: prompt.slice(0, 100),
-          reference_image_url: referenceImageBase64
-        })
-        .select()
-        .single();
-
-      if (dbError) {
-        console.error('Database error:', dbError);
-        throw dbError;
-      }
-
+      // First generate the image
       const result = await generateImage({
         prompt: `${selectedItem}: ${prompt}`,
         width: 1024,
@@ -91,24 +105,36 @@ export const useImageGeneration = () => {
         throw new Error('No image URL received from generation service');
       }
 
-      setGeneratedImageUrl(result.url);
-      
-      const { error: updateError } = await supabase
-        .from('generated_images')
-        .update({ 
-          image_url: result.url,
-          status: 'completed'
-        })
-        .eq('id', dbRecord.id);
+      // Store the temporary image URL in Supabase storage
+      const permanentUrl = await storeImageInSupabase(result.url, session.user.id);
 
-      if (updateError) {
-        console.error('Update error:', updateError);
-        throw updateError;
+      // Create the database record
+      const { data: dbRecord, error: dbError } = await supabase
+        .from('generated_images')
+        .insert({
+          user_id: session.user.id,
+          prompt: `${selectedItem}: ${prompt}`,
+          item_type: selectedItem,
+          aspect_ratio: selectedRatio,
+          status: 'completed',
+          is_public: true,
+          title: prompt.slice(0, 100),
+          image_url: permanentUrl,
+          reference_image_url: referenceImageBase64
+        })
+        .select()
+        .single();
+
+      if (dbError) {
+        console.error('Database error:', dbError);
+        throw dbError;
       }
+
+      setGeneratedImageUrl(permanentUrl);
       
       toast({
         title: "Image Generated",
-        description: "Your image has been generated successfully",
+        description: "Your image has been generated and stored successfully",
       });
     } catch (error: any) {
       console.error('Generation error:', error);
@@ -117,13 +143,6 @@ export const useImageGeneration = () => {
         description: error.message || "Failed to generate image. Please try again.",
         variant: "destructive",
       });
-
-      if (error.id) {
-        await supabase
-          .from('generated_images')
-          .update({ status: 'failed' })
-          .eq('id', error.id);
-      }
     } finally {
       setIsGenerating(false);
     }
