@@ -62,50 +62,57 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
 
   const handleDelete = async (id: number) => {
     try {
-      // First delete comment replies
-      const { data: comments } = await supabase
+      // First, get all comments for this image
+      const { data: comments, error: commentsQueryError } = await supabase
         .from('comments')
         .select('id')
         .eq('image_id', id);
 
+      if (commentsQueryError) throw commentsQueryError;
+
+      // If there are comments, delete their replies first
       if (comments && comments.length > 0) {
         const commentIds = comments.map(comment => comment.id);
         
-        // Delete all replies for these comments
         const { error: repliesError } = await supabase
           .from('comment_replies')
           .delete()
-          .in('comment_id', commentIds)
-          .throwOnError();
+          .in('comment_id', commentIds);
+
+        if (repliesError) throw repliesError;
       }
 
-      // Then delete the comments
+      // Delete the comments
       const { error: commentsError } = await supabase
         .from('comments')
         .delete()
-        .eq('image_id', id)
-        .throwOnError();
+        .eq('image_id', id);
+
+      if (commentsError) throw commentsError;
 
       // Delete marketplace metrics
       const { error: metricsError } = await supabase
         .from('marketplace_metrics')
         .delete()
-        .eq('image_id', id)
-        .throwOnError();
+        .eq('image_id', id);
+
+      if (metricsError) throw metricsError;
 
       // Delete image likes
       const { error: likesError } = await supabase
         .from('image_likes')
         .delete()
-        .eq('image_id', id)
-        .throwOnError();
+        .eq('image_id', id);
+
+      if (likesError) throw likesError;
 
       // Finally delete the image
       const { error: imageError } = await supabase
         .from('generated_images')
         .delete()
-        .eq('id', id)
-        .throwOnError();
+        .eq('id', id);
+
+      if (imageError) throw imageError;
 
       // Call the parent's onDelete handler
       onDelete(id);
