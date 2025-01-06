@@ -62,7 +62,24 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
 
   const handleDelete = async (id: number) => {
     try {
-      // Delete comments first
+      // First delete comment replies
+      const { data: comments } = await supabase
+        .from('comments')
+        .select('id')
+        .eq('image_id', id);
+
+      if (comments && comments.length > 0) {
+        const commentIds = comments.map(comment => comment.id);
+        
+        // Delete all replies for these comments
+        const { error: repliesError } = await supabase
+          .from('comment_replies')
+          .delete()
+          .in('comment_id', commentIds)
+          .throwOnError();
+      }
+
+      // Then delete the comments
       const { error: commentsError } = await supabase
         .from('comments')
         .delete()
