@@ -62,7 +62,15 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
 
   const handleDelete = async (id: number) => {
     try {
-      // First, delete related marketplace metrics
+      // First, delete all comments associated with the image
+      const { error: commentsError } = await supabase
+        .from('comments')
+        .delete()
+        .eq('image_id', id);
+
+      if (commentsError) throw commentsError;
+
+      // Then, delete related marketplace metrics
       const { error: metricsError } = await supabase
         .from('marketplace_metrics')
         .delete()
@@ -70,7 +78,15 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
 
       if (metricsError) throw metricsError;
 
-      // Then, delete the image
+      // Delete image likes
+      const { error: likesError } = await supabase
+        .from('image_likes')
+        .delete()
+        .eq('image_id', id);
+
+      if (likesError) throw likesError;
+
+      // Finally, delete the image
       const { error: imageError } = await supabase
         .from('generated_images')
         .delete()
