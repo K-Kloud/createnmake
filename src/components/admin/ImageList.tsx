@@ -62,37 +62,33 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
 
   const handleDelete = async (id: number) => {
     try {
-      // First, delete all comments associated with the image
+      // Delete comments first
       const { error: commentsError } = await supabase
         .from('comments')
         .delete()
-        .eq('image_id', id);
+        .eq('image_id', id)
+        .throwOnError();
 
-      if (commentsError) throw commentsError;
-
-      // Then, delete related marketplace metrics
+      // Delete marketplace metrics
       const { error: metricsError } = await supabase
         .from('marketplace_metrics')
         .delete()
-        .eq('image_id', id);
-
-      if (metricsError) throw metricsError;
+        .eq('image_id', id)
+        .throwOnError();
 
       // Delete image likes
       const { error: likesError } = await supabase
         .from('image_likes')
         .delete()
-        .eq('image_id', id);
+        .eq('image_id', id)
+        .throwOnError();
 
-      if (likesError) throw likesError;
-
-      // Finally, delete the image
+      // Finally delete the image
       const { error: imageError } = await supabase
         .from('generated_images')
         .delete()
-        .eq('id', id);
-
-      if (imageError) throw imageError;
+        .eq('id', id)
+        .throwOnError();
 
       // Call the parent's onDelete handler
       onDelete(id);
@@ -105,7 +101,7 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
       console.error('Delete error:', error);
       toast({
         title: "Error",
-        description: "Failed to delete the image. Please try again.",
+        description: error.message || "Failed to delete the image. Please try again.",
         variant: "destructive"
       });
     }
