@@ -4,6 +4,9 @@ import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageListHeader } from "./images/ImageListHeader";
 import { ImageListRow } from "./images/ImageListRow";
+import { Database } from "@/integrations/supabase/types";
+
+type TableName = keyof Database['public']['Tables'];
 
 interface ImageListProps {
   images: any[];
@@ -62,7 +65,7 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
 
   const handleDelete = async (id: number) => {
     const deleteWithToast = async (
-      tableName: string,
+      tableName: TableName,
       condition: Record<string, any>
     ) => {
       const { error } = await supabase
