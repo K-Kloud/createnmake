@@ -1,92 +1,35 @@
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { useState } from "react";
-import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { ImageListHeader } from "./images/ImageListHeader";
-import { ImageListRow } from "./images/ImageListRow";
-import { Database } from "@/integrations/supabase/types";
+import { useToast } from "@/components/ui/use-toast";
+import type { Database } from "@/integrations/supabase/types";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
 
-type TableName = keyof Database['public']['Tables'];
+type TableName = keyof Database["public"]["Tables"];
 
-interface ImageListProps {
-  images: any[];
-  onDelete: (id: number) => void;
-  onView: (id: number) => void;
-}
+export const ImageList = () => {
+  const { toast } = useToast();
+  const [isDeleting, setIsDeleting] = useState(false);
 
-export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editData, setEditData] = useState<any>({});
-
-  const startEditing = (image: any) => {
-    setEditingId(image.id);
-    setEditData({
-      title: image.title || '',
-      prompt: image.prompt || '',
-      likes: image.likes || 0,
-      views: image.views || 0
-    });
-  };
-
-  const cancelEditing = () => {
-    setEditingId(null);
-    setEditData({});
-  };
-
-  const saveChanges = async (id: number) => {
-    try {
-      const { error } = await supabase
-        .from('generated_images')
-        .update({
-          title: editData.title,
-          prompt: editData.prompt,
-          likes: parseInt(editData.likes),
-          views: parseInt(editData.views)
-        })
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Changes saved",
-        description: "The image details have been updated successfully."
-      });
-      
-      setEditingId(null);
-      setEditData({});
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save changes. Please try again.",
-        variant: "destructive"
-      });
-    }
+  const deleteWithToast = async (table: TableName, match: Record<string, any>) => {
+    const { error } = await supabase.from(table).delete().match(match);
+    if (error) throw error;
   };
 
   const handleDelete = async (id: number) => {
-    const deleteWithToast = async (
-      tableName: TableName,
-      condition: Record<string, any>
-    ) => {
-      const { error } = await supabase
-        .from(tableName)
-        .delete()
-        .match(condition);
-
-      if (error) {
-        console.error(`Error deleting from ${tableName}:`, error);
-        throw error;
-      }
-    };
+    if (isDeleting) return;
 
     try {
-      // 1. Get all comments for this image
-      const { data: comments, error: commentsQueryError } = await supabase
+      setIsDeleting(true);
+
+      // 1. Get all comments for this image first
+      const { data: comments, error: commentsError } = await supabase
         .from('comments')
         .select('id')
         .eq('image_id', id);
 
-      if (commentsQueryError) throw commentsQueryError;
+      if (commentsError) throw commentsError;
 
       // 2. If there are comments, delete their replies first
       if (comments && comments.length > 0) {
@@ -110,56 +53,91 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
       }
 
       // 4. Delete marketplace metrics
-      await deleteWithToast('marketplace_metrics', { image_id: id });
+      const { error: metricsError } = await supabase
+        .from('marketplace_metrics')
+        .delete()
+        .eq('image_id', id);
+
+      if (metricsError) throw metricsError;
 
       // 5. Delete image likes
-      await deleteWithToast('image_likes', { image_id: id });
+      const { error: likesError } = await supabase
+        .from('image_likes')
+        .delete()
+        .eq('image_id', id);
+
+      if (likesError) throw likesError;
 
       // 6. Finally delete the image
-      await deleteWithToast('generated_images', { id });
+      const { error: imageError } = await supabase
+        .from('generated_images')
+        .delete()
+        .eq('id', id);
 
-      // 7. Call the parent's onDelete handler
-      onDelete(id);
+      if (imageError) throw imageError;
 
       toast({
-        title: "Image deleted",
-        description: "The image and its related data have been successfully deleted."
+        title: "Success",
+        description: "Image and related data deleted successfully",
       });
+
     } catch (error: any) {
       console.error('Delete error:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to delete the image. Please try again.",
-        variant: "destructive"
+        description: error.message || "Failed to delete image",
+        variant: "destructive",
       });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
+  const { data: images, isLoading } = useQuery({
+    queryKey: ['admin-images'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('generated_images')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <Table>
-      <ImageListHeader />
-      <TableBody>
-        {images.map((image) => (
-          <ImageListRow
-            key={image.id}
-            image={image}
-            editingId={editingId}
-            editData={editData}
-            onEdit={startEditing}
-            onSave={saveChanges}
-            onCancel={cancelEditing}
-            onDelete={handleDelete}
-            onEditDataChange={setEditData}
-          />
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Image Management</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {images?.map((image) => (
+          <Card key={image.id} className="p-4">
+            <img
+              src={image.url}
+              alt={image.prompt || 'Generated image'}
+              className="w-full h-48 object-cover rounded-lg mb-2"
+            />
+            <p className="text-sm text-gray-600 mb-2">{image.prompt}</p>
+            <p className="text-xs text-gray-500 mb-2">
+              Created: {new Date(image.created_at).toLocaleDateString()}
+            </p>
+            <Button
+              variant="destructive"
+              onClick={() => handleDelete(image.id)}
+              disabled={isDeleting}
+              className="w-full"
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </Button>
+          </Card>
         ))}
-        {images.length === 0 && (
-          <TableRow>
-            <TableCell colSpan={6} className="text-center py-8">
-              No images found
-            </TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+      </div>
+    </div>
   );
 };
+
+export default ImageList;
