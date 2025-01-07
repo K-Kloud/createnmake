@@ -90,18 +90,23 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
 
       // 2. If there are comments, delete their replies first
       if (comments && comments.length > 0) {
-        const commentIds = comments.map(comment => comment.id);
-        
-        // Delete all replies for all comments
-        await deleteWithToast('comment_replies', { comment_id: commentIds[0] });
-        
-        // Delete remaining replies if any
-        for (let i = 1; i < commentIds.length; i++) {
-          await deleteWithToast('comment_replies', { comment_id: commentIds[i] });
+        // Delete all replies for all comments in one go
+        for (const comment of comments) {
+          const { error: replyError } = await supabase
+            .from('comment_replies')
+            .delete()
+            .eq('comment_id', comment.id);
+          
+          if (replyError) throw replyError;
         }
 
-        // 3. Delete all comments for this image
-        await deleteWithToast('comments', { image_id: id });
+        // 3. Then delete all comments for this image
+        const { error: commentError } = await supabase
+          .from('comments')
+          .delete()
+          .eq('image_id', id);
+        
+        if (commentError) throw commentError;
       }
 
       // 4. Delete marketplace metrics
