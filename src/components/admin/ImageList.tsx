@@ -91,16 +91,18 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
       // 2. If there are comments, delete their replies first
       if (comments && comments.length > 0) {
         const commentIds = comments.map(comment => comment.id);
+        
+        // Delete all replies for all comments
         await deleteWithToast('comment_replies', { comment_id: commentIds[0] });
         
         // Delete remaining replies if any
         for (let i = 1; i < commentIds.length; i++) {
           await deleteWithToast('comment_replies', { comment_id: commentIds[i] });
         }
-      }
 
-      // 3. Delete the comments
-      await deleteWithToast('comments', { image_id: id });
+        // 3. Delete all comments for this image
+        await deleteWithToast('comments', { image_id: id });
+      }
 
       // 4. Delete marketplace metrics
       await deleteWithToast('marketplace_metrics', { image_id: id });
