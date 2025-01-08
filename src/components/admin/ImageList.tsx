@@ -30,7 +30,7 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
       setIsDeleting(true);
       setDeletingId(id);
 
-      // 1. Delete all comment replies first
+      // 1. First, get all comments for this image
       const { data: comments, error: commentsError } = await supabase
         .from('comments')
         .select('id')
@@ -38,18 +38,19 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
 
       if (commentsError) throw commentsError;
 
+      // 2. Delete comment replies and comments
       if (comments && comments.length > 0) {
-        // Delete replies for each comment
-        for (const comment of comments) {
+        // Delete all replies for all comments
+        await Promise.all(comments.map(async (comment) => {
           const { error: replyError } = await supabase
             .from('comment_replies')
             .delete()
             .eq('comment_id', comment.id);
           
           if (replyError) throw replyError;
-        }
+        }));
 
-        // 2. Delete all comments for this image
+        // Now delete all comments
         const { error: deleteCommentsError } = await supabase
           .from('comments')
           .delete()
@@ -75,6 +76,14 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
       if (likesError) throw likesError;
 
       // 5. Finally delete the image
+      const { error: imageError } = await supabase
+        .from('generated_images')
+        .delete()
+        .eq('id', id);
+
+      if (imageError) throw imageError;
+
+      // 6. Call the onDelete callback to update the UI
       await onDelete(id);
 
       toast({
