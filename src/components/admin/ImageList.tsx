@@ -4,7 +4,6 @@ import { useToast } from "@/components/ui/use-toast";
 import type { Database } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
 
 type GeneratedImage = Database['public']['Tables']['generated_images']['Row'] & {
   profiles?: {
