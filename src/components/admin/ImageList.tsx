@@ -21,19 +21,16 @@ interface ImageListProps {
 export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
-
-  const deleteWithToast = async (table: keyof Database["public"]["Tables"], match: Record<string, any>) => {
-    const { error } = await supabase.from(table).delete().match(match);
-    if (error) throw error;
-  };
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const handleDelete = async (id: number) => {
     if (isDeleting) return;
 
     try {
       setIsDeleting(true);
+      setDeletingId(id);
 
-      // 1. Get all comments for this image first
+      // 1. Delete all comment replies first
       const { data: comments, error: commentsError } = await supabase
         .from('comments')
         .select('id')
@@ -41,9 +38,8 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
 
       if (commentsError) throw commentsError;
 
-      // 2. If there are comments, delete their replies first
       if (comments && comments.length > 0) {
-        // Delete all replies for all comments in one go
+        // Delete replies for each comment
         for (const comment of comments) {
           const { error: replyError } = await supabase
             .from('comment_replies')
@@ -53,16 +49,16 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
           if (replyError) throw replyError;
         }
 
-        // 3. Then delete all comments for this image
-        const { error: commentError } = await supabase
+        // 2. Delete all comments for this image
+        const { error: deleteCommentsError } = await supabase
           .from('comments')
           .delete()
           .eq('image_id', id);
         
-        if (commentError) throw commentError;
+        if (deleteCommentsError) throw deleteCommentsError;
       }
 
-      // 4. Delete marketplace metrics
+      // 3. Delete marketplace metrics
       const { error: metricsError } = await supabase
         .from('marketplace_metrics')
         .delete()
@@ -70,7 +66,7 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
 
       if (metricsError) throw metricsError;
 
-      // 5. Delete image likes
+      // 4. Delete image likes
       const { error: likesError } = await supabase
         .from('image_likes')
         .delete()
@@ -78,7 +74,7 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
 
       if (likesError) throw likesError;
 
-      // 6. Finally delete the image
+      // 5. Finally delete the image
       await onDelete(id);
 
       toast({
@@ -95,6 +91,7 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
       });
     } finally {
       setIsDeleting(false);
+      setDeletingId(null);
     }
   };
 
@@ -114,10 +111,10 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
           <Button
             variant="destructive"
             onClick={() => handleDelete(image.id)}
-            disabled={isDeleting}
+            disabled={isDeleting && deletingId === image.id}
             className="w-full"
           >
-            {isDeleting ? 'Deleting...' : 'Delete'}
+            {isDeleting && deletingId === image.id ? 'Deleting...' : 'Delete'}
           </Button>
         </Card>
       ))}
