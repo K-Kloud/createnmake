@@ -1,36 +1,24 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import type { Database } from "@/integrations/supabase/types";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-
-type GeneratedImage = Database['public']['Tables']['generated_images']['Row'] & {
-  profiles?: {
-    username: string | null;
-    avatar_url: string | null;
-  } | null;
-};
+import { ImageListHeader } from "./images/ImageListHeader";
+import { ImageListRow } from "./images/ImageListRow";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 interface ImageListProps {
-  images: GeneratedImage[];
+  images: any[];
   onDelete: (id: number) => Promise<void>;
-  onView: () => void;
+  isLoading?: boolean;
 }
 
-export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
-  const { toast } = useToast();
-  const [isDeleting, setIsDeleting] = useState(false);
+export const ImageList = ({ images, onDelete, isLoading = false }: ImageListProps) => {
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const handleDelete = async (id: number) => {
-    if (isDeleting) return;
-
     try {
-      setIsDeleting(true);
       setDeletingId(id);
 
-      // 1. First, get all comments for this image
+      // 1. First get all comments for this image
       const { data: comments, error: commentsError } = await supabase
         .from('comments')
         .select('id')
@@ -43,7 +31,7 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
 
       // 2. Delete comment replies and comments
       if (comments && comments.length > 0) {
-        // Delete all replies for all comments
+        // Delete all replies first
         await Promise.all(comments.map(async (comment) => {
           const { error: replyError } = await supabase
             .from('comment_replies')
@@ -103,50 +91,36 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
 
       // 6. Call the onDelete callback to update the UI
       await onDelete(id);
-
-      toast({
-        title: "Success",
-        description: "Image and related data deleted successfully",
-      });
-
+      toast.success('Image deleted successfully');
     } catch (error: any) {
-      console.error('Delete error:', error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to delete image",
-        variant: "destructive",
-      });
+      console.error('Error deleting image:', error);
+      toast.error(`Failed to delete image: ${error.message}`);
     } finally {
-      setIsDeleting(false);
       setDeletingId(null);
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {images?.map((image) => (
-        <Card key={image.id} className="p-4">
-          <img
-            src={image.image_url}
-            alt={image.prompt || 'Generated image'}
-            className="w-full h-48 object-cover rounded-lg mb-2"
+    <div className="space-y-4">
+      <ImageListHeader />
+      <div className="space-y-2">
+        {images.map((image) => (
+          <ImageListRow
+            key={image.id}
+            image={image}
+            onDelete={() => handleDelete(image.id)}
+            isDeleting={deletingId === image.id}
           />
-          <p className="text-sm text-gray-600 mb-2">{image.prompt}</p>
-          <p className="text-xs text-gray-500 mb-2">
-            Created: {new Date(image.created_at).toLocaleDateString()}
-          </p>
-          <Button
-            variant="destructive"
-            onClick={() => handleDelete(image.id)}
-            disabled={isDeleting && deletingId === image.id}
-            className="w-full"
-          >
-            {isDeleting && deletingId === image.id ? 'Deleting...' : 'Delete'}
-          </Button>
-        </Card>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };
-
-export default ImageList;
