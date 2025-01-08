@@ -6,13 +6,24 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 
-type TableName = keyof Database["public"]["Tables"];
+type GeneratedImage = Database['public']['Tables']['generated_images']['Row'] & {
+  profiles?: {
+    username: string | null;
+    avatar_url: string | null;
+  } | null;
+};
 
-export const ImageList = () => {
+interface ImageListProps {
+  images: GeneratedImage[];
+  onDelete: (id: number) => Promise<void>;
+  onView: () => void;
+}
+
+export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const deleteWithToast = async (table: TableName, match: Record<string, any>) => {
+  const deleteWithToast = async (table: keyof Database["public"]["Tables"], match: Record<string, any>) => {
     const { error } = await supabase.from(table).delete().match(match);
     if (error) throw error;
   };
@@ -69,12 +80,7 @@ export const ImageList = () => {
       if (likesError) throw likesError;
 
       // 6. Finally delete the image
-      const { error: imageError } = await supabase
-        .from('generated_images')
-        .delete()
-        .eq('id', id);
-
-      if (imageError) throw imageError;
+      await onDelete(id);
 
       toast({
         title: "Success",
@@ -93,49 +99,29 @@ export const ImageList = () => {
     }
   };
 
-  const { data: images, isLoading } = useQuery({
-    queryKey: ['admin-images'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('generated_images')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data;
-    }
-  });
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Image Management</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {images?.map((image) => (
-          <Card key={image.id} className="p-4">
-            <img
-              src={image.url}
-              alt={image.prompt || 'Generated image'}
-              className="w-full h-48 object-cover rounded-lg mb-2"
-            />
-            <p className="text-sm text-gray-600 mb-2">{image.prompt}</p>
-            <p className="text-xs text-gray-500 mb-2">
-              Created: {new Date(image.created_at).toLocaleDateString()}
-            </p>
-            <Button
-              variant="destructive"
-              onClick={() => handleDelete(image.id)}
-              disabled={isDeleting}
-              className="w-full"
-            >
-              {isDeleting ? 'Deleting...' : 'Delete'}
-            </Button>
-          </Card>
-        ))}
-      </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {images?.map((image) => (
+        <Card key={image.id} className="p-4">
+          <img
+            src={image.image_url}
+            alt={image.prompt || 'Generated image'}
+            className="w-full h-48 object-cover rounded-lg mb-2"
+          />
+          <p className="text-sm text-gray-600 mb-2">{image.prompt}</p>
+          <p className="text-xs text-gray-500 mb-2">
+            Created: {new Date(image.created_at).toLocaleDateString()}
+          </p>
+          <Button
+            variant="destructive"
+            onClick={() => handleDelete(image.id)}
+            disabled={isDeleting}
+            className="w-full"
+          >
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </Button>
+        </Card>
+      ))}
     </div>
   );
 };
