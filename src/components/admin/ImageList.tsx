@@ -36,7 +36,10 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
         .select('id')
         .eq('image_id', id);
 
-      if (commentsError) throw commentsError;
+      if (commentsError) {
+        console.error('Error fetching comments:', commentsError);
+        throw commentsError;
+      }
 
       // 2. Delete comment replies and comments
       if (comments && comments.length > 0) {
@@ -47,7 +50,10 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
             .delete()
             .eq('comment_id', comment.id);
           
-          if (replyError) throw replyError;
+          if (replyError) {
+            console.error('Error deleting replies:', replyError);
+            throw replyError;
+          }
         }));
 
         // Now delete all comments
@@ -56,7 +62,10 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
           .delete()
           .eq('image_id', id);
         
-        if (deleteCommentsError) throw deleteCommentsError;
+        if (deleteCommentsError) {
+          console.error('Error deleting comments:', deleteCommentsError);
+          throw deleteCommentsError;
+        }
       }
 
       // 3. Delete marketplace metrics
@@ -65,7 +74,10 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
         .delete()
         .eq('image_id', id);
 
-      if (metricsError) throw metricsError;
+      if (metricsError) {
+        console.error('Error deleting metrics:', metricsError);
+        throw metricsError;
+      }
 
       // 4. Delete image likes
       const { error: likesError } = await supabase
@@ -73,7 +85,10 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
         .delete()
         .eq('image_id', id);
 
-      if (likesError) throw likesError;
+      if (likesError) {
+        console.error('Error deleting likes:', likesError);
+        throw likesError;
+      }
 
       // 5. Finally delete the image
       const { error: imageError } = await supabase
@@ -81,7 +96,10 @@ export const ImageList = ({ images, onDelete, onView }: ImageListProps) => {
         .delete()
         .eq('id', id);
 
-      if (imageError) throw imageError;
+      if (imageError) {
+        console.error('Error deleting image:', imageError);
+        throw imageError;
+      }
 
       // 6. Call the onDelete callback to update the UI
       await onDelete(id);
