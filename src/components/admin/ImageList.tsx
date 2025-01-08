@@ -32,17 +32,15 @@ export const ImageList = ({ images, onDelete, isLoading = false }: ImageListProp
       // 2. Delete comment replies and comments
       if (comments && comments.length > 0) {
         // Delete all replies first
-        await Promise.all(comments.map(async (comment) => {
-          const { error: replyError } = await supabase
-            .from('comment_replies')
-            .delete()
-            .eq('comment_id', comment.id);
-          
-          if (replyError) {
-            console.error('Error deleting replies:', replyError);
-            throw replyError;
-          }
-        }));
+        const { error: replyError } = await supabase
+          .from('comment_replies')
+          .delete()
+          .eq('comment_id', comments[0].id);
+        
+        if (replyError) {
+          console.error('Error deleting replies:', replyError);
+          throw replyError;
+        }
 
         // Now delete all comments
         const { error: deleteCommentsError } = await supabase
