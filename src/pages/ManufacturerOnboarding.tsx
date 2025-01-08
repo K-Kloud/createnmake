@@ -4,15 +4,20 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { BusinessTypeSelect } from "@/components/ui/business-type-select";
+import { ImageUploadField } from "@/components/admin/portfolio/ImageUploadField";
+import { Loader2 } from "lucide-react";
 
 const ManufacturerOnboarding = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [formData, setFormData] = useState({
     businessName: "",
     businessType: "",
@@ -20,6 +25,7 @@ const ManufacturerOnboarding = () => {
     phone: "",
     address: "",
     specialties: "",
+    bio: ""
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,7 +36,24 @@ const ManufacturerOnboarding = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("No user found");
 
-      const { error } = await supabase
+      // Update profile with avatar
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({
+          avatar_url: avatarUrl,
+          business_name: formData.businessName,
+          business_type: formData.businessType,
+          phone: formData.phone,
+          address: formData.address,
+          specialties: formData.specialties.split(",").map(s => s.trim()),
+          bio: formData.bio
+        })
+        .eq("id", user.id);
+
+      if (profileError) throw profileError;
+
+      // Create manufacturer record
+      const { error: manufacturerError } = await supabase
         .from("manufacturers")
         .insert({
           id: user.id,
@@ -42,7 +65,7 @@ const ManufacturerOnboarding = () => {
           specialties: formData.specialties.split(",").map(s => s.trim()),
         });
 
-      if (error) throw error;
+      if (manufacturerError) throw manufacturerError;
 
       toast({
         title: "Profile Created",
@@ -72,6 +95,15 @@ const ManufacturerOnboarding = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
+                <Label>Profile Picture</Label>
+                <ImageUploadField
+                  label=""
+                  id="avatar"
+                  onChange={setAvatarUrl}
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="businessName">Business Name</Label>
                 <Input
                   id="businessName"
@@ -83,11 +115,9 @@ const ManufacturerOnboarding = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="businessType">Business Type</Label>
-                <Input
-                  id="businessType"
+                <BusinessTypeSelect
                   value={formData.businessType}
-                  onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
-                  required
+                  onChange={(value) => setFormData({ ...formData, businessType: value })}
                 />
               </div>
 
@@ -134,8 +164,26 @@ const ManufacturerOnboarding = () => {
                 />
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="bio">Business Bio</Label>
+                <Textarea
+                  id="bio"
+                  value={formData.bio}
+                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                  placeholder="Tell us about your business..."
+                  className="h-32"
+                />
+              </div>
+
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating Profile..." : "Complete Profile"}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating Profile...
+                  </>
+                ) : (
+                  "Complete Profile"
+                )}
               </Button>
             </form>
           </CardContent>
