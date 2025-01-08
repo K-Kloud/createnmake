@@ -142,7 +142,7 @@ const Admin = () => {
                 <ImageList 
                   images={images || []}
                   onDelete={handleDelete}
-                  onView={() => {}}
+                  isLoading={loadingImages}
                 />
               </div>
             </div>

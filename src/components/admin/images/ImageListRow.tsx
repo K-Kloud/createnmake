@@ -7,23 +7,25 @@ import { Input } from "@/components/ui/input";
 
 interface ImageListRowProps {
   image: any;
-  editingId: number | null;
-  editData: any;
-  onEdit: (image: any) => void;
-  onSave: (id: number) => void;
-  onCancel: () => void;
-  onDelete: (id: number) => void;
-  onEditDataChange: (data: any) => void;
+  onDelete: () => void;
+  isDeleting?: boolean;
+  editingId?: number | null;
+  editData?: any;
+  onEdit?: (image: any) => void;
+  onSave?: (id: number) => void;
+  onCancel?: () => void;
+  onEditDataChange?: (data: any) => void;
 }
 
 export const ImageListRow = ({
   image,
+  onDelete,
+  isDeleting = false,
   editingId,
   editData,
   onEdit,
   onSave,
   onCancel,
-  onDelete,
   onEditDataChange,
 }: ImageListRowProps) => {
   return (
@@ -39,14 +41,14 @@ export const ImageListRow = ({
         {editingId === image.id ? (
           <div className="space-y-2">
             <Input
-              value={editData.title}
-              onChange={(e) => onEditDataChange({ ...editData, title: e.target.value })}
+              value={editData?.title}
+              onChange={(e) => onEditDataChange?.({ ...editData, title: e.target.value })}
               placeholder="Title"
               className="mb-2"
             />
             <Input
-              value={editData.prompt}
-              onChange={(e) => onEditDataChange({ ...editData, prompt: e.target.value })}
+              value={editData?.prompt}
+              onChange={(e) => onEditDataChange?.({ ...editData, prompt: e.target.value })}
               placeholder="Prompt"
             />
           </div>
@@ -77,8 +79,8 @@ export const ImageListRow = ({
               <span>Likes:</span>
               <Input
                 type="number"
-                value={editData.likes}
-                onChange={(e) => onEditDataChange({ ...editData, likes: e.target.value })}
+                value={editData?.likes}
+                onChange={(e) => onEditDataChange?.({ ...editData, likes: e.target.value })}
                 className="w-20"
               />
             </div>
@@ -86,8 +88,8 @@ export const ImageListRow = ({
               <span>Views:</span>
               <Input
                 type="number"
-                value={editData.views}
-                onChange={(e) => onEditDataChange({ ...editData, views: e.target.value })}
+                value={editData?.views}
+                onChange={(e) => onEditDataChange?.({ ...editData, views: e.target.value })}
                 className="w-20"
               />
             </div>
@@ -109,7 +111,7 @@ export const ImageListRow = ({
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => onSave(image.id)}
+                onClick={() => onSave?.(image.id)}
                 className="text-green-500 hover:text-green-600"
               >
                 <Check className="h-4 w-4" />
@@ -128,14 +130,16 @@ export const ImageListRow = ({
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => onEdit(image)}
+                onClick={() => onEdit?.(image)}
+                disabled={isDeleting}
               >
                 <Eye className="h-4 w-4" />
               </Button>
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => onDelete(image.id)}
+                onClick={onDelete}
+                disabled={isDeleting}
                 className="text-destructive hover:text-destructive"
               >
                 <Trash className="h-4 w-4" />
