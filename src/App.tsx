@@ -17,6 +17,8 @@ import Manufacturer from "@/pages/Manufacturer";
 import Artisan from "@/pages/Artisan";
 import Admin from "@/pages/Admin";
 import CRMDashboard from "@/pages/CRMDashboard";
+import ArtisanOnboarding from "@/pages/ArtisanOnboarding";
+import ManufacturerOnboarding from "@/pages/ManufacturerOnboarding";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +43,8 @@ const App = () => (
             <Route path="/artisan" element={<Artisan />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/crm" element={<CRMDashboard />} />
+            <Route path="/artisan-onboarding" element={<ArtisanOnboarding />} />
+            <Route path="/manufacturer-onboarding" element={<ManufacturerOnboarding />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
