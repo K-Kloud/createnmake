@@ -1,87 +1,44 @@
-import { MessageCircle, Facebook, Twitter, Instagram, Linkedin, Github } from "lucide-react";
-import { Button } from "./ui/button";
-import { useNavigate } from "react-router-dom";
+import { Icons } from "@/components/Icons";
 
-export const Footer = () => {
-  const navigate = useNavigate();
-  const phoneNumber = "+447438306305";
-  const facebookPage = "https://facebook.com/openteknologies"; // Facebook page URL
-  
+export function Footer() {
   return (
-    <footer className="bg-card/30 backdrop-blur-md border-t border-white/10">
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-primary hover:brightness-125 transition-all duration-300 rounded-lg">OpenT</h3>
-            <p className="text-sm text-gray-400">
-              Create stunning AI-generated images with our cutting-edge technology.
-            </p>
-          </div>
-          
-          <div className="space-y-4">
-            <h4 className="text-lg font-semibold">Quick Links</h4>
-            <ul className="space-y-2">
-              <li>
-                <Button variant="link" onClick={() => navigate("/features")}>Features</Button>
-              </li>
-              <li>
-                <Button variant="link" onClick={() => navigate("/faq")}>FAQ</Button>
-              </li>
-              <li>
-                <Button variant="link" onClick={() => navigate("/contact")}>Contact</Button>
-              </li>
-              <li>
-                <Button variant="link" onClick={() => navigate("/testimonials")}>Testimonials</Button>
-              </li>
-            </ul>
-          </div>
-          
-          <div className="space-y-4">
-            <h4 className="text-lg font-semibold">Contact</h4>
-            <p className="text-sm text-gray-400">
-              Email: support@openteknologies.com<br />
-              Phone: {phoneNumber}<br />
-              Address: Castleford, West Yorkshire
-            </p>
-          </div>
-          
-          <div className="space-y-4">
-            <h4 className="text-lg font-semibold">Follow Us</h4>
-            <div className="flex space-x-4">
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={() => window.open(`https://wa.me/${phoneNumber.replace('+', '')}`, '_blank')}
-              >
-                <MessageCircle className="h-5 w-5" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={() => window.open(facebookPage, '_blank')}
-              >
-                <Facebook className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Twitter className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Instagram className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Linkedin className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Github className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
+    <footer className="border-t">
+      <div className="mx-auto max-w-7xl px-6 py-12 md:flex md:items-center md:justify-between lg:px-8">
+        <div className="flex justify-center space-x-6 md:order-2">
+          <a
+            href="https://www.facebook.com/profile.php?id=100092387506106"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-gray-500"
+          >
+            <span className="sr-only">Facebook</span>
+            <Icons.facebook className="h-6 w-6" />
+          </a>
+          <a
+            href="https://twitter.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-gray-500"
+          >
+            <span className="sr-only">Twitter</span>
+            <Icons.twitter className="h-6 w-6" />
+          </a>
+          <a
+            href="https://instagram.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-gray-500"
+          >
+            <span className="sr-only">Instagram</span>
+            <Icons.instagram className="h-6 w-6" />
+          </a>
         </div>
-        
-        <div className="mt-8 pt-8 border-t border-white/10 text-center text-sm text-gray-400">
-          © 2024 OpenT. All rights reserved.
+        <div className="mt-8 md:order-1 md:mt-0">
+          <p className="text-center text-xs leading-5 text-gray-500">
+            &copy; 2024 OpenT. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
   );
-};
+}
