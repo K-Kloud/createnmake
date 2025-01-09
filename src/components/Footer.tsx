@@ -14,24 +14,6 @@ export function Footer() {
             <span className="sr-only">Facebook</span>
             <Icons.facebook className="h-6 w-6" />
           </a>
-          <a
-            href="https://twitter.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-400 hover:text-gray-500"
-          >
-            <span className="sr-only">Twitter</span>
-            <Icons.twitter className="h-6 w-6" />
-          </a>
-          <a
-            href="https://instagram.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-400 hover:text-gray-500"
-          >
-            <span className="sr-only">Instagram</span>
-            <Icons.instagram className="h-6 w-6" />
-          </a>
         </div>
         <div className="mt-8 md:order-1 md:mt-0">
           <p className="text-center text-xs leading-5 text-gray-500">

@@ -12,6 +12,6 @@ export const Icons = {
   apple: Apple,
   mail: Mail,
   github: Github,
-  google: Chrome, // Using Chrome icon as a replacement for Google
+  google: Chrome,
   facebook: Facebook,
 };
