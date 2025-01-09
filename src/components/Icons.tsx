@@ -5,6 +5,8 @@ import {
   Github,
   Chrome,
   Facebook,
+  Twitter,
+  Instagram,
 } from "lucide-react";
 
 export const Icons = {
@@ -14,4 +16,6 @@ export const Icons = {
   github: Github,
   google: Chrome, // Using Chrome icon as a replacement for Google
   facebook: Facebook,
+  twitter: Twitter,
+  instagram: Instagram,
 };
