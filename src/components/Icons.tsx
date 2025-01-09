@@ -8,7 +8,6 @@ import {
   Instagram,
   Linkedin,
   Twitter,
-  WhatsApp,
 } from "lucide-react";
 
 export const Icons = {
@@ -21,5 +20,4 @@ export const Icons = {
   instagram: Instagram,
   linkedin: Linkedin,
   twitter: Twitter,
-  whatsapp: WhatsApp,
 };

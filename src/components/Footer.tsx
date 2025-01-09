@@ -41,15 +41,6 @@ export function Footer() {
             <span className="sr-only">LinkedIn</span>
             <Icons.linkedin className="h-6 w-6" />
           </a>
-          <a
-            href="https://wa.me/+33766637477"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-400 hover:text-gray-500 transition-colors"
-          >
-            <span className="sr-only">WhatsApp</span>
-            <Icons.whatsapp className="h-6 w-6" />
-          </a>
         </div>
         <div className="mt-8 md:order-1 md:mt-0">
           <p className="text-center text-xs leading-5 text-gray-500">
