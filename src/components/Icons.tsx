@@ -5,6 +5,10 @@ import {
   Github,
   Chrome,
   Facebook,
+  Instagram,
+  Linkedin,
+  Twitter,
+  WhatsApp,
 } from "lucide-react";
 
 export const Icons = {
@@ -14,4 +18,8 @@ export const Icons = {
   github: Github,
   google: Chrome,
   facebook: Facebook,
+  instagram: Instagram,
+  linkedin: Linkedin,
+  twitter: Twitter,
+  whatsapp: WhatsApp,
 };

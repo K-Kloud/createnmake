@@ -9,10 +9,46 @@ export function Footer() {
             href="https://www.facebook.com/profile.php?id=100092387506106"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gray-400 hover:text-gray-500"
+            className="text-gray-400 hover:text-gray-500 transition-colors"
           >
             <span className="sr-only">Facebook</span>
             <Icons.facebook className="h-6 w-6" />
+          </a>
+          <a
+            href="https://twitter.com/OpenT_AI"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-gray-500 transition-colors"
+          >
+            <span className="sr-only">X (Twitter)</span>
+            <Icons.twitter className="h-6 w-6" />
+          </a>
+          <a
+            href="https://instagram.com/opent.ai"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-gray-500 transition-colors"
+          >
+            <span className="sr-only">Instagram</span>
+            <Icons.instagram className="h-6 w-6" />
+          </a>
+          <a
+            href="https://www.linkedin.com/company/opent-ai"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-gray-500 transition-colors"
+          >
+            <span className="sr-only">LinkedIn</span>
+            <Icons.linkedin className="h-6 w-6" />
+          </a>
+          <a
+            href="https://wa.me/+33766637477"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-gray-500 transition-colors"
+          >
+            <span className="sr-only">WhatsApp</span>
+            <Icons.whatsapp className="h-6 w-6" />
           </a>
         </div>
         <div className="mt-8 md:order-1 md:mt-0">
