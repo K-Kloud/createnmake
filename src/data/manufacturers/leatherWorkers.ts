@@ -1,6 +1,6 @@
 export const leatherWorkers = [
   {
-    id: 5,
+    id: "5",
     name: "Luxury Leather Works",
     type: "Leather Worker",
     description: "Handcrafted leather bags and accessories using premium materials.",

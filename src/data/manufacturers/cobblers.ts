@@ -1,6 +1,6 @@
 export const cobblers = [
   {
-    id: 2,
+    id: "2",
     name: "Artisan Cobblers",
     type: "Cobbler",
     description: "Traditional shoe crafting and repair services using premium materials.",

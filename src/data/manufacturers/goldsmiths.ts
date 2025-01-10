@@ -1,6 +1,6 @@
 export const goldsmiths = [
   {
-    id: 4,
+    id: "4",
     name: "Golden Touch Jewelers",
     type: "Goldsmith",
     description: "Creating unique, handcrafted jewelry pieces and custom designs.",

@@ -1,6 +1,6 @@
 export const tailors = [
   {
-    id: 1,
+    id: "1",
     name: "Elite Tailors & Co.",
     type: "Tailor",
     description: "Specializing in bespoke suits and custom alterations with over 20 years of experience.",

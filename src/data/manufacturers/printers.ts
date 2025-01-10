@@ -1,6 +1,6 @@
 export const printers = [
   {
-    id: 3,
+    id: "3",
     name: "Digital Print Masters",
     type: "Printer",
     description: "High-quality digital and offset printing services for all your needs.",

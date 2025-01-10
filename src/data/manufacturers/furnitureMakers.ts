@@ -1,6 +1,6 @@
 export const furnitureMakers = [
   {
-    id: 6,
+    id: "6",
     name: "Artisan Furniture Makers",
     type: "Furniture Maker",
     description: "Custom-made furniture crafted with sustainable materials and traditional techniques.",
