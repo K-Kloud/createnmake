@@ -674,6 +674,44 @@ export type Database = {
           },
         ]
       }
+      manufacturer_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: number
+          manufacturer_id: string | null
+          rating: number | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: number
+          manufacturer_id?: string | null
+          rating?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: number
+          manufacturer_id?: string | null
+          rating?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manufacturer_reviews_manufacturer_id_fkey"
+            columns: ["manufacturer_id"]
+            isOneToOne: false
+            referencedRelation: "manufacturers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       manufacturers: {
         Row: {
           address: string | null

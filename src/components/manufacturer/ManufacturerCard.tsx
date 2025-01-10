@@ -21,6 +21,7 @@ interface ManufacturerCardProps {
   image: string;
   location: string;
   specialties: string[];
+  id: string;
   producedItems?: {
     id: number;
     generatedImage: string;
@@ -38,6 +39,7 @@ export const ManufacturerCard = ({
   image,
   location,
   specialties,
+  id,
   producedItems = [],
 }: ManufacturerCardProps) => {
   return (
@@ -69,7 +71,7 @@ export const ManufacturerCard = ({
             </div>
           </div>
 
-          <ManufacturerReviews reviews={reviews} />
+          <ManufacturerReviews reviews={reviews} manufacturerId={id} />
         </div>
       </CardContent>
     </Card>
