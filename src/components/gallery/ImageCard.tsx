@@ -87,7 +87,8 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
           <div className="p-4 space-y-3">
             <ImageHeader 
               creator={image.creator} 
-              timeAgo={image.timeAgo} 
+              timeAgo={image.timeAgo}
+              imageUrl={image.url}
             />
             <p className="text-sm text-gray-300">{image.prompt}</p>
             <ImageActions
