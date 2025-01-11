@@ -1,5 +1,4 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { ManufacturerHeader } from "./ManufacturerHeader";
 import { ManufacturerRating } from "./ManufacturerRating";
 import { PortfolioButton } from "./PortfolioButton";
 import { ManufacturerReviews } from "./ManufacturerReviews";
@@ -9,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface Review {
   id: number;
@@ -20,33 +19,31 @@ interface Review {
 }
 
 interface ManufacturerCardProps {
+  id: string;
   name: string;
   type: string;
+  image?: string;
   description: string;
   rating: number;
+  reviewCount: number;
   reviews: Review[];
-  image: string;
-  location: string;
   specialties: string[];
-  id: string;
   producedItems?: {
-    id: number;
-    generatedImage: string;
-    productImage: string;
-    description: string;
+    name: string;
+    image: string;
   }[];
 }
 
 export const ManufacturerCard = ({
+  id,
   name,
   type,
+  image,
   description,
   rating,
+  reviewCount,
   reviews,
-  image,
-  location,
   specialties,
-  id,
   producedItems = [],
 }: ManufacturerCardProps) => {
   const [newRating, setNewRating] = useState(0);
@@ -116,32 +113,54 @@ export const ManufacturerCard = ({
 
   return (
     <Card className="glass-card hover:scale-[1.02] transition-transform">
-      <ManufacturerHeader name={name} type={type} image={image} />
-      <CardContent>
-        <div className="space-y-4">
+      <CardContent className="p-6">
+        <div className="flex flex-col space-y-4">
           <div className="flex items-center justify-between">
-            <ManufacturerRating rating={rating} reviewCount={reviews.length} />
-            <PortfolioButton name={name} producedItems={producedItems} />
+            <div>
+              <h3 className="text-lg font-semibold">{name}</h3>
+              <p className="text-sm text-muted-foreground">{type}</p>
+            </div>
+            {image && (
+              <img
+                src={image}
+                alt={name}
+                className="w-16 h-16 rounded-full object-cover"
+              />
+            )}
           </div>
-          
+
+          <ManufacturerRating rating={rating} reviewCount={reviewCount} />
+
           <p className="text-sm">{description}</p>
-          
-          <div className="text-sm">
-            <p className="text-muted-foreground">Location: {location}</p>
-            <div className="mt-2">
-              <p className="text-muted-foreground">Specialties:</p>
-              <div className="flex flex-wrap gap-2 mt-1">
-                {specialties.map((specialty, index) => (
-                  <span
+
+          <div className="flex flex-wrap gap-2">
+            {specialties.map((specialty, index) => (
+              <span
+                key={index}
+                className="px-2 py-1 bg-primary/10 rounded-full text-xs"
+              >
+                {specialty}
+              </span>
+            ))}
+          </div>
+
+          {producedItems.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="font-medium">Recent Work</h4>
+              <div className="grid grid-cols-3 gap-2">
+                {producedItems.map((item, index) => (
+                  <img
                     key={index}
-                    className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary"
-                  >
-                    {specialty}
-                  </span>
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-24 object-cover rounded-md"
+                  />
                 ))}
               </div>
             </div>
-          </div>
+          )}
+
+          <PortfolioButton manufacturerId={id} />
 
           {session && (
             <div className="border rounded-lg p-4 space-y-3">
