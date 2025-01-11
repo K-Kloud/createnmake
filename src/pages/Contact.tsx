@@ -4,9 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, WhatsApp } from "lucide-react";
 
 const Contact = () => {
+  const phoneNumber = "+15551234567"; // Replace with your actual phone number
+  const whatsappLink = `https://wa.me/${phoneNumber.replace(/[^0-9]/g, '')}`;
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
@@ -50,12 +53,22 @@ const Contact = () => {
 
             <Card className="glass-card">
               <CardContent className="p-6">
-                <div className="flex items-center space-x-4">
-                  <Phone className="h-6 w-6 text-primary" />
-                  <div>
-                    <h3 className="font-semibold">Phone</h3>
-                    <p className="text-gray-400">+1 (555) 123-4567</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <Phone className="h-6 w-6 text-primary" />
+                    <div>
+                      <h3 className="font-semibold">Phone</h3>
+                      <p className="text-gray-400">{phoneNumber}</p>
+                    </div>
                   </div>
+                  <a 
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 hover:bg-primary/10 rounded-full transition-colors"
+                  >
+                    <WhatsApp className="h-6 w-6 text-primary" />
+                  </a>
                 </div>
               </CardContent>
             </Card>
