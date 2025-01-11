@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Heart, Eye, MessageSquare, Package } from "lucide-react";
+import { Heart, Eye, MessageSquare, Package, Share2 } from "lucide-react";
 
 interface ImageActionsProps {
   metrics: {
@@ -48,6 +48,9 @@ export const ImageActions = ({
         <Button variant="ghost" size="sm" className="space-x-1">
           <Eye className="h-4 w-4" />
           <span>{metrics.view || 0}</span>
+        </Button>
+        <Button variant="ghost" size="sm" className="space-x-1">
+          <Share2 className="h-4 w-4" />
         </Button>
       </div>
       <Button 
