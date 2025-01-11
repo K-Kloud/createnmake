@@ -29,8 +29,10 @@ interface ManufacturerCardProps {
   reviews: Review[];
   specialties: string[];
   producedItems?: {
-    name: string;
-    image: string;
+    id: number;
+    generatedImage: string;
+    productImage: string;
+    description: string;
   }[];
 }
 
@@ -151,8 +153,8 @@ export const ManufacturerCard = ({
                 {producedItems.map((item, index) => (
                   <img
                     key={index}
-                    src={item.image}
-                    alt={item.name}
+                    src={item.productImage}
+                    alt={item.description}
                     className="w-full h-24 object-cover rounded-md"
                   />
                 ))}
