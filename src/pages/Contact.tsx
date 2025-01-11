@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, Phone, MapPin, WhatsApp } from "lucide-react";
+import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 
 const Contact = () => {
   const phoneNumber = "+15551234567"; // Replace with your actual phone number
@@ -67,7 +67,7 @@ const Contact = () => {
                     rel="noopener noreferrer"
                     className="p-2 hover:bg-primary/10 rounded-full transition-colors"
                   >
-                    <WhatsApp className="h-6 w-6 text-primary" />
+                    <MessageCircle className="h-6 w-6 text-primary" />
                   </a>
                 </div>
               </CardContent>
