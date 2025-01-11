@@ -160,7 +160,7 @@ export const ManufacturerCard = ({
             </div>
           )}
 
-          <PortfolioButton manufacturerId={id} />
+          <PortfolioButton name={name} producedItems={producedItems} />
 
           {session && (
             <div className="border rounded-lg p-4 space-y-3">

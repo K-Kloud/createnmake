@@ -10,6 +10,7 @@ export const ManufacturerList = () => {
           <ManufacturerCard
             key={manufacturer.id}
             {...manufacturer}
+            reviewCount={manufacturer.reviews.length}
           />
         ))}
       </div>

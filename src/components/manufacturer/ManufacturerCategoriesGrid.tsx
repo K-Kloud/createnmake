@@ -53,6 +53,7 @@ export const ManufacturerCategoriesGrid = () => {
               <ManufacturerCard
                 key={manufacturer.id}
                 {...manufacturer}
+                reviewCount={manufacturer.reviews.length}
               />
             ))}
             {filteredManufacturers.length === 0 && (
