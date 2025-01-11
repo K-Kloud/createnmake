@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +21,7 @@ export const MakerSelectionDialog = ({
   onOpenChange,
   onMakerSelect,
 }: MakerSelectionDialogProps) => {
+  const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState<'artisan' | 'manufacturer' | null>(null);
 
   const dummyArtisans = [
@@ -37,6 +39,18 @@ export const MakerSelectionDialog = ({
     { id: 4, name: "Tech Solutions Mfg.", type: "Electronics", capacity: "Medium scale" },
     { id: 5, name: "Innovative Industries", type: "Custom", capacity: "Small scale" }
   ];
+
+  const handleManufacturerSelect = (manufacturerId: number) => {
+    onMakerSelect('manufacturer');
+    onOpenChange(false);
+    navigate(`/manufacturer/${manufacturerId}`);
+  };
+
+  const handleArtisanSelect = (artisanId: number) => {
+    onMakerSelect('artisan');
+    onOpenChange(false);
+    navigate(`/artisan/${artisanId}`);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -66,7 +80,7 @@ export const MakerSelectionDialog = ({
                     <div
                       key={artisan.id}
                       className="flex items-center justify-between p-2 rounded-lg hover:bg-accent cursor-pointer"
-                      onClick={() => onMakerSelect('artisan')}
+                      onClick={() => handleArtisanSelect(artisan.id)}
                     >
                       <div>
                         <h3 className="font-medium">{artisan.name}</h3>
@@ -97,7 +111,7 @@ export const MakerSelectionDialog = ({
                     <div
                       key={manufacturer.id}
                       className="flex items-center justify-between p-2 rounded-lg hover:bg-accent cursor-pointer"
-                      onClick={() => onMakerSelect('manufacturer')}
+                      onClick={() => handleManufacturerSelect(manufacturer.id)}
                     >
                       <div>
                         <h3 className="font-medium">{manufacturer.name}</h3>
