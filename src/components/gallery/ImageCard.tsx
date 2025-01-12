@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Comments } from "./Comments";
 import { ImageHeader } from "./ImageHeader";
 import { ImageActions } from "./ImageActions";
@@ -89,6 +89,7 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
               creator={image.creator} 
               timeAgo={image.timeAgo}
               imageUrl={image.url}
+              imageId={image.id}
             />
             <p className="text-sm text-gray-300">{image.prompt}</p>
             <ImageActions
