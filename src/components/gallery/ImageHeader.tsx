@@ -29,7 +29,8 @@ export const ImageHeader = ({ creator, timeAgo, imageUrl, imageId }: ImageHeader
     const shareableUrl = `${window.location.origin}/marketplace?image=${imageId}`;
 
     try {
-      if (navigator.canShare && navigator.canShare({ url: shareableUrl })) {
+      // Check if the Web Share API is available and can share the content
+      if (navigator.share) {
         try {
           await navigator.share({
             title: 'Check out this generated image!',
@@ -46,23 +47,23 @@ export const ImageHeader = ({ creator, timeAgo, imageUrl, imageId }: ImageHeader
             await navigator.clipboard.writeText(shareableUrl);
             toast({
               title: "Info",
-              description: "Image URL copied to clipboard instead",
+              description: "Link copied to clipboard",
             });
           }
         }
       } else {
-        // If Web Share API is not available or content cannot be shared
+        // If Web Share API is not available, fallback to clipboard
         await navigator.clipboard.writeText(shareableUrl);
         toast({
-          title: "Success",
-          description: "Image URL copied to clipboard",
+          title: "Info",
+          description: "Link copied to clipboard",
         });
       }
     } catch (error) {
       console.error('Share error:', error);
       toast({
         title: "Error",
-        description: "Failed to share or copy image URL",
+        description: "Failed to share or copy link",
         variant: "destructive",
       });
     }
