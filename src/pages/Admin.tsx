@@ -6,11 +6,12 @@ import { ImageFilters } from "@/components/admin/ImageFilters";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Database, Loader2 } from "lucide-react";
+import { Database, Loader2, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminStats } from "@/components/admin/stats/AdminStats";
 import { AdminPortfolio } from "@/components/admin/portfolio/AdminPortfolio";
+import { UserManagement } from "@/components/admin/users/UserManagement";
 
 const Admin = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -130,6 +131,7 @@ const Admin = () => {
             <TabsTrigger value="images">Images</TabsTrigger>
             <TabsTrigger value="stats">Stats</TabsTrigger>
             <TabsTrigger value="portfolios">Portfolios</TabsTrigger>
+            <TabsTrigger value="users">Users</TabsTrigger>
           </TabsList>
 
           <TabsContent value="images">
@@ -156,6 +158,10 @@ const Admin = () => {
             <div className="rounded-lg border bg-card">
               <AdminPortfolio />
             </div>
+          </TabsContent>
+
+          <TabsContent value="users">
+            <UserManagement />
           </TabsContent>
         </Tabs>
       </main>
