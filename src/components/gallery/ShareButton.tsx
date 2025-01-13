@@ -24,15 +24,16 @@ export const ShareButton = ({ creator, imageUrl, imageId }: ShareButtonProps) =>
     }
 
     try {
-      // Construct a clean base URL without any trailing special characters
-      const baseUrl = window.location.origin
-        .replace(/:[0-9]+$/, '') // Remove port if present
-        .replace(/\/$/, '');      // Remove trailing slash if present
+      // Get the current hostname without any port number
+      const hostname = window.location.hostname;
       
-      // Create a shareable URL that points to the marketplace with the image ID
+      // Construct the base URL using the hostname and protocol
+      const baseUrl = `${window.location.protocol}//${hostname}`;
+      
+      // Create the complete shareable URL
       const shareableUrl = `${baseUrl}/marketplace?image=${imageId}`;
       
-      console.log('Attempting to share with URL:', shareableUrl); // Debug log
+      console.log('Sharing URL:', shareableUrl); // Debug log
       
       let shareData;
       
