@@ -25,7 +25,9 @@ export const ShareButton = ({ creator, imageUrl, imageId }: ShareButtonProps) =>
 
     try {
       // Create a shareable URL that points to the marketplace with the image ID
-      const shareableUrl = `${window.location.origin}/marketplace?image=${imageId}`;
+      // Remove any trailing colons and ensure proper URL format
+      const baseUrl = window.location.origin.replace(/:\/*$/, '');
+      const shareableUrl = `${baseUrl}/marketplace?image=${imageId}`;
       
       // Create a blob from the image URL to share the actual image
       const response = await fetch(imageUrl);
