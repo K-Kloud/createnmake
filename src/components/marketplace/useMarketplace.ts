@@ -78,11 +78,13 @@ export const useMarketplace = () => {
         const imagesWithMetrics = await Promise.all(
           images.map(async (image) => {
             try {
+              // Call the RPC function directly
               const { data: metrics, error: metricsError } = await supabase
                 .rpc('get_image_metrics', { p_image_id: image.id });
 
               if (metricsError) {
                 console.error('Error fetching metrics for image', image.id, ':', metricsError);
+                // Return default metrics if there's an error
                 return {
                   ...image,
                   hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
@@ -115,6 +117,7 @@ export const useMarketplace = () => {
                 };
               }
 
+              // Transform metrics array into an object
               const metricsMap = (metrics || []).reduce((acc, metric) => {
                 acc[metric.metric_type] = metric.total_value;
                 return acc;
