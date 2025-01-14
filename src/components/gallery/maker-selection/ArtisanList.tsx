@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface Artisan {
   id: string;
@@ -16,6 +17,8 @@ interface ArtisanListProps {
 }
 
 export const ArtisanList = ({ onSelect }: ArtisanListProps) => {
+  const navigate = useNavigate();
+
   const { data: artisans, isLoading } = useQuery({
     queryKey: ['artisans'],
     queryFn: async () => {
@@ -31,6 +34,11 @@ export const ArtisanList = ({ onSelect }: ArtisanListProps) => {
       return data as Artisan[];
     },
   });
+
+  const handleArtisanSelect = (artisanId: string) => {
+    onSelect(artisanId);
+    navigate(`/artisan/${artisanId}/profile`);
+  };
 
   if (isLoading) {
     return (
@@ -55,7 +63,7 @@ export const ArtisanList = ({ onSelect }: ArtisanListProps) => {
           <div
             key={artisan.id}
             className="flex items-center justify-between p-2 rounded-lg hover:bg-accent cursor-pointer"
-            onClick={() => onSelect(artisan.id)}
+            onClick={() => handleArtisanSelect(artisan.id)}
           >
             <div className="flex items-center gap-3">
               <Avatar>
