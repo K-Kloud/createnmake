@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +18,20 @@ interface MakerSelectionDialogProps {
   onMakerSelect: (type: 'artisan' | 'manufacturer') => void;
 }
 
+interface Artisan {
+  id: string;
+  business_name: string;
+  specialties: string[];
+  rating?: number;
+}
+
+interface Manufacturer {
+  id: string;
+  business_name: string;
+  business_type: string;
+  specialties: string[];
+}
+
 export const MakerSelectionDialog = ({
   open,
   onOpenChange,
@@ -24,29 +40,47 @@ export const MakerSelectionDialog = ({
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState<'artisan' | 'manufacturer' | null>(null);
 
-  const dummyArtisans = [
-    { id: 1, name: "John's Crafts", specialty: "Wood carving", rating: 4.8 },
-    { id: 2, name: "Maria's Workshop", specialty: "Pottery", rating: 4.9 },
-    { id: 3, name: "Custom Creations", specialty: "Metal work", rating: 4.7 },
-    { id: 4, name: "Artistic Touch", specialty: "Glass work", rating: 4.6 },
-    { id: 5, name: "Handmade Haven", specialty: "Textile", rating: 4.8 }
-  ];
+  const { data: artisans, isLoading: isLoadingArtisans } = useQuery({
+    queryKey: ['artisans'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, business_name, specialties')
+        .eq('is_artisan', true);
 
-  const dummyManufacturers = [
-    { id: 1, name: "Quality Manufacturing Co.", type: "Industrial", capacity: "Large scale" },
-    { id: 2, name: "Precision Products Ltd.", type: "Precision", capacity: "Medium scale" },
-    { id: 3, name: "Global Manufacturing", type: "Multi-purpose", capacity: "Large scale" },
-    { id: 4, name: "Tech Solutions Mfg.", type: "Electronics", capacity: "Medium scale" },
-    { id: 5, name: "Innovative Industries", type: "Custom", capacity: "Small scale" }
-  ];
+      if (error) {
+        console.error('Error fetching artisans:', error);
+        return [];
+      }
+      return data as Artisan[];
+    },
+    enabled: selectedType === 'artisan'
+  });
 
-  const handleManufacturerSelect = (manufacturerId: number) => {
+  const { data: manufacturers, isLoading: isLoadingManufacturers } = useQuery({
+    queryKey: ['manufacturers'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('manufacturers')
+        .select('id, business_name, business_type, specialties')
+        .eq('is_verified', true);
+
+      if (error) {
+        console.error('Error fetching manufacturers:', error);
+        return [];
+      }
+      return data as Manufacturer[];
+    },
+    enabled: selectedType === 'manufacturer'
+  });
+
+  const handleManufacturerSelect = (manufacturerId: string) => {
     onMakerSelect('manufacturer');
     onOpenChange(false);
     navigate(`/manufacturer/${manufacturerId}`);
   };
 
-  const handleArtisanSelect = (artisanId: number) => {
+  const handleArtisanSelect = (artisanId: string) => {
     onMakerSelect('artisan');
     onOpenChange(false);
     navigate(`/artisan/${artisanId}`);
@@ -75,21 +109,32 @@ export const MakerSelectionDialog = ({
             </Button>
             {selectedType === 'artisan' && (
               <ScrollArea className="h-[200px] w-full rounded-md border p-4">
-                <div className="space-y-4">
-                  {dummyArtisans.map((artisan) => (
-                    <div
-                      key={artisan.id}
-                      className="flex items-center justify-between p-2 rounded-lg hover:bg-accent cursor-pointer"
-                      onClick={() => handleArtisanSelect(artisan.id)}
-                    >
-                      <div>
-                        <h3 className="font-medium">{artisan.name}</h3>
-                        <p className="text-sm text-muted-foreground">{artisan.specialty}</p>
+                {isLoadingArtisans ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  </div>
+                ) : artisans && artisans.length > 0 ? (
+                  <div className="space-y-4">
+                    {artisans.map((artisan) => (
+                      <div
+                        key={artisan.id}
+                        className="flex items-center justify-between p-2 rounded-lg hover:bg-accent cursor-pointer"
+                        onClick={() => handleArtisanSelect(artisan.id)}
+                      >
+                        <div>
+                          <h3 className="font-medium">{artisan.business_name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {artisan.specialties?.join(', ')}
+                          </p>
+                        </div>
                       </div>
-                      <span className="text-sm text-yellow-500">★ {artisan.rating}</span>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-muted-foreground py-4">
+                    No artisans found
+                  </p>
+                )}
               </ScrollArea>
             )}
           </div>
@@ -106,21 +151,33 @@ export const MakerSelectionDialog = ({
             </Button>
             {selectedType === 'manufacturer' && (
               <ScrollArea className="h-[200px] w-full rounded-md border p-4">
-                <div className="space-y-4">
-                  {dummyManufacturers.map((manufacturer) => (
-                    <div
-                      key={manufacturer.id}
-                      className="flex items-center justify-between p-2 rounded-lg hover:bg-accent cursor-pointer"
-                      onClick={() => handleManufacturerSelect(manufacturer.id)}
-                    >
-                      <div>
-                        <h3 className="font-medium">{manufacturer.name}</h3>
-                        <p className="text-sm text-muted-foreground">{manufacturer.type}</p>
+                {isLoadingManufacturers ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  </div>
+                ) : manufacturers && manufacturers.length > 0 ? (
+                  <div className="space-y-4">
+                    {manufacturers.map((manufacturer) => (
+                      <div
+                        key={manufacturer.id}
+                        className="flex items-center justify-between p-2 rounded-lg hover:bg-accent cursor-pointer"
+                        onClick={() => handleManufacturerSelect(manufacturer.id)}
+                      >
+                        <div>
+                          <h3 className="font-medium">{manufacturer.business_name}</h3>
+                          <p className="text-sm text-muted-foreground">{manufacturer.business_type}</p>
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          {manufacturer.specialties?.join(', ')}
+                        </span>
                       </div>
-                      <span className="text-sm text-muted-foreground">{manufacturer.capacity}</span>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-muted-foreground py-4">
+                    No manufacturers found
+                  </p>
+                )}
               </ScrollArea>
             )}
           </div>
