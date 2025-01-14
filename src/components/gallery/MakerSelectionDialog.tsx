@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface MakerSelectionDialogProps {
   open: boolean;
@@ -22,6 +23,7 @@ interface Artisan {
   id: string;
   business_name: string;
   specialties: string[];
+  avatar_url?: string;
   rating?: number;
 }
 
@@ -45,7 +47,7 @@ export const MakerSelectionDialog = ({
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, business_name, specialties')
+        .select('id, business_name, specialties, avatar_url')
         .eq('is_artisan', true);
 
       if (error) {
@@ -86,6 +88,14 @@ export const MakerSelectionDialog = ({
     navigate(`/artisan/${artisanId}`);
   };
 
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase();
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
@@ -121,11 +131,17 @@ export const MakerSelectionDialog = ({
                         className="flex items-center justify-between p-2 rounded-lg hover:bg-accent cursor-pointer"
                         onClick={() => handleArtisanSelect(artisan.id)}
                       >
-                        <div>
-                          <h3 className="font-medium">{artisan.business_name}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {artisan.specialties?.join(', ')}
-                          </p>
+                        <div className="flex items-center gap-3">
+                          <Avatar>
+                            <AvatarImage src={artisan.avatar_url} alt={artisan.business_name} />
+                            <AvatarFallback>{getInitials(artisan.business_name)}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <h3 className="font-medium">{artisan.business_name}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {artisan.specialties?.join(', ')}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -163,9 +179,14 @@ export const MakerSelectionDialog = ({
                         className="flex items-center justify-between p-2 rounded-lg hover:bg-accent cursor-pointer"
                         onClick={() => handleManufacturerSelect(manufacturer.id)}
                       >
-                        <div>
-                          <h3 className="font-medium">{manufacturer.business_name}</h3>
-                          <p className="text-sm text-muted-foreground">{manufacturer.business_type}</p>
+                        <div className="flex items-center gap-3">
+                          <Avatar>
+                            <AvatarFallback>{getInitials(manufacturer.business_name)}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <h3 className="font-medium">{manufacturer.business_name}</h3>
+                            <p className="text-sm text-muted-foreground">{manufacturer.business_type}</p>
+                          </div>
                         </div>
                         <span className="text-sm text-muted-foreground">
                           {manufacturer.specialties?.join(', ')}
