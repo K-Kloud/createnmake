@@ -79,13 +79,13 @@ export const MakerSelectionDialog = ({
   const handleManufacturerSelect = (manufacturerId: string) => {
     onMakerSelect('manufacturer');
     onOpenChange(false);
-    navigate(`/manufacturer/${manufacturerId}`);
+    navigate(`/maker/${manufacturerId}?type=manufacturer`);
   };
 
   const handleArtisanSelect = (artisanId: string) => {
     onMakerSelect('artisan');
     onOpenChange(false);
-    navigate(`/artisan/${artisanId}`);
+    navigate(`/maker/${artisanId}?type=artisan`);
   };
 
   const getInitials = (name: string) => {
