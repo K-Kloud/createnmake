@@ -24,14 +24,14 @@ export const ShareButton = ({ creator, imageUrl, imageId }: ShareButtonProps) =>
     }
 
     try {
-      // Get the current hostname without any port number
-      const hostname = window.location.hostname;
+      // Get the current hostname without port number
+      const hostname = window.location.hostname.split(':')[0];
       
-      // Construct the base URL using the hostname and protocol
+      // Construct the base URL using the hostname
       const baseUrl = `${window.location.protocol}//${hostname}`;
       
-      // Create the complete shareable URL
-      const shareableUrl = `${baseUrl}/marketplace?image=${imageId}`;
+      // Create the complete shareable URL without trailing slashes
+      const shareableUrl = `${baseUrl}/marketplace?image=${imageId}`.replace(/\/+$/, '');
       
       console.log('Sharing URL:', shareableUrl); // Debug log
       
