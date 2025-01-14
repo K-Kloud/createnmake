@@ -2,6 +2,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -12,6 +13,7 @@ interface ArtisanQuotesProps {
 export const ArtisanQuotes = ({ artisanId }: ArtisanQuotesProps) => {
   const { toast } = useToast();
   const [quoteAmount, setQuoteAmount] = useState<Record<number, string>>({});
+  const [quoteResponse, setQuoteResponse] = useState<Record<number, string>>({});
 
   const { data: quotes, refetch } = useQuery({
     queryKey: ['artisan-quotes', artisanId],
@@ -37,10 +39,24 @@ export const ArtisanQuotes = ({ artisanId }: ArtisanQuotesProps) => {
   });
 
   const updateQuoteMutation = useMutation({
-    mutationFn: async ({ quoteId, amount }: { quoteId: number; amount: number }) => {
+    mutationFn: async ({ 
+      quoteId, 
+      amount, 
+      status, 
+      response 
+    }: { 
+      quoteId: number; 
+      amount: number; 
+      status: 'quoted' | 'accepted' | 'rejected'; 
+      response?: string;
+    }) => {
       const { data, error } = await supabase
         .from('artisan_quotes')
-        .update({ amount, status: 'quoted' })
+        .update({ 
+          amount, 
+          status,
+          response: response || null
+        })
         .eq('id', quoteId);
       
       if (error) throw error;
@@ -55,7 +71,7 @@ export const ArtisanQuotes = ({ artisanId }: ArtisanQuotesProps) => {
     },
   });
 
-  const handleQuoteSubmit = async (quoteId: number) => {
+  const handleQuoteSubmit = async (quoteId: number, action: 'quote' | 'accept' | 'reject') => {
     const amount = parseFloat(quoteAmount[quoteId]);
     if (isNaN(amount) || amount <= 0) {
       toast({
@@ -66,7 +82,19 @@ export const ArtisanQuotes = ({ artisanId }: ArtisanQuotesProps) => {
       return;
     }
 
-    await updateQuoteMutation.mutateAsync({ quoteId, amount });
+    const response = quoteResponse[quoteId];
+    const status = action === 'quote' ? 'quoted' : action === 'accept' ? 'accepted' : 'rejected';
+
+    await updateQuoteMutation.mutateAsync({ 
+      quoteId, 
+      amount, 
+      status,
+      response 
+    });
+
+    // Clear the input fields after submission
+    setQuoteAmount(prev => ({ ...prev, [quoteId]: '' }));
+    setQuoteResponse(prev => ({ ...prev, [quoteId]: '' }));
   };
 
   return (
@@ -85,40 +113,86 @@ export const ArtisanQuotes = ({ artisanId }: ArtisanQuotesProps) => {
             <span className={`px-2 py-1 rounded-full text-sm ${
               quote.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500' :
               quote.status === 'quoted' ? 'bg-blue-500/10 text-blue-500' :
+              quote.status === 'accepted' ? 'bg-green-500/10 text-green-500' :
+              quote.status === 'rejected' ? 'bg-red-500/10 text-red-500' :
               quote.payment_status === 'paid' ? 'bg-green-500/10 text-green-500' :
               'bg-red-500/10 text-red-500'
             }`}>
               {quote.payment_status === 'paid' ? 'Paid' : quote.status}
             </span>
           </div>
+          
           <p className="mt-4">{quote.product_details}</p>
           
           {quote.status === 'pending' && (
-            <div className="flex gap-2 mt-4">
-              <Input
-                type="number"
-                placeholder="Quote amount"
-                value={quoteAmount[quote.id] || ''}
-                onChange={(e) => setQuoteAmount(prev => ({
+            <div className="space-y-4 mt-4">
+              <div className="flex gap-2">
+                <Input
+                  type="number"
+                  placeholder="Quote amount"
+                  value={quoteAmount[quote.id] || ''}
+                  onChange={(e) => setQuoteAmount(prev => ({
+                    ...prev,
+                    [quote.id]: e.target.value
+                  }))}
+                  className="max-w-[200px]"
+                />
+                <Button
+                  variant="outline"
+                  onClick={() => handleQuoteSubmit(quote.id, 'quote')}
+                >
+                  Submit Quote
+                </Button>
+              </div>
+              <Textarea
+                placeholder="Add a response to the customer (optional)"
+                value={quoteResponse[quote.id] || ''}
+                onChange={(e) => setQuoteResponse(prev => ({
                   ...prev,
                   [quote.id]: e.target.value
                 }))}
-                className="max-w-[200px]"
+                className="mt-2"
               />
-              <Button
-                variant="outline"
-                onClick={() => handleQuoteSubmit(quote.id)}
-              >
-                Submit Quote
-              </Button>
             </div>
           )}
 
           {quote.status === 'quoted' && (
-            <div className="mt-4">
+            <div className="mt-4 space-y-4">
               <p className="text-sm font-medium">
                 Quoted Amount: ${quote.amount}
               </p>
+              {quote.response && (
+                <p className="text-sm text-muted-foreground">
+                  Response: {quote.response}
+                </p>
+              )}
+              <div className="flex gap-2">
+                <Button
+                  variant="default"
+                  onClick={() => handleQuoteSubmit(quote.id, 'accept')}
+                >
+                  Accept Quote
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => handleQuoteSubmit(quote.id, 'reject')}
+                >
+                  Reject Quote
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {(quote.status === 'accepted' || quote.status === 'rejected') && (
+            <div className="mt-4">
+              <p className="text-sm font-medium">
+                Final Amount: ${quote.amount}
+              </p>
+              {quote.response && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  Response: {quote.response}
+                </p>
+              )}
             </div>
           )}
         </div>
