@@ -37,7 +37,8 @@ export const ArtisanList = ({ onSelect }: ArtisanListProps) => {
 
   const handleArtisanSelect = (artisanId: string) => {
     onSelect(artisanId);
-    navigate(`/artisan/${artisanId}/profile`);
+    // Update the navigation to use the maker route with type parameter
+    navigate(`/maker/${artisanId}?type=artisan`);
   };
 
   if (isLoading) {
