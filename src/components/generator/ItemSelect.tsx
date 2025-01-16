@@ -20,39 +20,86 @@ export const ItemSelect = ({ value, onChange }: ItemSelectProps) => {
         <SelectTrigger className="w-full bg-card/30 border-white/10">
           <SelectValue placeholder="Select what you want to create" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="max-h-[400px]">
           <SelectGroup>
-            <SelectLabel>Tailor Items</SelectLabel>
-            <SelectItem value="suit">Suit</SelectItem>
-            <SelectItem value="dress-shirt">Dress Shirt</SelectItem>
-            <SelectItem value="trousers">Trousers</SelectItem>
-            <SelectItem value="dress">Dress</SelectItem>
-            <SelectItem value="blazer">Blazer</SelectItem>
-            <SelectItem value="waistcoat">Waistcoat</SelectItem>
-            <SelectItem value="skirt">Skirt</SelectItem>
-            <SelectItem value="coat">Coat</SelectItem>
+            <SelectLabel>Men's Wear</SelectLabel>
+            <SelectItem value="mens-formal-suit">Formal Suit</SelectItem>
+            <SelectItem value="mens-tuxedo">Tuxedo</SelectItem>
+            <SelectItem value="mens-dress-shirt">Dress Shirt</SelectItem>
+            <SelectItem value="mens-waistcoat">Waistcoat</SelectItem>
+            <SelectItem value="mens-casual-shirt">Casual Shirt</SelectItem>
+            <SelectItem value="mens-jeans">Jeans</SelectItem>
+            <SelectItem value="mens-chinos">Chinos</SelectItem>
+            <SelectItem value="mens-hoodie">Hoodie</SelectItem>
+            <SelectItem value="mens-dashiki">Dashiki</SelectItem>
+            <SelectItem value="mens-agbada">Agbada</SelectItem>
+            <SelectItem value="mens-kaftan">Kaftan</SelectItem>
           </SelectGroup>
+
           <SelectGroup>
-            <SelectLabel>Cobbler Items</SelectLabel>
+            <SelectLabel>Women's Wear</SelectLabel>
+            <SelectItem value="womens-formal-dress">Formal Dress</SelectItem>
+            <SelectItem value="womens-gown">Evening Gown</SelectItem>
+            <SelectItem value="womens-blouse">Blouse</SelectItem>
+            <SelectItem value="womens-pencil-skirt">Pencil Skirt</SelectItem>
+            <SelectItem value="womens-casual-dress">Casual Dress</SelectItem>
+            <SelectItem value="womens-maxi-dress">Maxi Dress</SelectItem>
+            <SelectItem value="womens-iro-buba">Iro and Buba</SelectItem>
+            <SelectItem value="womens-wrapper">Traditional Wrapper</SelectItem>
+            <SelectItem value="womens-blazer">Blazer</SelectItem>
+          </SelectGroup>
+
+          <SelectGroup>
+            <SelectLabel>Children's Wear</SelectLabel>
+            <SelectItem value="kids-casual">Casual Wear</SelectItem>
+            <SelectItem value="kids-uniform">School Uniform</SelectItem>
+            <SelectItem value="kids-traditional">Traditional Attire</SelectItem>
+            <SelectItem value="kids-party">Party Wear</SelectItem>
+          </SelectGroup>
+
+          <SelectGroup>
+            <SelectLabel>Traditional African Styles</SelectLabel>
+            <SelectItem value="african-kente">Kente Cloth</SelectItem>
+            <SelectItem value="african-fugu">Fugu Smock</SelectItem>
+            <SelectItem value="african-boubou">Boubou</SelectItem>
+            <SelectItem value="african-kitenge">Kitenge</SelectItem>
+            <SelectItem value="african-shuka">Maasai Shuka</SelectItem>
+            <SelectItem value="african-djellaba">Djellaba</SelectItem>
+            <SelectItem value="african-kaftan">Kaftan</SelectItem>
+            <SelectItem value="african-aso-ebi">Aso Ebi</SelectItem>
+          </SelectGroup>
+
+          <SelectGroup>
+            <SelectLabel>Contemporary African</SelectLabel>
+            <SelectItem value="modern-ankara-jacket">Ankara Jacket</SelectItem>
+            <SelectItem value="modern-african-jumpsuit">African Print Jumpsuit</SelectItem>
+            <SelectItem value="modern-streetwear">African Streetwear</SelectItem>
+          </SelectGroup>
+
+          <SelectGroup>
+            <SelectLabel>Footwear</SelectLabel>
             <SelectItem value="dress-shoes">Dress Shoes</SelectItem>
             <SelectItem value="boots">Boots</SelectItem>
             <SelectItem value="sneakers">Sneakers</SelectItem>
             <SelectItem value="sandals">Sandals</SelectItem>
             <SelectItem value="loafers">Loafers</SelectItem>
-            <SelectItem value="oxford-shoes">Oxford Shoes</SelectItem>
             <SelectItem value="heels">Heels</SelectItem>
           </SelectGroup>
+
           <SelectGroup>
-            <SelectLabel>Leather Goods</SelectLabel>
-            <SelectItem value="leather-bag">Leather Bag</SelectItem>
-            <SelectItem value="wallet">Wallet</SelectItem>
+            <SelectLabel>Accessories</SelectLabel>
+            <SelectItem value="hat">Hat</SelectItem>
+            <SelectItem value="scarf">Scarf</SelectItem>
+            <SelectItem value="tie">Tie</SelectItem>
             <SelectItem value="belt">Belt</SelectItem>
-            <SelectItem value="briefcase">Briefcase</SelectItem>
+            <SelectItem value="jewelry">Jewelry</SelectItem>
+            <SelectItem value="handbag">Handbag</SelectItem>
             <SelectItem value="backpack">Backpack</SelectItem>
-            <SelectItem value="messenger-bag">Messenger Bag</SelectItem>
+            <SelectItem value="wallet">Wallet</SelectItem>
           </SelectGroup>
+
           <SelectGroup>
-            <SelectLabel>Furniture</SelectLabel>
+            <SelectLabel>Home & Decor</SelectLabel>
             <SelectItem value="dining-table">Dining Table</SelectItem>
             <SelectItem value="coffee-table">Coffee Table</SelectItem>
             <SelectItem value="bed-frame">Bed Frame</SelectItem>
@@ -62,6 +109,7 @@ export const ItemSelect = ({ value, onChange }: ItemSelectProps) => {
             <SelectItem value="bench">Bench</SelectItem>
             <SelectItem value="side-table">Side Table</SelectItem>
           </SelectGroup>
+
           <SelectGroup>
             <SelectLabel>Home Textiles</SelectLabel>
             <SelectItem value="quilt">Quilt</SelectItem>
@@ -72,6 +120,7 @@ export const ItemSelect = ({ value, onChange }: ItemSelectProps) => {
             <SelectItem value="area-rug">Area Rug</SelectItem>
             <SelectItem value="tapestry">Tapestry</SelectItem>
           </SelectGroup>
+
           <SelectGroup>
             <SelectLabel>Decor & Accessories</SelectLabel>
             <SelectItem value="wall-art">Wall Art</SelectItem>
@@ -81,14 +130,6 @@ export const ItemSelect = ({ value, onChange }: ItemSelectProps) => {
             <SelectItem value="mirror-frame">Mirror Frame</SelectItem>
             <SelectItem value="lamp">Lamp</SelectItem>
             <SelectItem value="basket">Basket</SelectItem>
-          </SelectGroup>
-          <SelectGroup>
-            <SelectLabel>Accessories</SelectLabel>
-            <SelectItem value="tie">Tie</SelectItem>
-            <SelectItem value="bow-tie">Bow Tie</SelectItem>
-            <SelectItem value="scarf">Scarf</SelectItem>
-            <SelectItem value="gloves">Gloves</SelectItem>
-            <SelectItem value="hat">Hat</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>

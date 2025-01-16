@@ -6,33 +6,35 @@ import { ReferenceImageUpload } from "./ReferenceImageUpload";
 import { Badge } from "@/components/ui/badge";
 
 const keywordSuggestions = {
-  "suit": ["tailored", "slim-fit", "double-breasted", "pinstripe", "classic"],
-  "dress-shirt": ["oxford", "french cuff", "spread collar", "fitted", "cotton"],
-  "trousers": ["pleated", "flat-front", "wool", "tapered", "high-waisted"],
-  "dress": ["evening", "cocktail", "a-line", "fitted", "silk"],
-  "blazer": ["structured", "casual", "wool", "single-breasted", "navy"],
-  "waistcoat": ["formal", "fitted", "textured", "lapelled", "traditional"],
-  "skirt": ["pencil", "pleated", "a-line", "midi", "high-waisted"],
-  "coat": ["overcoat", "trench", "wool", "cashmere", "belted"],
-  "dress-shoes": ["oxford", "leather", "cap-toe", "brogue", "polished"],
-  "boots": ["chelsea", "leather", "ankle", "combat", "dress"],
-  "sneakers": ["leather", "minimalist", "high-top", "athletic", "designer"],
-  "sandals": ["leather", "strappy", "gladiator", "flat", "wedge"],
-  "loafers": ["penny", "tassel", "suede", "leather", "driving"],
-  "oxford-shoes": ["wingtip", "cap-toe", "leather", "formal", "classic"],
-  "heels": ["stiletto", "block", "kitten", "platform", "peep-toe"],
-  "leather-bag": ["structured", "tote", "satchel", "briefcase", "crossbody"],
-  "wallet": ["bifold", "leather", "card-holder", "zip-around", "minimalist"],
-  "belt": ["leather", "dress", "reversible", "braided", "designer"],
-  "briefcase": ["leather", "expandable", "laptop", "classic", "modern"],
-  "backpack": ["leather", "laptop", "travel", "minimalist", "convertible"],
-  "messenger-bag": ["leather", "canvas", "laptop", "crossbody", "vintage"],
-  "tie": ["silk", "striped", "solid", "paisley", "knit"],
-  "bow-tie": ["silk", "pre-tied", "self-tie", "formal", "patterned"],
-  "scarf": ["silk", "wool", "cashmere", "printed", "lightweight"],
-  "gloves": ["leather", "driving", "lined", "touchscreen", "formal"],
-  "hat": ["fedora", "panama", "wool", "structured", "classic"],
+  // Men's Wear
+  "mens-formal-suit": ["tailored", "slim-fit", "double-breasted", "pinstripe", "classic"],
+  "mens-tuxedo": ["black-tie", "satin-lapel", "formal", "classic", "fitted"],
+  "mens-dress-shirt": ["oxford", "french-cuff", "spread-collar", "fitted", "cotton"],
+  "mens-waistcoat": ["formal", "fitted", "textured", "lapelled", "traditional"],
+  "mens-casual-shirt": ["relaxed", "cotton", "patterned", "short-sleeve", "linen"],
+  "mens-jeans": ["slim-fit", "straight-leg", "distressed", "dark-wash", "vintage"],
+  "mens-dashiki": ["embroidered", "colorful", "traditional", "festive", "patterned"],
+  "mens-agbada": ["embroidered", "grand", "ceremonial", "flowing", "royal"],
+  "mens-kaftan": ["embroidered", "casual", "summer", "comfortable", "elegant"],
+
+  // Women's Wear
+  "womens-formal-dress": ["elegant", "fitted", "floor-length", "structured", "sophisticated"],
+  "womens-gown": ["evening", "flowing", "embellished", "luxurious", "dramatic"],
+  "womens-blouse": ["silk", "ruffled", "fitted", "feminine", "classic"],
+  "womens-pencil-skirt": ["high-waisted", "fitted", "professional", "classic", "tailored"],
+  "womens-iro-buba": ["traditional", "embroidered", "ceremonial", "elegant", "cultural"],
+  "womens-wrapper": ["ankara", "lace", "embroidered", "festive", "traditional"],
+
+  // Traditional African
+  "african-kente": ["woven", "geometric", "colorful", "ceremonial", "royal"],
+  "african-kitenge": ["printed", "vibrant", "flowing", "patterned", "cultural"],
+  "african-aso-ebi": ["coordinated", "celebratory", "elegant", "festive", "traditional"],
   
+  // Contemporary African
+  "modern-ankara-jacket": ["contemporary", "fusion", "structured", "bold", "stylish"],
+  "modern-african-jumpsuit": ["modern", "printed", "fitted", "elegant", "versatile"],
+  "modern-streetwear": ["urban", "bold", "contemporary", "cultural", "trendy"],
+
   // Furniture
   "dining-table": ["solid wood", "extendable", "rustic", "modern", "handcrafted"],
   "coffee-table": ["wooden", "glass-top", "storage", "minimalist", "artisanal"],
