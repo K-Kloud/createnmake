@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Heart, Eye, MessageSquare, Package } from "lucide-react";
+import { ShareButton } from "./ShareButton";
 
 interface ImageActionsProps {
   metrics: {
@@ -12,6 +13,11 @@ interface ImageActionsProps {
   onCommentToggle: () => void;
   showComments: boolean;
   onMakeClick: () => void;
+  imageUrl?: string;
+  imageId?: number;
+  creator: {
+    name: string;
+  };
 }
 
 export const ImageActions = ({
@@ -21,6 +27,9 @@ export const ImageActions = ({
   onCommentToggle,
   showComments,
   onMakeClick,
+  imageUrl,
+  imageId,
+  creator,
 }: ImageActionsProps) => {
   return (
     <div className="flex justify-between items-center">
@@ -49,6 +58,11 @@ export const ImageActions = ({
           <Eye className="h-4 w-4" />
           <span>{metrics.view || 0}</span>
         </Button>
+        <ShareButton 
+          creator={creator}
+          imageUrl={imageUrl}
+          imageId={imageId}
+        />
       </div>
       <Button 
         size="sm" 
