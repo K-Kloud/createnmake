@@ -91,7 +91,7 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
               imageUrl={image.url}
               imageId={image.id}
             />
-            <p className="text-sm text-gray-300">{image.prompt}</p>
+            <p className="text-sm text-gray-300 truncate">{image.prompt}</p>
             <ImageActions
               metrics={image.metrics || { like: 0, comment: 0, view: 0 }}
               hasLiked={image.hasLiked}
