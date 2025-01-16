@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Image from "@/components/ui/image";
 import { Card } from "@/components/ui/card";
 import { ImageHeader } from "./ImageHeader";
 import { ImagePreviewDialog } from "./ImagePreviewDialog";
@@ -10,14 +9,14 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface ImageCardProps {
   image: {
-    id: string | number;
+    id: number;
     url: string;
     prompt: string;
     user?: {
       username?: string;
       avatarUrl?: string;
     };
-    createdAt: Date;
+    createdAt: string | Date;
     metrics?: {
       like: number;
       comment: number;
@@ -63,16 +62,15 @@ export const ImageCard = ({ image, onLike, onComment }: ImageCardProps) => {
         <ImageHeader
           username={image.user?.username}
           avatarUrl={image.user?.avatarUrl}
-          createdAt={image.createdAt}
+          createdAt={new Date(image.createdAt)}
         />
       </div>
       
       <div className="relative aspect-square cursor-pointer" onClick={handleImageClick}>
-        <Image
+        <img
           src={image.url}
           alt={image.prompt}
-          className="object-cover"
-          fill
+          className="object-cover w-full h-full"
         />
       </div>
 

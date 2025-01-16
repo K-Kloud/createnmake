@@ -13,7 +13,7 @@ interface ImageActionsProps {
   hasLiked: boolean;
   onLike: () => void;
   onComment: () => void;
-  imageId: string | number;
+  imageId: number;
 }
 
 export const ImageActions = ({ metrics, hasLiked, onLike, onComment, imageId }: ImageActionsProps) => {

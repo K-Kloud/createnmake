@@ -1,11 +1,10 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import Image from "@/components/ui/image";
 
 interface ImagePreviewDialogProps {
   isOpen: boolean;
   onClose: () => void;
   imageUrl: string;
-  imageId: string | number;
+  imageId: number;
 }
 
 export const ImagePreviewDialog = ({ isOpen, onClose, imageUrl, imageId }: ImagePreviewDialogProps) => {
@@ -13,11 +12,10 @@ export const ImagePreviewDialog = ({ isOpen, onClose, imageUrl, imageId }: Image
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl">
         <div className="aspect-square relative">
-          <Image
+          <img
             src={imageUrl}
             alt={`Generated image ${imageId}`}
-            className="object-cover rounded-lg"
-            fill
+            className="object-cover rounded-lg w-full h-full"
           />
         </div>
       </DialogContent>
