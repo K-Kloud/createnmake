@@ -1,63 +1,48 @@
 import { Button } from "@/components/ui/button";
-import { Heart, Eye, MessageSquare, Package } from "lucide-react";
+import { Heart, MessageCircle, Eye, Share2 } from "lucide-react";
+import { ShareButton } from "./ShareButton";
 
-interface ImageActionsProps {
-  metrics: {
-    like: number;
-    comment: number;
-    view: number;
-  };
-  hasLiked: boolean;
-  onLike: () => void;
-  onCommentToggle: () => void;
-  showComments: boolean;
-  onMakeClick: () => void;
+interface Metrics {
+  like: number;
+  comment: number;
+  view: number;
 }
 
-export const ImageActions = ({
-  metrics,
-  hasLiked,
-  onLike,
-  onCommentToggle,
-  showComments,
-  onMakeClick,
-}: ImageActionsProps) => {
+interface ImageActionsProps {
+  metrics: Metrics;
+  hasLiked: boolean;
+  onLike: () => void;
+  onComment: () => void;
+  imageId: string | number;
+}
+
+export const ImageActions = ({ metrics, hasLiked, onLike, onComment, imageId }: ImageActionsProps) => {
   return (
-    <div className="flex justify-between items-center">
-      <div className="flex space-x-4">
-        <Button 
-          variant={hasLiked ? "default" : "ghost"} 
-          size="sm" 
-          className="space-x-1"
+    <div className="flex items-center justify-between mt-2">
+      <div className="flex items-center space-x-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          className={`${hasLiked ? 'text-red-500' : ''} space-x-1`}
           onClick={onLike}
         >
-          <Heart 
-            className={`h-4 w-4 ${hasLiked ? 'fill-red-500 text-red-500' : ''}`} 
-          />
-          <span>{metrics.like || 0}</span>
+          <Heart className={`h-4 w-4 ${hasLiked ? 'fill-current' : ''}`} />
+          <span>{metrics.like}</span>
         </Button>
-        <Button 
-          variant={showComments ? "default" : "ghost"} 
-          size="sm" 
-          className="space-x-1"
-          onClick={onCommentToggle}
-        >
-          <MessageSquare className="h-4 w-4" />
-          <span>{metrics.comment || 0}</span>
+        <Button variant="ghost" size="sm" className="space-x-1" onClick={onComment}>
+          <MessageCircle className="h-4 w-4" />
+          <span>{metrics.comment}</span>
         </Button>
-        <Button variant="ghost" size="sm" className="space-x-1">
+        <Button variant="ghost" size="sm" className="space-x-1" disabled>
           <Eye className="h-4 w-4" />
-          <span>{metrics.view || 0}</span>
+          <span>{metrics.view}</span>
         </Button>
       </div>
-      <Button 
-        size="sm" 
-        className="space-x-1"
-        onClick={onMakeClick}
-      >
-        <Package className="h-4 w-4" />
-        <span>Make</span>
-      </Button>
+      <ShareButton imageId={imageId}>
+        <Button variant="ghost" size="sm">
+          <Share2 className="h-4 w-4" />
+        </Button>
+      </ShareButton>
     </div>
   );
 };

@@ -1,133 +1,97 @@
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-import { Comments } from "./Comments";
+import Image from "@/components/ui/image";
+import { Card } from "@/components/ui/card";
 import { ImageHeader } from "./ImageHeader";
-import { ImageActions } from "./ImageActions";
 import { ImagePreviewDialog } from "./ImagePreviewDialog";
-import { MakerSelectionDialog } from "./MakerSelectionDialog";
+import { ImageActions } from "./ImageActions";
+import { useToast } from "@/components/ui/use-toast";
+import { useMutation } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ImageCardProps {
   image: {
-    id: number;
+    id: string | number;
     url: string;
     prompt: string;
-    likes: number;
-    comments: any[];
-    views: number;
-    produced: number;
-    creator: {
-      name: string;
-      avatar: string;
+    user?: {
+      username?: string;
+      avatarUrl?: string;
     };
     createdAt: Date;
-    timeAgo: string;
-    hasLiked: boolean;
-    image_likes: { user_id: string }[];
     metrics?: {
       like: number;
       comment: number;
       view: number;
     };
+    hasLiked?: boolean;
   };
-  onLike: (imageId: number) => void;
-  onView: (imageId: number) => void;
-  onAddComment: (imageId: number, comment: string) => void;
-  onAddReply: (imageId: number, commentId: number, reply: string) => void;
+  onLike?: () => void;
+  onComment?: () => void;
 }
 
-export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: ImageCardProps) => {
-  const [showComments, setShowComments] = useState(false);
-  const [imageOpen, setImageOpen] = useState(false);
-  const [selectionDialogOpen, setSelectionDialogOpen] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const navigate = useNavigate();
+export const ImageCard = ({ image, onLike, onComment }: ImageCardProps) => {
+  const [showPreview, setShowPreview] = useState(false);
   const { toast } = useToast();
 
+  const { mutate: incrementViews } = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.rpc('increment_views', { image_id: image.id });
+      if (error) throw error;
+    },
+  });
+
   const handleImageClick = () => {
-    setImageOpen(true);
-    onView(image.id);
+    setShowPreview(true);
+    incrementViews();
   };
 
-  const handleZoomIn = () => {
-    setZoomLevel(prev => Math.min(prev + 0.5, 3));
-  };
-
-  const handleZoomOut = () => {
-    setZoomLevel(prev => Math.max(prev - 0.5, 1));
-  };
-
-  const handleMakeSelection = (type: 'artisan' | 'manufacturer') => {
-    localStorage.setItem('selectedDesignImage', JSON.stringify({
-      url: image.url,
-      prompt: image.prompt,
-      id: image.id
-    }));
-    
-    toast({
-      title: "Design Selected",
-      description: `Redirecting to ${type} selection...`,
-    });
-
-    setSelectionDialogOpen(false);
-    navigate(type === 'artisan' ? '/artisan' : '/manufacturer');
+  const handleLike = () => {
+    if (onLike) {
+      onLike();
+      toast({
+        title: image.hasLiked ? "Removed from likes" : "Added to likes",
+        description: image.hasLiked 
+          ? "The image has been removed from your likes"
+          : "The image has been added to your likes",
+      });
+    }
   };
 
   return (
-    <>
-      <Card className="overflow-hidden glass-card hover:scale-[1.02] transition-transform">
-        <CardContent className="p-0">
-          <img
-            src={image.url}
-            alt={image.prompt}
-            className="w-full h-64 object-cover cursor-pointer"
-            onClick={handleImageClick}
-          />
-          <div className="p-4 space-y-3">
-            <ImageHeader 
-              creator={image.creator} 
-              timeAgo={image.timeAgo}
-              imageUrl={image.url}
-              imageId={image.id}
-            />
-            <p className="text-sm text-gray-300 truncate">{image.prompt}</p>
-            <ImageActions
-              metrics={image.metrics || { like: 0, comment: 0, view: 0 }}
-              hasLiked={image.hasLiked}
-              onLike={() => onLike(image.id)}
-              onCommentToggle={() => setShowComments(!showComments)}
-              showComments={showComments}
-              onMakeClick={() => setSelectionDialogOpen(true)}
-            />
-            
-            {showComments && (
-              <Comments
-                imageId={image.id}
-                comments={image.comments}
-                onAddComment={onAddComment}
-                onAddReply={onAddReply}
-              />
-            )}
-          </div>
-        </CardContent>
-      </Card>
+    <Card className="overflow-hidden bg-card/30 hover:bg-card/40 transition-colors">
+      <div className="p-4">
+        <ImageHeader
+          username={image.user?.username}
+          avatarUrl={image.user?.avatarUrl}
+          createdAt={image.createdAt}
+        />
+      </div>
+      
+      <div className="relative aspect-square cursor-pointer" onClick={handleImageClick}>
+        <Image
+          src={image.url}
+          alt={image.prompt}
+          className="object-cover"
+          fill
+        />
+      </div>
 
-      <ImagePreviewDialog
-        open={imageOpen}
-        onOpenChange={setImageOpen}
-        imageUrl={image.url}
-        prompt={image.prompt}
-        zoomLevel={zoomLevel}
-        onZoomIn={handleZoomIn}
-        onZoomOut={handleZoomOut}
-      />
-
-      <MakerSelectionDialog
-        open={selectionDialogOpen}
-        onOpenChange={setSelectionDialogOpen}
-        onMakerSelect={handleMakeSelection}
-      />
-    </>
+      <div className="p-4">
+        <ImagePreviewDialog
+          isOpen={showPreview}
+          onClose={() => setShowPreview(false)}
+          imageUrl={image.url}
+          imageId={image.id}
+        />
+        <p className="text-sm text-gray-300 truncate">{image.prompt}</p>
+        <ImageActions
+          metrics={image.metrics || { like: 0, comment: 0, view: 0 }}
+          hasLiked={image.hasLiked || false}
+          onLike={handleLike}
+          onComment={onComment || (() => {})}
+          imageId={image.id}
+        />
+      </div>
+    </Card>
   );
 };

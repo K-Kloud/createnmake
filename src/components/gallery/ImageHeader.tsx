@@ -1,21 +1,25 @@
-import { CreatorInfo } from "./CreatorInfo";
-import { ShareButton } from "./ShareButton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatDistanceToNow } from "date-fns";
 
 interface ImageHeaderProps {
-  creator: {
-    name: string;
-    avatar: string;
-  };
-  timeAgo: string;
-  imageUrl?: string;
-  imageId?: number;
+  username?: string;
+  avatarUrl?: string;
+  createdAt: Date;
 }
 
-export const ImageHeader = ({ creator, timeAgo, imageUrl, imageId }: ImageHeaderProps) => {
+export const ImageHeader = ({ username, avatarUrl, createdAt }: ImageHeaderProps) => {
   return (
-    <div className="flex items-center justify-between mb-2">
-      <CreatorInfo creator={creator} timeAgo={timeAgo} />
-      <ShareButton creator={creator} imageUrl={imageUrl} imageId={imageId} />
+    <div className="flex items-center space-x-2">
+      <Avatar className="h-8 w-8">
+        <AvatarImage src={avatarUrl} alt={username} />
+        <AvatarFallback>{username?.[0]?.toUpperCase()}</AvatarFallback>
+      </Avatar>
+      <div className="flex flex-col">
+        <span className="text-sm font-medium">{username || 'Anonymous'}</span>
+        <span className="text-xs text-gray-400">
+          {formatDistanceToNow(new Date(createdAt), { addSuffix: true })}
+        </span>
+      </div>
     </div>
   );
 };
