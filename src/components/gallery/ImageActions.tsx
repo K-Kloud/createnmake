@@ -8,7 +8,7 @@ interface ImageActionsProps {
     view: number;
   };
   hasLiked: boolean;
-  onLike: () => void;
+  onLikeToggle: () => void;
   onCommentToggle: () => void;
   showComments: boolean;
   onMakeClick: () => void;
@@ -17,46 +17,44 @@ interface ImageActionsProps {
 export const ImageActions = ({
   metrics,
   hasLiked,
-  onLike,
+  onLikeToggle,
   onCommentToggle,
   showComments,
   onMakeClick,
 }: ImageActionsProps) => {
   return (
     <div className="flex justify-between items-center">
-      <div className="flex space-x-4">
-        <Button 
-          variant={hasLiked ? "default" : "ghost"} 
-          size="sm" 
-          className="space-x-1"
-          onClick={onLike}
+      <div className="flex gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onLikeToggle}
+          className={hasLiked ? "text-red-500" : ""}
         >
-          <Heart 
-            className={`h-4 w-4 ${hasLiked ? 'fill-red-500 text-red-500' : ''}`} 
-          />
+          <Heart className={`h-4 w-4 ${hasLiked ? "fill-current" : ""}`} />
           <span>{metrics.like || 0}</span>
         </Button>
-        <Button 
-          variant={showComments ? "default" : "ghost"} 
-          size="sm" 
-          className="space-x-1"
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={onCommentToggle}
+          className={showComments ? "text-primary" : ""}
         >
           <MessageSquare className="h-4 w-4" />
           <span>{metrics.comment || 0}</span>
         </Button>
-        <Button variant="ghost" size="sm" className="space-x-1">
+        <Button variant="ghost" size="sm">
           <Eye className="h-4 w-4" />
           <span>{metrics.view || 0}</span>
         </Button>
       </div>
       <Button 
-        size="sm" 
-        className="space-x-1"
+        size="sm"
         onClick={onMakeClick}
+        className="gap-2"
       >
         <Package className="h-4 w-4" />
-        <span>Make</span>
+        Make This
       </Button>
     </div>
   );
