@@ -22,8 +22,10 @@ export const MarketplaceGrid = ({
         <ImageCard
           key={image.id}
           image={image}
-          onLike={() => onLike(image.id)}
-          onComment={() => onAddComment(image.id, '')}
+          onLike={onLike}
+          onView={onView}
+          onAddComment={onAddComment}
+          onAddReply={onAddReply}
         />
       ))}
     </div>
