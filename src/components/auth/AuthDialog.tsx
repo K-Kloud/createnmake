@@ -14,7 +14,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { Separator } from "@/components/ui/separator";
 
 export function AuthDialog({
   isOpen,
@@ -44,6 +43,7 @@ export function AuthDialog({
             data: {
               username,
             },
+            emailRedirectTo: window.location.origin,
           },
         });
         
@@ -120,7 +120,7 @@ export function AuthDialog({
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: window.location.origin,
         },
       });
       
