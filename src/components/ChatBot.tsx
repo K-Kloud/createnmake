@@ -1,24 +1,13 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import {
-  MessageCircle,
-  MinimizeIcon,
-  X,
-  Send,
-  Factory,
-  HeadphonesIcon,
-} from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import { ScrollArea } from "./ui/scroll-area";
+import { Card, CardContent, CardFooter } from "./ui/card";
+import { MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "./ui/use-toast";
+import { ChatHeader } from "./chat/ChatHeader";
+import { ChatModeSelector } from "./chat/ChatModeSelector";
+import { ChatMessages } from "./chat/ChatMessages";
+import { ChatInput } from "./chat/ChatInput";
 
 type ChatMode = "customer" | "manufacturer";
 
@@ -89,97 +78,29 @@ export const ChatBot = () => {
 
   return (
     <Card className="fixed bottom-4 right-4 w-80 shadow-lg glass-card transition-all duration-300 ease-in-out">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4">
-        <CardTitle className="text-sm font-medium">Chat Support</CardTitle>
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6"
-            onClick={() => setIsMinimized(!isMinimized)}
-          >
-            <MinimizeIcon className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6"
-            onClick={() => setIsOpen(false)}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardHeader>
+      <ChatHeader 
+        onMinimize={() => setIsMinimized(!isMinimized)} 
+        onClose={() => setIsOpen(false)} 
+      />
 
       {!isMinimized && (
         <>
-          <div className="p-4 border-t border-border">
-            <div className="flex gap-2">
-              <Button
-                variant={chatMode === "customer" ? "default" : "outline"}
-                size="sm"
-                className="flex-1"
-                onClick={() => setChatMode("customer")}
-              >
-                <HeadphonesIcon className="mr-2 h-4 w-4" />
-                Customer Care
-              </Button>
-              <Button
-                variant={chatMode === "manufacturer" ? "default" : "outline"}
-                size="sm"
-                className="flex-1"
-                onClick={() => setChatMode("manufacturer")}
-              >
-                <Factory className="mr-2 h-4 w-4" />
-                Manufacturer
-              </Button>
-            </div>
-          </div>
+          <ChatModeSelector 
+            chatMode={chatMode} 
+            onModeChange={setChatMode} 
+          />
 
           <CardContent className="p-4">
-            <ScrollArea className="h-[300px] pr-4">
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`mb-4 flex ${
-                    message.sender === "user" ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  <div
-                    className={`rounded-lg px-4 py-2 max-w-[80%] ${
-                      message.sender === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted"
-                    }`}
-                  >
-                    <p className="text-sm">{message.text}</p>
-                    <span className="text-xs opacity-70">
-                      {message.timestamp.toLocaleTimeString()}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </ScrollArea>
+            <ChatMessages messages={messages} />
           </CardContent>
 
           <CardFooter className="p-4 pt-0">
-            <div className="flex w-full gap-2">
-              <Input
-                placeholder="Type your message..."
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSend();
-                  }
-                }}
-                disabled={isLoading}
-              />
-              <Button size="icon" onClick={handleSend} disabled={isLoading}>
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
+            <ChatInput
+              inputMessage={inputMessage}
+              onInputChange={setInputMessage}
+              onSend={handleSend}
+              isLoading={isLoading}
+            />
           </CardFooter>
         </>
       )}
