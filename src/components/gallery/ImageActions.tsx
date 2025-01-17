@@ -8,7 +8,7 @@ interface ImageActionsProps {
     view: number;
   };
   hasLiked: boolean;
-  onLikeToggle: () => void;
+  onLike: () => void;  // Changed from onLikeToggle to onLike
   onCommentToggle: () => void;
   showComments: boolean;
   onMakeClick: () => void;
@@ -17,7 +17,7 @@ interface ImageActionsProps {
 export const ImageActions = ({
   metrics,
   hasLiked,
-  onLikeToggle,
+  onLike,  // Changed from onLikeToggle to onLike
   onCommentToggle,
   showComments,
   onMakeClick,
@@ -28,7 +28,7 @@ export const ImageActions = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={onLikeToggle}
+          onClick={onLike}  // Changed from onLikeToggle to onLike
           className={hasLiked ? "text-red-500" : ""}
         >
           <Heart className={`h-4 w-4 ${hasLiked ? "fill-current" : ""}`} />
