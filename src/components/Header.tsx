@@ -1,19 +1,11 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { AuthDialog } from "./auth/AuthDialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { useToast } from "./ui/use-toast";
-import { Switch } from "@/components/ui/switch";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Navigation } from "./header/Navigation";
+import { ThemeToggle } from "./header/ThemeToggle";
+import { UserMenu } from "./header/UserMenu";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -23,7 +15,6 @@ export const Header = () => {
     if (stored) return stored === "dark";
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
-  const { toast } = useToast();
 
   const { data: session } = useQuery({
     queryKey: ['session'],
@@ -57,23 +48,6 @@ export const Header = () => {
     }
   }, [isDarkMode]);
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Signed out successfully",
-      description: "You have been logged out of your account.",
-    });
-    navigate('/');
-  };
-
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    toast({
-      title: `${isDarkMode ? 'Light' : 'Dark'} mode activated`,
-      description: `Switched to ${isDarkMode ? 'light' : 'dark'} theme.`,
-    });
-  };
-
   return (
     <>
       <header className="fixed top-0 w-full z-50 glass-card">
@@ -86,53 +60,15 @@ export const Header = () => {
               openteknologies
             </h1>
           </div>
-          <nav className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2 mr-2">
-              <Switch
-                checked={isDarkMode}
-                onCheckedChange={toggleTheme}
-                className="data-[state=checked]:bg-secondary"
-              />
-            </div>
-            <Button variant="ghost" onClick={() => navigate("/marketplace")}>
-              OpenMarket
-            </Button>
-            <Button variant="ghost" onClick={() => navigate("/create")}>
-              Create
-            </Button>
-            {session?.user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Avatar className="h-8 w-8 cursor-pointer">
-                    <AvatarImage src={profile?.avatar_url} alt={profile?.username || session.user.email} />
-                    <AvatarFallback>{(profile?.username?.[0] || session.user.email?.[0])?.toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem onClick={() => navigate("/dashboard")}>
-                    Dashboard
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/settings")}>
-                    Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={handleSignOut}
-                    className="text-red-500 focus:text-red-500"
-                  >
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Button 
-                className="bg-primary hover:bg-primary-hover"
-                onClick={() => setShowAuthDialog(true)}
-              >
-                Sign In / Sign Up
-              </Button>
-            )}
-          </nav>
+          <div className="flex items-center space-x-4">
+            <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+            <Navigation />
+            <UserMenu 
+              session={session} 
+              profile={profile} 
+              onShowAuthDialog={() => setShowAuthDialog(true)} 
+            />
+          </div>
         </div>
       </header>
       
