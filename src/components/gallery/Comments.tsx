@@ -8,6 +8,7 @@ interface Reply {
   id: number;
   text: string;
   user: {
+    id: string;
     name: string;
     avatar: string;
   };
