@@ -1,6 +1,9 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ZoomIn, ZoomOut } from "lucide-react";
+import { ZoomIn, ZoomOut, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 
 interface ImagePreviewDialogProps {
   open: boolean;
@@ -10,6 +13,8 @@ interface ImagePreviewDialogProps {
   zoomLevel: number;
   onZoomIn: () => void;
   onZoomOut: () => void;
+  imageId?: number;
+  userId?: string;
 }
 
 export const ImagePreviewDialog = ({
@@ -20,7 +25,49 @@ export const ImagePreviewDialog = ({
   zoomLevel,
   onZoomIn,
   onZoomOut,
+  imageId,
+  userId
 }: ImagePreviewDialogProps) => {
+  const { toast } = useToast();
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!imageId || !userId) {
+      toast({
+        title: "Error",
+        description: "Cannot delete this image",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      const { error } = await supabase
+        .from('generated_images')
+        .delete()
+        .eq('id', imageId)
+        .eq('user_id', userId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Image deleted successfully",
+      });
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
@@ -48,6 +95,16 @@ export const ImagePreviewDialog = ({
             >
               <ZoomIn className="h-4 w-4" />
             </Button>
+            {userId && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleDelete}
+                disabled={isDeleting}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>

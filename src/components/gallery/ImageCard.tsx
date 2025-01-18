@@ -30,6 +30,7 @@ interface ImageCardProps {
       comment: number;
       view: number;
     };
+    user_id: string; // Added user_id to the image object
   };
   onLike: (imageId: number) => void;
   onView: (imageId: number) => void;
@@ -121,6 +122,8 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
         zoomLevel={zoomLevel}
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
+        imageId={image.id}
+        userId={image.user_id}
       />
 
       <MakerSelectionDialog
