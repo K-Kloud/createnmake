@@ -1,7 +1,7 @@
 import { format, isValid } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Trash2 } from "lucide-react";
@@ -38,7 +38,16 @@ interface CommentListProps {
 export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
   const [replyText, setReplyText] = useState<{ [key: number]: string }>({});
   const [showReplyInput, setShowReplyInput] = useState<{ [key: number]: boolean }>({});
+  const [currentUser, setCurrentUser] = useState<{ id: string } | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user);
+    };
+    fetchUser();
+  }, []);
 
   const handleReply = (commentId: number) => {
     if (replyText[commentId]?.trim()) {
@@ -79,8 +88,6 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
     return format(new Date(date), "MMM d, yyyy 'at' h:mm a");
   };
 
-  const { data: { user } } = await supabase.auth.getUser();
-
   return (
     <div className="space-y-4">
       {comments.map((comment) => (
@@ -98,7 +105,7 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
                     {formatDate(comment.createdAt)}
                   </span>
                 </div>
-                {user && user.id === comment.user.id && (
+                {currentUser && currentUser.id === comment.user.id && (
                   <Button
                     variant="ghost"
                     size="sm"
