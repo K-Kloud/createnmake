@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ZoomIn, ZoomOut, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -71,6 +71,7 @@ export const ImagePreviewDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
+        <DialogTitle className="sr-only">Image Preview</DialogTitle>
         <div className="relative">
           <img
             src={imageUrl}
