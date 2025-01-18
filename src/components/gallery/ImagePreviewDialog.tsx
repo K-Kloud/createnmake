@@ -44,7 +44,33 @@ export const ImagePreviewDialog = ({
     try {
       setIsDeleting(true);
 
-      // First, delete related metrics
+      // First, delete comment replies
+      const { error: repliesError } = await supabase
+        .from('comment_replies')
+        .delete()
+        .eq('comment_id', supabase
+          .from('comments')
+          .select('id')
+          .eq('image_id', imageId)
+        );
+
+      if (repliesError) {
+        console.error('Error deleting comment replies:', repliesError);
+        throw repliesError;
+      }
+
+      // Then, delete comments
+      const { error: commentsError } = await supabase
+        .from('comments')
+        .delete()
+        .eq('image_id', imageId);
+
+      if (commentsError) {
+        console.error('Error deleting comments:', commentsError);
+        throw commentsError;
+      }
+
+      // Next, delete related metrics
       const { error: metricsError } = await supabase
         .from('marketplace_metrics')
         .delete()
@@ -55,7 +81,7 @@ export const ImagePreviewDialog = ({
         throw metricsError;
       }
 
-      // Then delete the image
+      // Finally delete the image
       const { error: imageError } = await supabase
         .from('generated_images')
         .delete()
