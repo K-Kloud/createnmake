@@ -20,17 +20,23 @@ import CRMDashboard from "@/pages/CRMDashboard";
 import ArtisanOnboarding from "@/pages/ArtisanOnboarding";
 import ManufacturerOnboarding from "@/pages/ManufacturerOnboarding";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <div className="min-h-screen bg-background">
           <Toaster />
           <Sonner />
           <Routes>
-            <Route index element={<Index />} />
             <Route path="/" element={<Index />} />
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/create" element={<Create />} />
