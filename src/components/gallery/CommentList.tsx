@@ -1,12 +1,13 @@
 import { format, isValid } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
 
 interface Reply {
   id: number;
@@ -39,16 +40,15 @@ interface CommentListProps {
 export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
   const [replyText, setReplyText] = useState<{ [key: number]: string }>({});
   const [showReplyInput, setShowReplyInput] = useState<{ [key: number]: boolean }>({});
-  const [currentUser, setCurrentUser] = useState<{ id: string } | null>(null);
   const { toast } = useToast();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setCurrentUser(user);
-    };
-    fetchUser();
-  }, []);
+  const { data: session } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getSession();
+      return data.session;
+    },
+  });
 
   const handleReply = (commentId: number) => {
     if (replyText[commentId]?.trim()) {
@@ -106,7 +106,7 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
                     {formatDate(comment.createdAt)}
                   </span>
                 </div>
-                {currentUser && currentUser.id === comment.user.id && (
+                {session?.user && session.user.id === comment.user.id && (
                   <Button
                     variant="ghost"
                     size="sm"
