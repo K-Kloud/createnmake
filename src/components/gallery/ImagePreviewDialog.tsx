@@ -44,19 +44,28 @@ export const ImagePreviewDialog = ({
     try {
       setIsDeleting(true);
 
-      // First, delete comment replies
-      const { error: repliesError } = await supabase
-        .from('comment_replies')
-        .delete()
-        .eq('comment_id', supabase
-          .from('comments')
-          .select('id')
-          .eq('image_id', imageId)
-        );
+      // First, get all comment IDs for this image
+      const { data: commentIds, error: commentIdsError } = await supabase
+        .from('comments')
+        .select('id')
+        .eq('image_id', imageId);
 
-      if (repliesError) {
-        console.error('Error deleting comment replies:', repliesError);
-        throw repliesError;
+      if (commentIdsError) {
+        console.error('Error fetching comment IDs:', commentIdsError);
+        throw commentIdsError;
+      }
+
+      // Delete comment replies for all comments of this image
+      if (commentIds && commentIds.length > 0) {
+        const { error: repliesError } = await supabase
+          .from('comment_replies')
+          .delete()
+          .in('comment_id', commentIds.map(c => c.id));
+
+        if (repliesError) {
+          console.error('Error deleting comment replies:', repliesError);
+          throw repliesError;
+        }
       }
 
       // Then, delete comments
