@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthDialog } from "./auth/AuthDialog";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "./header/Navigation";
 import { ThemeToggle } from "./header/ThemeToggle";
@@ -9,12 +9,27 @@ import { UserMenu } from "./header/UserMenu";
 
 export const Header = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const stored = localStorage.getItem("theme");
     if (stored) return stored === "dark";
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
+
+  // Set up auth state listener
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      queryClient.setQueryData(['session'], session);
+      if (session?.user) {
+        queryClient.invalidateQueries({ queryKey: ['profile', session.user.id] });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [queryClient]);
 
   const { data: session } = useQuery({
     queryKey: ['session'],
