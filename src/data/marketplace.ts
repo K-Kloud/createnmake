@@ -28,7 +28,8 @@ export const initialImages: GalleryImage[] = [
       like: 234,
       comment: 0,
       view: 1289
-    }
+    },
+    user_id: "user2"
   },
   {
     id: 2,
@@ -50,7 +51,8 @@ export const initialImages: GalleryImage[] = [
       like: 189,
       comment: 0,
       view: 876
-    }
+    },
+    user_id: "user3"
   },
   {
     id: 3,
@@ -72,7 +74,8 @@ export const initialImages: GalleryImage[] = [
       like: 567,
       comment: 0,
       view: 2345
-    }
+    },
+    user_id: "user4"
   },
   {
     id: 4,
@@ -94,7 +97,8 @@ export const initialImages: GalleryImage[] = [
       like: 432,
       comment: 0,
       view: 1567
-    }
+    },
+    user_id: "user5"
   },
   {
     id: 5,
@@ -116,7 +120,8 @@ export const initialImages: GalleryImage[] = [
       like: 345,
       comment: 0,
       view: 1789
-    }
+    },
+    user_id: "user6"
   },
   {
     id: 6,
@@ -138,6 +143,7 @@ export const initialImages: GalleryImage[] = [
       like: 678,
       comment: 0,
       view: 3456
-    }
+    },
+    user_id: "user7"
   },
 ];
