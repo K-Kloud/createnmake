@@ -1,11 +1,12 @@
 import { MarketplaceLoader } from "@/components/marketplace/MarketplaceLoader";
 import { useMarketplace } from "@/components/marketplace/useMarketplace";
 import { MarketplaceContent } from "@/components/marketplace/MarketplaceContent";
+import { transformImage } from "@/utils/transformers";
 
 export const OpenMarketSection = () => {
   const {
     session,
-    images,
+    images: rawImages,
     isLoading,
     likeMutation,
     viewMutation,
@@ -26,7 +27,7 @@ export const OpenMarketSection = () => {
 
     likeMutation.mutate({ 
       imageId, 
-      hasLiked: Boolean(images?.find(img => img.id === imageId)?.image_likes?.some(like => like.user_id === session.user.id)), 
+      hasLiked: Boolean(rawImages?.find(img => img.id === imageId)?.image_likes?.some(like => like.user_id === session.user.id)), 
       userId: session.user.id 
     });
   };
@@ -71,10 +72,13 @@ export const OpenMarketSection = () => {
     return <MarketplaceLoader />;
   }
 
+  // Transform the raw images to match GalleryImage type
+  const transformedImages = rawImages?.map(img => transformImage(img, session?.user?.id)) || [];
+
   return (
     <section className="py-16">
       <MarketplaceContent
-        images={images || []}
+        images={transformedImages}
         onLike={handleLike}
         onView={handleView}
         onAddComment={handleAddComment}
