@@ -4,6 +4,7 @@ import { MarketplaceLoader } from "@/components/marketplace/MarketplaceLoader";
 import { MarketplaceGrid } from "@/components/marketplace/MarketplaceGrid";
 import { useMarketplace } from "@/components/marketplace/useMarketplace";
 import { transformImage } from "@/utils/transformers";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const OpenMarketSection = () => {
   const {
@@ -20,6 +21,20 @@ export const OpenMarketSection = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
+
+  const queryClient = useQueryClient();
+
+  // Pre-fetch next page of data
+  const prefetchNextPage = async () => {
+    if (!images) return;
+    
+    const nextPage = Math.ceil(images.length / 9) + 1;
+    await queryClient.prefetchQuery({
+      queryKey: ['marketplace-images', nextPage],
+      queryFn: () => images.slice((nextPage - 1) * 9, nextPage * 9),
+      staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    });
+  };
 
   const handleLike = (imageId: number) => {
     const image = images?.find(img => img.id === imageId);
@@ -82,7 +97,6 @@ export const OpenMarketSection = () => {
 
     let filtered = images.map(image => transformImage(image, session?.user?.id));
 
-    // Apply search filter
     if (searchTerm) {
       filtered = filtered.filter(image => 
         image.prompt.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -90,7 +104,6 @@ export const OpenMarketSection = () => {
       );
     }
 
-    // Apply category filter
     if (selectedCategory !== "all") {
       filtered = filtered.filter(image => {
         const promptCategory = image.prompt.split(":")[0]?.toLowerCase();
@@ -98,7 +111,6 @@ export const OpenMarketSection = () => {
       });
     }
 
-    // Apply sorting
     return filtered.sort((a, b) => {
       switch (sortBy) {
         case "oldest":
