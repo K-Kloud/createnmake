@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { ZoomIn, ZoomOut, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 interface ImagePreviewDialogProps {
   open: boolean;
@@ -30,12 +31,43 @@ export const ImagePreviewDialog = ({
 }: ImagePreviewDialogProps) => {
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Get current user's session and check if they're an admin
+  const { data: session } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getSession();
+      return data.session;
+    },
+  });
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (session?.user?.id) {
+        setCurrentUserId(session.user.id);
+        const { data: adminRoles } = await supabase
+          .from('admin_roles')
+          .select('role')
+          .eq('user_id', session.user.id)
+          .eq('role', 'admin')
+          .single();
+        
+        setIsAdmin(!!adminRoles);
+      }
+    };
+
+    checkAdminStatus();
+  }, [session]);
+
+  const canDelete = isAdmin || (currentUserId && userId === currentUserId);
 
   const handleDelete = async () => {
-    if (!imageId || !userId) {
+    if (!imageId || !canDelete) {
       toast({
         title: "Error",
-        description: "Cannot delete this image",
+        description: "You don't have permission to delete this image",
         variant: "destructive",
       });
       return;
@@ -144,7 +176,7 @@ export const ImagePreviewDialog = ({
             >
               <ZoomIn className="h-4 w-4" />
             </Button>
-            {userId && (
+            {canDelete && (
               <Button
                 variant="destructive"
                 size="sm"
