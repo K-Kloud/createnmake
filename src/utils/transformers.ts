@@ -47,6 +47,7 @@ export const transformImage = (image: any, userId?: string): GalleryImage => {
       like: image.likes || 0,
       comment: (image.comments || []).length,
       view: image.views || 0
-    }
+    },
+    user_id: image.user_id || ''
   };
 };

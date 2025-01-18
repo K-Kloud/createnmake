@@ -19,6 +19,7 @@ export interface GalleryImage {
     comment: number;
     view: number;
   };
+  user_id: string;
 }
 
 export interface ImageLike {
