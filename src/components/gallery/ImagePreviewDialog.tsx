@@ -43,13 +43,26 @@ export const ImagePreviewDialog = ({
 
     try {
       setIsDeleting(true);
-      const { error } = await supabase
+
+      // First, delete related metrics
+      const { error: metricsError } = await supabase
+        .from('marketplace_metrics')
+        .delete()
+        .eq('image_id', imageId);
+
+      if (metricsError) {
+        console.error('Error deleting metrics:', metricsError);
+        throw metricsError;
+      }
+
+      // Then delete the image
+      const { error: imageError } = await supabase
         .from('generated_images')
         .delete()
         .eq('id', imageId)
         .eq('user_id', userId);
 
-      if (error) throw error;
+      if (imageError) throw imageError;
 
       toast({
         title: "Success",
