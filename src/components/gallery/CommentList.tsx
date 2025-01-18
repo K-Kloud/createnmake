@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Trash2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface Reply {
   id: number;
@@ -19,6 +22,7 @@ interface Comment {
   id: number;
   text: string;
   user: {
+    id: string;
     name: string;
     avatar: string;
   };
@@ -34,6 +38,7 @@ interface CommentListProps {
 export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
   const [replyText, setReplyText] = useState<{ [key: number]: string }>({});
   const [showReplyInput, setShowReplyInput] = useState<{ [key: number]: boolean }>({});
+  const { toast } = useToast();
 
   const handleReply = (commentId: number) => {
     if (replyText[commentId]?.trim()) {
@@ -43,12 +48,38 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
     }
   };
 
+  const handleDeleteComment = async (commentId: number, userId: string) => {
+    try {
+      const { error } = await supabase
+        .from('comments')
+        .delete()
+        .eq('id', commentId)
+        .eq('user_id', userId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Comment deleted",
+        description: "Your comment has been successfully deleted.",
+      });
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete comment. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const formatDate = (date: Date) => {
     if (!date || !isValid(new Date(date))) {
       return 'Invalid date';
     }
     return format(new Date(date), "MMM d, yyyy 'at' h:mm a");
   };
+
+  const { data: { user } } = await supabase.auth.getUser();
 
   return (
     <div className="space-y-4">
@@ -60,11 +91,23 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
               <AvatarFallback>{comment.user.name[0]}</AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <div className="flex items-center space-x-2">
-                <span className="font-medium">{comment.user.name}</span>
-                <span className="text-sm text-gray-400">
-                  {formatDate(comment.createdAt)}
-                </span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <span className="font-medium">{comment.user.name}</span>
+                  <span className="text-sm text-gray-400">
+                    {formatDate(comment.createdAt)}
+                  </span>
+                </div>
+                {user && user.id === comment.user.id && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-gray-400 hover:text-red-500"
+                    onClick={() => handleDeleteComment(comment.id, comment.user.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
               <p className="text-sm text-gray-300 mt-1">{comment.text}</p>
               <Button 
