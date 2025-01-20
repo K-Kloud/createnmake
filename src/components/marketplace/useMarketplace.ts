@@ -16,12 +16,8 @@ export const useMarketplace = () => {
 
   useEffect(() => {
     const getSession = async () => {
-      try {
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
-        setSession(currentSession);
-      } catch (error) {
-        console.error('Error getting session:', error);
-      }
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      setSession(currentSession);
     };
 
     getSession();
@@ -72,6 +68,8 @@ export const useMarketplace = () => {
           throw error;
         }
 
+        console.log('Raw images data:', images);
+
         if (!images) {
           console.log('No images found');
           return [];
@@ -80,11 +78,13 @@ export const useMarketplace = () => {
         const imagesWithMetrics = await Promise.all(
           images.map(async (image) => {
             try {
+              // Call the RPC function directly
               const { data: metrics, error: metricsError } = await supabase
                 .rpc('get_image_metrics', { p_image_id: image.id });
 
               if (metricsError) {
                 console.error('Error fetching metrics for image', image.id, ':', metricsError);
+                // Return default metrics if there's an error
                 return {
                   ...image,
                   hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
@@ -95,7 +95,7 @@ export const useMarketplace = () => {
                     user: {
                       id: comment.user_id,
                       name: comment.profiles?.username || 'Anonymous',
-                      avatar: comment.profiles?.avatar_url || '/placeholder.svg'
+                      avatar: comment.profiles?.avatar_url || 'https://github.com/shadcn.png'
                     },
                     replies: comment.comment_replies?.map(reply => ({
                       id: reply.id,
@@ -104,7 +104,7 @@ export const useMarketplace = () => {
                       user: {
                         id: reply.user_id,
                         name: reply.profiles?.username || 'Anonymous',
-                        avatar: reply.profiles?.avatar_url || '/placeholder.svg'
+                        avatar: reply.profiles?.avatar_url || 'https://github.com/shadcn.png'
                       }
                     })) || []
                   })) || [],
@@ -117,6 +117,12 @@ export const useMarketplace = () => {
                 };
               }
 
+              // Transform metrics array into an object
+              const metricsMap = (metrics || []).reduce((acc, metric) => {
+                acc[metric.metric_type] = metric.total_value;
+                return acc;
+              }, {});
+
               return {
                 ...image,
                 hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
@@ -127,7 +133,7 @@ export const useMarketplace = () => {
                   user: {
                     id: comment.user_id,
                     name: comment.profiles?.username || 'Anonymous',
-                    avatar: comment.profiles?.avatar_url || '/placeholder.svg'
+                    avatar: comment.profiles?.avatar_url || 'https://github.com/shadcn.png'
                   },
                   replies: comment.comment_replies?.map(reply => ({
                     id: reply.id,
@@ -136,15 +142,11 @@ export const useMarketplace = () => {
                     user: {
                       id: reply.user_id,
                       name: reply.profiles?.username || 'Anonymous',
-                      avatar: reply.profiles?.avatar_url || '/placeholder.svg'
+                      avatar: reply.profiles?.avatar_url || 'https://github.com/shadcn.png'
                     }
                   })) || []
                 })) || [],
-                metrics: {
-                  like: (metrics?.find(m => m.metric_type === 'like')?.total_value) || 0,
-                  comment: (metrics?.find(m => m.metric_type === 'comment')?.total_value) || 0,
-                  view: (metrics?.find(m => m.metric_type === 'view')?.total_value) || 0
-                },
+                metrics: metricsMap,
                 timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true })
               };
             } catch (error) {
@@ -154,6 +156,7 @@ export const useMarketplace = () => {
           })
         );
 
+        console.log('Processed images with metrics:', imagesWithMetrics);
         return imagesWithMetrics;
       } catch (error) {
         console.error('Error in marketplace query:', error);
@@ -167,10 +170,10 @@ export const useMarketplace = () => {
     },
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     refetchOnWindowFocus: true,
     refetchOnMount: true,
-    refetchInterval: 1000 * 60 * 5,
+    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
   });
 
   return {

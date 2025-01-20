@@ -29,17 +29,13 @@ export const ImageActions = ({
           variant="ghost"
           size="sm"
           onClick={onLike}
-          className={`group ${hasLiked ? "text-red-500" : ""}`}
+          className={hasLiked ? "text-red-500" : ""}
           aria-label={hasLiked ? "Unlike" : "Like"}
         >
           <Heart 
-            className={`h-4 w-4 transition-all duration-200 ${
-              hasLiked ? "fill-current scale-110" : "group-hover:scale-105"
-            }`} 
+            className={`h-4 w-4 transition-all duration-200 ${hasLiked ? "fill-current scale-110" : ""}`} 
           />
-          <span className="ml-1.5 text-sm font-medium">
-            {metrics?.like || 0}
-          </span>
+          <span className="ml-1">{metrics?.like || 0}</span>
         </Button>
         <Button
           variant="ghost"
