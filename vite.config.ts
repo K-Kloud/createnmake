@@ -10,14 +10,14 @@ export default defineConfig(({ mode }) => ({
     strictPort: true,
     cors: {
       origin: "*",
-      methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-      allowedHeaders: ["Content-Type", "Authorization"],
+      methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization", "apikey", "Range"],
       credentials: true
     },
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,PATCH',
-      'Access-Control-Allow-Headers': 'Content-Type,Authorization'
+      'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,PATCH,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type,Authorization,apikey,Range'
     }
   },
   plugins: [
