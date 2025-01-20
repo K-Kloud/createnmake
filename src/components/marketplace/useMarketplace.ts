@@ -117,11 +117,6 @@ export const useMarketplace = () => {
                 };
               }
 
-              const metricsMap = (metrics || []).reduce((acc, metric) => {
-                acc[metric.metric_type] = metric.total_value;
-                return acc;
-              }, {});
-
               return {
                 ...image,
                 hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
@@ -145,7 +140,11 @@ export const useMarketplace = () => {
                     }
                   })) || []
                 })) || [],
-                metrics: metricsMap,
+                metrics: {
+                  like: (metrics?.find(m => m.metric_type === 'like')?.total_value) || 0,
+                  comment: (metrics?.find(m => m.metric_type === 'comment')?.total_value) || 0,
+                  view: (metrics?.find(m => m.metric_type === 'view')?.total_value) || 0
+                },
                 timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true })
               };
             } catch (error) {
