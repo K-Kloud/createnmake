@@ -11,13 +11,13 @@ export default defineConfig(({ mode }) => ({
     cors: {
       origin: "*",
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization", "apikey", "Range"],
+      allowedHeaders: ["Content-Type", "Authorization", "apikey", "Range", "x-client-info", "Prefer"],
       credentials: true
     },
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,PATCH,OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type,Authorization,apikey,Range'
+      'Access-Control-Allow-Headers': 'Content-Type,Authorization,apikey,Range,x-client-info,Prefer'
     }
   },
   plugins: [
