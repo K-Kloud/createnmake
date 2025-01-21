@@ -8,7 +8,7 @@ interface ImageActionsProps {
     view: number;
   };
   hasLiked: boolean;
-  onLike: () => void;
+  onLike: () => void;  // Changed from onLikeToggle to onLike
   onCommentToggle: () => void;
   showComments: boolean;
   onMakeClick: () => void;
@@ -17,7 +17,7 @@ interface ImageActionsProps {
 export const ImageActions = ({
   metrics,
   hasLiked,
-  onLike,
+  onLike,  // Changed from onLikeToggle to onLike
   onCommentToggle,
   showComments,
   onMakeClick,
@@ -28,14 +28,11 @@ export const ImageActions = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={onLike}
+          onClick={onLike}  // Changed from onLikeToggle to onLike
           className={hasLiked ? "text-red-500" : ""}
-          aria-label={hasLiked ? "Unlike" : "Like"}
         >
-          <Heart 
-            className={`h-4 w-4 transition-all duration-200 ${hasLiked ? "fill-current scale-110" : ""}`} 
-          />
-          <span className="ml-1">{metrics?.like || 0}</span>
+          <Heart className={`h-4 w-4 ${hasLiked ? "fill-current" : ""}`} />
+          <span>{metrics.like || 0}</span>
         </Button>
         <Button
           variant="ghost"
@@ -44,11 +41,11 @@ export const ImageActions = ({
           className={showComments ? "text-primary" : ""}
         >
           <MessageSquare className="h-4 w-4" />
-          <span className="ml-1">{metrics?.comment || 0}</span>
+          <span>{metrics.comment || 0}</span>
         </Button>
         <Button variant="ghost" size="sm">
           <Eye className="h-4 w-4" />
-          <span className="ml-1">{metrics?.view || 0}</span>
+          <span>{metrics.view || 0}</span>
         </Button>
       </div>
       <Button 

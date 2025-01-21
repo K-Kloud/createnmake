@@ -7,19 +7,17 @@ import { ChatBot } from "@/components/ChatBot";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <div className="pt-20"> {/* Added padding-top to prevent content from hiding under fixed header */}
-        <main className="container mx-auto px-4">
-          <Hero />
-          <div className="py-16">
-            <div className="image-generator">
-              <ImageGenerator />
-            </div>
-            <OpenMarketSection />
+      <main className="flex-grow pt-16">
+        <Hero />
+        <div className="container px-4 py-16">
+          <div className="image-generator">
+            <ImageGenerator />
           </div>
-        </main>
-      </div>
+          <OpenMarketSection />
+        </div>
+      </main>
       <ChatBot />
       <Footer />
     </div>

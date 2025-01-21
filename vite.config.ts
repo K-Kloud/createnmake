@@ -8,10 +8,9 @@ export default defineConfig(({ mode }) => ({
     host: "0.0.0.0",
     port: 8080,
     strictPort: true,
-    cors: {
-      origin: "*",
-      methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-      credentials: true
+    cors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
     }
   },
   plugins: [
@@ -23,7 +22,7 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     }
   },
-  base: "",
+  base: "/",
   optimizeDeps: {
     include: [
       'react',

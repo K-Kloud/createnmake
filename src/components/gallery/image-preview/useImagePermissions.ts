@@ -23,7 +23,7 @@ export const useImagePermissions = (userId?: string) => {
           .select('role')
           .eq('user_id', session.user.id)
           .eq('role', 'admin')
-          .maybeSingle();
+          .single();
         
         setIsAdmin(!!adminRoles);
       }

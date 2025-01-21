@@ -7,7 +7,6 @@ import { ImageHeader } from "./ImageHeader";
 import { ImageActions } from "./ImageActions";
 import { ImagePreviewDialog } from "./ImagePreviewDialog";
 import { MakerSelectionDialog } from "./MakerSelectionDialog";
-import { useLazyImage } from "@/hooks/use-lazy-image";
 
 interface ImageCardProps {
   image: {
@@ -31,7 +30,7 @@ interface ImageCardProps {
       comment: number;
       view: number;
     };
-    user_id: string;
+    user_id: string; // Added user_id to the image object
   };
   onLike: (imageId: number) => void;
   onView: (imageId: number) => void;
@@ -46,11 +45,18 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
   const [zoomLevel, setZoomLevel] = useState(1);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { imageSrc, isLoaded } = useLazyImage(image.url);
 
   const handleImageClick = () => {
     setImageOpen(true);
     onView(image.id);
+  };
+
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + 0.5, 3));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - 0.5, 1));
   };
 
   const handleMakeSelection = (type: 'artisan' | 'manufacturer') => {
@@ -73,20 +79,12 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
     <>
       <Card className="overflow-hidden glass-card hover:scale-[1.02] transition-transform">
         <CardContent className="p-0">
-          <div className="relative w-full h-64">
-            <div 
-              className={`absolute inset-0 bg-muted animate-pulse ${isLoaded ? 'hidden' : ''}`}
-            />
-            <img
-              src={imageSrc}
-              alt={image.prompt}
-              className={`w-full h-full object-cover cursor-pointer transition-opacity duration-300 ${
-                isLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
-              onClick={handleImageClick}
-              loading="lazy"
-            />
-          </div>
+          <img
+            src={image.url}
+            alt={image.prompt}
+            className="w-full h-64 object-cover cursor-pointer"
+            onClick={handleImageClick}
+          />
           <div className="p-4 space-y-3">
             <ImageHeader 
               creator={image.creator} 
@@ -122,8 +120,8 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
         imageUrl={image.url}
         prompt={image.prompt}
         zoomLevel={zoomLevel}
-        onZoomIn={() => setZoomLevel(prev => Math.min(prev + 0.5, 3))}
-        onZoomOut={() => setZoomLevel(prev => Math.max(prev - 0.5, 1))}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
         imageId={image.id}
         userId={image.user_id}
       />
