@@ -9,7 +9,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SignInForm } from "./SignInForm";
 import { SignUpForm } from "./SignUpForm";
-import { SocialButtons } from "./SocialButtons";
 import { ResetPasswordForm } from "./ResetPasswordForm";
 
 export function AuthDialog({
@@ -57,50 +56,35 @@ export function AuthDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          <SocialButtons />
+        <Tabs defaultValue="signin" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="signin">Sign In</TabsTrigger>
+            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+          </TabsList>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Or continue with
-              </span>
-            </div>
-          </div>
+          <TabsContent value="signin">
+            <SignInForm
+              email={email}
+              setEmail={setEmail}
+              password={password}
+              setPassword={setPassword}
+              isLoading={isLoading}
+              onForgotPassword={() => setIsResetMode(true)}
+            />
+          </TabsContent>
 
-          <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="signin">
-              <SignInForm
-                email={email}
-                setEmail={setEmail}
-                password={password}
-                setPassword={setPassword}
-                isLoading={isLoading}
-                onForgotPassword={() => setIsResetMode(true)}
-              />
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <SignUpForm
-                email={email}
-                setEmail={setEmail}
-                password={password}
-                setPassword={setPassword}
-                username={username}
-                setUsername={setUsername}
-                isLoading={isLoading}
-              />
-            </TabsContent>
-          </Tabs>
-        </div>
+          <TabsContent value="signup">
+            <SignUpForm
+              email={email}
+              setEmail={setEmail}
+              password={password}
+              setPassword={setPassword}
+              username={username}
+              setUsername={setUsername}
+              isLoading={isLoading}
+            />
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
