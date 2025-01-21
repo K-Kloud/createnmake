@@ -50,7 +50,7 @@ export function AuthDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] glass-card">
         <DialogHeader>
-          <DialogTitle>Welcome to OpenT</DialogTitle>
+          <DialogTitle>Welcome to OpenTeknologies</DialogTitle>
           <DialogDescription>
             Sign in to your account or create a new one to start creating amazing AI-generated images
           </DialogDescription>
