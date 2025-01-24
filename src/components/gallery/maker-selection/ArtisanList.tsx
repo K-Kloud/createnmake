@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 interface Artisan {
   id: string;
@@ -14,11 +14,10 @@ interface Artisan {
 
 interface ArtisanListProps {
   onSelect: (artisanId: string) => void;
+  isSubmitting?: boolean;
 }
 
-export const ArtisanList = ({ onSelect }: ArtisanListProps) => {
-  const navigate = useNavigate();
-
+export const ArtisanList = ({ onSelect, isSubmitting }: ArtisanListProps) => {
   const { data: artisans, isLoading } = useQuery({
     queryKey: ['artisans'],
     queryFn: async () => {
@@ -34,12 +33,6 @@ export const ArtisanList = ({ onSelect }: ArtisanListProps) => {
       return data as Artisan[];
     },
   });
-
-  const handleArtisanSelect = (artisanId: string) => {
-    onSelect(artisanId);
-    // Update the navigation to use the maker route with type parameter
-    navigate(`/maker/${artisanId}?type=artisan`);
-  };
 
   if (isLoading) {
     return (
@@ -64,7 +57,7 @@ export const ArtisanList = ({ onSelect }: ArtisanListProps) => {
           <div
             key={artisan.id}
             className="flex items-center justify-between p-2 rounded-lg hover:bg-accent cursor-pointer"
-            onClick={() => handleArtisanSelect(artisan.id)}
+            onClick={() => !isSubmitting && onSelect(artisan.id)}
           >
             <div className="flex items-center gap-3">
               <Avatar>
@@ -78,6 +71,9 @@ export const ArtisanList = ({ onSelect }: ArtisanListProps) => {
                 </p>
               </div>
             </div>
+            {isSubmitting && (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+            )}
           </div>
         ))}
       </div>
