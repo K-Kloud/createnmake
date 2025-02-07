@@ -1,11 +1,14 @@
+
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useLikeImage } from "./hooks/useLikeImage";
 import { useViewImage } from "./hooks/useViewImage";
 import { useCommentImage } from "./hooks/useCommentImage";
 import { formatDistanceToNow } from "date-fns";
+
+const ITEMS_PER_PAGE = 9;
 
 export const useMarketplace = () => {
   const { toast } = useToast();
@@ -31,11 +34,18 @@ export const useMarketplace = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const { data: images, isLoading } = useQuery({
+  const {
+    data: images,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
     queryKey: ['marketplace-images'],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 0 }) => {
       try {
-        console.log('Fetching marketplace images...');
+        const from = pageParam * ITEMS_PER_PAGE;
+        const to = from + ITEMS_PER_PAGE - 1;
+
         const { data: images, error } = await supabase
           .from('generated_images')
           .select(`
@@ -61,102 +71,37 @@ export const useMarketplace = () => {
             )
           `)
           .eq('is_public', true)
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false })
+          .range(from, to);
 
-        if (error) {
-          console.error('Error fetching marketplace images:', error);
-          throw error;
-        }
+        if (error) throw error;
 
-        console.log('Raw images data:', images);
-
-        if (!images) {
-          console.log('No images found');
-          return [];
-        }
+        if (!images) return [];
 
         const imagesWithMetrics = await Promise.all(
           images.map(async (image) => {
             try {
-              // Call the RPC function directly
               const { data: metrics, error: metricsError } = await supabase
                 .rpc('get_image_metrics', { p_image_id: image.id });
 
               if (metricsError) {
                 console.error('Error fetching metrics for image', image.id, ':', metricsError);
-                // Return default metrics if there's an error
-                return {
-                  ...image,
-                  hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
-                  comments: image.comments?.map(comment => ({
-                    id: comment.id,
-                    text: comment.text,
-                    createdAt: new Date(comment.created_at),
-                    user: {
-                      id: comment.user_id,
-                      name: comment.profiles?.username || 'Anonymous',
-                      avatar: comment.profiles?.avatar_url || 'https://github.com/shadcn.png'
-                    },
-                    replies: comment.comment_replies?.map(reply => ({
-                      id: reply.id,
-                      text: reply.text,
-                      createdAt: new Date(reply.created_at),
-                      user: {
-                        id: reply.user_id,
-                        name: reply.profiles?.username || 'Anonymous',
-                        avatar: reply.profiles?.avatar_url || 'https://github.com/shadcn.png'
-                      }
-                    })) || []
-                  })) || [],
-                  metrics: {
-                    like: image.likes || 0,
-                    comment: (image.comments || []).length,
-                    view: image.views || 0
-                  },
-                  timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true })
-                };
+                return transformImageWithDefaultMetrics(image, session);
               }
 
-              // Transform metrics array into an object
               const metricsMap = (metrics || []).reduce((acc, metric) => {
                 acc[metric.metric_type] = metric.total_value;
                 return acc;
               }, {});
 
-              return {
-                ...image,
-                hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
-                comments: image.comments?.map(comment => ({
-                  id: comment.id,
-                  text: comment.text,
-                  createdAt: new Date(comment.created_at),
-                  user: {
-                    id: comment.user_id,
-                    name: comment.profiles?.username || 'Anonymous',
-                    avatar: comment.profiles?.avatar_url || 'https://github.com/shadcn.png'
-                  },
-                  replies: comment.comment_replies?.map(reply => ({
-                    id: reply.id,
-                    text: reply.text,
-                    createdAt: new Date(reply.created_at),
-                    user: {
-                      id: reply.user_id,
-                      name: reply.profiles?.username || 'Anonymous',
-                      avatar: reply.profiles?.avatar_url || 'https://github.com/shadcn.png'
-                    }
-                  })) || []
-                })) || [],
-                metrics: metricsMap,
-                timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true })
-              };
+              return transformImageWithMetrics(image, session, metricsMap);
             } catch (error) {
               console.error('Error processing image metrics:', error);
-              return image;
+              return transformImageWithDefaultMetrics(image, session);
             }
           })
         );
 
-        console.log('Processed images with metrics:', imagesWithMetrics);
         return imagesWithMetrics;
       } catch (error) {
         console.error('Error in marketplace query:', error);
@@ -168,13 +113,56 @@ export const useMarketplace = () => {
         return [];
       }
     },
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === ITEMS_PER_PAGE ? allPages.length : undefined;
+    },
+    initialPageParam: 0,
+    refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
-    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
   });
+
+  const transformImageWithDefaultMetrics = (image, session) => ({
+    ...image,
+    hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
+    comments: transformComments(image.comments),
+    metrics: {
+      like: image.likes || 0,
+      comment: (image.comments || []).length,
+      view: image.views || 0
+    },
+    timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true })
+  });
+
+  const transformImageWithMetrics = (image, session, metricsMap) => ({
+    ...image,
+    hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
+    comments: transformComments(image.comments),
+    metrics: metricsMap,
+    timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true })
+  });
+
+  const transformComments = (comments) => {
+    return comments?.map(comment => ({
+      id: comment.id,
+      text: comment.text,
+      createdAt: new Date(comment.created_at),
+      user: {
+        id: comment.user_id,
+        name: comment.profiles?.username || 'Anonymous',
+        avatar: comment.profiles?.avatar_url || 'https://github.com/shadcn.png'
+      },
+      replies: comment.comment_replies?.map(reply => ({
+        id: reply.id,
+        text: reply.text,
+        createdAt: new Date(reply.created_at),
+        user: {
+          id: reply.user_id,
+          name: reply.profiles?.username || 'Anonymous',
+          avatar: reply.profiles?.avatar_url || 'https://github.com/shadcn.png'
+        }
+      })) || []
+    })) || [];
+  };
 
   return {
     session,
@@ -184,6 +172,8 @@ export const useMarketplace = () => {
     viewMutation,
     commentMutation,
     replyMutation,
-    toast
+    toast,
+    fetchNextPage,
+    hasNextPage,
   };
 };

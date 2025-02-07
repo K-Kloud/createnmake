@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from "react";
 import { MarketplaceHeader } from "@/components/marketplace/MarketplaceHeader";
 import { MarketplaceLoader } from "@/components/marketplace/MarketplaceLoader";
@@ -14,7 +15,9 @@ export const OpenMarketSection = () => {
     viewMutation,
     commentMutation,
     replyMutation,
-    toast
+    toast,
+    fetchNextPage,
+    hasNextPage,
   } = useMarketplace();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -78,15 +81,18 @@ export const OpenMarketSection = () => {
   };
 
   const filteredAndSortedImages = useMemo(() => {
-    if (!images) return [];
+    if (!images?.pages?.length) return [];
 
-    let filtered = images.map(image => transformImage(image, session?.user?.id));
+    let filtered = images.pages.flatMap(page => 
+      page.map(image => transformImage(image, session?.user?.id))
+    );
 
     // Apply search filter
     if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(image => 
-        image.prompt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        image.creator.name.toLowerCase().includes(searchTerm.toLowerCase())
+        image.prompt.toLowerCase().includes(searchLower) ||
+        image.creator.name.toLowerCase().includes(searchLower)
       );
     }
 
@@ -112,11 +118,7 @@ export const OpenMarketSection = () => {
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       }
     });
-  }, [images, searchTerm, selectedCategory, sortBy, session?.user?.id]);
-
-  if (isLoading) {
-    return <MarketplaceLoader />;
-  }
+  }, [images?.pages, searchTerm, selectedCategory, sortBy, session?.user?.id]);
 
   return (
     <section className="py-16">
@@ -125,13 +127,19 @@ export const OpenMarketSection = () => {
         onCategoryChange={setSelectedCategory}
         onSortChange={setSortBy}
       />
-      <MarketplaceGrid
-        images={filteredAndSortedImages}
-        onLike={handleLike}
-        onView={handleView}
-        onAddComment={handleAddComment}
-        onAddReply={handleAddReply}
-      />
+      {isLoading ? (
+        <MarketplaceLoader />
+      ) : (
+        <MarketplaceGrid
+          images={filteredAndSortedImages}
+          onLike={handleLike}
+          onView={handleView}
+          onAddComment={handleAddComment}
+          onAddReply={handleAddReply}
+          onLoadMore={fetchNextPage}
+          hasMore={hasNextPage}
+        />
+      )}
     </section>
   );
 };
