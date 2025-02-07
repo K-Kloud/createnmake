@@ -25,7 +25,9 @@ export const OpenMarketSection = () => {
   const [sortBy, setSortBy] = useState("newest");
 
   const handleLike = (imageId: number) => {
-    const image = images?.find(img => img.id === imageId);
+    // Get all images from all pages and find the one we want
+    const allImages = images?.pages.flatMap(page => page) || [];
+    const image = allImages.find(img => img.id === imageId);
     if (!image) return;
 
     if (!session?.user) {
@@ -143,3 +145,4 @@ export const OpenMarketSection = () => {
     </section>
   );
 };
+
