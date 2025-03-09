@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -29,8 +30,12 @@
   }
 
   body {
-    @apply bg-background text-foreground text-center;
+    @apply bg-background text-foreground text-center dark:bg-[#1A1F2C];
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  html {
+    @apply dark;
   }
 
   .dark body {
@@ -39,7 +44,7 @@
 }
 
 .glass-card {
-  @apply bg-card/30 backdrop-blur-md border border-primary/20 shadow-xl rounded-[var(--radius)];
+  @apply bg-card/30 backdrop-blur-md border border-primary/20 shadow-xl rounded-[var(--radius)] hover:shadow-primary/20 transition-all duration-300;
 }
 
 .gradient-text {
@@ -47,11 +52,11 @@
 }
 
 .button-glow {
-  @apply transition-shadow duration-300 rounded-[var(--radius)];
+  @apply transition-shadow duration-300 rounded-[var(--radius)] hover:shadow-lg hover:shadow-primary/30 active:scale-95;
 }
 
 .input-glow {
-  @apply transition-shadow duration-300 rounded-[var(--radius)];
+  @apply transition-shadow duration-300 rounded-[var(--radius)] focus:shadow-md focus:shadow-primary/30;
 }
 
 @keyframes bounce-slow {

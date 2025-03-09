@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Heart, Eye, MessageSquare, Package } from "lucide-react";
 
@@ -8,7 +9,7 @@ interface ImageActionsProps {
     view: number;
   };
   hasLiked: boolean;
-  onLike: () => void;  // Changed from onLikeToggle to onLike
+  onLike: () => void;
   onCommentToggle: () => void;
   showComments: boolean;
   onMakeClick: () => void;
@@ -17,7 +18,7 @@ interface ImageActionsProps {
 export const ImageActions = ({
   metrics,
   hasLiked,
-  onLike,  // Changed from onLikeToggle to onLike
+  onLike,
   onCommentToggle,
   showComments,
   onMakeClick,
@@ -28,30 +29,34 @@ export const ImageActions = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={onLike}  // Changed from onLikeToggle to onLike
-          className={hasLiked ? "text-red-500" : ""}
+          onClick={onLike}
+          className={`transition-colors ${hasLiked ? "text-red-500 hover:text-red-400" : "hover:text-primary"}`}
         >
-          <Heart className={`h-4 w-4 ${hasLiked ? "fill-current" : ""}`} />
+          <Heart className={`h-4 w-4 transition-transform hover:scale-110 ${hasLiked ? "fill-current" : ""}`} />
           <span>{metrics.like || 0}</span>
         </Button>
         <Button
           variant="ghost"
           size="sm"
           onClick={onCommentToggle}
-          className={showComments ? "text-primary" : ""}
+          className={`transition-colors ${showComments ? "text-primary hover:text-primary/80" : "hover:text-primary"}`}
         >
-          <MessageSquare className="h-4 w-4" />
+          <MessageSquare className="h-4 w-4 transition-transform hover:scale-110" />
           <span>{metrics.comment || 0}</span>
         </Button>
-        <Button variant="ghost" size="sm">
-          <Eye className="h-4 w-4" />
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className="hover:text-primary"
+        >
+          <Eye className="h-4 w-4 transition-transform hover:scale-110" />
           <span>{metrics.view || 0}</span>
         </Button>
       </div>
       <Button 
         size="sm"
         onClick={onMakeClick}
-        className="gap-2"
+        className="gap-2 button-glow"
       >
         <Package className="h-4 w-4" />
         Make This

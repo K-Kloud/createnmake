@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthDialog } from "./auth/AuthDialog";
@@ -11,11 +12,7 @@ export const Header = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const stored = localStorage.getItem("theme");
-    if (stored) return stored === "dark";
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
+  const [isDarkMode, setIsDarkMode] = useState(true); // Set dark mode as default
 
   // Set up auth state listener
   useEffect(() => {
@@ -69,7 +66,7 @@ export const Header = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <h1 
-              className="text-xl font-bold text-primary animate-glow rounded-lg cursor-pointer" 
+              className="text-xl font-bold text-primary animate-glow rounded-lg cursor-pointer transition-transform hover:scale-105 active:scale-95" 
               onClick={() => navigate("/")}
             >
               openteknologies

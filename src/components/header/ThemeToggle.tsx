@@ -1,3 +1,4 @@
+
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -22,7 +23,7 @@ export const ThemeToggle = ({ isDarkMode, setIsDarkMode }: ThemeToggleProps) => 
       <Switch
         checked={isDarkMode}
         onCheckedChange={toggleTheme}
-        className="data-[state=checked]:bg-secondary"
+        className="data-[state=checked]:bg-secondary transition-colors"
       />
     </div>
   );

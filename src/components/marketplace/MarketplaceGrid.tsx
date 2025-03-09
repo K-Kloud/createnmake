@@ -35,14 +35,15 @@ export const MarketplaceGrid = ({
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {images.map((image) => (
-          <ImageCard
-            key={image.id}
-            image={image}
-            onLike={onLike}
-            onView={onView}
-            onAddComment={onAddComment}
-            onAddReply={onAddReply}
-          />
+          <div key={image.id} className="transform transition-all duration-300 hover:scale-[1.02]">
+            <ImageCard
+              image={image}
+              onLike={onLike}
+              onView={onView}
+              onAddComment={onAddComment}
+              onAddReply={onAddReply}
+            />
+          </div>
         ))}
       </div>
       {hasMore && (

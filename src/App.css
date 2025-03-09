@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -9,13 +10,16 @@
   height: 6em;
   padding: 1.5em;
   will-change: filter;
-  transition: filter 300ms;
+  transition: filter 300ms, transform 300ms;
 }
+
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em #00ff9daa);
+  transform: scale(1.05);
 }
+
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(0 0 2em #00ff9daa);
 }
 
 @keyframes logo-spin {
@@ -35,8 +39,41 @@
 
 .card {
   padding: 2em;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 255, 157, 0.1);
 }
 
 .read-the-docs {
   color: #888;
+  transition: color 0.3s ease;
+}
+
+.read-the-docs:hover {
+  color: #00ff9d;
+}
+
+/* Dark mode enhanced styles */
+.dark button {
+  box-shadow: 0 0 0 rgba(0, 255, 157, 0);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.dark button:hover {
+  box-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
+}
+
+.dark button:active {
+  transform: scale(0.95);
+}
+
+.dark a {
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.dark a:hover {
+  text-shadow: 0 0 8px rgba(0, 255, 157, 0.5);
 }
