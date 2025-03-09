@@ -1,4 +1,3 @@
-
 import { format, isValid, parseISO } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -83,12 +82,10 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
     }
   };
 
-  const formatDate = (date: Date) => {
-    // Check if date is a valid Date object first
+  const formatDate = (date: Date | string) => {
     if (!date) return 'No date';
     
-    // Try to parse the date if it's not already a valid Date object
-    const dateObj = date instanceof Date ? date : parseISO(date.toString());
+    const dateObj = typeof date === 'string' ? parseISO(date) : date;
     
     if (!isValid(dateObj)) {
       return 'Invalid date';
