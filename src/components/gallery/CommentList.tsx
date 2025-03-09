@@ -1,4 +1,5 @@
-import { format, isValid } from "date-fns";
+
+import { format, isValid, parseISO } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -83,10 +84,17 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
   };
 
   const formatDate = (date: Date) => {
-    if (!date || !isValid(new Date(date))) {
+    // Check if date is a valid Date object first
+    if (!date) return 'No date';
+    
+    // Try to parse the date if it's not already a valid Date object
+    const dateObj = date instanceof Date ? date : parseISO(date.toString());
+    
+    if (!isValid(dateObj)) {
       return 'Invalid date';
     }
-    return format(new Date(date), "MMM d, yyyy 'at' h:mm a");
+    
+    return format(dateObj, "MMM d, yyyy 'at' h:mm a");
   };
 
   return (
@@ -96,12 +104,14 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
           <div className="flex space-x-3">
             <Avatar className="h-8 w-8">
               <AvatarImage src={comment.user.avatar} alt={comment.user.name} />
-              <AvatarFallback>{comment.user.name[0]}</AvatarFallback>
+              <AvatarFallback>{comment.user.name ? comment.user.name[0] : '?'}</AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <span className="font-medium">{comment.user.name}</span>
+                  <span className="font-medium">
+                    {comment.user.name || 'User'}
+                  </span>
                   <span className="text-sm text-gray-400">
                     {formatDate(comment.createdAt)}
                   </span>
@@ -155,11 +165,13 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
                   <div key={reply.id} className="flex space-x-3 mt-2">
                     <Avatar className="h-6 w-6">
                       <AvatarImage src={reply.user.avatar} alt={reply.user.name} />
-                      <AvatarFallback>{reply.user.name[0]}</AvatarFallback>
+                      <AvatarFallback>{reply.user.name ? reply.user.name[0] : '?'}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
-                        <span className="font-medium text-sm">{reply.user.name}</span>
+                        <span className="font-medium text-sm">
+                          {reply.user.name || 'User'}
+                        </span>
                         <span className="text-xs text-gray-400">
                           {formatDate(reply.createdAt)}
                         </span>
