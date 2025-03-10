@@ -9,8 +9,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TaskFilters } from "@/components/crm/TaskFilters";
-import { CalendarDays, CheckCircle, Clock, AlertTriangle } from "lucide-react";
+import { CalendarDays, CheckCircle, Clock, AlertTriangle, FileDown } from "lucide-react";
 import { AddTaskDialog } from "./AddTaskDialog";
+import { exportTaskReport } from "./TaskExporter";
 
 interface Task {
   id: string;
@@ -245,6 +246,10 @@ export const TaskWorkflow = () => {
     setTasks([...tasks, task]);
   };
 
+  const handleExportSchedule = () => {
+    exportTaskReport(tasks);
+  };
+
   const filteredTasks = tasks.filter(task => 
     task.day === activeDay && 
     (filters.search ? 
@@ -264,7 +269,10 @@ export const TaskWorkflow = () => {
             <CardDescription>Manage your marketing tasks and track progress</CardDescription>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline">Export Schedule</Button>
+            <Button variant="outline" onClick={handleExportSchedule}>
+              <FileDown className="mr-2 h-4 w-4" />
+              Export Schedule
+            </Button>
             <AddTaskDialog onTaskAdd={handleAddTask} />
           </div>
         </div>
