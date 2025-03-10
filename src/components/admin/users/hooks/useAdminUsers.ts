@@ -1,7 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { AdminUser, AdminRole, Profile } from "../types";
+import { AdminUser, AdminRole, Profile, SupabaseAuthResponse } from "../types";
 
 export const useAdminUsers = () => {
   return useQuery<AdminUser[]>({
@@ -25,7 +25,7 @@ export const useAdminUsers = () => {
         if (usersError) throw usersError;
 
         return adminRoles.map((role: AdminRole) => {
-          const user = users.users.find((u) => u.id === role.user_id);
+          const user = (users as SupabaseAuthResponse).users.find((u) => u.id === role.user_id);
           return {
             id: role.user_id,
             email: user?.email || "Unknown",

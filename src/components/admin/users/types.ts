@@ -16,3 +16,14 @@ export type Profile = {
   id: string;
   username: string;
 };
+
+// Type for Supabase Auth User
+export type SupabaseUser = {
+  id: string;
+  email?: string;
+};
+
+// Type for Supabase Auth response
+export type SupabaseAuthResponse = {
+  users: SupabaseUser[];
+};

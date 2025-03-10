@@ -1,58 +1,73 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
+import { AdminUser } from "../types";
 
 export const useAdminMutations = () => {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const addAdminMutation = useMutation({
-    mutationFn: async (email: string) => {
-      const { data: userData, error: userError } = await supabase
-        .from("profiles")
+    mutationFn: async (emailOrUsername: string) => {
+      // First, try to find the user by email
+      const { data: userByEmail, error: userEmailError } = await supabase
+        .from("users")
         .select("id")
-        .eq("username", email)
+        .eq("email", emailOrUsername)
         .single();
 
-      if (userError) {
-        const { data: auth, error: authError } = await supabase.auth.admin.listUsers({
-          perPage: 1000,
-        });
-
-        if (authError) throw new Error("Cannot find user with this email");
-
-        const user = auth.users.find(u => u.email === email);
-        if (!user) throw new Error("User not found with this email");
-        
-        const { error: roleError } = await supabase
-          .from("admin_roles")
-          .insert({ user_id: user.id, role: "admin" });
-
-        if (roleError) throw roleError;
-        
-        return { id: user.id, email, role: "admin", created_at: new Date().toISOString() };
-      } else {
-        const { error: roleError } = await supabase
-          .from("admin_roles")
-          .insert({ user_id: userData.id, role: "admin" });
-
-        if (roleError) throw roleError;
-        
-        return { id: userData.id, email, role: "admin", created_at: new Date().toISOString() };
+      if (userEmailError && userEmailError.code !== "PGRST116") {
+        throw userEmailError;
       }
+
+      // If not found by email, try by username in profiles
+      const { data: userByUsername, error: usernameError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("username", emailOrUsername)
+        .single();
+
+      if (usernameError && usernameError.code !== "PGRST116") {
+        throw usernameError;
+      }
+
+      const userId = userByEmail?.id || userByUsername?.id;
+
+      if (!userId) {
+        throw new Error(`No user found with email or username: ${emailOrUsername}`);
+      }
+
+      // Check if user is already an admin
+      const { data: existingRole } = await supabase
+        .from("admin_roles")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+
+      if (existingRole) {
+        throw new Error("User is already an admin");
+      }
+
+      // Add admin role
+      const { error } = await supabase
+        .from("admin_roles")
+        .insert([{ user_id: userId, role: "admin" }]);
+
+      if (error) throw error;
+
+      return { userId };
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
       toast({
         title: "Success",
-        description: "Admin user added successfully",
+        description: "Admin role added successfully",
       });
-      queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
     },
     onError: (error: Error) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to add admin user",
+        description: error.message,
         variant: "destructive",
       });
     },
@@ -66,19 +81,19 @@ export const useAdminMutations = () => {
         .eq("user_id", userId);
 
       if (error) throw error;
-      return userId;
+      return { userId };
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
       toast({
         title: "Success",
         description: "Admin role removed successfully",
       });
-      queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to remove admin role",
+        description: error.message,
         variant: "destructive",
       });
     },
