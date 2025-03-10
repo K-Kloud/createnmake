@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ export const ManufacturerOnboardingForm = () => {
     businessName: "",
     businessType: "",
     contactEmail: "",
-    phone: "",
+    phone: "+44 7438306305", // Set default phone number as the new one
     address: "",
     specialties: "",
     bio: ""

@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 
 interface Manufacturer {
@@ -15,6 +16,9 @@ interface ManufacturerOverviewProps {
 
 export const ManufacturerOverview = ({ manufacturer }: ManufacturerOverviewProps) => {
   if (!manufacturer) return null;
+  
+  // Default phone number if manufacturer.phone is null
+  const phoneNumber = manufacturer.phone || "+44 7438306305";
 
   return (
     <div className="glass-card p-6">
@@ -22,7 +26,7 @@ export const ManufacturerOverview = ({ manufacturer }: ManufacturerOverviewProps
       <div className="grid gap-4">
         <p><strong>Type:</strong> {manufacturer.business_type}</p>
         <p><strong>Email:</strong> {manufacturer.contact_email}</p>
-        <p><strong>Phone:</strong> {manufacturer.phone}</p>
+        <p><strong>Phone:</strong> {phoneNumber}</p>
         <p><strong>Address:</strong> {manufacturer.address}</p>
         <div>
           <strong>Specialties:</strong>

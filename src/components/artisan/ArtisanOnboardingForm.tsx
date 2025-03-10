@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -32,7 +33,7 @@ export const ArtisanOnboardingForm = () => {
     businessName: "",
     businessType: "",
     specialties: "",
-    phone: "",
+    phone: "+44 7438306305", // Set default phone number as the new one
     address: "",
     bio: "",
   });
