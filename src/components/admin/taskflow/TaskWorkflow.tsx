@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -13,7 +14,8 @@ import { CalendarDays, CheckCircle, Clock, AlertTriangle, FileDown } from "lucid
 import { AddTaskDialog } from "./AddTaskDialog";
 import { exportTaskReport } from "./TaskExporter";
 
-interface Task {
+// Export the Task interface so it can be used in other files
+export interface Task {
   id: string;
   title: string;
   description: string;
