@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +33,20 @@ type Profile = {
   username: string;
 };
 
+// Define types for Supabase response objects
+type AdminRole = {
+  user_id: string;
+  role: string;
+  created_at: string;
+};
+
+type SupabaseAuthResponse = {
+  users: {
+    id: string;
+    email: string;
+  }[];
+};
+
 export const AdminUsersList = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -49,7 +64,7 @@ export const AdminUsersList = () => {
       if (rolesError) throw rolesError;
 
       // Get profile information for each admin
-      const userIds = adminRoles.map((role) => role.user_id);
+      const userIds = adminRoles.map((role: AdminRole) => role.user_id);
       
       if (userIds.length === 0) return [];
 
@@ -61,7 +76,7 @@ export const AdminUsersList = () => {
         if (usersError) throw usersError;
 
         // Match users with roles
-        return adminRoles.map((role) => {
+        return adminRoles.map((role: AdminRole) => {
           const user = users.users.find((u) => u.id === role.user_id);
           return {
             id: role.user_id,
@@ -79,8 +94,8 @@ export const AdminUsersList = () => {
 
         if (profilesError) throw profilesError;
 
-        return adminRoles.map((role) => {
-          const profile = profiles.find((p) => p.id === role.user_id);
+        return adminRoles.map((role: AdminRole) => {
+          const profile = profiles.find((p: Profile) => p.id === role.user_id);
           return {
             id: role.user_id,
             email: profile?.username || "Unknown",
