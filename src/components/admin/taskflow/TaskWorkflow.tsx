@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -11,8 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TaskFilters } from "@/components/crm/TaskFilters";
 import { CalendarDays, CheckCircle, Clock, AlertTriangle } from "lucide-react";
+import { AddTaskDialog } from "./AddTaskDialog";
 
-// Type definitions
 interface Task {
   id: string;
   title: string;
@@ -40,10 +39,8 @@ export const TaskWorkflow = () => {
     timeFilter: "",
   });
 
-  // Initialize tasks with sample data
   useEffect(() => {
     const sampleTasks: Task[] = [
-      // Monday Tasks
       {
         id: "m1",
         title: "Review Weekly Objectives",
@@ -115,7 +112,6 @@ export const TaskWorkflow = () => {
         important: false,
       },
       
-      // Tuesday Tasks
       {
         id: "t1",
         title: "Campaign Performance Analysis",
@@ -167,7 +163,6 @@ export const TaskWorkflow = () => {
         important: false,
       },
       
-      // Add a few sample tasks for other days
       {
         id: "w1",
         title: "Strategy Meeting with CEO",
@@ -203,7 +198,6 @@ export const TaskWorkflow = () => {
     setTasks(sampleTasks);
   }, []);
 
-  // Update stats whenever tasks change
   useEffect(() => {
     updateStats();
   }, [tasks]);
@@ -235,6 +229,22 @@ export const TaskWorkflow = () => {
     setFilters({ ...filters, ...newFilters });
   };
 
+  const handleAddTask = (newTask: {
+    title: string;
+    description: string;
+    time: string;
+    timeBlock: string;
+    day: string;
+    important: boolean;
+  }) => {
+    const task = {
+      ...newTask,
+      id: `${newTask.day}-${Date.now()}`,
+      completed: false,
+    };
+    setTasks([...tasks, task]);
+  };
+
   const filteredTasks = tasks.filter(task => 
     task.day === activeDay && 
     (filters.search ? 
@@ -243,7 +253,6 @@ export const TaskWorkflow = () => {
       : true)
   );
 
-  // Group tasks by time block
   const timeBlocks = Array.from(new Set(filteredTasks.map(task => task.timeBlock)));
   
   return (
@@ -256,12 +265,11 @@ export const TaskWorkflow = () => {
           </div>
           <div className="flex gap-2">
             <Button variant="outline">Export Schedule</Button>
-            <Button>Add Task</Button>
+            <AddTaskDialog onTaskAdd={handleAddTask} />
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Stats section */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardContent className="pt-6 text-center">
@@ -301,12 +309,10 @@ export const TaskWorkflow = () => {
           </Card>
         </div>
 
-        {/* Filters */}
         <div className="pb-4">
           <TaskFilters onFilterChange={handleFilterChange} />
         </div>
 
-        {/* Day selector */}
         <div className="flex overflow-x-auto pb-2">
           {["monday", "tuesday", "wednesday", "thursday", "friday"].map((day) => (
             <Button
@@ -320,7 +326,6 @@ export const TaskWorkflow = () => {
           ))}
         </div>
 
-        {/* Tasks */}
         <div className="space-y-6">
           {timeBlocks.map(timeBlock => (
             <div key={timeBlock} className="rounded-lg border bg-card text-card-foreground shadow">
