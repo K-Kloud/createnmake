@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -6,12 +7,13 @@ import { ImageFilters } from "@/components/admin/ImageFilters";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Database, Loader2, Users } from "lucide-react";
+import { Database, Loader2, Users, CalendarRange } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminStats } from "@/components/admin/stats/AdminStats";
 import { AdminPortfolio } from "@/components/admin/portfolio/AdminPortfolio";
 import { UserManagement } from "@/components/admin/users/UserManagement";
+import { TaskWorkflow } from "@/components/admin/taskflow/TaskWorkflow";
 
 const Admin = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -132,6 +134,10 @@ const Admin = () => {
             <TabsTrigger value="stats">Stats</TabsTrigger>
             <TabsTrigger value="portfolios">Portfolios</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
+            <TabsTrigger value="taskflow">
+              <CalendarRange className="mr-2 h-4 w-4" />
+              Task Workflow
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="images">
@@ -162,6 +168,10 @@ const Admin = () => {
 
           <TabsContent value="users">
             <UserManagement />
+          </TabsContent>
+
+          <TabsContent value="taskflow">
+            <TaskWorkflow />
           </TabsContent>
         </Tabs>
       </main>
