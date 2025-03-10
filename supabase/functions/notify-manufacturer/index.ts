@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -55,7 +56,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "OpenT <notifications@opent.dev>",
+        from: "OpenT <notifications@openteknologies.com>",
         to: [manufacturer.contact_email],
         subject: notification.title,
         html: `
