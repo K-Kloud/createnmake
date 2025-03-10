@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,6 +22,16 @@ type AdminUser = {
   created_at: string;
 };
 
+type AuthUser = {
+  id: string;
+  email: string;
+};
+
+type Profile = {
+  id: string;
+  username: string;
+};
+
 export const AdminUsersList = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -30,7 +39,7 @@ export const AdminUsersList = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch all admin users
-  const { data: adminUsers, isLoading } = useQuery({
+  const { data: adminUsers, isLoading } = useQuery<AdminUser[]>({
     queryKey: ["adminUsers"],
     queryFn: async () => {
       const { data: adminRoles, error: rolesError } = await supabase
@@ -44,11 +53,24 @@ export const AdminUsersList = () => {
       
       if (userIds.length === 0) return [];
 
-      const { data: users, error: usersError } = await supabase.auth.admin.listUsers({
-        perPage: 1000,
-      });
+      try {
+        const { data: users, error: usersError } = await supabase.auth.admin.listUsers({
+          perPage: 1000,
+        });
 
-      if (usersError) {
+        if (usersError) throw usersError;
+
+        // Match users with roles
+        return adminRoles.map((role) => {
+          const user = users.users.find((u) => u.id === role.user_id);
+          return {
+            id: role.user_id,
+            email: user?.email || "Unknown",
+            role: role.role,
+            created_at: role.created_at,
+          };
+        });
+      } catch (error) {
         // Fall back to fetching only profiles if not super admin
         const { data: profiles, error: profilesError } = await supabase
           .from("profiles")
@@ -67,17 +89,6 @@ export const AdminUsersList = () => {
           };
         });
       }
-
-      // Match users with roles
-      return adminRoles.map((role) => {
-        const user = users.users.find((u) => u.id === role.user_id);
-        return {
-          id: role.user_id,
-          email: user?.email || "Unknown",
-          role: role.role,
-          created_at: role.created_at,
-        };
-      });
     },
   });
 
