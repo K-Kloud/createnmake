@@ -65,12 +65,12 @@ export const Header = () => {
       <header className="fixed top-0 w-full z-50 glass-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <h1 
-              className="text-xl font-bold text-primary animate-glow rounded-lg cursor-pointer transition-transform hover:scale-105 active:scale-95" 
+            <button 
+              className="bg-primary text-primary-foreground px-4 py-2 text-xl font-bold rounded-md hover:bg-primary/90 transition-all duration-200 hover:shadow-sm hover:shadow-primary/20 active:scale-95" 
               onClick={() => navigate("/")}
             >
               openteknologies
-            </h1>
+            </button>
           </div>
           <div className="flex items-center space-x-4">
             <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
