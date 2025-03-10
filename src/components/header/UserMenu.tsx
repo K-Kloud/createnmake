@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -36,7 +37,7 @@ export const UserMenu = ({ session, profile, onShowAuthDialog }: UserMenuProps) 
         className="bg-primary hover:bg-primary-hover"
         onClick={onShowAuthDialog}
       >
-        Sign In / Sign Up
+        Get Started
       </Button>
     );
   }
