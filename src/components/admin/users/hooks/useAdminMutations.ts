@@ -9,24 +9,23 @@ export const useAdminMutations = () => {
 
   const addAdminMutation = useMutation({
     mutationFn: async (emailOrUsername: string) => {
-      // First, try to find the user by email in the profiles table
-      // Since we don't have direct access to the auth.users table
-      const { data: userByEmail, error: userEmailError } = await supabase
+      // Try to find the user by username in the profiles table
+      const { data: userByUsername, error: usernameError } = await supabase
         .from("profiles")
         .select("id")
         .eq("username", emailOrUsername)
         .single();
 
-      if (userEmailError && userEmailError.code !== "PGRST116") {
-        throw userEmailError;
+      if (usernameError && usernameError.code !== "PGRST116") {
+        throw usernameError;
       }
 
-      // If not found by email/username, we can't add them as admin
-      if (!userByEmail) {
-        throw new Error(`No user found with email or username: ${emailOrUsername}`);
+      // If not found by username, we can't add them as admin
+      if (!userByUsername) {
+        throw new Error(`No user found with username: ${emailOrUsername}`);
       }
 
-      const userId = userByEmail.id;
+      const userId = userByUsername.id;
 
       // Check if user is already an admin
       const { data: existingRole } = await supabase
