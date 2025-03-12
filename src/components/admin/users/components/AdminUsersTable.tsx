@@ -58,26 +58,28 @@ export const AdminUsersTable = ({
               <TableRow key={admin.id}>
                 <TableCell className="font-medium">{admin.email}</TableCell>
                 <TableCell>
-                  <Badge variant="outline" className="capitalize">
-                    {admin.role}
+                  <Badge variant={admin.role === "super_admin" ? "default" : "outline"} className="capitalize">
+                    {admin.role === "super_admin" ? "Super Admin" : admin.role}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   {new Date(admin.created_at).toLocaleDateString()}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onRemoveAdmin(admin.id)}
-                    disabled={isRemoving}
-                  >
-                    {isRemoving && removingId === admin.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <ShieldX className="h-4 w-4 text-destructive" />
-                    )}
-                  </Button>
+                  {admin.role !== "super_admin" && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onRemoveAdmin(admin.id)}
+                      disabled={isRemoving}
+                    >
+                      {isRemoving && removingId === admin.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <ShieldX className="h-4 w-4 text-destructive" />
+                      )}
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             ))

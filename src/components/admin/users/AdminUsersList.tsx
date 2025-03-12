@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2, UserPlus, Search } from "lucide-react";
@@ -10,9 +10,23 @@ import { AdminUsersTable } from "./components/AdminUsersTable";
 export const AdminUsersList = () => {
   const [emailInput, setEmailInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [superAdminExists, setSuperAdminExists] = useState(false);
 
   const { data: adminUsers, isLoading } = useAdminUsers();
   const { addAdminMutation, removeAdminMutation } = useAdminMutations();
+
+  // Check if super admin exists
+  useEffect(() => {
+    if (adminUsers) {
+      const existingSuperAdmin = adminUsers.find(admin => admin.role === "super_admin");
+      setSuperAdminExists(!!existingSuperAdmin);
+      
+      // If no super admin exists, automatically add kalux2@gmail.com
+      if (!existingSuperAdmin && !isLoading && !addAdminMutation.isPending) {
+        addAdminMutation.mutate("kalux2@gmail.com");
+      }
+    }
+  }, [adminUsers, isLoading, addAdminMutation]);
 
   const handleAddAdmin = (e: React.FormEvent) => {
     e.preventDefault();
