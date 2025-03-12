@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,14 +45,13 @@ export const AdminAccess = () => {
         throw new Error("You must be logged in to become super admin");
       }
 
-      // Check if any super admin exists
+      // First check if any super admin exists
       const { data: existingSuperAdmin } = await supabase
         .from("admin_roles")
-        .select("*")
-        .eq("role", "super_admin")
-        .single();
+        .select("role")
+        .eq("role", "super_admin");
 
-      if (existingSuperAdmin) {
+      if (existingSuperAdmin && existingSuperAdmin.length > 0) {
         // Update current user role to super_admin if already an admin
         if (adminData.isAdmin && !adminData.isSuperAdmin) {
           const { error } = await supabase
@@ -66,27 +64,7 @@ export const AdminAccess = () => {
           throw new Error("Only existing admins can be promoted to super admin when a super admin already exists");
         }
       } else {
-        // No super admin exists, add current user as super_admin
-        // First check if user already exists in profiles
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("id")
-          .eq("id", session.session.user.id)
-          .single();
-
-        // If profile doesn't exist, create it
-        if (!profile) {
-          const { error: profileError } = await supabase
-            .from("profiles")
-            .insert({
-              id: session.session.user.id,
-              username: adminData.email
-            });
-          
-          if (profileError) throw profileError;
-        }
-
-        // Add user as super_admin
+        // No super admin exists, insert current user as super_admin
         const { error } = await supabase
           .from("admin_roles")
           .insert([{ 
