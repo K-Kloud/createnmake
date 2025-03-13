@@ -82,7 +82,8 @@ export const useMarketplace = () => {
 
             if (commentsError) {
               console.error('Error fetching comments for image', image.id, ':', commentsError);
-              image.comments = [];
+              // Create a new object with the comments property
+              return { ...image, comments: [] };
             } else {
               // Now get replies for each comment
               const commentsWithReplies = await Promise.all(
@@ -100,16 +101,17 @@ export const useMarketplace = () => {
 
                   if (repliesError) {
                     console.error('Error fetching replies for comment', comment.id, ':', repliesError);
-                    comment.comment_replies = [];
+                    // Add comment_replies as a new property
+                    return { ...comment, comment_replies: [] };
                   } else {
-                    comment.comment_replies = replies || [];
+                    // Add comment_replies as a new property
+                    return { ...comment, comment_replies: replies || [] };
                   }
-                  return comment;
                 })
               );
-              image.comments = commentsWithReplies || [];
+              // Create a new object with the comments property
+              return { ...image, comments: commentsWithReplies || [] };
             }
-            return image;
           })
         );
 
