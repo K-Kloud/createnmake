@@ -61,7 +61,7 @@ export const MakerSelectionDialog = ({
         <div className="py-4">
           <MakerTypeButtons 
             selectedType={selectedType} 
-            onChange={handleTypeChange} 
+            onSelectType={handleTypeChange} 
           />
           
           <div className="mt-4">
