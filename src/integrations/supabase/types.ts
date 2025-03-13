@@ -516,6 +516,7 @@ export type Database = {
           is_public: boolean | null
           item_type: string
           likes: number | null
+          price: string | null
           prompt: string
           reference_image_url: string | null
           status: string
@@ -533,6 +534,7 @@ export type Database = {
           is_public?: boolean | null
           item_type: string
           likes?: number | null
+          price?: string | null
           prompt: string
           reference_image_url?: string | null
           status?: string
@@ -550,6 +552,7 @@ export type Database = {
           is_public?: boolean | null
           item_type?: string
           likes?: number | null
+          price?: string | null
           prompt?: string
           reference_image_url?: string | null
           status?: string

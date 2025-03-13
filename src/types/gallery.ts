@@ -20,6 +20,7 @@ export interface GalleryImage {
     view: number;
   };
   user_id: string;
+  price?: string;
 }
 
 export interface ImageLike {

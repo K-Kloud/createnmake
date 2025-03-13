@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -101,10 +102,28 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
       description: `Price has been updated to ${newPrice}`,
     });
     
-    await supabase
-      .from('generated_images')
-      .update({ price: newPrice })
-      .eq('id', image.id);
+    try {
+      const { error } = await supabase
+        .from('generated_images')
+        .update({ price: newPrice })
+        .eq('id', image.id);
+        
+      if (error) {
+        console.error('Error updating price:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update price in database",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Exception updating price:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

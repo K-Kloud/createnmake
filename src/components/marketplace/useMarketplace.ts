@@ -130,7 +130,8 @@ export const useMarketplace = () => {
       comment: (image.comments || []).length,
       view: image.views || 0
     },
-    timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true })
+    timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true }),
+    price: image.price
   });
 
   const transformImageWithMetrics = (image, session, metricsMap) => ({
@@ -138,7 +139,8 @@ export const useMarketplace = () => {
     hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
     comments: transformComments(image.comments),
     metrics: metricsMap,
-    timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true })
+    timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true }),
+    price: image.price
   });
 
   const transformComments = (comments) => {
