@@ -36,15 +36,17 @@ export const ImagePreviewDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto p-1 sm:p-6 bg-background/95 backdrop-blur-sm">
+      <DialogContent className="max-w-[90vw] max-h-[90vh] p-1 sm:p-6 bg-background/95 backdrop-blur-sm overflow-hidden">
         <DialogTitle className="sr-only">Image Preview</DialogTitle>
-        <div className="relative">
-          <img
-            src={imageUrl}
-            alt={prompt}
-            className="w-full object-contain transition-transform duration-200 rounded-lg"
-            style={{ transform: `scale(${zoomLevel})` }}
-          />
+        <div className="relative flex items-center justify-center h-full">
+          <div className="overflow-auto max-h-[calc(90vh-120px)] w-full">
+            <img
+              src={imageUrl}
+              alt={prompt}
+              className="w-full h-auto object-contain transition-transform duration-200"
+              style={{ transform: `scale(${zoomLevel})` }}
+            />
+          </div>
           <div className="absolute top-2 right-2 flex space-x-2">
             <Button 
               variant="secondary" 
