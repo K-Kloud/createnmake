@@ -46,6 +46,7 @@ export const useMarketplace = () => {
         const from = pageParam * ITEMS_PER_PAGE;
         const to = from + ITEMS_PER_PAGE - 1;
 
+        // First, get the images with proper profile relationships
         const { data: images, error } = await supabase
           .from('generated_images')
           .select(`
@@ -54,21 +55,7 @@ export const useMarketplace = () => {
               username,
               avatar_url
             ),
-            image_likes(user_id),
-            comments(
-              id,
-              text,
-              created_at,
-              user_id,
-              profiles!generated_images_user_id_fkey(username, avatar_url),
-              comment_replies(
-                id,
-                text,
-                created_at,
-                user_id,
-                profiles!generated_images_user_id_fkey(username, avatar_url)
-              )
-            )
+            image_likes(user_id)
           `)
           .eq('is_public', true)
           .order('created_at', { ascending: false })
@@ -78,8 +65,56 @@ export const useMarketplace = () => {
 
         if (!images) return [];
 
-        const imagesWithMetrics = await Promise.all(
+        // Now, get the comments separately for each image
+        const imagesWithComments = await Promise.all(
           images.map(async (image) => {
+            // Get comments for this image
+            const { data: comments, error: commentsError } = await supabase
+              .from('comments')
+              .select(`
+                id,
+                text,
+                created_at,
+                user_id,
+                profiles:user_id (username, avatar_url)
+              `)
+              .eq('image_id', image.id);
+
+            if (commentsError) {
+              console.error('Error fetching comments for image', image.id, ':', commentsError);
+              image.comments = [];
+            } else {
+              // Now get replies for each comment
+              const commentsWithReplies = await Promise.all(
+                (comments || []).map(async (comment) => {
+                  const { data: replies, error: repliesError } = await supabase
+                    .from('comment_replies')
+                    .select(`
+                      id,
+                      text,
+                      created_at,
+                      user_id,
+                      profiles:user_id (username, avatar_url)
+                    `)
+                    .eq('comment_id', comment.id);
+
+                  if (repliesError) {
+                    console.error('Error fetching replies for comment', comment.id, ':', repliesError);
+                    comment.comment_replies = [];
+                  } else {
+                    comment.comment_replies = replies || [];
+                  }
+                  return comment;
+                })
+              );
+              image.comments = commentsWithReplies || [];
+            }
+            return image;
+          })
+        );
+
+        const imagesWithMetrics = await Promise.all(
+          imagesWithComments.map(async (image) => {
             try {
               const { data: metrics, error: metricsError } = await supabase
                 .rpc('get_image_metrics', { p_image_id: image.id });
