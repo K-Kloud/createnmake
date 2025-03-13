@@ -11,7 +11,7 @@ import { MakerSelectionDialog } from "./MakerSelectionDialog";
 import { generateRandomPrice } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useImageCard } from "./hooks/useImageCard";
-import { Eye } from "lucide-react";
+import { Eye, MaximizeIcon } from "lucide-react";
 
 interface ImageCardProps {
   image: {
@@ -90,8 +90,8 @@ export const ImageCard = ({
               onClick={openImagePreview}
             />
             <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <span className="text-white text-sm font-medium bg-black/50 px-3 py-1 rounded-full flex items-center gap-1.5">
-                <Eye size={16} /> Click to view
+              <span className="text-white text-sm font-medium bg-black/50 px-3 py-1.5 rounded-full flex items-center gap-2 transform transition-transform duration-200 group-hover:scale-110">
+                <MaximizeIcon size={18} /> View full image
               </span>
             </div>
           </div>
