@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const useImageCard = (image, onView) => {
   const [currentPrice, setCurrentPrice] = useState(image.price || generateRandomPrice(image.id));
   const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -24,15 +25,18 @@ export const useImageCard = (image, onView) => {
   const isCreator = currentUser === image.user_id;
 
   const handleImageClick = () => {
+    // Record view
     onView(image.id);
   };
 
   const handleZoomIn = () => {
-    return Math.min(3, 0.5);
+    setZoomLevel(prev => Math.min(prev + 0.25, 3));
+    return zoomLevel;
   };
 
   const handleZoomOut = () => {
-    return Math.max(1, 0.5);
+    setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
+    return zoomLevel;
   };
 
   const handleMakeSelection = (type: 'artisan' | 'manufacturer') => {
@@ -89,6 +93,7 @@ export const useImageCard = (image, onView) => {
     handleImageClick,
     handleZoomIn,
     handleZoomOut,
+    zoomLevel,
     handleMakeSelection,
     handlePriceChange
   };

@@ -47,7 +47,6 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
   const [showComments, setShowComments] = useState(false);
   const [imageOpen, setImageOpen] = useState(false);
   const [selectionDialogOpen, setSelectionDialogOpen] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(1);
   
   const { 
     currentPrice, 
@@ -56,20 +55,33 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
     handleImageClick,
     handleZoomIn,
     handleZoomOut,
+    zoomLevel,
     handleMakeSelection,
     handlePriceChange
   } = useImageCard(image, onView);
+
+  const openImagePreview = () => {
+    setImageOpen(true);
+    handleImageClick();
+  };
 
   return (
     <>
       <Card className="overflow-hidden glass-card hover:scale-[1.02] transition-transform">
         <CardContent className="p-0">
-          <img
-            src={image.url}
-            alt={image.prompt}
-            className="w-full h-64 object-cover cursor-pointer"
-            onClick={handleImageClick}
-          />
+          <div className="relative group">
+            <img
+              src={image.url}
+              alt={image.prompt}
+              className="w-full h-64 object-cover cursor-pointer"
+              onClick={openImagePreview}
+            />
+            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <span className="text-white text-sm font-medium bg-black/50 px-3 py-1 rounded-full">
+                Click to view
+              </span>
+            </div>
+          </div>
           <div className="p-4 space-y-3">
             <ImageHeader 
               creator={image.creator} 
