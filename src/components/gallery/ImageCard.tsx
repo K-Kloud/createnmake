@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +8,7 @@ import { ImageHeader } from "./ImageHeader";
 import { ImageActions } from "./ImageActions";
 import { ImagePreviewDialog } from "./ImagePreviewDialog";
 import { MakerSelectionDialog } from "./MakerSelectionDialog";
+import { generateRandomPrice } from "@/lib/utils";
 
 interface ImageCardProps {
   image: {
@@ -46,6 +48,9 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
   const [zoomLevel, setZoomLevel] = useState(1);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Generate a stable price for each image based on its ID
+  const price = image.price || generateRandomPrice(image.id);
 
   const handleImageClick = () => {
     setImageOpen(true);
@@ -92,7 +97,7 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
               timeAgo={image.timeAgo}
               imageUrl={image.url}
               imageId={image.id}
-              price={image.price}
+              price={price}
             />
             <p className="text-sm text-gray-300 truncate">{image.prompt}</p>
             <ImageActions
