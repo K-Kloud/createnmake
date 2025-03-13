@@ -12,6 +12,7 @@ interface MarketplaceGridProps {
   onAddReply: (imageId: number, commentId: number, reply: string) => void;
   onLoadMore: () => void;
   hasMore: boolean;
+  onImageClick: (image: GalleryImage) => void;
 }
 
 export const MarketplaceGrid = ({
@@ -22,6 +23,7 @@ export const MarketplaceGrid = ({
   onAddReply,
   onLoadMore,
   hasMore,
+  onImageClick,
 }: MarketplaceGridProps) => {
   const { ref, inView } = useInView();
 
@@ -42,6 +44,7 @@ export const MarketplaceGrid = ({
               onView={onView}
               onAddComment={onAddComment}
               onAddReply={onAddReply}
+              onFullImageClick={() => onImageClick(image)}
             />
           </div>
         ))}

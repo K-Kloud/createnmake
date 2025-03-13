@@ -11,6 +11,7 @@ import { MakerSelectionDialog } from "./MakerSelectionDialog";
 import { generateRandomPrice } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useImageCard } from "./hooks/useImageCard";
+import { Eye } from "lucide-react";
 
 interface ImageCardProps {
   image: {
@@ -41,9 +42,17 @@ interface ImageCardProps {
   onView: (imageId: number) => void;
   onAddComment: (imageId: number, comment: string) => void;
   onAddReply: (imageId: number, commentId: number, reply: string) => void;
+  onFullImageClick?: () => void;
 }
 
-export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: ImageCardProps) => {
+export const ImageCard = ({ 
+  image, 
+  onLike, 
+  onView, 
+  onAddComment, 
+  onAddReply,
+  onFullImageClick 
+}: ImageCardProps) => {
   const [showComments, setShowComments] = useState(false);
   const [imageOpen, setImageOpen] = useState(false);
   const [selectionDialogOpen, setSelectionDialogOpen] = useState(false);
@@ -61,8 +70,12 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
   } = useImageCard(image, onView);
 
   const openImagePreview = () => {
-    setImageOpen(true);
-    handleImageClick();
+    if (onFullImageClick) {
+      onFullImageClick();
+    } else {
+      setImageOpen(true);
+      handleImageClick();
+    }
   };
 
   return (
@@ -77,8 +90,8 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
               onClick={openImagePreview}
             />
             <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <span className="text-white text-sm font-medium bg-black/50 px-3 py-1 rounded-full">
-                Click to view
+              <span className="text-white text-sm font-medium bg-black/50 px-3 py-1 rounded-full flex items-center gap-1.5">
+                <Eye size={16} /> Click to view
               </span>
             </div>
           </div>
@@ -114,17 +127,19 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
         </CardContent>
       </Card>
 
-      <ImagePreviewDialog
-        open={imageOpen}
-        onOpenChange={setImageOpen}
-        imageUrl={image.url}
-        prompt={image.prompt}
-        zoomLevel={zoomLevel}
-        onZoomIn={handleZoomIn}
-        onZoomOut={handleZoomOut}
-        imageId={image.id}
-        userId={image.user_id}
-      />
+      {!onFullImageClick && (
+        <ImagePreviewDialog
+          open={imageOpen}
+          onOpenChange={setImageOpen}
+          imageUrl={image.url}
+          prompt={image.prompt}
+          zoomLevel={zoomLevel}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          imageId={image.id}
+          userId={image.user_id}
+        />
+      )}
 
       <MakerSelectionDialog
         open={selectionDialogOpen}
