@@ -30,7 +30,8 @@ interface ImageCardProps {
       comment: number;
       view: number;
     };
-    user_id: string; // Added user_id to the image object
+    user_id: string;
+    price?: string;
   };
   onLike: (imageId: number) => void;
   onView: (imageId: number) => void;
@@ -91,6 +92,7 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
               timeAgo={image.timeAgo}
               imageUrl={image.url}
               imageId={image.id}
+              price={image.price}
             />
             <p className="text-sm text-gray-300 truncate">{image.prompt}</p>
             <ImageActions
