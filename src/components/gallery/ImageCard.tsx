@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +8,7 @@ import { ImageActions } from "./ImageActions";
 import { ImagePreviewDialog } from "./ImagePreviewDialog";
 import { MakerSelectionDialog } from "./MakerSelectionDialog";
 import { generateRandomPrice } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ImageCardProps {
   image: {
@@ -46,11 +46,23 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
   const [imageOpen, setImageOpen] = useState(false);
   const [selectionDialogOpen, setSelectionDialogOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [currentPrice, setCurrentPrice] = useState(image.price || generateRandomPrice(image.id));
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Generate a stable price for each image based on its ID
-  const price = image.price || generateRandomPrice(image.id);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
+  
+  useState(() => {
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session?.user) {
+        setCurrentUser(data.session.user.id);
+      }
+    };
+    checkUser();
+  });
+
+  const isCreator = currentUser === image.user_id;
 
   const handleImageClick = () => {
     setImageOpen(true);
@@ -81,6 +93,20 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
     navigate(type === 'artisan' ? '/artisan' : '/manufacturer');
   };
 
+  const handlePriceChange = async (newPrice: string) => {
+    setCurrentPrice(newPrice);
+    
+    toast({
+      title: "Price Updated",
+      description: `Price has been updated to ${newPrice}`,
+    });
+    
+    await supabase
+      .from('generated_images')
+      .update({ price: newPrice })
+      .eq('id', image.id);
+  };
+
   return (
     <>
       <Card className="overflow-hidden glass-card hover:scale-[1.02] transition-transform">
@@ -97,7 +123,9 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
               timeAgo={image.timeAgo}
               imageUrl={image.url}
               imageId={image.id}
-              price={price}
+              price={currentPrice}
+              isCreator={isCreator}
+              onPriceChange={handlePriceChange}
             />
             <p className="text-sm text-gray-300 truncate">{image.prompt}</p>
             <ImageActions
