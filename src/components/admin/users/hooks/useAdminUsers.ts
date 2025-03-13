@@ -7,6 +7,9 @@ export const useAdminUsers = () => {
   return useQuery<AdminUser[]>({
     queryKey: ["adminUsers"],
     queryFn: async () => {
+      // First check if kalux2@gmail.com is a super_admin
+      await ensureSuperAdminExists();
+      
       const { data: adminRoles, error: rolesError } = await supabase
         .from("admin_roles")
         .select("user_id, role, created_at");
@@ -54,3 +57,55 @@ export const useAdminUsers = () => {
     },
   });
 };
+
+// Helper function to ensure kalux2@gmail.com is a super_admin
+async function ensureSuperAdminExists() {
+  try {
+    // Check if kalux2@gmail.com exists in profiles
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('id, username')
+      .eq('username', 'kalux2@gmail.com')
+      .single();
+    
+    let userId = profileData?.id;
+    
+    // If profile doesn't exist, create it
+    if (!userId) {
+      const { data: newProfile } = await supabase
+        .from('profiles')
+        .insert({
+          id: crypto.randomUUID(),
+          username: 'kalux2@gmail.com'
+        })
+        .select('id')
+        .single();
+      
+      if (newProfile) {
+        userId = newProfile.id;
+      }
+    }
+    
+    if (userId) {
+      // Check if user is already a super_admin
+      const { data: existingRole } = await supabase
+        .from('admin_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('role', 'super_admin')
+        .single();
+      
+      // If not a super_admin, add the role
+      if (!existingRole) {
+        await supabase
+          .from('admin_roles')
+          .upsert({
+            user_id: userId,
+            role: 'super_admin'
+          });
+      }
+    }
+  } catch (error) {
+    console.error('Error ensuring super admin exists:', error);
+  }
+}

@@ -1,123 +1,99 @@
+
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
-import { MakerTypeButtons } from "./maker-selection/MakerTypeButtons";
+import { Button } from "@/components/ui/button";
 import { ArtisanList } from "./maker-selection/ArtisanList";
 import { ManufacturerList } from "./maker-selection/ManufacturerList";
-import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { MakerTypeButtons } from "./maker-selection/MakerTypeButtons";
 
 interface MakerSelectionDialogProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onMakerSelect: (type: 'artisan' | 'manufacturer') => void;
-  generatedImage?: {
-    id: number;
-    url: string;
-    prompt: string;
-  };
+  onClose: () => void;
+  imageId: number;
 }
 
 export const MakerSelectionDialog = ({
   open,
-  onOpenChange,
-  onMakerSelect,
-  generatedImage,
+  onClose,
+  imageId,
 }: MakerSelectionDialogProps) => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [selectedType, setSelectedType] = useState<'artisan' | 'manufacturer' | null>(null);
+  const [selectedType, setSelectedType] = useState<"artisan" | "manufacturer">("artisan");
+  const [selectedMakerId, setSelectedMakerId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleManufacturerSelect = (manufacturerId: string) => {
-    onMakerSelect('manufacturer');
-    onOpenChange(false);
-    navigate(`/maker/${manufacturerId}?type=manufacturer`);
+  const handleSelect = (id: string) => {
+    setSelectedMakerId(id);
   };
 
-  const handleArtisanSelect = async (artisanId: string) => {
-    if (!generatedImage) {
-      onMakerSelect('artisan');
-      onOpenChange(false);
-      navigate(`/maker/${artisanId}?type=artisan`);
-      return;
-    }
+  const handleTypeChange = (type: "artisan" | "manufacturer") => {
+    setSelectedType(type);
+    setSelectedMakerId(null);
+  };
 
-    setIsSubmitting(true);
-
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session?.user) {
-        toast({
-          title: "Authentication Required",
-          description: "Please sign in to submit a quote request",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const { error } = await supabase.functions.invoke('notify-artisan', {
-        body: {
-          artisanId,
-          userId: session.user.id,
-          productDetails: generatedImage.prompt,
-          imageUrl: generatedImage.url,
-        },
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Quote Request Sent",
-        description: "The artisan has been notified and will respond to your request soon.",
-      });
-
-      onMakerSelect('artisan');
-      onOpenChange(false);
-    } catch (error) {
-      console.error('Error sending quote request:', error);
-      toast({
-        title: "Error",
-        description: "Failed to send quote request. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
+  const handleSubmit = async () => {
+    if (!selectedMakerId) return;
+    
+    // The actual update is now handled in the individual components
+    // We just need to close the dialog after assignment
+    setTimeout(() => {
       setIsSubmitting(false);
-    }
+      onClose();
+    }, 500);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Choose a Maker</DialogTitle>
+          <DialogTitle>Assign a maker</DialogTitle>
           <DialogDescription>
-            Select who you'd like to make this design
+            Choose who should make this item
           </DialogDescription>
         </DialogHeader>
-        
-        <div className="mt-4">
-          <MakerTypeButtons onSelectType={setSelectedType} />
+
+        <div className="py-4">
+          <MakerTypeButtons 
+            selectedType={selectedType} 
+            onChange={handleTypeChange} 
+          />
           
-          {selectedType === 'artisan' && (
-            <div className="mt-4">
-              <ArtisanList onSelect={handleArtisanSelect} isSubmitting={isSubmitting} />
-            </div>
-          )}
-          
-          {selectedType === 'manufacturer' && (
-            <div className="mt-4">
-              <ManufacturerList onSelect={handleManufacturerSelect} />
-            </div>
-          )}
+          <div className="mt-4">
+            {selectedType === "artisan" ? (
+              <ArtisanList 
+                onSelect={handleSelect} 
+                isSubmitting={isSubmitting}
+                selectedId={selectedMakerId || undefined}
+                imageId={imageId}
+              />
+            ) : (
+              <ManufacturerList 
+                onSelect={handleSelect} 
+                isSubmitting={isSubmitting}
+                selectedId={selectedMakerId || undefined}
+                imageId={imageId}
+              />
+            )}
+          </div>
         </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleSubmit} 
+            disabled={!selectedMakerId || isSubmitting}
+          >
+            {isSubmitting ? "Assigning..." : "Confirm Assignment"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
