@@ -45,11 +45,7 @@ export const ArtisanList = ({ onSelect, isSubmitting = false, selectedId, imageI
     try {
       const { error } = await supabase
         .from('generated_images')
-        .update({ 
-          assigned_artisan_id: artisanId,
-          // Clear manufacturer assignment when assigning to artisan
-          assigned_manufacturer_id: null
-        })
+        .update({ assigned_artisan_id: artisanId })
         .eq('id', imageId);
 
       if (error) throw error;

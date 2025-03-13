@@ -510,8 +510,6 @@ export type Database = {
       generated_images: {
         Row: {
           aspect_ratio: string
-          assigned_artisan_id: string | null
-          assigned_manufacturer_id: string | null
           created_at: string | null
           id: number
           image_url: string | null
@@ -530,8 +528,6 @@ export type Database = {
         }
         Insert: {
           aspect_ratio?: string
-          assigned_artisan_id?: string | null
-          assigned_manufacturer_id?: string | null
           created_at?: string | null
           id?: never
           image_url?: string | null
@@ -550,8 +546,6 @@ export type Database = {
         }
         Update: {
           aspect_ratio?: string
-          assigned_artisan_id?: string | null
-          assigned_manufacturer_id?: string | null
           created_at?: string | null
           id?: never
           image_url?: string | null
@@ -569,20 +563,6 @@ export type Database = {
           views?: number | null
         }
         Relationships: [
-          {
-            foreignKeyName: "generated_images_assigned_artisan_id_fkey"
-            columns: ["assigned_artisan_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "generated_images_assigned_manufacturer_id_fkey"
-            columns: ["assigned_manufacturer_id"]
-            isOneToOne: false
-            referencedRelation: "manufacturers"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "generated_images_user_id_fkey"
             columns: ["user_id"]

@@ -50,7 +50,7 @@ export const useMarketplace = () => {
           .from('generated_images')
           .select(`
             *,
-            profiles!generated_images_user_id_fkey (
+            profiles (
               username,
               avatar_url
             ),
@@ -60,13 +60,13 @@ export const useMarketplace = () => {
               text,
               created_at,
               user_id,
-              profiles!generated_images_user_id_fkey(username, avatar_url),
+              profiles(username, avatar_url),
               comment_replies(
                 id,
                 text,
                 created_at,
                 user_id,
-                profiles!generated_images_user_id_fkey(username, avatar_url)
+                profiles(username, avatar_url)
               )
             )
           `)

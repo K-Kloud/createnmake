@@ -1,11 +1,15 @@
 
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 import { Comments } from "./Comments";
 import { ImageHeader } from "./ImageHeader";
 import { ImageActions } from "./ImageActions";
 import { ImagePreviewDialog } from "./ImagePreviewDialog";
 import { MakerSelectionDialog } from "./MakerSelectionDialog";
+import { generateRandomPrice } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 import { useImageCard } from "./hooks/useImageCard";
 
 interface ImageCardProps {
@@ -52,6 +56,7 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
     handleImageClick,
     handleZoomIn,
     handleZoomOut,
+    handleMakeSelection,
     handlePriceChange
   } = useImageCard(image, onView);
 
@@ -111,8 +116,8 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
 
       <MakerSelectionDialog
         open={selectionDialogOpen}
-        onClose={() => setSelectionDialogOpen(false)}
-        imageId={image.id}
+        onOpenChange={setSelectionDialogOpen}
+        onMakerSelect={handleMakeSelection}
       />
     </>
   );
