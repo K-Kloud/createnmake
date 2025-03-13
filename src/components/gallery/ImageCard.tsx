@@ -10,6 +10,7 @@ import { ImagePreviewDialog } from "./ImagePreviewDialog";
 import { MakerSelectionDialog } from "./MakerSelectionDialog";
 import { generateRandomPrice } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { useImageCard } from "./hooks/useImageCard";
 
 interface ImageCardProps {
   image: {
@@ -47,84 +48,17 @@ export const ImageCard = ({ image, onLike, onView, onAddComment, onAddReply }: I
   const [imageOpen, setImageOpen] = useState(false);
   const [selectionDialogOpen, setSelectionDialogOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [currentPrice, setCurrentPrice] = useState(image.price || generateRandomPrice(image.id));
-  const navigate = useNavigate();
-  const { toast } = useToast();
-
-  const [currentUser, setCurrentUser] = useState<string | null>(null);
   
-  useState(() => {
-    const checkUser = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session?.user) {
-        setCurrentUser(data.session.user.id);
-      }
-    };
-    checkUser();
-  });
-
-  const isCreator = currentUser === image.user_id;
-
-  const handleImageClick = () => {
-    setImageOpen(true);
-    onView(image.id);
-  };
-
-  const handleZoomIn = () => {
-    setZoomLevel(prev => Math.min(prev + 0.5, 3));
-  };
-
-  const handleZoomOut = () => {
-    setZoomLevel(prev => Math.max(prev - 0.5, 1));
-  };
-
-  const handleMakeSelection = (type: 'artisan' | 'manufacturer') => {
-    localStorage.setItem('selectedDesignImage', JSON.stringify({
-      url: image.url,
-      prompt: image.prompt,
-      id: image.id
-    }));
-    
-    toast({
-      title: "Design Selected",
-      description: `Redirecting to ${type} selection...`,
-    });
-
-    setSelectionDialogOpen(false);
-    navigate(type === 'artisan' ? '/artisan' : '/manufacturer');
-  };
-
-  const handlePriceChange = async (newPrice: string) => {
-    setCurrentPrice(newPrice);
-    
-    toast({
-      title: "Price Updated",
-      description: `Price has been updated to ${newPrice}`,
-    });
-    
-    try {
-      const { error } = await supabase
-        .from('generated_images')
-        .update({ price: newPrice })
-        .eq('id', image.id);
-        
-      if (error) {
-        console.error('Error updating price:', error);
-        toast({
-          title: "Error",
-          description: "Failed to update price in database",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error('Exception updating price:', error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred",
-        variant: "destructive",
-      });
-    }
-  };
+  const { 
+    currentPrice, 
+    currentUser, 
+    isCreator, 
+    handleImageClick,
+    handleZoomIn,
+    handleZoomOut,
+    handleMakeSelection,
+    handlePriceChange
+  } = useImageCard(image, onView);
 
   return (
     <>

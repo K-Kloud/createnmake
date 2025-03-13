@@ -1,7 +1,6 @@
 
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
+import { usePriceEditing } from "./hooks/usePriceEditing";
 
 interface CreatorInfoProps {
   creator: {
@@ -9,9 +8,9 @@ interface CreatorInfoProps {
     avatar: string;
   };
   timeAgo: string;
-  price?: string; // Optional price prop
-  isCreator?: boolean; // Add prop to check if the current user is the creator
-  onPriceChange?: (newPrice: string) => void; // Add callback for price changes
+  price?: string; 
+  isCreator?: boolean;
+  onPriceChange?: (newPrice: string) => void;
 }
 
 export const CreatorInfo = ({ 
@@ -25,45 +24,14 @@ export const CreatorInfo = ({
   const avatarSrc = creator?.avatar || '/placeholder.svg';
   const displayName = creator?.name || 'Anonymous';
   
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedPrice, setEditedPrice] = useState(price || "");
-  const { toast } = useToast();
-
-  const handlePriceClick = () => {
-    if (isCreator) {
-      setIsEditing(true);
-    }
-  };
-
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditedPrice(e.target.value);
-  };
-
-  const handleBlur = () => {
-    setIsEditing(false);
-    if (editedPrice && onPriceChange) {
-      // Validate price format (£ followed by numbers)
-      if (/^£\d+$/.test(editedPrice)) {
-        onPriceChange(editedPrice);
-      } else {
-        toast({
-          title: "Invalid price format",
-          description: "Price should be in format £XX",
-          variant: "destructive",
-        });
-        setEditedPrice(price || "");
-      }
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.currentTarget.blur();
-    } else if (e.key === "Escape") {
-      setIsEditing(false);
-      setEditedPrice(price || "");
-    }
-  };
+  const { 
+    isEditing,
+    editedPrice,
+    handlePriceClick,
+    handlePriceChange,
+    handleBlur,
+    handleKeyDown
+  } = usePriceEditing(price, isCreator, onPriceChange);
 
   return (
     <div className="flex items-center space-x-2">
@@ -76,7 +44,7 @@ export const CreatorInfo = ({
       <span className="text-sm text-gray-400">{timeAgo}</span>
       {price && (
         isEditing ? (
-          <Input
+          <input
             value={editedPrice}
             onChange={handlePriceChange}
             onBlur={handleBlur}
