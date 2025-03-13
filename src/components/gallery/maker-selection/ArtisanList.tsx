@@ -6,7 +6,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
 
 interface Artisan {
   id: string;
@@ -18,11 +17,9 @@ interface Artisan {
 interface ArtisanListProps {
   onSelect: (artisanId: string) => void;
   isSubmitting?: boolean;
-  selectedId?: string;
-  imageId?: number;
 }
 
-export const ArtisanList = ({ onSelect, isSubmitting = false, selectedId, imageId }: ArtisanListProps) => {
+export const ArtisanList = ({ onSelect, isSubmitting }: ArtisanListProps) => {
   const { data: artisans, isLoading } = useQuery({
     queryKey: ['artisans'],
     queryFn: async () => {
@@ -38,32 +35,6 @@ export const ArtisanList = ({ onSelect, isSubmitting = false, selectedId, imageI
       return data as Artisan[];
     },
   });
-
-  const handleAssign = async (artisanId: string) => {
-    if (!imageId) return;
-    
-    try {
-      const { error } = await supabase
-        .from('generated_images')
-        .update({ assigned_artisan_id: artisanId })
-        .eq('id', imageId);
-
-      if (error) throw error;
-      
-      onSelect(artisanId);
-      toast({
-        title: "Artisan assigned",
-        description: "The artisan has been successfully assigned to this item."
-      });
-    } catch (error) {
-      console.error('Error assigning artisan:', error);
-      toast({
-        title: "Error",
-        description: "Failed to assign artisan. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
 
   if (isLoading) {
     return (
@@ -87,9 +58,7 @@ export const ArtisanList = ({ onSelect, isSubmitting = false, selectedId, imageI
         {artisans.map((artisan) => (
           <div
             key={artisan.id}
-            className={`flex items-center justify-between p-2 rounded-lg hover:bg-accent cursor-pointer transition-colors ${
-              selectedId === artisan.id ? 'bg-accent/50' : ''
-            }`}
+            className="flex items-center justify-between p-2 rounded-lg hover:bg-accent cursor-pointer transition-colors"
             onClick={() => !isSubmitting && onSelect(artisan.id)}
           >
             <div className="flex items-center gap-3">
@@ -110,15 +79,11 @@ export const ArtisanList = ({ onSelect, isSubmitting = false, selectedId, imageI
                 size="sm" 
                 className="text-primary hover:text-primary/80 hover:bg-primary/10"
                 disabled={isSubmitting}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAssign(artisan.id);
-                }}
               >
                 <span className="mr-2">Assign</span>
                 <CheckCircle className="h-4 w-4" />
               </Button>
-              {isSubmitting && selectedId === artisan.id && (
+              {isSubmitting && (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary ml-2"></div>
               )}
             </div>
