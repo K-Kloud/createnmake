@@ -1,4 +1,26 @@
 
+import { useToast } from "@/hooks/use-toast";
+import { LikeMutationParams } from "@/types/gallery";
+import { Session } from "@supabase/supabase-js";
+
+interface MarketplaceActionsProps {
+  session: Session | null;
+  images: any[];
+  likeMutation: {
+    mutate: (params: LikeMutationParams) => void;
+  };
+  viewMutation: {
+    mutate: (imageId: number) => void;
+  };
+  commentMutation: {
+    mutate: (params: { imageId: number; text: string; userId: string }) => void;
+  };
+  replyMutation: {
+    mutate: (params: { commentId: number; text: string; userId: string }) => void;
+  };
+  toast: ReturnType<typeof useToast>["toast"];
+}
+
 export const useMarketplaceActions = ({
   session,
   images,
@@ -7,7 +29,7 @@ export const useMarketplaceActions = ({
   commentMutation,
   replyMutation,
   toast
-}) => {
+}: MarketplaceActionsProps) => {
   const handleLike = (imageId: number) => {
     // Find the image we want
     const image = images.find(img => img.id === imageId);
