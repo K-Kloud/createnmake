@@ -1,9 +1,11 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { CheckCircle } from "lucide-react";
 
 interface Artisan {
   id: string;
@@ -56,7 +58,7 @@ export const ArtisanList = ({ onSelect, isSubmitting }: ArtisanListProps) => {
         {artisans.map((artisan) => (
           <div
             key={artisan.id}
-            className="flex items-center justify-between p-2 rounded-lg hover:bg-accent cursor-pointer"
+            className="flex items-center justify-between p-2 rounded-lg hover:bg-accent cursor-pointer transition-colors"
             onClick={() => !isSubmitting && onSelect(artisan.id)}
           >
             <div className="flex items-center gap-3">
@@ -71,9 +73,20 @@ export const ArtisanList = ({ onSelect, isSubmitting }: ArtisanListProps) => {
                 </p>
               </div>
             </div>
-            {isSubmitting && (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-            )}
+            <div className="flex items-center">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-primary hover:text-primary/80 hover:bg-primary/10"
+                disabled={isSubmitting}
+              >
+                <span className="mr-2">Assign</span>
+                <CheckCircle className="h-4 w-4" />
+              </Button>
+              {isSubmitting && (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary ml-2"></div>
+              )}
+            </div>
           </div>
         ))}
       </div>
