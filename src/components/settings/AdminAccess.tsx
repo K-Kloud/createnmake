@@ -3,33 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useAdminAccess } from "@/hooks/useAdminAccess";
 
 export const AdminAccess = () => {
   const navigate = useNavigate();
-
-  // Check if user is admin
-  const { data: isAdmin, isLoading } = useQuery({
-    queryKey: ['isAdmin'],
-    queryFn: async () => {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session?.session?.user) return false;
-      
-      const { data, error } = await supabase
-        .from('admin_roles')
-        .select('role')
-        .eq('user_id', session.session.user.id)
-        .single();
-
-      if (error) {
-        return false;
-      }
-
-      return !!data;
-    },
-    enabled: true,
-  });
+  const { isAdmin, isLoading } = useAdminAccess();
 
   if (isLoading || !isAdmin) {
     return null;

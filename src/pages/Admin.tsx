@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ImageList } from "@/components/admin/ImageList";
@@ -14,34 +14,17 @@ import { AdminStats } from "@/components/admin/stats/AdminStats";
 import { AdminPortfolio } from "@/components/admin/portfolio/AdminPortfolio";
 import { UserManagement } from "@/components/admin/users/UserManagement";
 import { TaskWorkflow } from "@/components/admin/taskflow/TaskWorkflow";
+import { useAdminAccess } from "@/hooks/useAdminAccess";
 
 const Admin = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const { data: isAdmin, isLoading: checkingAdmin } = useQuery({
-    queryKey: ['isAdmin'],
-    queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return false;
+  // Use the new admin access hook
+  const { isAdmin, isLoading: checkingAdmin, session } = useAdminAccess();
 
-      const { data, error } = await supabase
-        .from('admin_roles')
-        .select('role')
-        .eq('user_id', session.user.id)
-        .eq('role', 'admin')
-        .single();
-
-      if (error) {
-        console.error('Error checking admin status:', error);
-        return false;
-      }
-
-      return !!data;
-    },
-  });
-
+  // Only fetch images if user is admin
   const { data: images, isLoading: loadingImages, refetch } = useQuery({
     queryKey: ['adminImages', searchTerm],
     queryFn: async () => {
@@ -65,7 +48,7 @@ const Admin = () => {
       if (error) throw error;
       return data || [];
     },
-    enabled: isAdmin,
+    enabled: !!isAdmin,
   });
 
   const handleDelete = async (id: number) => {
@@ -92,18 +75,8 @@ const Admin = () => {
     }
   };
 
-  useEffect(() => {
-    if (!checkingAdmin && !isAdmin) {
-      toast({
-        title: "Access Denied",
-        description: "You don't have permission to access this page.",
-        variant: "destructive",
-      });
-      navigate('/');
-    }
-  }, [isAdmin, checkingAdmin, navigate, toast]);
-
-  if (checkingAdmin || loadingImages) {
+  // Handle unauthorized access or loading state
+  if (checkingAdmin) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <Header />
@@ -116,7 +89,26 @@ const Admin = () => {
   }
 
   if (!isAdmin) {
-    return null;
+    // Use session check to differentiate between not logged in and not admin
+    if (!session) {
+      // User is not logged in
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to access this page.",
+        variant: "destructive",
+      });
+      navigate('/');
+      return null;
+    } else {
+      // User is logged in but not an admin
+      toast({
+        title: "Access Denied",
+        description: "You don't have permission to access the admin dashboard.",
+        variant: "destructive",
+      });
+      navigate('/dashboard');
+      return null;
+    }
   }
 
   return (
