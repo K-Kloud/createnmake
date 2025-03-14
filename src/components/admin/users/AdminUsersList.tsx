@@ -6,14 +6,28 @@ import { Loader2, UserPlus, Search } from "lucide-react";
 import { useAdminUsers } from "./hooks/useAdminUsers";
 import { useAdminMutations } from "./hooks/useAdminMutations";
 import { AdminUsersTable } from "./components/AdminUsersTable";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export const AdminUsersList = () => {
   const [emailInput, setEmailInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [superAdminExists, setSuperAdminExists] = useState(false);
+  const { toast } = useToast();
 
-  const { data: adminUsers, isLoading } = useAdminUsers();
+  const { data: adminUsers, isLoading, refetch } = useAdminUsers();
   const { addAdminMutation, removeAdminMutation } = useAdminMutations();
+
+  // Check current user's email
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
+  
+  useEffect(() => {
+    async function getSession() {
+      const { data } = await supabase.auth.getSession();
+      setCurrentUserEmail(data.session?.user?.email || null);
+    }
+    getSession();
+  }, []);
 
   // Check if super admin exists
   useEffect(() => {
@@ -21,12 +35,22 @@ export const AdminUsersList = () => {
       const existingSuperAdmin = adminUsers.find(admin => admin.role === "super_admin");
       setSuperAdminExists(!!existingSuperAdmin);
       
-      // If no super admin exists, automatically add kalux2@gmail.com
-      if (!existingSuperAdmin && !isLoading && !addAdminMutation.isPending) {
-        addAdminMutation.mutate("kalux2@gmail.com");
+      // If current user is kalux2@gmail.com and no super admin exists, automatically add them
+      if (!existingSuperAdmin && !isLoading && !addAdminMutation.isPending && 
+          currentUserEmail === "kalux2@gmail.com") {
+        console.log("Adding kalux2@gmail.com as super_admin automatically");
+        addAdminMutation.mutate("kalux2@gmail.com", {
+          onSuccess: () => {
+            toast({
+              title: "Super Admin Created",
+              description: "You've been granted super admin privileges."
+            });
+            refetch();
+          }
+        });
       }
     }
-  }, [adminUsers, isLoading, addAdminMutation]);
+  }, [adminUsers, isLoading, addAdminMutation, currentUserEmail, refetch, toast]);
 
   const handleAddAdmin = (e: React.FormEvent) => {
     e.preventDefault();

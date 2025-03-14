@@ -24,6 +24,9 @@ export const UserMenu = ({ session, profile, onShowAuthDialog }: UserMenuProps) 
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAdmin } = useAdminAccess();
+  
+  // Special case for kalux2@gmail.com
+  const isSpecialAdmin = session?.user?.email === "kalux2@gmail.com";
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -57,7 +60,7 @@ export const UserMenu = ({ session, profile, onShowAuthDialog }: UserMenuProps) 
         <DropdownMenuItem onClick={() => navigate("/dashboard")}>
           Dashboard
         </DropdownMenuItem>
-        {isAdmin && (
+        {(isAdmin || isSpecialAdmin) && (
           <DropdownMenuItem onClick={() => navigate("/admin")}>
             <ShieldCheck className="mr-2 h-4 w-4" />
             Admin Panel
