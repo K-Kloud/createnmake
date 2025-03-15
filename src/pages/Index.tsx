@@ -6,15 +6,12 @@ import { Footer } from "@/components/Footer";
 import { OpenMarketSection } from "@/components/OpenMarketSection";
 import { ChatBot } from "@/components/ChatBot";
 import { useEffect } from "react";
+import { addStructuredData } from "@/utils/seo";
 
 const Index = () => {
   // Add structured data for SEO
   useEffect(() => {
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.innerHTML = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Organization",
+    const cleanup = addStructuredData('Organization', {
       "name": "Create2Make",
       "url": "https://create2make.com",
       "logo": "https://create2make.com/lovable-uploads/8373b451-38a1-4ecb-8594-cf0c25ba20c4.png",
@@ -25,11 +22,8 @@ const Index = () => {
         "https://instagram.com/create2make"
       ]
     });
-    document.head.appendChild(script);
     
-    return () => {
-      document.head.removeChild(script);
-    };
+    return cleanup;
   }, []);
 
   return (

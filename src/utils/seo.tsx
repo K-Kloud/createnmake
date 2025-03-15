@@ -2,6 +2,7 @@
 /**
  * Utility functions for SEO optimization
  */
+import React from 'react';
 
 // Function to remove duplicate content with canonical URLs
 export const setCanonicalLink = (url: string) => {
