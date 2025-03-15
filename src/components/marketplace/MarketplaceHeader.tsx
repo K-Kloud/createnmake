@@ -1,8 +1,10 @@
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Search } from "lucide-react";
+import { useEffect } from "react";
 
 interface MarketplaceHeaderProps {
   onSearch: (term: string) => void;
@@ -12,6 +14,54 @@ interface MarketplaceHeaderProps {
 
 export const MarketplaceHeader = ({ onSearch, onSortChange, onCategoryChange }: MarketplaceHeaderProps) => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Use URL parameters for better SEO and user experience
+  useEffect(() => {
+    const searchTerm = searchParams.get('q');
+    const category = searchParams.get('category');
+    const sort = searchParams.get('sort');
+    
+    if (searchTerm) onSearch(searchTerm);
+    if (category) onCategoryChange(category);
+    if (sort) onSortChange(sort);
+  }, [searchParams, onSearch, onCategoryChange, onSortChange]);
+  
+  const handleSearch = (term: string) => {
+    onSearch(term);
+    setSearchParams(prev => {
+      if (term) {
+        prev.set('q', term);
+      } else {
+        prev.delete('q');
+      }
+      return prev;
+    });
+  };
+  
+  const handleCategoryChange = (value: string) => {
+    onCategoryChange(value);
+    setSearchParams(prev => {
+      if (value && value !== 'all') {
+        prev.set('category', value);
+      } else {
+        prev.delete('category');
+      }
+      return prev;
+    });
+  };
+  
+  const handleSortChange = (value: string) => {
+    onSortChange(value);
+    setSearchParams(prev => {
+      if (value) {
+        prev.set('sort', value);
+      } else {
+        prev.delete('sort');
+      }
+      return prev;
+    });
+  };
   
   return (
     <div className="space-y-4 mb-8">
@@ -31,11 +81,16 @@ export const MarketplaceHeader = ({ onSearch, onSortChange, onCategoryChange }: 
           <Input
             placeholder="Search images..."
             className="pl-8"
-            onChange={(e) => onSearch(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
+            defaultValue={searchParams.get('q') || ''}
+            aria-label="Search marketplace images"
           />
         </div>
         
-        <Select onValueChange={onCategoryChange}>
+        <Select 
+          onValueChange={handleCategoryChange}
+          defaultValue={searchParams.get('category') || 'all'}
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
@@ -49,7 +104,10 @@ export const MarketplaceHeader = ({ onSearch, onSortChange, onCategoryChange }: 
           </SelectContent>
         </Select>
 
-        <Select onValueChange={onSortChange}>
+        <Select 
+          onValueChange={handleSortChange}
+          defaultValue={searchParams.get('sort') || 'newest'}
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>

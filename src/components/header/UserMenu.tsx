@@ -42,6 +42,7 @@ export const UserMenu = ({ session, profile, onShowAuthDialog }: UserMenuProps) 
       <Button 
         className="bg-primary hover:bg-primary-hover"
         onClick={onShowAuthDialog}
+        aria-label="Sign in or register"
       >
         Get Started
       </Button>
@@ -51,7 +52,7 @@ export const UserMenu = ({ session, profile, onShowAuthDialog }: UserMenuProps) 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="h-8 w-8 cursor-pointer">
+        <Avatar className="h-8 w-8 cursor-pointer" aria-label="User menu">
           <AvatarImage src={profile?.avatar_url} alt={profile?.username || session.user.email} />
           <AvatarFallback>{(profile?.username?.[0] || session.user.email?.[0])?.toUpperCase()}</AvatarFallback>
         </Avatar>

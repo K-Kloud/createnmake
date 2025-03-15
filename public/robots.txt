@@ -1,0 +1,19 @@
+
+User-agent: *
+Allow: /
+
+# Important pages
+Allow: /index.html
+Allow: /marketplace
+Allow: /features
+Allow: /contact
+Allow: /faq
+
+# Disallow admin and personal areas
+Disallow: /admin
+Disallow: /settings
+Disallow: /dashboard
+Disallow: /crm
+
+# Sitemap
+Sitemap: https://create2make.com/sitemap.xml
