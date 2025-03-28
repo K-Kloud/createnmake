@@ -1,40 +1,23 @@
 
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/Icons";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Phone } from "lucide-react";
 
-export const SocialButtons = () => {
-  const { toast } = useToast();
+interface SocialButtonsProps {
+  onPhoneAuth: () => void;
+}
 
-  const handleSocialLogin = async (provider: 'google') => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: window.location.origin,
-        },
-      });
-      
-      if (error) throw error;
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
-
+export const SocialButtons = ({ onPhoneAuth }: SocialButtonsProps) => {
   return (
     <div className="space-y-4">
       <Button
         className="w-full"
         variant="outline"
-        onClick={() => handleSocialLogin('google')}
+        onClick={onPhoneAuth}
       >
-        <Icons.google className="mr-2 h-4 w-4" />
-        Continue with Google
+        <Phone className="mr-2 h-4 w-4" />
+        Continue with Phone
       </Button>
     </div>
   );

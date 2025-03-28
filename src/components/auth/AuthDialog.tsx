@@ -88,7 +88,7 @@ export function AuthDialog({
         </DialogHeader>
 
         <div className="space-y-4">
-          <SocialButtons />
+          <SocialButtons onPhoneAuth={() => setIsPhoneMode(true)} />
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
