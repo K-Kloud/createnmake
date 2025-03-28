@@ -12,7 +12,7 @@ import { SignInForm } from "./SignInForm";
 import { SignUpForm } from "./SignUpForm";
 import { SocialButtons } from "./SocialButtons";
 import { ResetPasswordForm } from "./ResetPasswordForm";
-import { PhoneAuthForm } from "./PhoneAuthForm"; // New import
+import { PhoneAuthForm } from "./PhoneAuthForm";
 
 export function AuthDialog({
   isOpen,
@@ -27,6 +27,7 @@ export function AuthDialog({
   const [username, setUsername] = useState("");
   const [isResetMode, setIsResetMode] = useState(false);
   const [isPhoneMode, setIsPhoneMode] = useState(false);
+  const [activeTab, setActiveTab] = useState<"signin" | "signup">("signin");
 
   if (isResetMode) {
     return (
@@ -55,7 +56,9 @@ export function AuthDialog({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[425px] glass-card">
           <DialogHeader>
-            <DialogTitle>Phone Authentication</DialogTitle>
+            <DialogTitle>
+              {activeTab === "signin" ? "Phone Sign In" : "Phone Sign Up"}
+            </DialogTitle>
             <DialogDescription>
               Enter your phone number to receive a verification code.
             </DialogDescription>
@@ -65,6 +68,9 @@ export function AuthDialog({
             isLoading={isLoading}
             setIsLoading={setIsLoading}
             onBack={() => setIsPhoneMode(false)}
+            isSignUp={activeTab === "signup"}
+            username={username}
+            setUsername={setUsername}
           />
         </DialogContent>
       </Dialog>
@@ -95,7 +101,11 @@ export function AuthDialog({
             </div>
           </div>
 
-          <Tabs defaultValue="signin" className="w-full">
+          <Tabs 
+            defaultValue="signin" 
+            className="w-full"
+            onValueChange={(value) => setActiveTab(value as "signin" | "signup")}
+          >
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
