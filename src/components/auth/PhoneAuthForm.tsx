@@ -26,6 +26,16 @@ interface PhoneAuthFormProps {
   setUsername?: (username: string) => void;
 }
 
+// Define type-safe schema interfaces
+interface SignUpFormValues {
+  username: string;
+  phoneNumber: string;
+}
+
+interface SignInFormValues {
+  phoneNumber: string;
+}
+
 export const PhoneAuthForm = ({
   isLoading,
   setIsLoading,
@@ -50,23 +60,153 @@ export const PhoneAuthForm = ({
     phoneNumber: z.string().min(8, "Please enter a valid phone number")
   });
 
-  // Use the appropriate schema based on isSignUp flag
-  const formSchema = isSignUp ? signUpSchema : signInSchema;
+  // Conditional form setup based on sign-in or sign-up flow
+  const SignUpForm = () => {
+    const form = useForm<SignUpFormValues>({
+      resolver: zodResolver(signUpSchema),
+      defaultValues: {
+        username: username,
+        phoneNumber: "",
+      },
+    });
 
-  // Infer the form schema type
-  type FormValues = z.infer<typeof formSchema>;
+    const onSubmit = async (values: SignUpFormValues) => {
+      handleSendOTP(values.phoneNumber, values.username);
+    };
 
-  // Initialize the form with correct default values
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: isSignUp 
-      ? { username, phoneNumber: "" }
-      : { phoneNumber: "" }
-  });
+    return (
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Username</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Choose a username" 
+                    {...field} 
+                    onChange={(e) => {
+                      field.onChange(e);
+                      setUsername(e.target.value);
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="phoneNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="+1234567890" 
+                    type="tel"
+                    {...field} 
+                  />
+                </FormControl>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Include country code (e.g., +1 for US)
+                </p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <div className="space-y-2 mt-4">
+            <Button className="w-full" type="submit" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  Sending code...
+                </>
+              ) : (
+                "Send Verification Code"
+              )}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onBack}
+              className="w-full mt-2"
+            >
+              Back to Sign In
+            </Button>
+          </div>
+        </form>
+      </Form>
+    );
+  };
 
-  const handleSendOTP = async (values: FormValues) => {
+  const SignInForm = () => {
+    const form = useForm<SignInFormValues>({
+      resolver: zodResolver(signInSchema),
+      defaultValues: {
+        phoneNumber: "",
+      },
+    });
+
+    const onSubmit = async (values: SignInFormValues) => {
+      handleSendOTP(values.phoneNumber);
+    };
+
+    return (
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="phoneNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="+1234567890" 
+                    type="tel"
+                    {...field} 
+                  />
+                </FormControl>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Include country code (e.g., +1 for US)
+                </p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <div className="space-y-2 mt-4">
+            <Button className="w-full" type="submit" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  Sending code...
+                </>
+              ) : (
+                "Send Verification Code"
+              )}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onBack}
+              className="w-full mt-2"
+            >
+              Back to Sign In
+            </Button>
+          </div>
+        </form>
+      </Form>
+    );
+  };
+
+  const handleSendOTP = async (phone: string, usernameValue?: string) => {
     setIsLoading(true);
-    const phone = values.phoneNumber;
     
     try {
       // Format phone number if needed
@@ -77,7 +217,7 @@ export const PhoneAuthForm = ({
         phone: formattedPhone,
         options: isSignUp ? {
           data: {
-            username: isSignUp ? values.username : undefined,
+            username: usernameValue,
           }
         } : undefined
       });
@@ -115,16 +255,12 @@ export const PhoneAuthForm = ({
 
       // If it's a sign-up, create a profile record
       if (isSignUp && data?.user) {
-        // If we have username from the form
-        const usernameToUse = isSignUp && form.getValues().username 
-          ? form.getValues().username 
-          : undefined;
-
+        // Use the username that was stored when sending the OTP
         const { error: profileError } = await supabase
           .from('profiles')
           .upsert({
             id: data.user.id,
-            username: usernameToUse,
+            username: username,
             updated_at: new Date().toISOString(),
           });
 
@@ -201,74 +337,6 @@ export const PhoneAuthForm = ({
     );
   }
 
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSendOTP)} className="space-y-4">
-        {isSignUp && (
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="Choose a username" 
-                    {...field} 
-                    onChange={(e) => {
-                      field.onChange(e);
-                      if (setUsername) setUsername(e.target.value);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
-        
-        <FormField
-          control={form.control}
-          name="phoneNumber"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone Number</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="+1234567890" 
-                  type="tel"
-                  {...field} 
-                />
-              </FormControl>
-              <p className="text-xs text-muted-foreground mt-1">
-                Include country code (e.g., +1 for US)
-              </p>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <div className="space-y-2 mt-4">
-          <Button className="w-full" type="submit" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                Sending code...
-              </>
-            ) : (
-              "Send Verification Code"
-            )}
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onBack}
-            className="w-full mt-2"
-          >
-            Back to Sign In
-          </Button>
-        </div>
-      </form>
-    </Form>
-  );
+  // Render the appropriate form based on whether it's sign-up or sign-in
+  return isSignUp ? <SignUpForm /> : <SignInForm />;
 };
