@@ -26,15 +26,20 @@ interface PhoneAuthFormProps {
   setUsername?: (username: string) => void;
 }
 
-// Define type-safe schema interfaces
-interface SignUpFormValues {
-  username: string;
-  phoneNumber: string;
-}
+// Define type-safe schema interfaces for sign-up flow
+const signUpSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  phoneNumber: z.string().min(8, "Please enter a valid phone number")
+});
 
-interface SignInFormValues {
-  phoneNumber: string;
-}
+type SignUpFormValues = z.infer<typeof signUpSchema>;
+
+// Define type-safe schema interfaces for sign-in flow
+const signInSchema = z.object({
+  phoneNumber: z.string().min(8, "Please enter a valid phone number")
+});
+
+type SignInFormValues = z.infer<typeof signInSchema>;
 
 export const PhoneAuthForm = ({
   isLoading,
@@ -49,16 +54,6 @@ export const PhoneAuthForm = ({
   const [phoneNumber, setPhoneNumber] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [isVerificationSent, setIsVerificationSent] = useState(false);
-
-  // Define the form schemas
-  const signUpSchema = z.object({
-    username: z.string().min(3, "Username must be at least 3 characters"),
-    phoneNumber: z.string().min(8, "Please enter a valid phone number")
-  });
-
-  const signInSchema = z.object({
-    phoneNumber: z.string().min(8, "Please enter a valid phone number")
-  });
 
   // Conditional form setup based on sign-in or sign-up flow
   const SignUpForm = () => {
@@ -215,7 +210,7 @@ export const PhoneAuthForm = ({
       
       const { error } = await supabase.auth.signInWithOtp({
         phone: formattedPhone,
-        options: isSignUp ? {
+        options: isSignUp && usernameValue ? {
           data: {
             username: usernameValue,
           }
