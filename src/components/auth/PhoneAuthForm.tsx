@@ -40,28 +40,31 @@ export const PhoneAuthForm = ({
   const [verificationCode, setVerificationCode] = useState("");
   const [isVerificationSent, setIsVerificationSent] = useState(false);
 
-  // Form schema for sign up with phone
+  // Define the form schemas
   const signUpSchema = z.object({
     username: z.string().min(3, "Username must be at least 3 characters"),
     phoneNumber: z.string().min(8, "Please enter a valid phone number")
   });
 
-  // Form schema for sign in with phone
   const signInSchema = z.object({
     phoneNumber: z.string().min(8, "Please enter a valid phone number")
   });
 
+  // Use the appropriate schema based on isSignUp flag
   const formSchema = isSignUp ? signUpSchema : signInSchema;
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  // Infer the form schema type
+  type FormValues = z.infer<typeof formSchema>;
+
+  // Initialize the form with correct default values
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: username,
-      phoneNumber: "",
-    },
+    defaultValues: isSignUp 
+      ? { username, phoneNumber: "" }
+      : { phoneNumber: "" }
   });
 
-  const handleSendOTP = async (values: z.infer<typeof formSchema>) => {
+  const handleSendOTP = async (values: FormValues) => {
     setIsLoading(true);
     const phone = values.phoneNumber;
     
@@ -74,7 +77,7 @@ export const PhoneAuthForm = ({
         phone: formattedPhone,
         options: isSignUp ? {
           data: {
-            username: values.username,
+            username: isSignUp ? values.username : undefined,
           }
         } : undefined
       });
@@ -112,11 +115,16 @@ export const PhoneAuthForm = ({
 
       // If it's a sign-up, create a profile record
       if (isSignUp && data?.user) {
+        // If we have username from the form
+        const usernameToUse = isSignUp && form.getValues().username 
+          ? form.getValues().username 
+          : undefined;
+
         const { error: profileError } = await supabase
           .from('profiles')
           .upsert({
             id: data.user.id,
-            username: form.getValues().username,
+            username: usernameToUse,
             updated_at: new Date().toISOString(),
           });
 
