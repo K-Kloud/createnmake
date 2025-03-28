@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import {
   Dialog,
@@ -11,6 +12,7 @@ import { SignInForm } from "./SignInForm";
 import { SignUpForm } from "./SignUpForm";
 import { SocialButtons } from "./SocialButtons";
 import { ResetPasswordForm } from "./ResetPasswordForm";
+import { PhoneAuthForm } from "./PhoneAuthForm"; // New import
 
 export function AuthDialog({
   isOpen,
@@ -24,6 +26,7 @@ export function AuthDialog({
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [isResetMode, setIsResetMode] = useState(false);
+  const [isPhoneMode, setIsPhoneMode] = useState(false);
 
   if (isResetMode) {
     return (
@@ -47,11 +50,32 @@ export function AuthDialog({
     );
   }
 
+  if (isPhoneMode) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-[425px] glass-card">
+          <DialogHeader>
+            <DialogTitle>Phone Authentication</DialogTitle>
+            <DialogDescription>
+              Enter your phone number to receive a verification code.
+            </DialogDescription>
+          </DialogHeader>
+
+          <PhoneAuthForm 
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+            onBack={() => setIsPhoneMode(false)}
+          />
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] glass-card">
         <DialogHeader>
-          <DialogTitle>Welcome to OpenT</DialogTitle>
+          <DialogTitle>Welcome to Create2Make</DialogTitle>
           <DialogDescription>
             Sign in to your account or create a new one to start creating amazing AI-generated images
           </DialogDescription>
@@ -86,6 +110,15 @@ export function AuthDialog({
                 isLoading={isLoading}
                 onForgotPassword={() => setIsResetMode(true)}
               />
+              <div className="mt-4 text-center">
+                <button 
+                  type="button"
+                  onClick={() => setIsPhoneMode(true)}
+                  className="text-sm text-primary hover:underline"
+                >
+                  Sign in with phone number instead
+                </button>
+              </div>
             </TabsContent>
 
             <TabsContent value="signup">
@@ -98,6 +131,15 @@ export function AuthDialog({
                 setUsername={setUsername}
                 isLoading={isLoading}
               />
+              <div className="mt-4 text-center">
+                <button 
+                  type="button"
+                  onClick={() => setIsPhoneMode(true)}
+                  className="text-sm text-primary hover:underline"
+                >
+                  Sign up with phone number instead
+                </button>
+              </div>
             </TabsContent>
           </Tabs>
         </div>
