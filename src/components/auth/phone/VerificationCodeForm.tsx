@@ -1,5 +1,4 @@
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/Icons";
@@ -30,11 +29,14 @@ export const VerificationCodeForm = ({
     <form onSubmit={onVerify} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="verification-code">Enter verification code</Label>
+        <p className="text-sm text-muted-foreground">
+          We've sent a 6-digit code to {phoneNumber}
+        </p>
         <div className="flex justify-center py-4">
           <InputOTP
             maxLength={6}
             value={verificationCode}
-            onChange={setVerificationCode}
+            onChange={(value) => setVerificationCode(value)}
             render={({ slots }) => (
               <InputOTPGroup>
                 {slots.map((slot, index) => (
