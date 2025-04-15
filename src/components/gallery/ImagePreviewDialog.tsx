@@ -1,9 +1,12 @@
+
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ImageControls } from "./image-preview/ImageControls";
 import { useImagePermissions } from "./image-preview/useImagePermissions";
 import { useImageDeletion } from "./image-preview/useImageDeletion";
-import { X, ZoomIn, ZoomOut } from "lucide-react";
+import { X, ZoomIn, ZoomOut, Eye, EyeOff } from "lucide-react";
 import { Button } from "../ui/button";
+import { useState } from "react";
+
 interface ImagePreviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -14,7 +17,9 @@ interface ImagePreviewDialogProps {
   onZoomOut: () => void;
   imageId?: number;
   userId?: string;
+  showPrompt?: boolean; // New optional prop
 }
+
 export const ImagePreviewDialog = ({
   open,
   onOpenChange,
@@ -24,8 +29,10 @@ export const ImagePreviewDialog = ({
   onZoomIn,
   onZoomOut,
   imageId,
-  userId
+  userId,
+  showPrompt = true // Default to true for backward compatibility
 }: ImagePreviewDialogProps) => {
+  const [isPromptVisible, setIsPromptVisible] = useState(showPrompt);
   const {
     canDelete
   } = useImagePermissions(userId);
@@ -33,6 +40,7 @@ export const ImagePreviewDialog = ({
     isDeleting,
     handleDelete
   } = useImageDeletion(() => onOpenChange(false));
+
   return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[90vw] max-h-[90vh] p-1 sm:p-6 bg-background/95 backdrop-blur-sm overflow-hidden">
         <DialogTitle className="sr-only">Image Preview</DialogTitle>
@@ -51,15 +59,26 @@ export const ImagePreviewDialog = ({
               <ZoomOut className="h-4 w-4" />
               <span className="sr-only">Zoom Out</span>
             </Button>
+            <Button 
+              variant="secondary" 
+              size="icon" 
+              onClick={() => setIsPromptVisible(!isPromptVisible)} 
+              className="bg-background/80 backdrop-blur-sm hover:bg-background/60"
+            >
+              {isPromptVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              <span className="sr-only">{isPromptVisible ? 'Hide' : 'Show'} Prompt</span>
+            </Button>
             <Button variant="secondary" size="icon" onClick={() => onOpenChange(false)} className="bg-background/80 backdrop-blur-sm hover:bg-background/60">
               <X className="h-4 w-4" />
               <span className="sr-only">Close</span>
             </Button>
           </div>
           
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-            <p className="text-white text-sm md:text-base: ">{prompt}</p>
-          </div>
+          {isPromptVisible && (
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+              <p className="text-white text-sm md:text-base">{prompt}</p>
+            </div>
+          )}
           
           <ImageControls zoomLevel={zoomLevel} onZoomIn={onZoomIn} onZoomOut={onZoomOut} onDelete={() => handleDelete(imageId, userId, canDelete)} canDelete={canDelete} isDeleting={isDeleting} />
         </div>

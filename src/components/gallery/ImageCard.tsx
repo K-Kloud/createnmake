@@ -10,7 +10,7 @@ import { MakerSelectionDialog } from "./MakerSelectionDialog";
 import { generateRandomPrice } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useImageCard } from "./hooks/useImageCard";
-import { Eye, MaximizeIcon } from "lucide-react";
+import { Eye, EyeOff, MaximizeIcon } from "lucide-react";
 
 interface ImageCardProps {
   image: {
@@ -55,6 +55,7 @@ export const ImageCard = ({
   const [showComments, setShowComments] = useState(false);
   const [imageOpen, setImageOpen] = useState(false);
   const [selectionDialogOpen, setSelectionDialogOpen] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(true);
   
   const { 
     currentPrice, 
@@ -103,7 +104,18 @@ export const ImageCard = ({
               isCreator={isCreator}
               onPriceChange={handlePriceChange}
             />
-            <p className="text-sm text-gray-300 truncate">{image.prompt}</p>
+            <div className="flex items-center justify-between">
+              <p className={`text-sm text-gray-300 ${showPrompt ? 'truncate' : 'hidden'}`}>{image.prompt}</p>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setShowPrompt(!showPrompt)}
+                className="ml-2"
+              >
+                {showPrompt ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                <span className="sr-only">{showPrompt ? 'Hide' : 'Show'} Prompt</span>
+              </Button>
+            </div>
             <ImageActions
               metrics={image.metrics || { like: 0, comment: 0, view: 0 }}
               hasLiked={image.hasLiked}
@@ -136,6 +148,7 @@ export const ImageCard = ({
           onZoomOut={handleZoomOut}
           imageId={image.id}
           userId={image.user_id}
+          showPrompt={showPrompt}
         />
       )}
 

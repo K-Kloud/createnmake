@@ -1,9 +1,8 @@
-
+import { useState } from "react";
 import { MarketplaceLoader } from "@/components/marketplace/MarketplaceLoader";
 import { MarketplaceGrid } from "@/components/marketplace/MarketplaceGrid";
 import { GalleryImage } from "@/types/gallery";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { useState } from "react";
 import { ImagePreviewDialog } from "@/components/gallery/ImagePreviewDialog";
 
 interface MarketplaceContentProps {
@@ -30,6 +29,7 @@ export const MarketplaceContent = ({
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [showPrompt, setShowPrompt] = useState(true);
 
   if (isLoading) {
     return <MarketplaceLoader />;
@@ -74,6 +74,7 @@ export const MarketplaceContent = ({
           onZoomOut={handleZoomOut}
           imageId={selectedImage.id}
           userId={selectedImage.user_id}
+          showPrompt={showPrompt}
         />
       )}
     </>
