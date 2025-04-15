@@ -1,3 +1,4 @@
+
 import {
   Dialog,
   DialogContent,
@@ -5,8 +6,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Download, Share2, Loader2 } from "lucide-react";
+import { Download, Share2, Loader2, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import { ImagePreviewDialog } from "@/components/gallery/ImagePreviewDialog";
 
 interface PreviewDialogProps {
   open: boolean;
@@ -24,6 +27,21 @@ export const PreviewDialog = ({
   generatedImageUrl 
 }: PreviewDialogProps) => {
   const { toast } = useToast();
+  const [isFullScreenPreview, setIsFullScreenPreview] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [showPrompt, setShowPrompt] = useState(false); // Default to hiding prompt
+
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + 0.25, 3));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
+  };
+
+  const handleFullScreenPreview = () => {
+    setIsFullScreenPreview(true);
+  };
 
   const handleDownload = async () => {
     if (!generatedImageUrl) {
@@ -107,60 +125,78 @@ export const PreviewDialog = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
-        <DialogHeader>
-          <DialogTitle>Generated Image Preview</DialogTitle>
-        </DialogHeader>
-        <div 
-          className="bg-card/50 rounded-lg flex flex-col items-center justify-center min-h-[400px] gap-4"
-        >
-          {isGenerating ? (
-            <div className="flex flex-col items-center gap-4">
-              <Loader2 className="h-8 w-8 animate-spin" />
-              <p className="text-muted-foreground">Generating your image...</p>
-            </div>
-          ) : generatedImageUrl ? (
-            <>
-              <img 
-                src={generatedImageUrl} 
-                alt="Generated preview" 
-                className="rounded-lg max-h-[500px] object-contain"
-                onError={(e) => {
-                  e.currentTarget.src = '/placeholder.svg';
-                  toast({
-                    title: "Error",
-                    description: "Failed to load image",
-                    variant: "destructive",
-                  });
-                }}
-              />
-              <div className="flex gap-2 mt-4">
-                <Button
-                  onClick={handleDownload}
-                  variant="outline"
-                  className="flex items-center gap-2"
-                  disabled={!generatedImageUrl}
-                >
-                  <Download className="w-4 h-4" />
-                  Download
-                </Button>
-                <Button
-                  onClick={handleShare}
-                  variant="outline"
-                  className="flex items-center gap-2"
-                  disabled={!generatedImageUrl}
-                >
-                  <Share2 className="w-4 h-4" />
-                  Share
-                </Button>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Generated Image Preview</DialogTitle>
+          </DialogHeader>
+          <div 
+            className="bg-card/50 rounded-lg flex flex-col items-center justify-center min-h-[400px] gap-4"
+          >
+            {isGenerating ? (
+              <div className="flex flex-col items-center gap-4">
+                <Loader2 className="h-8 w-8 animate-spin" />
+                <p className="text-muted-foreground">Generating your image...</p>
               </div>
-            </>
-          ) : (
-            <p className="text-muted-foreground">Preview will appear here</p>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+            ) : generatedImageUrl ? (
+              <>
+                <div className="relative cursor-pointer" onClick={handleFullScreenPreview}>
+                  <img 
+                    src={generatedImageUrl} 
+                    alt="Generated preview" 
+                    className="rounded-lg max-h-[500px] object-contain"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.svg';
+                      toast({
+                        title: "Error",
+                        description: "Failed to load image",
+                        variant: "destructive",
+                      });
+                    }}
+                  />
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <Button
+                    onClick={handleDownload}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    disabled={!generatedImageUrl}
+                  >
+                    <Download className="w-4 h-4" />
+                    Download
+                  </Button>
+                  <Button
+                    onClick={handleShare}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    disabled={!generatedImageUrl}
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <p className="text-muted-foreground">Preview will appear here</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {isFullScreenPreview && generatedImageUrl && (
+        <ImagePreviewDialog
+          open={isFullScreenPreview}
+          onOpenChange={setIsFullScreenPreview}
+          imageUrl={generatedImageUrl}
+          prompt=""
+          zoomLevel={zoomLevel}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          showPrompt={showPrompt}
+          isGeneratedImage={true}
+        />
+      )}
+    </>
   );
 };

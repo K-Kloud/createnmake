@@ -5,7 +5,7 @@ import { useImagePermissions } from "./image-preview/useImagePermissions";
 import { useImageDeletion } from "./image-preview/useImageDeletion";
 import { X, ZoomIn, ZoomOut, Eye, EyeOff } from "lucide-react";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ImagePreviewDialogProps {
   open: boolean;
@@ -17,7 +17,8 @@ interface ImagePreviewDialogProps {
   onZoomOut: () => void;
   imageId?: number;
   userId?: string;
-  showPrompt?: boolean; // New optional prop
+  showPrompt?: boolean; // Default prop
+  isGeneratedImage?: boolean; // New prop to identify generated images
 }
 
 export const ImagePreviewDialog = ({
@@ -30,9 +31,17 @@ export const ImagePreviewDialog = ({
   onZoomOut,
   imageId,
   userId,
-  showPrompt = true // Default to true for backward compatibility
+  showPrompt = true, // Default to true for backward compatibility
+  isGeneratedImage = false // Default to false
 }: ImagePreviewDialogProps) => {
-  const [isPromptVisible, setIsPromptVisible] = useState(showPrompt);
+  // Initialize with showPrompt prop but hide by default for generated images
+  const [isPromptVisible, setIsPromptVisible] = useState(isGeneratedImage ? false : showPrompt);
+  
+  // Update visibility when showPrompt prop changes
+  useEffect(() => {
+    setIsPromptVisible(isGeneratedImage ? false : showPrompt);
+  }, [showPrompt, isGeneratedImage]);
+  
   const {
     canDelete
   } = useImagePermissions(userId);
