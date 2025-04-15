@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { MarketplaceLoader } from "@/components/marketplace/MarketplaceLoader";
 import { MarketplaceGrid } from "@/components/marketplace/MarketplaceGrid";
@@ -75,6 +76,7 @@ export const MarketplaceContent = ({
           imageId={selectedImage.id}
           userId={selectedImage.user_id}
           showPrompt={showPrompt}
+          onLike={onLike}
         />
       )}
     </>

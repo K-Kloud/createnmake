@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -79,11 +80,21 @@ export const ImageCard = ({
     }
   };
 
+  // Handle double-click to like the image
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the single click handler
+    onLike(image.id);
+  };
+
   return (
     <>
       <Card className="overflow-hidden glass-card hover:scale-[1.02] transition-transform">
         <CardContent className="p-0">
-          <div className="relative group cursor-pointer" onClick={openImagePreview}>
+          <div 
+            className="relative group cursor-pointer" 
+            onClick={openImagePreview}
+            onDoubleClick={handleDoubleClick}
+          >
             <img
               src={image.url}
               alt={image.prompt}

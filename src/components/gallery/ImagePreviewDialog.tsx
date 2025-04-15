@@ -19,6 +19,7 @@ interface ImagePreviewDialogProps {
   userId?: string;
   showPrompt?: boolean; // Default prop
   isGeneratedImage?: boolean; // New prop to identify generated images
+  onLike?: (imageId: number) => void; // Add onLike prop
 }
 
 export const ImagePreviewDialog = ({
@@ -32,7 +33,8 @@ export const ImagePreviewDialog = ({
   imageId,
   userId,
   showPrompt = true, // Default to true for backward compatibility
-  isGeneratedImage = false // Default to false
+  isGeneratedImage = false, // Default to false
+  onLike
 }: ImagePreviewDialogProps) => {
   // Initialize with showPrompt prop but hide by default for generated images
   const [isPromptVisible, setIsPromptVisible] = useState(isGeneratedImage ? false : showPrompt);
@@ -50,11 +52,21 @@ export const ImagePreviewDialog = ({
     handleDelete
   } = useImageDeletion(() => onOpenChange(false));
 
+  // Handle double-click to like the image
+  const handleDoubleClick = () => {
+    if (onLike && imageId) {
+      onLike(imageId);
+    }
+  };
+
   return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[90vw] max-h-[90vh] p-1 sm:p-6 bg-background/95 backdrop-blur-sm overflow-hidden">
         <DialogTitle className="sr-only">Image Preview</DialogTitle>
         <div className="relative flex items-center justify-center h-full">
-          <div className="overflow-auto max-h-[calc(90vh-120px)] w-full">
+          <div 
+            className="overflow-auto max-h-[calc(90vh-120px)] w-full"
+            onDoubleClick={handleDoubleClick}
+          >
             <img src={imageUrl} alt={prompt} className="w-full h-auto object-contain transition-transform duration-200" style={{
             transform: `scale(${zoomLevel})`
           }} />

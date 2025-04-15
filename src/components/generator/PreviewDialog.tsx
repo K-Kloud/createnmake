@@ -17,6 +17,7 @@ interface PreviewDialogProps {
   isGenerating: boolean;
   selectedRatio: string;
   generatedImageUrl?: string;
+  onLike?: (imageId: number) => void; // Add optional onLike prop
 }
 
 export const PreviewDialog = ({ 
@@ -24,7 +25,8 @@ export const PreviewDialog = ({
   onOpenChange, 
   isGenerating,
   selectedRatio,
-  generatedImageUrl 
+  generatedImageUrl,
+  onLike 
 }: PreviewDialogProps) => {
   const { toast } = useToast();
   const [isFullScreenPreview, setIsFullScreenPreview] = useState(false);
@@ -141,7 +143,10 @@ export const PreviewDialog = ({
               </div>
             ) : generatedImageUrl ? (
               <>
-                <div className="relative cursor-pointer" onClick={handleFullScreenPreview}>
+                <div 
+                  className="relative cursor-pointer" 
+                  onClick={handleFullScreenPreview}
+                >
                   <img 
                     src={generatedImageUrl} 
                     alt="Generated preview" 
@@ -195,6 +200,7 @@ export const PreviewDialog = ({
           onZoomOut={handleZoomOut}
           showPrompt={showPrompt}
           isGeneratedImage={true}
+          onLike={onLike}
         />
       )}
     </>
