@@ -1,3 +1,4 @@
+
 import { format, isValid, parseISO } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -106,10 +107,10 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <span className="font-medium">
-                    {comment.user.name || 'User'}
+                  <span className="font-bold text-white text-sm">
+                    {comment.user.name || 'Anonymous User'}
                   </span>
-                  <span className="text-sm text-gray-400">
+                  <span className="text-xs text-gray-400">
                     {formatDate(comment.createdAt)}
                   </span>
                 </div>
