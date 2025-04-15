@@ -12,14 +12,14 @@ const Index = () => {
   // Add structured data for SEO
   useEffect(() => {
     const cleanup = addStructuredData('Organization', {
-      "name": "Create2Make",
-      "url": "https://create2make.com",
-      "logo": "https://create2make.com/lovable-uploads/8373b451-38a1-4ecb-8594-cf0c25ba20c4.png",
+      "name": "Openteknologies",
+      "url": "https://openteknologies.com",
+      "logo": "https://openteknologies.com/lovable-uploads/8373b451-38a1-4ecb-8594-cf0c25ba20c4.png",
       "description": "Connect with skilled artisans and manufacturers to bring your custom designs to life.",
       "sameAs": [
-        "https://twitter.com/create2make",
-        "https://facebook.com/create2make",
-        "https://instagram.com/create2make"
+        "https://twitter.com/openteknologies",
+        "https://facebook.com/openteknologies",
+        "https://instagram.com/openteknologies"
       ]
     });
     
