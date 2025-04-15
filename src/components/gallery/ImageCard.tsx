@@ -11,6 +11,7 @@ import { generateRandomPrice } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useImageCard } from "./hooks/useImageCard";
 import { Eye, EyeOff, MaximizeIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ImageCardProps {
   image: {
