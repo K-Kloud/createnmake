@@ -1,11 +1,13 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/Icons";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { cleanupAuthState } from "@/utils/auth";
 
 interface SignInFormProps {
   email: string;
@@ -30,17 +32,31 @@ export const SignInForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Clean up existing state
+      cleanupAuthState();
+      
+      // Attempt global sign out
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continue even if this fails
+      }
+
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      
       if (error) throw error;
+      
       toast({
         title: "Welcome back!",
         description: "You have successfully signed in.",
       });
-      navigate('/dashboard');
-    } catch (error) {
+      
+      // Force page reload
+      window.location.href = '/dashboard';
+    } catch (error: any) {
       toast({
         title: "Error",
         description: error.message,

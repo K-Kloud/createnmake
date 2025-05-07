@@ -1,9 +1,10 @@
 
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { SignInFormValues, SignUpFormValues } from "./PhoneAuthTypes";
+import { sendWelcomeNotification, sendVerificationNotification } from "@/services/notificationService";
 
 export const usePhoneAuth = (
   isSignUp: boolean,
@@ -78,7 +79,15 @@ export const usePhoneAuth = (
         if (profileError) {
           console.error("Error creating profile:", profileError);
           // Continue anyway as auth was successful
+        } else {
+          // Send welcome notification for new users
+          await sendWelcomeNotification(data.user.id);
         }
+      }
+
+      // Send verification notification
+      if (data?.user) {
+        await sendVerificationNotification(data.user.id);
       }
 
       toast({

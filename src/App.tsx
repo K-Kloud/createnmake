@@ -20,6 +20,7 @@ import Admin from "@/pages/Admin";
 import CRMDashboard from "@/pages/CRMDashboard";
 import ArtisanOnboarding from "@/pages/ArtisanOnboarding";
 import ManufacturerOnboarding from "@/pages/ManufacturerOnboarding";
+import AuthCallback from "@/pages/AuthCallback";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="/crm" element={<CRMDashboard />} />
             <Route path="/artisan-onboarding" element={<ArtisanOnboarding />} />
             <Route path="/manufacturer-onboarding" element={<ManufacturerOnboarding />} />
+            <Route path="/auth-callback" element={<AuthCallback />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>

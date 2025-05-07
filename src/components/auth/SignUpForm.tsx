@@ -1,11 +1,14 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/Icons";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { cleanupAuthState } from "@/utils/auth";
+import { sendWelcomeNotification } from "@/services/notificationService";
 
 interface SignUpFormProps {
   email: string;
@@ -32,14 +35,24 @@ export const SignUpForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { error: signUpError } = await supabase.auth.signUp({
+      // Clean up existing state
+      cleanupAuthState();
+      
+      // Attempt global sign out
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continue even if this fails
+      }
+      
+      const { error: signUpError, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             username,
           },
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: `${window.location.origin}/auth-callback`,
         },
       });
       
@@ -48,19 +61,24 @@ export const SignUpForm = ({
       const { error: profileError } = await supabase
         .from('profiles')
         .upsert({
-          id: (await supabase.auth.getUser()).data.user?.id,
+          id: data.user?.id,
           username,
           updated_at: new Date().toISOString(),
         });
 
       if (profileError) throw profileError;
+      
+      // Send welcome notification
+      if (data.user) {
+        await sendWelcomeNotification(data.user.id);
+      }
 
       toast({
         title: "Account created!",
         description: "Please check your email to verify your account.",
       });
       navigate('/dashboard');
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
         description: error.message,

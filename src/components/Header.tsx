@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "./header/Navigation";
 import { ThemeToggle } from "./header/ThemeToggle";
 import { UserMenu } from "./header/UserMenu";
+import { AuthProvider } from "@/hooks/useAuth";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export const Header = () => {
       queryClient.setQueryData(['session'], session);
       if (session?.user) {
         queryClient.invalidateQueries({ queryKey: ['profile', session.user.id] });
+        queryClient.invalidateQueries({ queryKey: ['notifications'] });
       }
     });
 
