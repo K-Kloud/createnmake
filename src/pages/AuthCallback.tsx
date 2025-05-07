@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { sendWelcomeNotification } from "@/services/notificationService";
+import { Icons } from "@/components/Icons"; // Add this import for Icons
 
 const AuthCallback = () => {
   const navigate = useNavigate();
