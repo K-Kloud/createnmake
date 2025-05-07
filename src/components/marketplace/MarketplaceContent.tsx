@@ -1,10 +1,12 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MarketplaceLoader } from "@/components/marketplace/MarketplaceLoader";
 import { MarketplaceGrid } from "@/components/marketplace/MarketplaceGrid";
 import { GalleryImage } from "@/types/gallery";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { ImagePreviewDialog } from "@/components/gallery/ImagePreviewDialog";
+import { supabase } from "@/integrations/supabase/client";
+import { sendWelcomeNotification } from "@/services/notificationService";
 
 interface MarketplaceContentProps {
   isLoading: boolean;
@@ -31,6 +33,25 @@ export const MarketplaceContent = ({
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [showPrompt, setShowPrompt] = useState(true);
+  
+  // Check for new user session and send welcome notification
+  useEffect(() => {
+    const checkAndSendWelcome = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session?.user?.id) {
+        // Check local storage to see if we've sent a welcome notification before
+        const welcomeSent = localStorage.getItem(`welcome_sent_${data.session.user.id}`);
+        if (!welcomeSent) {
+          // Send welcome notification
+          await sendWelcomeNotification(data.session.user.id);
+          // Mark that we've sent a welcome notification
+          localStorage.setItem(`welcome_sent_${data.session.user.id}`, 'true');
+        }
+      }
+    };
+    
+    checkAndSendWelcome();
+  }, []);
 
   if (isLoading) {
     return <MarketplaceLoader />;
