@@ -11,13 +11,16 @@ export const useNotifications = () => {
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: ["notifications"],
     queryFn: async () => {
-      const { data: session } = await supabase.auth.getSession();
+      // Get the current session
+      const { data } = await supabase.auth.getSession();
+      const session = data.session;
       
+      // If there's no session or no user, return an empty array
       if (!session?.user) {
         return [];
       }
       
-      const { data, error } = await supabase
+      const { data: notificationData, error } = await supabase
         .from("user_notifications")
         .select("*")
         .order("created_at", { ascending: false });
@@ -31,7 +34,7 @@ export const useNotifications = () => {
         return [];
       }
 
-      return data as Notification[];
+      return notificationData as Notification[];
     },
     refetchOnWindowFocus: true,
   });
