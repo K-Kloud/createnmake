@@ -30,11 +30,52 @@ export const ImageActions = ({
   const { toast } = useToast();
   const [isAnimating, setIsAnimating] = useState(false);
   const [showPlusOne, setShowPlusOne] = useState(false);
+  const [displayCount, setDisplayCount] = useState(metrics.like || 0);
   
   // Reset animation state when hasLiked changes externally
   useEffect(() => {
     setIsAnimating(false);
   }, [hasLiked]);
+  
+  // Update displayed count when metrics change
+  useEffect(() => {
+    if (metrics.like !== undefined) {
+      // Animate the count change
+      let start = displayCount;
+      const end = metrics.like;
+      const duration = 500; // ms
+      const startTime = performance.now();
+      
+      // Only animate if there's a difference
+      if (start !== end) {
+        const animateCount = (timestamp: number) => {
+          const elapsed = timestamp - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          
+          // If we're counting up or down
+          if (start < end) {
+            // Counting up
+            const current = Math.floor(start + (end - start) * progress);
+            setDisplayCount(current);
+          } else {
+            // Counting down
+            const current = Math.ceil(start - (start - end) * progress);
+            setDisplayCount(current);
+          }
+          
+          if (progress < 1) {
+            requestAnimationFrame(animateCount);
+          } else {
+            setDisplayCount(end);
+          }
+        };
+        
+        requestAnimationFrame(animateCount);
+      } else {
+        setDisplayCount(end);
+      }
+    }
+  }, [metrics.like]);
 
   const handleLikeClick = () => {
     if (!session?.user) {
@@ -72,7 +113,7 @@ export const ImageActions = ({
             className={`h-4 w-4 transition-all duration-300 ${isAnimating ? 'scale-125' : ''} ${hasLiked ? "fill-current" : ""}`} 
             onAnimationEnd={() => setIsAnimating(false)}
           />
-          <span>{metrics.like || 0}</span>
+          <span className="transition-all duration-200">{displayCount}</span>
           {showPlusOne && (
             <span className="absolute -top-4 right-0 text-green-500 text-xs font-bold animate-fade-up">
               +1
