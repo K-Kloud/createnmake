@@ -59,20 +59,24 @@ export const ImagePreviewDialog = ({
       onLike(imageId);
     }
   };
+  
   return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[90vw] max-h-[90vh] p-1 sm:p-6 bg-background/95 backdrop-blur-sm overflow-hidden">
         <DialogTitle className="sr-only">Image Preview</DialogTitle>
         <div className="relative flex items-center justify-center h-full">
-          <div className="overflow-auto max-h-[calc(90vh-120px)] w-full" onDoubleClick={handleDoubleClick}>
-            <img 
-              src={imageUrl} 
-              alt={prompt} 
-              style={{
-                transform: `scale(${zoomLevel})`
-              }} 
-              className="w-full h-auto transition-transform duration-200 object-contain mx-auto" 
-            />
+          <div className="overflow-auto max-h-[calc(90vh-120px)] w-full flex justify-center" onDoubleClick={handleDoubleClick}>
+            <div className={`transition-all duration-200 ${isGeneratedImage ? 'w-full max-w-4xl' : 'w-full'}`}>
+              <img 
+                src={imageUrl} 
+                alt={prompt} 
+                style={{
+                  transform: `scale(${zoomLevel})`
+                }} 
+                className="w-full h-auto transition-transform duration-200 object-contain mx-auto" 
+              />
+            </div>
           </div>
+          
           <div className="absolute top-2 right-2 flex space-x-2">
             <Button variant="secondary" size="icon" onClick={onZoomIn} className="bg-background/80 backdrop-blur-sm hover:bg-background/60">
               <ZoomIn className="h-4 w-4" />
