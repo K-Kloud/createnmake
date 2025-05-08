@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ImageControls } from "./image-preview/ImageControls";
 import { useImagePermissions } from "./image-preview/useImagePermissions";
@@ -5,6 +6,8 @@ import { useImageDeletion } from "./image-preview/useImageDeletion";
 import { X, ZoomIn, ZoomOut, Eye, EyeOff } from "lucide-react";
 import { Button } from "../ui/button";
 import { useState, useEffect } from "react";
+import { AspectRatio } from "../ui/aspect-ratio";
+
 interface ImagePreviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -61,9 +64,14 @@ export const ImagePreviewDialog = ({
         <DialogTitle className="sr-only">Image Preview</DialogTitle>
         <div className="relative flex items-center justify-center h-full">
           <div className="overflow-auto max-h-[calc(90vh-120px)] w-full" onDoubleClick={handleDoubleClick}>
-            <img src={imageUrl} alt={prompt} style={{
-            transform: `scale(${zoomLevel})`
-          }} className="w-full h-auto transition-transform duration-200 object-fill" />
+            <img 
+              src={imageUrl} 
+              alt={prompt} 
+              style={{
+                transform: `scale(${zoomLevel})`
+              }} 
+              className="w-full h-auto transition-transform duration-200 object-contain mx-auto" 
+            />
           </div>
           <div className="absolute top-2 right-2 flex space-x-2">
             <Button variant="secondary" size="icon" onClick={onZoomIn} className="bg-background/80 backdrop-blur-sm hover:bg-background/60">
