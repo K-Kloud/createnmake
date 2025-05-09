@@ -61,8 +61,8 @@ export const SignInForm = ({
           // Find the next factor ID from authenticator methods
           const authMethods = factors.data.currentAuthenticationMethods || [];
           if (authMethods.length > 0 && authMethods[0]) {
-            // Access the id property directly which exists on the AMREntry type
-            const factorId = authMethods[0].id;
+            // Use factorId property directly which exists on the authMethods array items
+            const factorId = authMethods[0].factorId;
             
             if (factorId) {
               setMfaFactorId(factorId);

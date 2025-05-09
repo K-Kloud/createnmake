@@ -10,6 +10,23 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+// Extended profile type to include is_creator
+interface Profile {
+  address: string;
+  avatar_url: string;
+  bio: string;
+  business_name: string;
+  business_type: string;
+  created_at: string;
+  id: string;
+  is_artisan: boolean;
+  is_creator: boolean; // Added this field
+  phone: string;
+  specialties: string[];
+  updated_at: string;
+  username: string;
+}
+
 const CreatorOnboardingPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -23,7 +40,7 @@ const CreatorOnboardingPage = () => {
     },
   });
 
-  const { data: profile, isLoading: isProfileLoading } = useQuery({
+  const { data: profile, isLoading: isProfileLoading } = useQuery<Profile | null>({
     queryKey: ['profile', session?.user?.id],
     queryFn: async () => {
       if (!session?.user?.id) return null;

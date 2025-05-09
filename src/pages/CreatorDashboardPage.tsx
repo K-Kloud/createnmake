@@ -8,6 +8,23 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
+// Extended profile type to include is_creator
+interface Profile {
+  address: string;
+  avatar_url: string;
+  bio: string;
+  business_name: string;
+  business_type: string;
+  created_at: string;
+  id: string;
+  is_artisan: boolean;
+  is_creator: boolean; // Added this field
+  phone: string;
+  specialties: string[];
+  updated_at: string;
+  username: string;
+}
+
 const CreatorDashboardPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -20,7 +37,7 @@ const CreatorDashboardPage = () => {
     },
   });
 
-  const { data: profile, isLoading } = useQuery({
+  const { data: profile, isLoading } = useQuery<Profile | null>({
     queryKey: ['profile', session?.user?.id],
     queryFn: async () => {
       if (!session?.user?.id) return null;

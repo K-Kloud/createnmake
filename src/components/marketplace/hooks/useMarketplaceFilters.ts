@@ -48,6 +48,7 @@ export const useMarketplaceFilters = (images: any[], session: Session | null) =>
           return parseFloat(a.price || '0') - parseFloat(b.price || '0');
         case "best-rated":
           // Derive a simple rating from likes for sorting
+          // Since we don't have an actual rating property, we use likes as a proxy
           const aLikes = (a.metrics?.like || 0);
           const bLikes = (b.metrics?.like || 0);
           return bLikes - aLikes; // Sort by likes as a proxy for rating

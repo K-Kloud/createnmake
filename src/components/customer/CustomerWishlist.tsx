@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { CardTitle, CardDescription, Card } from "@/components/ui/card";
 import { ImageCard } from "@/components/gallery/ImageCard";
+import { useToast } from "@/hooks/use-toast";
 
 interface CustomerWishlistProps {
   customerId: string;
@@ -12,6 +13,7 @@ interface CustomerWishlistProps {
 
 export const CustomerWishlist = ({ customerId }: CustomerWishlistProps) => {
   const [wishlistedItems, setWishlistedItems] = useState([]);
+  const { toast } = useToast();
   
   // This would normally fetch actual wishlisted items from the database
   const { data: images, isLoading } = useQuery({
@@ -22,6 +24,27 @@ export const CustomerWishlist = ({ customerId }: CustomerWishlistProps) => {
       return [];
     },
   });
+
+  // Define the required handler functions for ImageCard
+  const handleLike = (imageId: number) => {
+    // Implement like functionality
+    console.log(`Liked image ${imageId}`);
+  };
+
+  const handleView = (imageId: number) => {
+    // Implement view tracking
+    console.log(`Viewed image ${imageId}`);
+  };
+
+  const handleAddComment = (imageId: number, comment: string) => {
+    // Implement comment adding
+    console.log(`Added comment to image ${imageId}: ${comment}`);
+  };
+
+  const handleAddReply = (imageId: number, commentId: number, reply: string) => {
+    // Implement reply adding
+    console.log(`Added reply to comment ${commentId} on image ${imageId}: ${reply}`);
+  };
   
   if (isLoading) {
     return (
@@ -49,7 +72,14 @@ export const CustomerWishlist = ({ customerId }: CustomerWishlistProps) => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {images.map(image => (
-          <ImageCard key={image.id} image={image} />
+          <ImageCard 
+            key={image.id} 
+            image={image} 
+            onLike={handleLike}
+            onView={handleView}
+            onAddComment={handleAddComment}
+            onAddReply={handleAddReply}
+          />
         ))}
       </div>
     </div>
