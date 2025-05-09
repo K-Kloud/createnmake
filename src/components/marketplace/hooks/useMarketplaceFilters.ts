@@ -28,8 +28,8 @@ export const useMarketplaceFilters = (images: any[], session: Session | null) =>
     // Apply category filter
     if (selectedCategory !== "all") {
       filtered = filtered.filter(image => {
-        const promptCategory = image.prompt.split(":")[0]?.toLowerCase();
-        return promptCategory === selectedCategory;
+        const promptLower = image.prompt.toLowerCase();
+        return promptLower.includes(selectedCategory.toLowerCase());
       });
     }
 
@@ -39,9 +39,15 @@ export const useMarketplaceFilters = (images: any[], session: Session | null) =>
         case "oldest":
           return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         case "most-liked":
-          return (b.metrics.like || 0) - (a.metrics.like || 0);
+          return (b.metrics?.like || b.likes || 0) - (a.metrics?.like || a.likes || 0);
         case "most-viewed":
-          return (b.metrics.view || 0) - (a.metrics.view || 0);
+          return (b.metrics?.view || b.views || 0) - (a.metrics?.view || a.views || 0);
+        case "price-high":
+          return parseFloat(b.price || '0') - parseFloat(a.price || '0');
+        case "price-low":
+          return parseFloat(a.price || '0') - parseFloat(b.price || '0');
+        case "best-rated":
+          return ((b.metrics?.rating || 0) * 100) - ((a.metrics?.rating || 0) * 100);
         case "newest":
         default:
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();

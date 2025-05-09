@@ -1,12 +1,12 @@
-
 import { useState, useEffect } from "react";
 import { MarketplaceLoader } from "@/components/marketplace/MarketplaceLoader";
 import { MarketplaceGrid } from "@/components/marketplace/MarketplaceGrid";
 import { GalleryImage } from "@/types/gallery";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { ImagePreviewDialog } from "@/components/gallery/ImagePreviewDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { sendWelcomeNotification } from "@/services/notificationService";
+import { ProductDetail } from "@/components/marketplace/ProductDetail";
+import { Wishlist, WishlistItem } from "@/components/marketplace/Wishlist";
+import { useToast } from "@/hooks/use-toast";
 
 interface MarketplaceContentProps {
   isLoading: boolean;
@@ -29,10 +29,11 @@ export const MarketplaceContent = ({
   onLoadMore,
   hasMore
 }: MarketplaceContentProps) => {
+  const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [showPrompt, setShowPrompt] = useState(true);
+  const [isProductDetailOpen, setIsProductDetailOpen] = useState(false);
+  const [similarProducts, setSimilarProducts] = useState<GalleryImage[]>([]);
   
   // Check for new user session and send welcome notification
   useEffect(() => {
@@ -53,27 +54,58 @@ export const MarketplaceContent = ({
     checkAndSendWelcome();
   }, []);
 
+  const fetchSimilarProducts = (product: GalleryImage) => {
+    // Filter existing images to find similar items based on prompt keywords
+    // In a real app, this would be an API call to get recommended products
+    const keywords = product.prompt?.toLowerCase().split(' ') || [];
+    const similar = images
+      .filter(img => img.id !== product.id)
+      .filter(img => {
+        const imgKeywords = img.prompt?.toLowerCase().split(' ') || [];
+        return keywords.some(keyword => 
+          imgKeywords.includes(keyword) && keyword.length > 3
+        );
+      })
+      .slice(0, 4);
+    
+    setSimilarProducts(similar);
+  };
+
   if (isLoading) {
     return <MarketplaceLoader />;
   }
 
   const handleImageClick = (image: GalleryImage) => {
     setSelectedImage(image);
-    setIsPreviewOpen(true);
-    setZoomLevel(1);
+    
+    if (image.price) {
+      // If image has a price, open product detail
+      fetchSimilarProducts(image);
+      setIsProductDetailOpen(true);
+    } else {
+      // Otherwise open regular preview
+      setIsPreviewOpen(true);
+    }
+    
     onView(image.id);
   };
 
-  const handleZoomIn = () => {
-    setZoomLevel(prev => Math.min(prev + 0.25, 3));
-  };
-
-  const handleZoomOut = () => {
-    setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
+  const handleProductShare = (productId: number) => {
+    const productUrl = `${window.location.origin}/marketplace?product=${productId}`;
+    navigator.clipboard.writeText(productUrl);
+    
+    toast({
+      title: "Link Copied",
+      description: "Product link has been copied to your clipboard"
+    });
   };
 
   return (
     <>
+      <div className="flex justify-end mb-4">
+        <Wishlist onProductClick={handleImageClick} />
+      </div>
+      
       <MarketplaceGrid
         images={images}
         onLike={onLike}
@@ -86,19 +118,16 @@ export const MarketplaceContent = ({
       />
 
       {selectedImage && (
-        <ImagePreviewDialog
-          open={isPreviewOpen}
-          onOpenChange={setIsPreviewOpen}
-          imageUrl={selectedImage.url}
-          prompt={selectedImage.prompt}
-          zoomLevel={zoomLevel}
-          onZoomIn={handleZoomIn}
-          onZoomOut={handleZoomOut}
-          imageId={selectedImage.id}
-          userId={selectedImage.user_id}
-          showPrompt={showPrompt}
-          onLike={onLike}
-        />
+        <>
+          <ProductDetail 
+            isOpen={isProductDetailOpen}
+            onClose={() => setIsProductDetailOpen(false)}
+            product={selectedImage}
+            onLike={onLike}
+            onShare={handleProductShare}
+            similarProducts={similarProducts}
+          />
+        </>
       )}
     </>
   );
