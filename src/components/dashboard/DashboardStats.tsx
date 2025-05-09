@@ -23,25 +23,25 @@ export const DashboardStats = ({
       <StatsCard
         title="Designs"
         value={generatedImagesCount}
-        icon={<LayoutGrid size={16} />}
+        icon={LayoutGrid}
         onClick={() => navigate("/designs")}
       />
       <StatsCard
         title="Products"
         value={productsCount}
-        icon={<PackageOpen size={16} />}
+        icon={PackageOpen}
         onClick={() => navigate("/products")}
       />
       <StatsCard
         title="Orders"
         value={ordersCount}
-        icon={<ShoppingBag size={16} />}
+        icon={ShoppingBag}
         onClick={() => navigate("/orders")}
       />
       <StatsCard
         title="Likes"
         value={likesCount}
-        icon={<Heart size={16} />}
+        icon={Heart}
       />
     </div>
   );

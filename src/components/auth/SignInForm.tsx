@@ -60,12 +60,14 @@ export const SignInForm = ({
         if (factors.data.nextLevel === 'aal2' && factors.data.currentLevel === 'aal1') {
           // Find the next factor ID from authenticator methods
           const authMethods = factors.data.currentAuthenticationMethods || [];
-          const factorId = authMethods[0]?.id;
-          
-          if (factorId) {
-            setMfaFactorId(factorId);
-            setNeedsMFA(true);
-            return;
+          if (authMethods.length > 0 && authMethods[0]) {
+            const factorId = authMethods[0].factorId;
+            
+            if (factorId) {
+              setMfaFactorId(factorId);
+              setNeedsMFA(true);
+              return;
+            }
           }
         }
       }
