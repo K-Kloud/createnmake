@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,8 +61,8 @@ export const SignInForm = ({
           // Find the next factor ID from authenticator methods
           const authMethods = factors.data.currentAuthenticationMethods || [];
           if (authMethods.length > 0 && authMethods[0]) {
-            // Get the factorId from the auth method - using factorId property which is correct for the AMREntry type
-            const factorId = authMethods[0].factorId;
+            // Access the id property directly which exists on the AMREntry type
+            const factorId = authMethods[0].id;
             
             if (factorId) {
               setMfaFactorId(factorId);

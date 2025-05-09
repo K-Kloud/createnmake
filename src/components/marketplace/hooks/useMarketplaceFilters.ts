@@ -47,10 +47,10 @@ export const useMarketplaceFilters = (images: any[], session: Session | null) =>
         case "price-low":
           return parseFloat(a.price || '0') - parseFloat(b.price || '0');
         case "best-rated":
-          // Using a default value of 0 for rating since the metrics object doesn't have a rating property
-          const aRating = (a.metrics?.like || 0) / 20; // Derive a simple rating from likes
-          const bRating = (b.metrics?.like || 0) / 20; // Derive a simple rating from likes
-          return bRating - aRating; // Sort from highest to lowest rating
+          // Derive a simple rating from likes for sorting
+          const aLikes = (a.metrics?.like || 0);
+          const bLikes = (b.metrics?.like || 0);
+          return bLikes - aLikes; // Sort by likes as a proxy for rating
         case "newest":
         default:
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
