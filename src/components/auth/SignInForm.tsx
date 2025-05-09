@@ -57,10 +57,16 @@ export const SignInForm = ({
         // This means MFA is required
         const factors = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
         
-        if (factors.data.nextLevel === 'aal2' && factors.data.currentLevel === 'aal1' && factors.data.nextFactor) {
-          setMfaFactorId(factors.data.nextFactor.id);
-          setNeedsMFA(true);
-          return;
+        if (factors.data.nextLevel === 'aal2' && factors.data.currentLevel === 'aal1') {
+          // Find the next factor ID from authenticator methods
+          const authMethods = factors.data.currentAuthenticationMethods || [];
+          const factorId = authMethods[0]?.id;
+          
+          if (factorId) {
+            setMfaFactorId(factorId);
+            setNeedsMFA(true);
+            return;
+          }
         }
       }
       
