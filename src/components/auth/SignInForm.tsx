@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { cleanupAuthState } from "@/utils/auth";
+import { MFAVerify } from "./MFAVerify";
 
 interface SignInFormProps {
   email: string;
@@ -28,6 +29,8 @@ export const SignInForm = ({
 }: SignInFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [needsMFA, setNeedsMFA] = useState(false);
+  const [mfaFactorId, setMfaFactorId] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,12 +45,24 @@ export const SignInForm = ({
         // Continue even if this fails
       }
 
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
       if (error) throw error;
+
+      // Check if MFA is required
+      if (data?.session === null && data?.user === null) {
+        // This means MFA is required
+        const factors = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+        
+        if (factors.data.nextLevel === 'aal2' && factors.data.currentLevel === 'aal1' && factors.data.nextFactor) {
+          setMfaFactorId(factors.data.nextFactor.id);
+          setNeedsMFA(true);
+          return;
+        }
+      }
       
       toast({
         title: "Welcome back!",
@@ -64,6 +79,26 @@ export const SignInForm = ({
       });
     }
   };
+
+  const handleMFAComplete = () => {
+    toast({
+      title: "Welcome back!",
+      description: "You have successfully signed in.",
+    });
+    
+    // Force page reload
+    window.location.href = '/dashboard';
+  };
+
+  if (needsMFA) {
+    return (
+      <MFAVerify 
+        factorId={mfaFactorId} 
+        onComplete={handleMFAComplete}
+        onCancel={() => setNeedsMFA(false)}
+      />
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

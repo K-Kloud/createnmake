@@ -1,22 +1,26 @@
+
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Settings, Image, History, Upload } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import { useEffect, useState } from "react";
+import { Settings, MoveUpRight, LayoutGrid } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DesignsPanel } from "@/components/dashboard/DesignsPanel";
+import { ProductsPanel } from "@/components/dashboard/ProductsPanel";
+import { OrdersPanel } from "@/components/dashboard/OrdersPanel";
+import { EarningsPanel } from "@/components/dashboard/EarningsPanel";
 import { StatsCard } from "@/components/dashboard/StatsCard";
-import { UserImages } from "@/components/dashboard/UserImages";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [showImages, setShowImages] = useState(false);
 
   const { data: session } = useQuery({
     queryKey: ['session'],
@@ -63,6 +67,48 @@ const Dashboard = () => {
         .from('image_likes')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', session.user.id);
+      return count || 0;
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  // Query for orders count
+  const { data: ordersCount = 0 } = useQuery({
+    queryKey: ['ordersCount', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return 0;
+      
+      // Count all quote requests and artisan quotes
+      const [artisanResult, quoteResult] = await Promise.all([
+        supabase
+          .from('artisan_quotes')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', session.user.id),
+          
+        supabase
+          .from('quote_requests')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', session.user.id)
+      ]);
+      
+      const artisanCount = artisanResult.count || 0;
+      const quoteCount = quoteResult.count || 0;
+      
+      return artisanCount + quoteCount;
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  // Query for product count (images with prices)
+  const { data: productsCount = 0 } = useQuery({
+    queryKey: ['productsCount', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return 0;
+      const { count } = await supabase
+        .from('generated_images')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', session.user.id)
+        .not('price', 'is', null);
       return count || 0;
     },
     enabled: !!session?.user?.id,
@@ -131,80 +177,140 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <div className="container px-4 py-24 flex-grow">
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* User Profile Section */}
-          <Card className="flex-1 glass-card">
-            <CardHeader>
-              <CardTitle>Profile</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col items-center gap-4">
-                <div className="relative">
-                  <Avatar className="h-24 w-24">
-                    <AvatarImage src={profile.avatar_url} alt={profile.username} />
-                    <AvatarFallback>{profile.username?.[0]?.toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <label
-                    htmlFor="avatar-upload"
-                    className="absolute bottom-0 right-0 p-1 bg-primary rounded-full cursor-pointer hover:bg-primary/90 transition-colors"
-                  >
-                    <Upload className="h-4 w-4 text-white" />
-                  </label>
-                  <input
-                    type="file"
-                    id="avatar-upload"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                  />
-                </div>
-                <h2 className="text-2xl font-bold">{profile.username}</h2>
-                <p className="text-gray-400">{session.user.email}</p>
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => navigate("/settings")}
-                >
-                  <Settings className="mr-2 h-4 w-4" />
-                  Edit Profile
-                </Button>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Sidebar */}
+          <div className="lg:col-span-3">
+            <div className="space-y-6">
+              {/* Profile Card */}
+              <Card className="glass-card">
+                <CardContent className="p-6">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="relative">
+                      <Avatar className="h-24 w-24">
+                        <AvatarImage src={profile.avatar_url} alt={profile.username} />
+                        <AvatarFallback>{profile.username?.[0]?.toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                      <label
+                        htmlFor="avatar-upload"
+                        className="absolute bottom-0 right-0 p-1 bg-primary rounded-full cursor-pointer hover:bg-primary/90 transition-colors"
+                      >
+                        <Settings className="h-4 w-4 text-white" />
+                      </label>
+                      <input
+                        type="file"
+                        id="avatar-upload"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleAvatarUpload}
+                      />
+                    </div>
+                    <div className="text-center">
+                      <h2 className="text-xl font-bold">{profile.username}</h2>
+                      <p className="text-sm text-muted-foreground">{session.user.email}</p>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => navigate("/settings")}
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      Account Settings
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Stats Overview */}
+              <div className="grid grid-cols-2 gap-4">
+                <StatsCard
+                  title="Designs"
+                  value={generatedImagesCount}
+                  icon={<LayoutGrid className="h-4 w-4" />}
+                  onClick={() => navigate("/designs")}
+                />
+                <StatsCard
+                  title="Products"
+                  value={productsCount}
+                  icon={<PackageOpen className="h-4 w-4" />}
+                  onClick={() => navigate("/products")}
+                />
+                <StatsCard
+                  title="Orders"
+                  value={ordersCount}
+                  icon={<ShoppingBag className="h-4 w-4" />}
+                  onClick={() => navigate("/orders")}
+                />
+                <StatsCard
+                  title="Likes"
+                  value={likesCount}
+                  icon={<Heart className="h-4 w-4" />}
+                />
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Stats Section */}
-          <div className="flex-[2] grid grid-cols-1 md:grid-cols-2 gap-4">
-            <StatsCard
-              title="Images Generated"
-              value={generatedImagesCount}
-              onClick={() => setShowImages(!showImages)}
-            />
-            <StatsCard
-              title="Images Liked"
-              value={likesCount}
-            />
+              {/* Quick Actions */}
+              <Card className="glass-card">
+                <CardHeader>
+                  <CardTitle className="text-lg">Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <Button 
+                      variant="default" 
+                      className="w-full justify-between"
+                      onClick={() => navigate("/create")}
+                    >
+                      Create New Design
+                      <MoveUpRight className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-between"
+                      onClick={() => navigate("/marketplace")}
+                    >
+                      Browse Marketplace
+                      <MoveUpRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
 
-            {showImages && session.user && (
-              <UserImages userId={session.user.id} />
-            )}
+          {/* Main Content */}
+          <div className="lg:col-span-9">
+            <Tabs defaultValue="dashboard" className="space-y-6">
+              <TabsList className="bg-background/50 backdrop-blur-sm">
+                <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+                <TabsTrigger value="designs">Designs</TabsTrigger>
+                <TabsTrigger value="products">Products</TabsTrigger>
+                <TabsTrigger value="orders">Orders</TabsTrigger>
+                <TabsTrigger value="earnings">Earnings</TabsTrigger>
+              </TabsList>
 
-            <Card className="glass-card col-span-full">
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  <Button onClick={() => navigate("/create")}>
-                    <Image className="mr-2 h-4 w-4" />
-                    Create New Image
-                  </Button>
-                  <Button variant="outline" onClick={() => navigate("/marketplace")}>
-                    <History className="mr-2 h-4 w-4" />
-                    View Gallery
-                  </Button>
+              <TabsContent value="dashboard" className="space-y-6">
+                <DesignsPanel />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <OrdersPanel />
+                  <EarningsPanel />
                 </div>
-              </CardContent>
-            </Card>
+              </TabsContent>
+
+              <TabsContent value="designs">
+                <DesignsPanel />
+              </TabsContent>
+
+              <TabsContent value="products">
+                <ProductsPanel />
+              </TabsContent>
+
+              <TabsContent value="orders">
+                <OrdersPanel />
+              </TabsContent>
+
+              <TabsContent value="earnings">
+                <EarningsPanel />
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </div>
