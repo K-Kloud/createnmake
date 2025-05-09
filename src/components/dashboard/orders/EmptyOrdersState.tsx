@@ -1,0 +1,18 @@
+
+import { Button } from "@/components/ui/button";
+import { ShoppingBag } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+export const EmptyOrdersState = () => {
+  const navigate = useNavigate();
+  
+  return (
+    <div className="flex flex-col items-center justify-center h-[200px] border border-dashed rounded-lg bg-card/30">
+      <ShoppingBag className="h-10 w-10 text-muted-foreground mb-2" />
+      <p className="text-muted-foreground">No orders yet</p>
+      <Button onClick={() => navigate("/marketplace")} variant="link" className="mt-2">
+        Explore marketplace
+      </Button>
+    </div>
+  );
+};
