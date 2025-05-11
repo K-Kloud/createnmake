@@ -22,6 +22,7 @@ interface ImagePreviewDialogProps {
   isGeneratedImage?: boolean; // New prop to identify generated images
   onLike?: (imageId: number) => void; // Add onLike prop
 }
+
 export const ImagePreviewDialog = ({
   open,
   onOpenChange,
@@ -45,13 +46,9 @@ export const ImagePreviewDialog = ({
   useEffect(() => {
     setIsPromptVisible(isGeneratedImage ? false : showPrompt);
   }, [showPrompt, isGeneratedImage]);
-  const {
-    canDelete
-  } = useImagePermissions(userId);
-  const {
-    isDeleting,
-    handleDelete
-  } = useImageDeletion(() => onOpenChange(false));
+  
+  const { canDelete } = useImagePermissions(userId);
+  const { isDeleting, handleDelete } = useImageDeletion(() => onOpenChange(false));
 
   // Handle double-click to like the image
   const handleDoubleClick = () => {
@@ -62,19 +59,25 @@ export const ImagePreviewDialog = ({
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[90vw] max-h-[90vh] p-1 sm:p-6 bg-background/95 backdrop-blur-sm overflow-hidden">
+      <DialogContent className="max-w-[95vw] max-h-[95vh] p-1 sm:p-6 bg-background/95 backdrop-blur-sm flex flex-col">
         <DialogTitle className="sr-only">Image Preview</DialogTitle>
-        <div className="relative flex items-center justify-center h-full">
-          <div className="w-full flex justify-center items-center" onDoubleClick={handleDoubleClick}>
-            <div className={`transition-all duration-300 ${isGeneratedImage ? 'w-full max-w-4xl' : 'w-full'}`}>
-              <img 
-                src={imageUrl} 
-                alt={prompt} 
-                style={{
-                  transform: `scale(${zoomLevel})`
-                }} 
-                className="w-full object-contain mx-auto transition-all duration-300 max-h-[70vh] hover:shadow-[0_0_30px_rgba(0,255,157,0.25)]" 
-              />
+        
+        <div className="relative flex-1 flex items-center justify-center w-full h-full min-h-[50vh]">
+          <div 
+            className="w-full h-full flex justify-center items-center" 
+            onDoubleClick={handleDoubleClick}
+          >
+            <div className={`w-full h-full flex items-center justify-center ${isGeneratedImage ? 'max-w-5xl' : 'w-full'}`}>
+              <div className="relative w-full h-full flex items-center justify-center">
+                <img 
+                  src={imageUrl} 
+                  alt={prompt} 
+                  style={{
+                    transform: `scale(${zoomLevel})`
+                  }} 
+                  className="max-w-full max-h-[80vh] object-contain transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,157,0.25)]" 
+                />
+              </div>
             </div>
           </div>
           
