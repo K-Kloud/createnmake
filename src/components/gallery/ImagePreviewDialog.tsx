@@ -60,19 +60,20 @@ export const ImagePreviewDialog = ({
     }
   };
   
-  return <Dialog open={open} onOpenChange={onOpenChange}>
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[90vw] max-h-[90vh] p-1 sm:p-6 bg-background/95 backdrop-blur-sm overflow-hidden">
         <DialogTitle className="sr-only">Image Preview</DialogTitle>
         <div className="relative flex items-center justify-center h-full">
-          <div className="overflow-auto max-h-[calc(90vh-120px)] w-full flex justify-center" onDoubleClick={handleDoubleClick}>
-            <div className={`transition-all duration-200 ${isGeneratedImage ? 'w-full max-w-4xl' : 'w-full'}`}>
+          <div className="w-full flex justify-center items-center" onDoubleClick={handleDoubleClick}>
+            <div className={`transition-all duration-300 ${isGeneratedImage ? 'w-full max-w-4xl' : 'w-full'}`}>
               <img 
                 src={imageUrl} 
                 alt={prompt} 
                 style={{
                   transform: `scale(${zoomLevel})`
                 }} 
-                className="w-full h-auto transition-transform duration-200 object-contain mx-auto" 
+                className="w-full object-contain mx-auto transition-all duration-300 max-h-[70vh] hover:shadow-[0_0_30px_rgba(0,255,157,0.25)]" 
               />
             </div>
           </div>
@@ -96,12 +97,15 @@ export const ImagePreviewDialog = ({
             </Button>
           </div>
           
-          {isPromptVisible && <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+          {isPromptVisible && (
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
               <p className="text-white text-sm md:text-base">{prompt}</p>
-            </div>}
+            </div>
+          )}
           
           <ImageControls zoomLevel={zoomLevel} onZoomIn={onZoomIn} onZoomOut={onZoomOut} onDelete={() => handleDelete(imageId, userId, canDelete)} canDelete={canDelete} isDeleting={isDeleting} />
         </div>
       </DialogContent>
-    </Dialog>;
+    </Dialog>
+  );
 };
