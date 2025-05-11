@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -97,7 +98,7 @@ export const ImageCard = ({
             <img
               src={image.url}
               alt={image.prompt}
-              className="w-full h-64 object-cover transition-all duration-300 group-hover:brightness-110"
+              className="w-full h-64 object-contain transition-all duration-300 group-hover:brightness-110"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
               <span className="text-white text-sm font-medium bg-black/50 px-3 py-1.5 rounded-full flex items-center gap-2 transform transition-transform duration-300 group-hover:scale-110 shadow-lg">
