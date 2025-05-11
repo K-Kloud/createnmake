@@ -1,3 +1,4 @@
+
 import { useImageGeneration } from "./generator/useImageGeneration";
 import { GenerationForm } from "./generator/GenerationForm";
 import { PreviewDialog } from "./generator/PreviewDialog";
@@ -23,6 +24,12 @@ export const ImageGenerator = () => {
     handleGenerate
   } = useImageGeneration();
 
+  // Add function to handle liking images if needed
+  const handleLikeImage = (imageId: number) => {
+    console.log("Image liked:", imageId);
+    // Implement like functionality if needed
+  };
+
   return (
     <div className="space-y-8 animate-float">
       <div className="glass-card p-6 rounded-xl space-y-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(110,89,165,0.5)] hover:border-primary/50">
@@ -46,6 +53,7 @@ export const ImageGenerator = () => {
           isGenerating={isGenerating}
           selectedRatio={selectedRatio}
           generatedImageUrl={generatedImageUrl}
+          onLike={handleLikeImage}
         />
       </div>
 
