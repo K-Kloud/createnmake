@@ -61,10 +61,10 @@ export const SignInForm = ({
           // Find the next factor ID from authenticator methods
           const authMethods = factors.data.currentAuthenticationMethods || [];
           if (authMethods.length > 0 && authMethods[0]) {
-            // Access the factorId property 
-            // Note: In Supabase's AMREntry type, the authentication method id is accessed differently
-            // We need to access it as a generic property with type assertion
-            const factorId = (authMethods[0] as any).id;
+            // Access the id property from the authentication method
+            // We need to use a type assertion since the AMREntry type 
+            // doesn't explicitly define an id property
+            const factorId = (authMethods[0] as any).factorId || (authMethods[0] as any).id;
             
             if (factorId) {
               setMfaFactorId(factorId);
