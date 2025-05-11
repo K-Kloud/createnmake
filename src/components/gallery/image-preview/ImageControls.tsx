@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { ZoomIn, ZoomOut, Trash2 } from "lucide-react";
 
@@ -24,17 +25,21 @@ export const ImageControls = ({
         variant="secondary"
         size="sm"
         onClick={onZoomOut}
-        disabled={zoomLevel <= 1}
+        disabled={zoomLevel <= 0.5}
+        className="bg-background/80 backdrop-blur-sm hover:bg-background/60"
       >
         <ZoomOut className="h-4 w-4" />
+        <span className="sr-only">Zoom Out</span>
       </Button>
       <Button
         variant="secondary"
         size="sm"
         onClick={onZoomIn}
         disabled={zoomLevel >= 3}
+        className="bg-background/80 backdrop-blur-sm hover:bg-background/60"
       >
         <ZoomIn className="h-4 w-4" />
+        <span className="sr-only">Zoom In</span>
       </Button>
       {canDelete && (
         <Button
@@ -42,8 +47,10 @@ export const ImageControls = ({
           size="sm"
           onClick={onDelete}
           disabled={isDeleting}
+          className="bg-background/80 backdrop-blur-sm hover:bg-background/60"
         >
           <Trash2 className="h-4 w-4" />
+          <span className="sr-only">Delete</span>
         </Button>
       )}
     </div>

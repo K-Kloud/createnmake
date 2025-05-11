@@ -6,7 +6,6 @@ import { useImageDeletion } from "./image-preview/useImageDeletion";
 import { X, ZoomIn, ZoomOut, Eye, EyeOff } from "lucide-react";
 import { Button } from "../ui/button";
 import { useState, useEffect } from "react";
-import { AspectRatio } from "../ui/aspect-ratio";
 
 interface ImagePreviewDialogProps {
   open: boolean;
@@ -106,7 +105,14 @@ export const ImagePreviewDialog = ({
             </div>
           )}
           
-          <ImageControls zoomLevel={zoomLevel} onZoomIn={onZoomIn} onZoomOut={onZoomOut} onDelete={() => handleDelete(imageId, userId, canDelete)} canDelete={canDelete} isDeleting={isDeleting} />
+          <ImageControls 
+            zoomLevel={zoomLevel} 
+            onZoomIn={onZoomIn} 
+            onZoomOut={onZoomOut} 
+            onDelete={() => handleDelete(imageId, userId, canDelete)} 
+            canDelete={canDelete} 
+            isDeleting={isDeleting} 
+          />
         </div>
       </DialogContent>
     </Dialog>
