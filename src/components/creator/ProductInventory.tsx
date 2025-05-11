@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -68,24 +67,25 @@ export const ProductInventory = ({ creatorId }: ProductInventoryProps) => {
 
   const handlePriceChange = (productId: number, newPrice: string) => {
     // Update price in database using proper promise handling
-    supabase
-      .from('generated_images')
-      .update({ price: newPrice })
-      .eq('id', productId)
-      .then(() => {
-        toast({
-          title: "Price Updated",
-          description: "Product price has been updated successfully.",
-        });
-        refetch();
-      })
-      .catch((error: any) => {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
+    // Convert PromiseLike to Promise with then/catch pattern
+    Promise.resolve(
+      supabase
+        .from('generated_images')
+        .update({ price: newPrice })
+        .eq('id', productId)
+    ).then(() => {
+      toast({
+        title: "Price Updated",
+        description: "Product price has been updated successfully.",
       });
+      refetch();
+    }).catch((error: any) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    });
   };
 
   return (

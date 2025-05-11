@@ -61,8 +61,8 @@ export const SignInForm = ({
           // Find the next factor ID from authenticator methods
           const authMethods = factors.data.currentAuthenticationMethods || [];
           if (authMethods.length > 0 && authMethods[0]) {
-            // Use id property which exists on the authMethods array items instead of factorId
-            const factorId = authMethods[0].id;
+            // The factorId property is what we need, not id
+            const factorId = authMethods[0].factorId;
             
             if (factorId) {
               setMfaFactorId(factorId);
