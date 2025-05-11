@@ -9,23 +9,7 @@ import { CreatorOnboarding } from "@/components/creator/CreatorOnboarding";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
-// Extended profile type to include is_creator
-interface Profile {
-  address: string;
-  avatar_url: string;
-  bio: string;
-  business_name: string;
-  business_type: string;
-  created_at: string;
-  id: string;
-  is_artisan: boolean;
-  is_creator: boolean; // Added this field
-  phone: string;
-  specialties: string[];
-  updated_at: string;
-  username: string;
-}
+import { Profile } from "@/types/auth";
 
 const CreatorOnboardingPage = () => {
   const navigate = useNavigate();
@@ -49,7 +33,7 @@ const CreatorOnboardingPage = () => {
         .select('*')
         .eq('id', session.user.id)
         .single();
-      return data;
+      return data as Profile | null;
     },
     enabled: !!session?.user?.id,
   });

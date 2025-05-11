@@ -7,23 +7,7 @@ import { CreatorDashboard } from "@/components/creator/CreatorDashboard";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-
-// Extended profile type to include is_creator
-interface Profile {
-  address: string;
-  avatar_url: string;
-  bio: string;
-  business_name: string;
-  business_type: string;
-  created_at: string;
-  id: string;
-  is_artisan: boolean;
-  is_creator: boolean; // Added this field
-  phone: string;
-  specialties: string[];
-  updated_at: string;
-  username: string;
-}
+import { Profile } from "@/types/auth";
 
 const CreatorDashboardPage = () => {
   const { toast } = useToast();
@@ -46,7 +30,7 @@ const CreatorDashboardPage = () => {
         .select('*')
         .eq('id', session.user.id)
         .single();
-      return data;
+      return data as Profile | null;
     },
     enabled: !!session?.user?.id,
   });

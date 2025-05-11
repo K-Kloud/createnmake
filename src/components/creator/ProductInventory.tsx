@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -66,7 +67,7 @@ export const ProductInventory = ({ creatorId }: ProductInventoryProps) => {
   };
 
   const handlePriceChange = (productId: number, newPrice: string) => {
-    // Update price in database
+    // Update price in database using proper promise handling
     supabase
       .from('generated_images')
       .update({ price: newPrice })
