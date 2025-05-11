@@ -33,13 +33,12 @@ export const ImagePreviewDialog = ({
   imageId,
   userId,
   showPrompt = true,
-  // Default to true for backward compatibility
   isGeneratedImage = false,
-  // Default to false
   onLike
 }: ImagePreviewDialogProps) => {
   // Initialize with showPrompt prop but hide by default for generated images
   const [isPromptVisible, setIsPromptVisible] = useState(isGeneratedImage ? false : showPrompt);
+  const [currentZoom, setCurrentZoom] = useState(zoomLevel);
 
   // Update visibility when showPrompt prop changes
   useEffect(() => {
@@ -54,6 +53,18 @@ export const ImagePreviewDialog = ({
     if (onLike && imageId) {
       onLike(imageId);
     }
+  };
+
+  // Handle zoom in with updated zoom level tracking
+  const handleZoomInWithTracking = () => {
+    const newZoom = onZoomIn();
+    setCurrentZoom(newZoom || Math.min(currentZoom + 0.5, 5));
+  };
+
+  // Handle zoom out with updated zoom level tracking
+  const handleZoomOutWithTracking = () => {
+    const newZoom = onZoomOut();
+    setCurrentZoom(newZoom || Math.max(currentZoom - 0.5, 1));
   };
   
   return (
@@ -72,20 +83,23 @@ export const ImagePreviewDialog = ({
                   src={imageUrl} 
                   alt={prompt} 
                   style={{
-                    transform: `scale(${zoomLevel})`
+                    transform: `scale(${currentZoom})`
                   }} 
                   className="max-w-full max-h-[80vh] object-contain transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,157,0.25)]" 
                 />
+                <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 bg-background/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm">
+                  {currentZoom.toFixed(1)}x zoom
+                </div>
               </div>
             </div>
           </div>
           
           <div className="absolute top-2 right-2 flex space-x-2">
-            <Button variant="secondary" size="icon" onClick={onZoomIn} className="bg-background/80 backdrop-blur-sm hover:bg-background/60">
+            <Button variant="secondary" size="icon" onClick={handleZoomInWithTracking} className="bg-background/80 backdrop-blur-sm hover:bg-background/60">
               <ZoomIn className="h-4 w-4" />
               <span className="sr-only">Zoom In</span>
             </Button>
-            <Button variant="secondary" size="icon" onClick={onZoomOut} className="bg-background/80 backdrop-blur-sm hover:bg-background/60">
+            <Button variant="secondary" size="icon" onClick={handleZoomOutWithTracking} className="bg-background/80 backdrop-blur-sm hover:bg-background/60">
               <ZoomOut className="h-4 w-4" />
               <span className="sr-only">Zoom Out</span>
             </Button>
@@ -106,9 +120,9 @@ export const ImagePreviewDialog = ({
           )}
           
           <ImageControls 
-            zoomLevel={zoomLevel} 
-            onZoomIn={onZoomIn} 
-            onZoomOut={onZoomOut} 
+            zoomLevel={currentZoom} 
+            onZoomIn={handleZoomInWithTracking} 
+            onZoomOut={handleZoomOutWithTracking} 
             onDelete={() => handleDelete(imageId, userId, canDelete)} 
             canDelete={canDelete} 
             isDeleting={isDeleting} 

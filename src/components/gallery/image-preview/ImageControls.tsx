@@ -25,7 +25,7 @@ export const ImageControls = ({
         variant="secondary"
         size="sm"
         onClick={onZoomOut}
-        disabled={zoomLevel <= 0.5}
+        disabled={zoomLevel <= 1}
         className="bg-background/80 backdrop-blur-sm hover:bg-background/60"
       >
         <ZoomOut className="h-4 w-4" />
@@ -35,7 +35,7 @@ export const ImageControls = ({
         variant="secondary"
         size="sm"
         onClick={onZoomIn}
-        disabled={zoomLevel >= 3}
+        disabled={zoomLevel >= 5}
         className="bg-background/80 backdrop-blur-sm hover:bg-background/60"
       >
         <ZoomIn className="h-4 w-4" />

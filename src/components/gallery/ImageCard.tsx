@@ -59,6 +59,7 @@ export const ImageCard = ({
   const [selectionDialogOpen, setSelectionDialogOpen] = useState(false);
   const [showPrompt, setShowPrompt] = useState(true);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomFactor, setZoomFactor] = useState(1);
   
   const { 
     currentPrice, 
@@ -90,7 +91,32 @@ export const ImageCard = ({
   // Handle hover zoom effect
   const toggleZoom = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent triggering the click handler for opening the preview
-    setIsZoomed(!isZoomed);
+    if (isZoomed) {
+      setZoomFactor(1);
+      setIsZoomed(false);
+    } else {
+      setZoomFactor(2); // Initial zoom level on click
+      setIsZoomed(true);
+    }
+  };
+
+  // Increase zoom level
+  const increaseZoom = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isZoomed) {
+      setZoomFactor(prev => Math.min(prev + 0.5, 5));
+    }
+  };
+
+  // Decrease zoom level
+  const decreaseZoom = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isZoomed) {
+      setZoomFactor(prev => Math.max(prev - 0.5, 1));
+      if (zoomFactor <= 1) {
+        setIsZoomed(false);
+      }
+    }
   };
 
   return (
@@ -105,20 +131,46 @@ export const ImageCard = ({
             <img
               src={image.url}
               alt={image.prompt}
-              className={`w-full h-64 object-contain transition-all duration-300 ${isZoomed ? 'scale-110 brightness-110' : 'group-hover:brightness-110'}`}
+              className={`w-full h-64 object-contain transition-all duration-300 ${isZoomed ? 'scale-['+zoomFactor+'] brightness-110' : 'group-hover:brightness-110'}`}
+              style={{
+                transform: isZoomed ? `scale(${zoomFactor})` : 'none',
+                transformOrigin: 'center'
+              }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={toggleZoom}
-                className="text-white text-sm font-medium bg-black/50 px-3 py-1.5 rounded-full flex items-center gap-2 transform transition-transform duration-300 hover:scale-110 shadow-lg"
-              >
-                <Maximize size={18} />
-                {isZoomed ? "Reset view" : "Zoom image"}
-              </Button>
+              {isZoomed ? (
+                <div className="flex space-x-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={decreaseZoom}
+                    className="text-white text-sm font-medium bg-black/50 px-3 py-1.5 rounded-full flex items-center gap-2 transform transition-transform duration-300 hover:scale-110 shadow-lg"
+                  >
+                    Zoom Out
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={increaseZoom}
+                    className="text-white text-sm font-medium bg-black/50 px-3 py-1.5 rounded-full flex items-center gap-2 transform transition-transform duration-300 hover:scale-110 shadow-lg"
+                  >
+                    Zoom In ({zoomFactor}x)
+                  </Button>
+                </div>
+              ) : (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={toggleZoom}
+                  className="text-white text-sm font-medium bg-black/50 px-3 py-1.5 rounded-full flex items-center gap-2 transform transition-transform duration-300 hover:scale-110 shadow-lg"
+                >
+                  <Maximize size={18} />
+                  Zoom Image
+                </Button>
+              )}
             </div>
           </div>
+          
           <div className="p-4 space-y-3">
             <ImageHeader 
               creator={image.creator} 
