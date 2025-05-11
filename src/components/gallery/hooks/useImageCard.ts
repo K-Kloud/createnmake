@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -30,12 +31,12 @@ export const useImageCard = (image, onView) => {
 
   const handleZoomIn = () => {
     setZoomLevel(prev => Math.min(prev + 0.5, 5));
-    return zoomLevel;
+    // No return value needed
   };
 
   const handleZoomOut = () => {
     setZoomLevel(prev => Math.max(prev - 0.5, 1));
-    return zoomLevel;
+    // No return value needed
   };
 
   const handleMakeSelection = (type: 'artisan' | 'manufacturer') => {

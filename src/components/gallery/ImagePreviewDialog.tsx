@@ -55,16 +55,16 @@ export const ImagePreviewDialog = ({
     }
   };
 
-  // Handle zoom in with updated zoom level tracking
+  // Handle zoom in with updated zoom level tracking - fixed to avoid testing void for truthiness
   const handleZoomInWithTracking = () => {
-    const newZoom = onZoomIn();
-    setCurrentZoom(newZoom || Math.min(currentZoom + 0.5, 5));
+    onZoomIn();
+    setCurrentZoom(Math.min(currentZoom + 0.5, 5));
   };
 
-  // Handle zoom out with updated zoom level tracking
+  // Handle zoom out with updated zoom level tracking - fixed to avoid testing void for truthiness
   const handleZoomOutWithTracking = () => {
-    const newZoom = onZoomOut();
-    setCurrentZoom(newZoom || Math.max(currentZoom - 0.5, 1));
+    onZoomOut();
+    setCurrentZoom(Math.max(currentZoom - 0.5, 1));
   };
   
   return (
