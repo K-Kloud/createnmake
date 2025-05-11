@@ -21,16 +21,18 @@ const CreatorDashboardPage = () => {
     },
   });
 
-  const { data: profile, isLoading } = useQuery<Profile | null>({
+  const { data: profile, isLoading } = useQuery<Profile>({
     queryKey: ['profile', session?.user?.id],
     queryFn: async () => {
-      if (!session?.user?.id) return null;
+      if (!session?.user?.id) return null as unknown as Profile;
+      
       const { data } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', session.user.id)
         .single();
-      return data as Profile | null;
+        
+      return data as Profile;
     },
     enabled: !!session?.user?.id,
   });

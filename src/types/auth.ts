@@ -14,11 +14,11 @@ export interface Profile {
   created_at: string | null
   updated_at: string | null
   is_creator: boolean | null
+  is_artisan: boolean | null
   address: string | null
   bio: string | null
   business_name: string | null
   business_type: string | null
-  is_artisan: boolean | null
   phone: string | null
   specialties: string[] | null
 }
