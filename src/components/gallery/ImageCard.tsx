@@ -11,7 +11,7 @@ import { MakerSelectionDialog } from "./MakerSelectionDialog";
 import { generateRandomPrice } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useImageCard } from "./hooks/useImageCard";
-import { Eye, EyeOff, MaximizeIcon } from "lucide-react";
+import { Eye, EyeOff, Maximize } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ImageCardProps {
@@ -58,6 +58,7 @@ export const ImageCard = ({
   const [imageOpen, setImageOpen] = useState(false);
   const [selectionDialogOpen, setSelectionDialogOpen] = useState(false);
   const [showPrompt, setShowPrompt] = useState(true);
+  const [isZoomed, setIsZoomed] = useState(false);
   
   const { 
     currentPrice, 
@@ -86,6 +87,12 @@ export const ImageCard = ({
     onLike(image.id);
   };
 
+  // Handle hover zoom effect
+  const toggleZoom = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the click handler for opening the preview
+    setIsZoomed(!isZoomed);
+  };
+
   return (
     <>
       <Card className="overflow-hidden glass-card hover:scale-[1.02] transition-transform">
@@ -98,12 +105,18 @@ export const ImageCard = ({
             <img
               src={image.url}
               alt={image.prompt}
-              className="w-full h-64 object-contain transition-all duration-300 group-hover:brightness-110"
+              className={`w-full h-64 object-contain transition-all duration-300 ${isZoomed ? 'scale-110 brightness-110' : 'group-hover:brightness-110'}`}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-              <span className="text-white text-sm font-medium bg-black/50 px-3 py-1.5 rounded-full flex items-center gap-2 transform transition-transform duration-300 group-hover:scale-110 shadow-lg">
-                <MaximizeIcon size={18} /> View full image
-              </span>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={toggleZoom}
+                className="text-white text-sm font-medium bg-black/50 px-3 py-1.5 rounded-full flex items-center gap-2 transform transition-transform duration-300 hover:scale-110 shadow-lg"
+              >
+                <Maximize size={18} />
+                {isZoomed ? "Reset view" : "Zoom image"}
+              </Button>
             </div>
           </div>
           <div className="p-4 space-y-3">
