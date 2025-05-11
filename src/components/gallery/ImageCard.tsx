@@ -8,11 +8,9 @@ import { ImageHeader } from "./ImageHeader";
 import { ImageActions } from "./ImageActions";
 import { ImagePreviewDialog } from "./ImagePreviewDialog";
 import { MakerSelectionDialog } from "./MakerSelectionDialog";
-import { generateRandomPrice } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
 import { useImageCard } from "./hooks/useImageCard";
-import { Eye, EyeOff, Maximize } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ImageZoom } from "./image-card/ImageZoom";
+import { ImagePrompt } from "./image-card/ImagePrompt";
 
 interface ImageCardProps {
   image: {
@@ -58,8 +56,6 @@ export const ImageCard = ({
   const [imageOpen, setImageOpen] = useState(false);
   const [selectionDialogOpen, setSelectionDialogOpen] = useState(false);
   const [showPrompt, setShowPrompt] = useState(true);
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [zoomFactor, setZoomFactor] = useState(1);
   
   const { 
     currentPrice, 
@@ -88,88 +84,16 @@ export const ImageCard = ({
     onLike(image.id);
   };
 
-  // Handle hover zoom effect
-  const toggleZoom = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent triggering the click handler for opening the preview
-    if (isZoomed) {
-      setZoomFactor(1);
-      setIsZoomed(false);
-    } else {
-      setZoomFactor(2); // Initial zoom level on click
-      setIsZoomed(true);
-    }
-  };
-
-  // Increase zoom level
-  const increaseZoom = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (isZoomed) {
-      setZoomFactor(prev => Math.min(prev + 0.5, 5));
-    }
-  };
-
-  // Decrease zoom level
-  const decreaseZoom = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (isZoomed) {
-      setZoomFactor(prev => Math.max(prev - 0.5, 1));
-      if (zoomFactor <= 1) {
-        setIsZoomed(false);
-      }
-    }
-  };
-
   return (
     <>
       <Card className="overflow-hidden glass-card hover:scale-[1.02] transition-transform">
         <CardContent className="p-0">
-          <div 
-            className="relative group cursor-pointer" 
-            onClick={openImagePreview}
+          <ImageZoom 
+            imageUrl={image.url}
+            alt={image.prompt}
+            onImageClick={openImagePreview}
             onDoubleClick={handleDoubleClick}
-          >
-            <img
-              src={image.url}
-              alt={image.prompt}
-              className={`w-full h-64 object-contain transition-all duration-300 ${isZoomed ? 'scale-['+zoomFactor+'] brightness-110' : 'group-hover:brightness-110'}`}
-              style={{
-                transform: isZoomed ? `scale(${zoomFactor})` : 'none',
-                transformOrigin: 'center'
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-              {isZoomed ? (
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                  <Button 
-                    variant="secondary" 
-                    size="sm"
-                    onClick={decreaseZoom}
-                    className="text-white bg-black/50 backdrop-blur-sm hover:bg-black/70 px-3 py-1.5 rounded-full flex items-center gap-2 shadow-lg"
-                  >
-                    Zoom Out
-                  </Button>
-                  <Button 
-                    variant="secondary" 
-                    size="sm"
-                    onClick={increaseZoom}
-                    className="text-white bg-black/50 backdrop-blur-sm hover:bg-black/70 px-3 py-1.5 rounded-full flex items-center gap-2 shadow-lg"
-                  >
-                    Zoom In ({zoomFactor}x)
-                  </Button>
-                </div>
-              ) : (
-                <Button 
-                  variant="secondary" 
-                  size="sm"
-                  onClick={toggleZoom}
-                  className="text-white bg-black/50 backdrop-blur-sm hover:bg-black/70 px-3 py-1.5 rounded-full flex items-center gap-2 shadow-lg"
-                >
-                  <Maximize size={18} />
-                  Zoom Image
-                </Button>
-              )}
-            </div>
-          </div>
+          />
           
           <div className="p-4 space-y-3">
             <ImageHeader 
@@ -181,18 +105,12 @@ export const ImageCard = ({
               isCreator={isCreator}
               onPriceChange={handlePriceChange}
             />
-            <div className="flex items-center justify-between">
-              <p className={`text-sm text-gray-300 ${showPrompt ? 'truncate' : 'hidden'}`}>{image.prompt}</p>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => setShowPrompt(!showPrompt)}
-                className="ml-2"
-              >
-                {showPrompt ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                <span className="sr-only">{showPrompt ? 'Hide' : 'Show'} Prompt</span>
-              </Button>
-            </div>
+            
+            <ImagePrompt 
+              prompt={image.prompt}
+              initialShowPrompt={showPrompt}
+            />
+            
             <ImageActions
               metrics={image.metrics || { like: 0, comment: 0, view: 0 }}
               hasLiked={image.hasLiked}
