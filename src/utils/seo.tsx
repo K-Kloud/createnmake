@@ -3,6 +3,7 @@
  * Utility functions for SEO optimization
  */
 import React from 'react';
+import { StructuredDataProps } from '@/types/seo';
 
 // Function to remove duplicate content with canonical URLs
 export const setCanonicalLink = (url: string) => {
@@ -20,7 +21,7 @@ export const setCanonicalLink = (url: string) => {
 };
 
 // Add structured data for different page types
-export const addStructuredData = (type: 'Organization' | 'Product' | 'BlogPosting' | 'FAQPage', data: any) => {
+export const addStructuredData = (type: 'Organization' | 'Product' | 'BlogPosting' | 'FAQPage' | 'LocalBusiness' | 'WebSite', data: any) => {
   const script = document.createElement('script');
   script.type = 'application/ld+json';
   
@@ -76,4 +77,14 @@ export const updateMetaTags = (title: string, description: string) => {
   
   if (ogTitle) ogTitle.setAttribute('content', title);
   if (ogDescription) ogDescription.setAttribute('content', description);
+};
+
+// Generate sitemap data for dynamic pages
+export const generateSitemapEntry = (url: string, changeFreq: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never', priority: number) => {
+  return {
+    url,
+    changeFreq,
+    priority,
+    lastMod: new Date().toISOString().split('T')[0]
+  };
 };

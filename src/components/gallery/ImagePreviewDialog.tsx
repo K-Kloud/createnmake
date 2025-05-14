@@ -6,6 +6,7 @@ import { useImageDeletion } from "./image-preview/useImageDeletion";
 import { X, ZoomIn, ZoomOut, Eye, EyeOff } from "lucide-react";
 import { Button } from "../ui/button";
 import { useState, useEffect } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ImagePreviewDialogProps {
   open: boolean;
@@ -36,9 +37,11 @@ export const ImagePreviewDialog = ({
   isGeneratedImage = false,
   onLike
 }: ImagePreviewDialogProps) => {
+  const { toast } = useToast();
   // Initialize with showPrompt prop but hide by default for generated images
   const [isPromptVisible, setIsPromptVisible] = useState(isGeneratedImage ? false : showPrompt);
   const [currentZoom, setCurrentZoom] = useState(zoomLevel);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   // Update visibility when showPrompt prop changes
   useEffect(() => {
@@ -52,19 +55,36 @@ export const ImagePreviewDialog = ({
   const handleDoubleClick = () => {
     if (onLike && imageId) {
       onLike(imageId);
+      toast({
+        title: "Image liked",
+        description: "You've liked this image",
+      });
     }
   };
 
-  // Handle zoom in with updated zoom level tracking - fixed to avoid testing void for truthiness
+  // Handle zoom in with updated zoom level tracking
   const handleZoomInWithTracking = () => {
     onZoomIn();
     setCurrentZoom(Math.min(currentZoom + 0.5, 5));
   };
 
-  // Handle zoom out with updated zoom level tracking - fixed to avoid testing void for truthiness
+  // Handle zoom out with updated zoom level tracking
   const handleZoomOutWithTracking = () => {
     onZoomOut();
     setCurrentZoom(Math.max(currentZoom - 0.5, 1));
+  };
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
+  const handleImageError = () => {
+    setImageLoaded(true);
+    toast({
+      title: "Image Error",
+      description: "Failed to load image. Using placeholder instead.",
+      variant: "destructive",
+    });
   };
   
   return (
@@ -79,13 +99,19 @@ export const ImagePreviewDialog = ({
           >
             <div className={`w-full h-full flex items-center justify-center ${isGeneratedImage ? 'max-w-5xl' : 'w-full'}`}>
               <div className="relative w-full h-full flex items-center justify-center">
+                {!imageLoaded && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
                 <img 
                   src={imageUrl} 
                   alt={prompt} 
-                  style={{
-                    transform: `scale(${currentZoom})`
-                  }} 
+                  style={{ transform: `scale(${currentZoom})` }} 
                   className="max-w-full max-h-[80vh] object-contain transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,157,0.25)]" 
+                  onLoad={handleImageLoad}
+                  onError={handleImageError}
+                  loading="eager"
                 />
                 <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 bg-background/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm">
                   {currentZoom.toFixed(1)}x zoom
@@ -113,7 +139,7 @@ export const ImagePreviewDialog = ({
             </Button>
           </div>
           
-          {isPromptVisible && (
+          {isPromptVisible && prompt && (
             <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
               <p className="text-white text-sm md:text-base">{prompt}</p>
             </div>

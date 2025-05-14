@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { ImageOverlay } from "./ImageOverlay";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { optimizeImage } from "@/utils/seo";
 
 interface ImageZoomProps {
   imageUrl: string;
@@ -61,10 +62,14 @@ export const ImageZoom = ({
           src={imageUrl}
           alt={alt}
           className="w-full h-full object-cover transition-all duration-300"
+          loading="lazy"
           style={{
             transform: isZoomed ? `scale(${zoomFactor})` : 'none',
             transformOrigin: 'center',
             filter: isZoomed ? 'brightness(110%)' : 'none'
+          }}
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = '/placeholder.svg';
           }}
         />
       </AspectRatio>
