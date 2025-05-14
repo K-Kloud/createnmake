@@ -51,10 +51,17 @@ export const ImageZoom = ({
     }
   };
 
+  // Handle image click for full-screen expansion
+  const handleExpandClick = (e: React.MouseEvent) => {
+    // Only proceed if we're not zoomed (otherwise let zoom controls handle the click)
+    if (!isZoomed) {
+      onImageClick();
+    }
+  };
+
   return (
     <div 
       className="relative group cursor-pointer h-64 w-full" 
-      onClick={onImageClick}
       onDoubleClick={onDoubleClick}
     >
       <AspectRatio ratio={16/9} className="h-full w-full">
@@ -80,6 +87,7 @@ export const ImageZoom = ({
         onToggleZoom={toggleZoom}
         onZoomIn={increaseZoom}
         onZoomOut={decreaseZoom}
+        onExpandClick={handleExpandClick}
       />
     </div>
   );
