@@ -36,6 +36,7 @@ import CreatorDashboardPage from "@/pages/CreatorDashboardPage";
 import Designs from "@/pages/Designs";
 import Design from "@/pages/Design";
 import MakerDetail from "@/pages/MakerDetail";
+import Orders from "@/pages/Orders";
 
 const queryClient = new QueryClient();
 
@@ -151,6 +152,14 @@ function App() {
                 {
                   path: "/maker/:makerId",
                   element: <MakerDetail />,
+                },
+                {
+                  path: "/orders",
+                  element: <Orders />,
+                },
+                {
+                  path: "/orders/:type/:orderId",
+                  element: <Orders />,
                 },
               ])}
             />
