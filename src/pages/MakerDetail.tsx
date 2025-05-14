@@ -92,7 +92,8 @@ const MakerDetail = () => {
         rating: review.rating,
         comment: review.comment,
         date: new Date(review.created_at).toLocaleDateString(),
-        user: review.profiles?.username || 'Anonymous'
+        // Fix: Access the first username from the profiles array or use a default value
+        user: review.profiles && review.profiles[0]?.username || 'Anonymous'
       }));
     },
     enabled: !!makerId && makerType === 'manufacturer',
