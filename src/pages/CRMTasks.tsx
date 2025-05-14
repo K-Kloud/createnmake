@@ -49,7 +49,7 @@ const CRMTasks = () => {
       if (error) throw error;
       
       return data.map(task => ({
-        id: task.id,
+        id: String(task.id), // Convert to string explicitly
         description: task.description,
         company: task.company,
         task_type: task.task_type,

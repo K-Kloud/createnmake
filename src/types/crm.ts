@@ -7,6 +7,7 @@ export interface CRMTask {
   status: 'not_started' | 'in_progress' | 'completed' | 'waiting';
   priority: 'low' | 'medium' | 'high' | 'urgent';
   due_date: string;
+  assignees?: Assignee[]; // Added assignees property
   assignee_id?: string;
   owner_id?: string;
   related_to?: string;
@@ -14,7 +15,7 @@ export interface CRMTask {
 }
 
 export interface Assignee {
-  id: string;
+  id?: string;
   initials: string;
   name?: string;
   color?: string;
