@@ -9,6 +9,8 @@ import { ManufacturerHeader } from "@/components/manufacturer/ManufacturerHeader
 import { ManufacturerCard } from "@/components/manufacturer/ManufacturerCard";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Manufacturer, Artisan } from "@/types/maker";
+import { toast } from "@/components/ui/use-toast";
 
 const MakerDetail = () => {
   const { makerId } = useParams<{ makerId: string }>();
@@ -34,7 +36,7 @@ const MakerDetail = () => {
         return null;
       }
       
-      return data;
+      return data as Manufacturer | Artisan;
     },
     enabled: !!makerId && !!makerType,
   });
@@ -125,7 +127,8 @@ const MakerDetail = () => {
   }
 
   if (makerType === 'manufacturer') {
-    const manufacturer = maker;
+    // Type assertion to help TypeScript understand we're working with a Manufacturer
+    const manufacturer = maker as Manufacturer;
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <Header />
@@ -222,36 +225,37 @@ const MakerDetail = () => {
     );
   }
   
-  // Artisan view - simplified for this example
+  // Artisan view - Type assertion to help TypeScript understand we're working with an Artisan
+  const artisan = maker as Artisan;
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-4">{maker.business_name || maker.username}</h1>
+        <h1 className="text-2xl font-bold mb-4">{artisan.business_name || artisan.username}</h1>
         <p className="mb-6">Artisan Profile</p>
         
         <div className="glass-card p-6">
           <div className="flex items-center mb-4">
-            {maker.avatar_url ? (
-              <img src={maker.avatar_url} alt="Profile" className="w-16 h-16 rounded-full mr-4" />
+            {artisan.avatar_url ? (
+              <img src={artisan.avatar_url} alt="Profile" className="w-16 h-16 rounded-full mr-4" />
             ) : (
               <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mr-4">
                 <span className="text-xl font-bold">
-                  {(maker.business_name || maker.username || "A").charAt(0)}
+                  {(artisan.business_name || artisan.username || "A").charAt(0)}
                 </span>
               </div>
             )}
             <div>
-              <h2 className="text-xl font-semibold">{maker.business_name || maker.username}</h2>
-              <p className="text-muted-foreground">{maker.business_type || "Artisan"}</p>
+              <h2 className="text-xl font-semibold">{artisan.business_name || artisan.username}</h2>
+              <p className="text-muted-foreground">{artisan.business_type || "Artisan"}</p>
             </div>
           </div>
           
-          {maker.specialties && maker.specialties.length > 0 && (
+          {artisan.specialties && artisan.specialties.length > 0 && (
             <div className="mb-4">
               <h3 className="font-medium mb-2">Specialties</h3>
               <div className="flex flex-wrap gap-2">
-                {maker.specialties.map((specialty: string) => (
+                {artisan.specialties.map((specialty: string) => (
                   <span
                     key={specialty}
                     className="px-2 py-1 bg-primary/10 rounded-full text-xs"
@@ -263,10 +267,10 @@ const MakerDetail = () => {
             </div>
           )}
           
-          {maker.bio && (
+          {artisan.bio && (
             <div className="mb-4">
               <h3 className="font-medium mb-2">Bio</h3>
-              <p>{maker.bio}</p>
+              <p>{artisan.bio}</p>
             </div>
           )}
         </div>
