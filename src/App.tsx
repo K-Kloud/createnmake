@@ -1,3 +1,4 @@
+
 import {
   QueryClient,
   QueryClientProvider,
@@ -15,6 +16,8 @@ import Marketplace from "@/pages/Marketplace";
 import Admin from "@/pages/Admin";
 import Settings from "@/pages/Settings";
 import CRMDashboard from "@/pages/CRMDashboard";
+import CRMContacts from "@/pages/CRMContacts";
+import CRMTasks from "@/pages/CRMTasks";
 import Artisan from "@/pages/Artisan";
 import ArtisanOnboarding from "@/pages/ArtisanOnboarding";
 import Manufacturer from "@/pages/Manufacturer";
@@ -86,6 +89,14 @@ function App() {
                 {
                   path: "/crm",
                   element: <CRMDashboard />,
+                },
+                {
+                  path: "/crm/contacts",
+                  element: <CRMContacts />,
+                },
+                {
+                  path: "/crm/tasks",
+                  element: <CRMTasks />,
                 },
                 {
                   path: "/artisan",
