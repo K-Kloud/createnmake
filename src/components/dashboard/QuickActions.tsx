@@ -32,6 +32,16 @@ export const QuickActions = () => {
               <MoveUpRight className="h-4 w-4" />
             </Link>
           </Button>
+          <Button 
+            variant="outline" 
+            className="w-full justify-between"
+            asChild
+          >
+            <Link to="/designs">
+              View All Designs
+              <MoveUpRight className="h-4 w-4" />
+            </Link>
+          </Button>
         </div>
       </CardContent>
     </Card>

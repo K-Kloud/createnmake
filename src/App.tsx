@@ -33,6 +33,8 @@ import {
 } from "react-router-dom";
 import CreatorOnboardingPage from "@/pages/CreatorOnboardingPage";
 import CreatorDashboardPage from "@/pages/CreatorDashboardPage";
+import Designs from "@/pages/Designs";
+import Design from "@/pages/Design";
 
 const queryClient = new QueryClient();
 
@@ -88,6 +90,14 @@ function App() {
                 {
                   path: "/settings",
                   element: <Settings />,
+                },
+                {
+                  path: "/designs",
+                  element: <Designs />,
+                },
+                {
+                  path: "/designs/:designId",
+                  element: <Design />,
                 },
                 {
                   path: "/crm",

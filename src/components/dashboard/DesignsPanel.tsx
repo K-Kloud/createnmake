@@ -5,12 +5,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Image } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export const DesignsPanel = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   const { data: designs, isLoading } = useQuery({
     queryKey: ['user-designs', user?.id],
@@ -30,25 +29,21 @@ export const DesignsPanel = () => {
     enabled: !!user?.id,
   });
 
-  const handleViewAll = () => {
-    navigate("/designs");
-  };
-
-  const handleCreate = () => {
-    navigate("/create");
-  };
-
   return (
     <Card className="glass-card">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-xl font-bold">My Designs</CardTitle>
         <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" onClick={handleViewAll}>
-            View All
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/designs">
+              View All
+            </Link>
           </Button>
-          <Button size="sm" onClick={handleCreate}>
-            <Plus className="mr-2 h-4 w-4" />
-            Create New
+          <Button size="sm" asChild>
+            <Link to="/create">
+              <Plus className="mr-2 h-4 w-4" />
+              Create New
+            </Link>
           </Button>
         </div>
       </CardHeader>
@@ -62,8 +57,11 @@ export const DesignsPanel = () => {
         ) : designs && designs.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {designs.map((design) => (
-              <div key={design.id} className="group relative overflow-hidden rounded-lg border cursor-pointer"
-                onClick={() => navigate(`/designs/${design.id}`)}>
+              <Link 
+                key={design.id} 
+                to={`/designs/${design.id}`} 
+                className="group relative overflow-hidden rounded-lg border"
+              >
                 <AspectRatio ratio={1/1} className="bg-muted">
                   <img
                     src={design.image_url}
@@ -74,15 +72,17 @@ export const DesignsPanel = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
                   <p className="text-white text-xs truncate">{design.prompt || "Design"}</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-[200px] border border-dashed rounded-lg bg-card/30">
             <Image className="h-10 w-10 text-muted-foreground mb-2" />
             <p className="text-muted-foreground">No designs yet</p>
-            <Button onClick={handleCreate} variant="link" className="mt-2">
-              Create your first design
+            <Button asChild variant="link" className="mt-2">
+              <Link to="/create">
+                Create your first design
+              </Link>
             </Button>
           </div>
         )}
