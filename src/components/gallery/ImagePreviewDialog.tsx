@@ -51,6 +51,21 @@ export const ImagePreviewDialog = ({
   const { canDelete } = useImagePermissions(userId);
   const { isDeleting, handleDelete } = useImageDeletion(() => onOpenChange(false));
 
+  // Helper functions to get WebP and AVIF versions of the image URL
+  const getWebpUrl = (url: string) => {
+    if (url.toLowerCase().endsWith('.webp')) return url;
+    if (url.includes('?')) return `${url}&format=webp`;
+    const urlWithoutExt = url.substring(0, url.lastIndexOf('.')) || url;
+    return `${urlWithoutExt}.webp`;
+  };
+  
+  const getAvifUrl = (url: string) => {
+    if (url.toLowerCase().endsWith('.avif')) return url;
+    if (url.includes('?')) return `${url}&format=avif`;
+    const urlWithoutExt = url.substring(0, url.lastIndexOf('.')) || url;
+    return `${urlWithoutExt}.avif`;
+  };
+
   // Handle double-click to like the image
   const handleDoubleClick = () => {
     if (onLike && imageId) {
@@ -87,6 +102,9 @@ export const ImagePreviewDialog = ({
     });
   };
   
+  const webpUrl = getWebpUrl(imageUrl);
+  const avifUrl = getAvifUrl(imageUrl);
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[95vw] max-h-[95vh] p-1 sm:p-6 bg-background/95 backdrop-blur-sm flex flex-col">
@@ -104,15 +122,20 @@ export const ImagePreviewDialog = ({
                     <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 )}
-                <img 
-                  src={imageUrl} 
-                  alt={prompt} 
-                  style={{ transform: `scale(${currentZoom})` }} 
-                  className="max-w-full max-h-[80vh] object-contain transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,157,0.25)]" 
-                  onLoad={handleImageLoad}
-                  onError={handleImageError}
-                  loading="eager"
-                />
+                <picture>
+                  <source srcSet={avifUrl} type="image/avif" />
+                  <source srcSet={webpUrl} type="image/webp" />
+                  <img 
+                    src={imageUrl} 
+                    alt={prompt} 
+                    style={{ transform: `scale(${currentZoom})` }} 
+                    className="max-w-full max-h-[80vh] object-contain transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,157,0.25)]" 
+                    onLoad={handleImageLoad}
+                    onError={handleImageError}
+                    loading="eager"
+                    decoding="async"
+                  />
+                </picture>
                 <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 bg-background/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm">
                   {currentZoom.toFixed(1)}x zoom
                 </div>

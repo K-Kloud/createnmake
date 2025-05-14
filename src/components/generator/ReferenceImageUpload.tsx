@@ -1,3 +1,4 @@
+
 import { Plus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -9,7 +10,7 @@ interface ReferenceImageUploadProps {
 export const ReferenceImageUpload = ({ referenceImage, onUpload }: ReferenceImageUploadProps) => {
   const { toast } = useToast();
 
-  const convertToPNG = async (file: File): Promise<File> => {
+  const convertToWebP = async (file: File): Promise<File> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
@@ -25,16 +26,17 @@ export const ReferenceImageUpload = ({ referenceImage, onUpload }: ReferenceImag
         
         ctx.drawImage(img, 0, 0);
         
+        // Use WebP format with quality of 0.8 (80%)
         canvas.toBlob((blob) => {
           if (blob) {
-            const pngFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.png'), {
-              type: 'image/png'
+            const webpFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.webp'), {
+              type: 'image/webp'
             });
-            resolve(pngFile);
+            resolve(webpFile);
           } else {
-            reject(new Error('Failed to convert image to PNG'));
+            reject(new Error('Failed to convert image to WebP'));
           }
-        }, 'image/png', 1.0);
+        }, 'image/webp', 0.8);
       };
       
       img.onerror = () => reject(new Error('Failed to load image'));
@@ -66,20 +68,20 @@ export const ReferenceImageUpload = ({ referenceImage, onUpload }: ReferenceImag
         return;
       }
 
-      // Convert to PNG if not already PNG
-      const pngFile = file.type === 'image/png' ? file : await convertToPNG(file);
+      // Convert to WebP for better compression
+      const webpFile = file.type === 'image/webp' ? file : await convertToWebP(file);
       
       // Check converted file size
-      if (pngFile.size > 4 * 1024 * 1024) {
+      if (webpFile.size > 4 * 1024 * 1024) {
         toast({
           title: "Converted file too large",
-          description: "The converted PNG file is too large. Please try with a smaller image.",
+          description: "The converted WebP file is too large. Please try with a smaller image.",
           variant: "destructive",
         });
         return;
       }
 
-      onUpload(pngFile);
+      onUpload(webpFile);
       toast({
         title: "Image uploaded",
         description: "Your reference image has been uploaded successfully. The AI will use this as inspiration.",
@@ -106,7 +108,7 @@ export const ReferenceImageUpload = ({ referenceImage, onUpload }: ReferenceImag
       <label
         htmlFor="imageUpload"
         className="absolute -bottom-3 right-2 inline-flex items-center justify-center size-8 rounded-full bg-primary hover:bg-primary-hover text-white cursor-pointer transition-colors hover:scale-110 animate-bounce-slow"
-        title="Upload a reference image for AI to use as inspiration (PNG format, max 4MB)"
+        title="Upload a reference image for AI to use as inspiration (WebP format, max 4MB)"
       >
         <Plus className="size-4" />
       </label>

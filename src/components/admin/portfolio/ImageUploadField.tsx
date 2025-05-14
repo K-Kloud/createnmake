@@ -1,3 +1,4 @@
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
@@ -15,6 +16,40 @@ export const ImageUploadField = ({ label, id, onChange }: ImageUploadFieldProps)
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
 
+  const convertToWebP = async (file: File): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Failed to get canvas context'));
+          return;
+        }
+        
+        ctx.drawImage(img, 0, 0);
+        
+        // Use WebP format with 80% quality for good balance between quality and file size
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const webpFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.webp'), {
+              type: 'image/webp'
+            });
+            resolve(webpFile);
+          } else {
+            reject(new Error('Failed to convert image to WebP'));
+          }
+        }, 'image/webp', 0.8);
+      };
+      
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -30,12 +65,18 @@ export const ImageUploadField = ({ label, id, onChange }: ImageUploadFieldProps)
 
     try {
       setIsUploading(true);
-      const fileExt = file.name.split('.').pop();
-      const filePath = `${Math.random()}.${fileExt}`;
+      
+      // Convert to WebP for better compression if not already WebP
+      const optimizedFile = file.type === 'image/webp' ? file : await convertToWebP(file);
+      
+      // Use optimized filename with timestamp to prevent conflicts
+      const fileExt = 'webp'; // Always use webp extension for converted files
+      const timestamp = Date.now();
+      const filePath = `portfolio_${timestamp}.${fileExt}`;
 
       const { error: uploadError, data } = await supabase.storage
         .from('portfolio-images')
-        .upload(filePath, file);
+        .upload(filePath, optimizedFile);
 
       if (uploadError) throw uploadError;
 
@@ -47,7 +88,7 @@ export const ImageUploadField = ({ label, id, onChange }: ImageUploadFieldProps)
       
       toast({
         title: "Success",
-        description: "Image uploaded successfully",
+        description: "Image uploaded successfully in WebP format for faster loading",
       });
     } catch (error) {
       console.error('Upload error:', error);
@@ -77,6 +118,9 @@ export const ImageUploadField = ({ label, id, onChange }: ImageUploadFieldProps)
             <Loader2 className="h-4 w-4 animate-spin" />
           </div>
         )}
+        <p className="text-xs text-muted-foreground mt-1">
+          Images will be automatically converted to WebP format for faster loading
+        </p>
       </div>
     </div>
   );
