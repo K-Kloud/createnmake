@@ -1,13 +1,15 @@
 
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
-import { ImageGenerator } from "@/components/ImageGenerator";
-import { Footer } from "@/components/Footer";
-import { OpenMarketSection } from "@/components/OpenMarketSection";
-import { ChatBot } from "@/components/ChatBot";
-import { useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { addStructuredData } from "@/utils/seo";
 import { SEO } from "@/components/SEO";
+
+// Lazy load non-critical components
+const ImageGenerator = lazy(() => import("@/components/ImageGenerator").then(module => ({ default: module.ImageGenerator })));
+const OpenMarketSection = lazy(() => import("@/components/OpenMarketSection").then(module => ({ default: module.OpenMarketSection })));
+const ChatBot = lazy(() => import("@/components/ChatBot").then(module => ({ default: module.ChatBot })));
+const Footer = lazy(() => import("@/components/Footer").then(module => ({ default: module.Footer })));
 
 const Index = () => {
   // Add structured data for SEO
@@ -38,14 +40,22 @@ const Index = () => {
       <main className="flex-grow pt-16">
         <Hero />
         <div className="container px-4 py-16">
-          <div className="image-generator">
-            <ImageGenerator />
-          </div>
-          <OpenMarketSection />
+          <Suspense fallback={<div className="h-64 w-full flex items-center justify-center">Loading generator...</div>}>
+            <div className="image-generator">
+              <ImageGenerator />
+            </div>
+          </Suspense>
+          <Suspense fallback={<div className="h-32 w-full"></div>}>
+            <OpenMarketSection />
+          </Suspense>
         </div>
       </main>
-      <ChatBot />
-      <Footer />
+      <Suspense fallback={null}>
+        <ChatBot />
+      </Suspense>
+      <Suspense fallback={<div className="h-20 w-full bg-background"></div>}>
+        <Footer />
+      </Suspense>
     </div>
   );
 };

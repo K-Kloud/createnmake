@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -14,7 +15,10 @@ export default defineConfig(({ mode }) => ({
     }
   },
   plugins: [
-    react(),
+    react({
+      // Enable fast refresh only in development
+      fastRefresh: mode === 'development'
+    }),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
@@ -35,16 +39,36 @@ export default defineConfig(({ mode }) => ({
     force: true
   },
   build: {
+    // Enable minification
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,  // Remove console logs in production
+        drop_debugger: true
+      }
+    },
+    // Improve code splitting
     commonjsOptions: {
       transformMixedEsModules: true,
     },
     rollupOptions: {
-      external: [],
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
+          'ui-components': [
+            '@radix-ui/react-context',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-aspect-ratio'
+          ],
+          'data-fetching': ['@tanstack/react-query'],
+          'utils': ['@/lib/utils', '@/utils/seo']
         }
       }
     }
+  },
+  // Enable experimental features for better optimization
+  esbuild: {
+    legalComments: 'none',
+    treeShaking: true
   }
 }));

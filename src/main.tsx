@@ -1,15 +1,19 @@
 
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+import { AuthProvider } from "./hooks/useAuth";
 import "./index.css";
 import "./App.css";
-import { AuthProvider } from "./hooks/useAuth";
+
+// Use lazy loading for the main App component
+const App = React.lazy(() => import("./App"));
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <AuthProvider>
-      <App />
+      <React.Suspense fallback={<div className="flex h-screen w-full items-center justify-center">Loading...</div>}>
+        <App />
+      </React.Suspense>
     </AuthProvider>
   </React.StrictMode>
 );
