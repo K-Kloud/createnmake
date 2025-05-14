@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { ImageOverlay } from "./ImageOverlay";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { optimizeImage } from "@/utils/seo";
 
 interface ImageZoomProps {
   imageUrl: string;
@@ -61,7 +60,7 @@ export const ImageZoom = ({
 
   return (
     <div 
-      className="relative group cursor-pointer h-64 w-full" 
+      className="relative group cursor-pointer h-auto w-full" 
       onDoubleClick={onDoubleClick}
     >
       <AspectRatio ratio={16/9} className="h-full w-full">

@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
@@ -16,13 +17,13 @@ const Manufacturer = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
       {session?.user ? (
         <ManufacturerDashboard manufacturerId={session.user.id} />
       ) : (
-        <main className="container px-4 py-24">
-          <h1 className="text-4xl font-bold mb-8 gradient-text">
+        <main className="w-full px-4 sm:px-6 py-12 sm:py-16 md:py-24 max-w-7xl mx-auto">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 gradient-text">
             Manufacturing Categories
           </h1>
           <ManufacturerCategoriesGrid />

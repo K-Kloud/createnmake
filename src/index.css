@@ -30,7 +30,7 @@
   }
 
   body {
-    @apply bg-background text-foreground text-center dark:bg-[#1A1F2C];
+    @apply bg-background text-foreground text-center dark:bg-[#1A1F2C] min-h-screen w-full overflow-x-hidden;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
@@ -57,6 +57,20 @@
 
 .input-glow {
   @apply transition-shadow duration-300 rounded-[var(--radius)] focus:shadow-md focus:shadow-primary/30;
+}
+
+/* Responsive container class */
+.responsive-container {
+  @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Responsive text sizes */
+.responsive-heading {
+  @apply text-2xl sm:text-3xl md:text-4xl font-bold;
+}
+
+.responsive-subheading {
+  @apply text-lg sm:text-xl md:text-2xl;
 }
 
 @keyframes bounce-slow {
@@ -94,4 +108,15 @@
 
 .animate-fade-up {
   animation: fade-up 1s ease-out forwards;
+}
+
+/* Mobile specific styles */
+@media (max-width: 640px) {
+  .mobile-full-width {
+    @apply -mx-4 px-4 w-screen;
+  }
+  
+  .mobile-stack {
+    @apply flex-col items-center;
+  }
 }

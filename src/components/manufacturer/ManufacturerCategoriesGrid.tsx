@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { CategoryCard } from "./CategoryCard";
 import { ManufacturerCard } from "./ManufacturerCard";
@@ -5,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { manufacturerCategories } from "@/data/manufacturerCategories";
 import { getCategoryCount, getFilteredManufacturers } from "@/utils/manufacturerUtils";
 import { Scissors, Footprints, Printer, Gem, Briefcase, Armchair } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const iconMap: Record<string, any> = {
   Scissors,
@@ -18,12 +20,13 @@ const iconMap: Record<string, any> = {
 export const ManufacturerCategoriesGrid = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const filteredManufacturers = getFilteredManufacturers(selectedCategory);
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
         {manufacturerCategories.map((category) => {
           const IconComponent = iconMap[category.icon];
           return (
@@ -44,11 +47,11 @@ export const ManufacturerCategoriesGrid = () => {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className={`${isMobile ? 'w-[95vw] max-w-full p-4' : 'max-w-4xl'} max-h-[80vh] overflow-y-auto`}>
           <DialogHeader>
-            <DialogTitle>{selectedCategory} Manufacturers</DialogTitle>
+            <DialogTitle className="text-xl">{selectedCategory} Manufacturers</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-1 gap-6 mt-4">
+          <div className="grid grid-cols-1 gap-4 sm:gap-6 mt-4">
             {filteredManufacturers.map((manufacturer) => (
               <ManufacturerCard
                 key={manufacturer.id}

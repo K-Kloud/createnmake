@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { ManufacturerRating } from "./ManufacturerRating";
 import { PortfolioButton } from "./PortfolioButton";
@@ -5,6 +6,7 @@ import { ManufacturerReviews } from "./ManufacturerReviews";
 import { ManufacturerReviewForm } from "./ManufacturerReviewForm";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Review {
   id: number;
@@ -51,28 +53,30 @@ export const ManufacturerCard = ({
       return data.session;
     },
   });
+  
+  const isMobile = useIsMobile();
 
   return (
     <Card className="glass-card hover:scale-[1.02] transition-transform">
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold">{name}</h3>
-              <p className="text-sm text-muted-foreground">{type}</p>
+              <h3 className="text-base sm:text-lg font-semibold">{name}</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">{type}</p>
             </div>
             {image && (
               <img
                 src={image}
                 alt={name}
-                className="w-16 h-16 rounded-full object-cover"
+                className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover"
               />
             )}
           </div>
 
           <ManufacturerRating rating={rating} reviewCount={reviewCount} />
 
-          <p className="text-sm">{description}</p>
+          <p className="text-xs sm:text-sm">{description}</p>
 
           <div className="flex flex-wrap gap-2">
             {specialties.map((specialty, index) => (
@@ -87,14 +91,15 @@ export const ManufacturerCard = ({
 
           {producedItems.length > 0 && (
             <div className="space-y-2">
-              <h4 className="font-medium">Recent Work</h4>
-              <div className="grid grid-cols-3 gap-2">
+              <h4 className="font-medium text-sm sm:text-base">Recent Work</h4>
+              <div className="grid grid-cols-3 gap-1 sm:gap-2">
                 {producedItems.map((item, index) => (
                   <img
                     key={index}
                     src={item.productImage}
                     alt={item.description}
-                    className="w-full h-24 object-cover rounded-md"
+                    className="w-full h-16 sm:h-24 object-cover rounded-md"
+                    loading="lazy"
                   />
                 ))}
               </div>
