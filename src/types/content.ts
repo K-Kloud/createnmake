@@ -1,3 +1,4 @@
+
 import { Json } from './auth'
 
 export interface GeneratedContent {
@@ -12,6 +13,7 @@ export interface GeneratedImage {
   id: number
   user_id: string | null
   prompt: string
+  negative_prompt?: string | null
   item_type: string
   aspect_ratio: string
   image_url: string | null
