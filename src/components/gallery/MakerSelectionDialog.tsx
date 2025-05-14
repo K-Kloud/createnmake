@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -81,6 +82,7 @@ export const MakerSelectionDialog = ({
 
       onMakerSelect('artisan');
       onOpenChange(false);
+      navigate(`/maker/${artisanId}?type=artisan`);
     } catch (error) {
       console.error('Error sending quote request:', error);
       toast({
