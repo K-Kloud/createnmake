@@ -17,6 +17,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { GeneratedImage } from "@/types/content";
 
 const Design = () => {
   const { designId } = useParams<{ designId: string }>();
@@ -36,7 +37,7 @@ const Design = () => {
         .single();
         
       if (error) throw error;
-      return data || null;
+      return data as GeneratedImage | null;
     },
     enabled: !!designId,
   });
