@@ -9,13 +9,14 @@ import { TaskList } from "@/components/crm/TaskList";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { CRMTask } from "@/types/crm";
 
 const CRMTasks = () => {
   const [filterValues, setFilterValues] = useState({});
   
   const { data: tasks, isLoading } = useQuery({
     queryKey: ['crm-tasks', filterValues],
-    queryFn: async () => {
+    queryFn: async (): Promise<CRMTask[]> => {
       let query = supabase
         .from('crm_tasks')
         .select(`
@@ -52,9 +53,9 @@ const CRMTasks = () => {
         id: String(task.id), // Convert to string explicitly
         description: task.description,
         company: task.company,
-        task_type: task.task_type,
-        status: task.status,
-        priority: task.priority,
+        task_type: task.task_type as CRMTask['task_type'], // Type casting to ensure compatibility
+        status: task.status as CRMTask['status'],
+        priority: task.priority as CRMTask['priority'],
         due_date: task.due_date,
         assignees: [{ initials: 'AI', color: 'bg-blue-500' }], // Default assignee for now
       }));

@@ -18,3 +18,8 @@ export function useMediaQuery(query: string): boolean {
 
   return matches;
 }
+
+// Add the alias for backward compatibility
+export const useIsMobile = (breakpoint: string = "(max-width: 768px)"): boolean => {
+  return useMediaQuery(breakpoint);
+};

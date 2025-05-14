@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TaskFilters } from "@/components/crm/TaskFilters";
@@ -7,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Plus, Download, BarChart, CheckCircle, AlertCircle, ClockIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TaskStats } from "@/types/crm";
+import { CRMTask, TaskStats } from "@/types/crm";
 import { useState } from "react";
 import { CRMDashboardSkeleton } from "./CRMDashboardSkeleton";
 import { TaskMetricsChart } from "./TaskMetricsChart";
@@ -17,7 +16,7 @@ export const CRMDashboard = () => {
   
   const { data: tasks, isLoading } = useQuery({
     queryKey: ['crm-tasks', filterValues],
-    queryFn: async () => {
+    queryFn: async (): Promise<CRMTask[]> => {
       let query = supabase
         .from('crm_tasks')
         .select(`
@@ -51,12 +50,12 @@ export const CRMDashboard = () => {
       if (error) throw error;
       
       return data.map(task => ({
-        id: task.id,
+        id: String(task.id), // Convert to string explicitly
         description: task.description,
         company: task.company,
-        task_type: task.task_type,
-        status: task.status,
-        priority: task.priority,
+        task_type: task.task_type as CRMTask['task_type'], // Type casting to ensure compatibility
+        status: task.status as CRMTask['status'],
+        priority: task.priority as CRMTask['priority'],
         due_date: task.due_date,
         assignees: [{ initials: 'AI', color: 'bg-blue-500' }], // Default assignee for now
       }));
