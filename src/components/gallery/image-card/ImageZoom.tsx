@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { ImageOverlay } from "./ImageOverlay";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface ImageZoomProps {
   imageUrl: string;
@@ -51,20 +52,22 @@ export const ImageZoom = ({
 
   return (
     <div 
-      className="relative group cursor-pointer" 
+      className="relative group cursor-pointer h-64 w-full" 
       onClick={onImageClick}
       onDoubleClick={onDoubleClick}
     >
-      <img
-        src={imageUrl}
-        alt={alt}
-        className="w-full h-64 object-contain transition-all duration-300"
-        style={{
-          transform: isZoomed ? `scale(${zoomFactor})` : 'none',
-          transformOrigin: 'center',
-          filter: isZoomed ? 'brightness(110%)' : 'none'
-        }}
-      />
+      <AspectRatio ratio={16/9} className="h-full w-full">
+        <img
+          src={imageUrl}
+          alt={alt}
+          className="w-full h-full object-cover transition-all duration-300"
+          style={{
+            transform: isZoomed ? `scale(${zoomFactor})` : 'none',
+            transformOrigin: 'center',
+            filter: isZoomed ? 'brightness(110%)' : 'none'
+          }}
+        />
+      </AspectRatio>
       
       <ImageOverlay 
         isZoomed={isZoomed}
