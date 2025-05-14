@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CardTitle, CardDescription, Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 interface CustomerMessagesProps {
   customerId: string;
@@ -33,8 +34,8 @@ export const CustomerMessages = ({ customerId }: CustomerMessagesProps) => {
         <CardDescription className="mb-6">
           When you interact with designers or place orders, your messages will appear here.
         </CardDescription>
-        <Button onClick={() => window.location.href = '/marketplace'}>
-          Browse Marketplace
+        <Button asChild>
+          <Link to="/marketplace">Browse Marketplace</Link>
         </Button>
       </Card>
     );

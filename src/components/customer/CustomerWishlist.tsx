@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CardTitle, CardDescription, Card } from "@/components/ui/card";
 import { ImageCard } from "@/components/gallery/ImageCard";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 interface CustomerWishlistProps {
   customerId: string;
@@ -61,8 +62,8 @@ export const CustomerWishlist = ({ customerId }: CustomerWishlistProps) => {
         <CardDescription className="mb-6">
           Save designs you love to your wishlist for easy access later.
         </CardDescription>
-        <Button onClick={() => window.location.href = '/marketplace'}>
-          Browse Marketplace
+        <Button asChild>
+          <Link to="/marketplace">Browse Marketplace</Link>
         </Button>
       </Card>
     );

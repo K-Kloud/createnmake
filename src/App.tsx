@@ -18,6 +18,9 @@ import Settings from "@/pages/Settings";
 import CRMDashboard from "@/pages/CRMDashboard";
 import CRMContacts from "@/pages/CRMContacts";
 import CRMTasks from "@/pages/CRMTasks";
+import CRMCalendar from "@/pages/CRMCalendar";
+import CRMAnalytics from "@/pages/CRMAnalytics";
+import CRMCommunications from "@/pages/CRMCommunications";
 import Artisan from "@/pages/Artisan";
 import ArtisanOnboarding from "@/pages/ArtisanOnboarding";
 import Manufacturer from "@/pages/Manufacturer";
@@ -97,6 +100,18 @@ function App() {
                 {
                   path: "/crm/tasks",
                   element: <CRMTasks />,
+                },
+                {
+                  path: "/crm/calendar",
+                  element: <CRMCalendar />,
+                },
+                {
+                  path: "/crm/analytics",
+                  element: <CRMAnalytics />,
+                },
+                {
+                  path: "/crm/communications",
+                  element: <CRMCommunications />,
                 },
                 {
                   path: "/artisan",

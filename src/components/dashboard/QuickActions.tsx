@@ -2,11 +2,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MoveUpRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export const QuickActions = () => {
-  const navigate = useNavigate();
-  
   return (
     <Card className="glass-card">
       <CardHeader>
@@ -17,18 +15,22 @@ export const QuickActions = () => {
           <Button 
             variant="default" 
             className="w-full justify-between"
-            onClick={() => navigate("/create")}
+            asChild
           >
-            Create New Design
-            <MoveUpRight className="h-4 w-4" />
+            <Link to="/create">
+              Create New Design
+              <MoveUpRight className="h-4 w-4" />
+            </Link>
           </Button>
           <Button 
             variant="outline" 
             className="w-full justify-between"
-            onClick={() => navigate("/marketplace")}
+            asChild
           >
-            Browse Marketplace
-            <MoveUpRight className="h-4 w-4" />
+            <Link to="/marketplace">
+              Browse Marketplace
+              <MoveUpRight className="h-4 w-4" />
+            </Link>
           </Button>
         </div>
       </CardContent>

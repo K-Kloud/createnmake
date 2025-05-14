@@ -1,7 +1,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Package } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface OrderItemProps {
   order: any;
@@ -9,13 +9,11 @@ interface OrderItemProps {
 }
 
 export const OrderItem = ({ order, getStatusColor }: OrderItemProps) => {
-  const navigate = useNavigate();
-
   return (
-    <div 
+    <Link 
       key={`${order.type}-${order.id}`} 
+      to={`/orders/${order.type}/${order.id}`}
       className="flex items-center justify-between p-3 rounded-lg border hover:bg-card/50 cursor-pointer"
-      onClick={() => navigate(`/orders/${order.type}/${order.id}`)}
     >
       <div className="flex items-center space-x-3">
         <Package className="h-5 w-5 text-muted-foreground" />
@@ -27,6 +25,6 @@ export const OrderItem = ({ order, getStatusColor }: OrderItemProps) => {
         </div>
       </div>
       <Badge className={`${getStatusColor(order.status)}`}>{order.status}</Badge>
-    </div>
+    </Link>
   );
 };

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-mobile";
+import { Link, useLocation } from "react-router-dom";
 
 interface CRMLayoutProps {
   children: React.ReactNode;
@@ -23,6 +24,7 @@ interface CRMLayoutProps {
 export const CRMLayout = ({ children, currentTab = "dashboard" }: CRMLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const location = useLocation();
   
   // Auto-close sidebar on mobile
   const effectiveSidebarOpen = isMobile ? false : sidebarOpen;
@@ -58,20 +60,26 @@ export const CRMLayout = ({ children, currentTab = "dashboard" }: CRMLayoutProps
           </div>
           <nav className="flex-1 py-4">
             <ul className="space-y-1">
-              {navItems.map((item) => (
-                <li key={item.label}>
-                  <a 
-                    href={item.href} 
-                    className={cn(
-                      "flex items-center py-2 px-4 hover:bg-muted rounded-md mx-2",
-                      currentTab === item.label.toLowerCase() && "bg-primary/10 text-primary"
-                    )}
-                  >
-                    <item.icon size={20} />
-                    {effectiveSidebarOpen && <span className="ml-3">{item.label}</span>}
-                  </a>
-                </li>
-              ))}
+              {navItems.map((item) => {
+                const isActive = 
+                  (item.href === "/crm" && location.pathname === "/crm") || 
+                  (item.href !== "/crm" && location.pathname.startsWith(item.href));
+                
+                return (
+                  <li key={item.label}>
+                    <Link 
+                      to={item.href}
+                      className={cn(
+                        "flex items-center py-2 px-4 hover:bg-muted rounded-md mx-2",
+                        isActive && "bg-primary/10 text-primary"
+                      )}
+                    >
+                      <item.icon size={20} />
+                      {effectiveSidebarOpen && <span className="ml-3">{item.label}</span>}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
         </aside>

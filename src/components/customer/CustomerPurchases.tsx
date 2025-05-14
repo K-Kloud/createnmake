@@ -12,6 +12,7 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 
 interface CustomerPurchasesProps {
   customerId: string;
@@ -42,8 +43,8 @@ export const CustomerPurchases = ({ customerId }: CustomerPurchasesProps) => {
         <CardDescription className="mb-6">
           Browse our marketplace to find beautiful designs created by our talented community.
         </CardDescription>
-        <Button onClick={() => window.location.href = '/marketplace'}>
-          Browse Marketplace
+        <Button asChild>
+          <Link to="/marketplace">Browse Marketplace</Link>
         </Button>
       </Card>
     );
@@ -82,8 +83,8 @@ export const CustomerPurchases = ({ customerId }: CustomerPurchasesProps) => {
                 </TableCell>
                 <TableCell>£{purchase.amount}</TableCell>
                 <TableCell>
-                  <Button variant="ghost" size="sm">
-                    View Details
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to={`/orders/${purchase.id}`}>View Details</Link>
                   </Button>
                 </TableCell>
               </TableRow>

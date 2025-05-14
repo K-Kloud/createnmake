@@ -1,16 +1,15 @@
+
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export const Navigation = () => {
-  const navigate = useNavigate();
-  
   return (
     <nav className="flex items-center space-x-4">
-      <Button variant="ghost" onClick={() => navigate("/marketplace")}>
-        OpenMarket
+      <Button variant="ghost" asChild>
+        <Link to="/marketplace">OpenMarket</Link>
       </Button>
-      <Button variant="ghost" onClick={() => navigate("/create")}>
-        Create
+      <Button variant="ghost" asChild>
+        <Link to="/create">Create</Link>
       </Button>
     </nav>
   );
