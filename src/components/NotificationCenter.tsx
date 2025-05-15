@@ -1,4 +1,3 @@
-
 import { Bell, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,8 +11,11 @@ import { formatDistanceToNow } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 
 export function NotificationCenter() {
+  useAuthGuard(); // Protect notifications from unauthenticated access
+
   const { notifications, unreadCount, isLoading, markAsRead, markAllAsRead } = useNotificationSystem();
   const { user } = useAuth();
 

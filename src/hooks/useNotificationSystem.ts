@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -13,12 +12,17 @@ export interface Notification {
   created_at: string;
   is_read: boolean;
   metadata?: Record<string, any>;
+  deleted_at?: string;
 }
 
 function normalizeMetadata(meta: any): Record<string, any> | undefined {
   // Only return objects and arrays, or undefined otherwise
   if (meta && typeof meta === 'object') return meta as Record<string, any>;
   return undefined;
+}
+
+function filterActiveNotifications(notifications: Notification[]) {
+  return notifications.filter(n => !n.deleted_at);
 }
 
 export function useNotificationSystem() {
@@ -52,12 +56,12 @@ export function useNotificationSystem() {
         const notificationsSafe: Notification[] = (data || []).map((n: any) => ({
           ...n,
           metadata: normalizeMetadata(n.metadata),
-          // Defensive: Supabase returns null for booleans sometimes
           is_read: !!n.is_read,
+          deleted_at: n.deleted_at,
         }));
 
-        setNotifications(notificationsSafe);
-        setUnreadCount(notificationsSafe.filter(n => !n.is_read).length);
+        setNotifications(filterActiveNotifications(notificationsSafe));
+        setUnreadCount(filterActiveNotifications(notificationsSafe).filter(n => !n.is_read).length);
       } catch (error: any) {
         console.error('Error fetching notifications:', error.message);
       } finally {
@@ -85,6 +89,7 @@ export function useNotificationSystem() {
               ...newNotification,
               metadata: normalizeMetadata(newNotification.metadata),
               is_read: !!newNotification.is_read,
+              deleted_at: newNotification.deleted_at,
             },
             ...prev,
           ]);
@@ -160,4 +165,3 @@ export function useNotificationSystem() {
     markAllAsRead
   };
 }
-

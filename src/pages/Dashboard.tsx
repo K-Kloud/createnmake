@@ -1,4 +1,3 @@
-
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
@@ -11,8 +10,11 @@ import { ProfileCard } from "@/components/dashboard/ProfileCard";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 
 const Dashboard = () => {
+  useAuthGuard();
+
   const navigate = useNavigate();
   const { session, user } = useAuth();
   

@@ -1,4 +1,4 @@
-
+import React from "react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -37,136 +37,139 @@ import Designs from "@/pages/Designs";
 import Design from "@/pages/Design";
 import MakerDetail from "@/pages/MakerDetail";
 import Orders from "@/pages/Orders";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
-    <div className="app">
-      <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-            <Toaster />
-            <RouterProvider
-              router={createBrowserRouter([
-                {
-                  path: "/",
-                  element: <Index />,
-                },
-                {
-                  path: "/features",
-                  element: <Features />,
-                },
-                {
-                  path: "/testimonials",
-                  element: <Testimonials />,
-                },
-                {
-                  path: "/faq",
-                  element: <FAQ />,
-                },
-                {
-                  path: "/contact",
-                  element: <Contact />,
-                },
-                {
-                  path: "/auth/callback",
-                  element: <AuthCallback />,
-                },
-                {
-                  path: "/dashboard",
-                  element: <Dashboard />,
-                },
-                {
-                  path: "/create",
-                  element: <Create />,
-                },
-                {
-                  path: "/marketplace",
-                  element: <Marketplace />,
-                },
-                {
-                  path: "/admin",
-                  element: <Admin />,
-                },
-                {
-                  path: "/settings",
-                  element: <Settings />,
-                },
-                {
-                  path: "/designs",
-                  element: <Designs />,
-                },
-                {
-                  path: "/designs/:designId",
-                  element: <Design />,
-                },
-                {
-                  path: "/crm",
-                  element: <CRMDashboard />,
-                },
-                {
-                  path: "/crm/contacts",
-                  element: <CRMContacts />,
-                },
-                {
-                  path: "/crm/tasks",
-                  element: <CRMTasks />,
-                },
-                {
-                  path: "/crm/calendar",
-                  element: <CRMCalendar />,
-                },
-                {
-                  path: "/crm/analytics",
-                  element: <CRMAnalytics />,
-                },
-                {
-                  path: "/crm/communications",
-                  element: <CRMCommunications />,
-                },
-                {
-                  path: "/artisan",
-                  element: <Artisan />,
-                },
-                {
-                  path: "/artisan/onboarding",
-                  element: <ArtisanOnboarding />,
-                },
-                {
-                  path: "/manufacturer",
-                  element: <Manufacturer />,
-                },
-                {
-                  path: "/manufacturer/onboarding",
-                  element: <ManufacturerOnboarding />,
-                },
-                {
-                  path: "/creator/onboarding",
-                  element: <CreatorOnboardingPage />,
-                },
-                {
-                  path: "/creator/dashboard",
-                  element: <CreatorDashboardPage />,
-                },
-                {
-                  path: "/maker/:makerId",
-                  element: <MakerDetail />,
-                },
-                {
-                  path: "/orders",
-                  element: <Orders />,
-                },
-                {
-                  path: "/orders/:type/:orderId",
-                  element: <Orders />,
-                },
-              ])}
-            />
-          </ThemeProvider>
-        </QueryClientProvider>
-      </AuthProvider>
-    </div>
+    <ErrorBoundary>
+      <div className="app">
+        <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+              <Toaster />
+              <RouterProvider
+                router={createBrowserRouter([
+                  {
+                    path: "/",
+                    element: <Index />,
+                  },
+                  {
+                    path: "/features",
+                    element: <Features />,
+                  },
+                  {
+                    path: "/testimonials",
+                    element: <Testimonials />,
+                  },
+                  {
+                    path: "/faq",
+                    element: <FAQ />,
+                  },
+                  {
+                    path: "/contact",
+                    element: <Contact />,
+                  },
+                  {
+                    path: "/auth/callback",
+                    element: <AuthCallback />,
+                  },
+                  {
+                    path: "/dashboard",
+                    element: <Dashboard />,
+                  },
+                  {
+                    path: "/create",
+                    element: <Create />,
+                  },
+                  {
+                    path: "/marketplace",
+                    element: <Marketplace />,
+                  },
+                  {
+                    path: "/admin",
+                    element: <Admin />,
+                  },
+                  {
+                    path: "/settings",
+                    element: <Settings />,
+                  },
+                  {
+                    path: "/designs",
+                    element: <Designs />,
+                  },
+                  {
+                    path: "/designs/:designId",
+                    element: <Design />,
+                  },
+                  {
+                    path: "/crm",
+                    element: <CRMDashboard />,
+                  },
+                  {
+                    path: "/crm/contacts",
+                    element: <CRMContacts />,
+                  },
+                  {
+                    path: "/crm/tasks",
+                    element: <CRMTasks />,
+                  },
+                  {
+                    path: "/crm/calendar",
+                    element: <CRMCalendar />,
+                  },
+                  {
+                    path: "/crm/analytics",
+                    element: <CRMAnalytics />,
+                  },
+                  {
+                    path: "/crm/communications",
+                    element: <CRMCommunications />,
+                  },
+                  {
+                    path: "/artisan",
+                    element: <Artisan />,
+                  },
+                  {
+                    path: "/artisan/onboarding",
+                    element: <ArtisanOnboarding />,
+                  },
+                  {
+                    path: "/manufacturer",
+                    element: <Manufacturer />,
+                  },
+                  {
+                    path: "/manufacturer/onboarding",
+                    element: <ManufacturerOnboarding />,
+                  },
+                  {
+                    path: "/creator/onboarding",
+                    element: <CreatorOnboardingPage />,
+                  },
+                  {
+                    path: "/creator/dashboard",
+                    element: <CreatorDashboardPage />,
+                  },
+                  {
+                    path: "/maker/:makerId",
+                    element: <MakerDetail />,
+                  },
+                  {
+                    path: "/orders",
+                    element: <Orders />,
+                  },
+                  {
+                    path: "/orders/:type/:orderId",
+                    element: <Orders />,
+                  },
+                ])}
+              />
+            </ThemeProvider>
+          </QueryClientProvider>
+        </AuthProvider>
+      </div>
+    </ErrorBoundary>
   );
 }
 
