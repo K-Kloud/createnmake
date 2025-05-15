@@ -9,8 +9,10 @@ import {
   CarouselNext,
   CarouselPrevious
 } from "@/components/ui/carousel";
-import { AspectRatio, ResponsiveImage } from "@/components/ui/aspect-ratio";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useEffect, useState } from "react";
+import { useMarketplaceImages } from "./hooks/useMarketplaceImages";
+import { useSession } from "@supabase/auth-helpers-react";
 
 interface Collection {
   id: number;
@@ -25,9 +27,21 @@ export const FeaturedCollections = () => {
   const navigate = useNavigate();
   const [autoPlay, setAutoPlay] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
+  const session = useSession();
+  const { data: marketplaceImages, isLoading } = useMarketplaceImages(session?.user?.id);
   
-  // Sample featured collections with better images
-  const collections: Collection[] = [
+  // Create featured collections from marketplace images
+  const collections: Collection[] = (marketplaceImages || []).slice(0, 3).map(image => ({
+    id: image.id,
+    title: image.prompt ? (image.prompt.length > 40 ? image.prompt.substring(0, 40) + '...' : image.prompt) : "Featured Design",
+    description: `By ${image.creator.name}`,
+    imageUrl: image.url,
+    itemCount: image.likes + image.views,
+    category: "design"
+  }));
+
+  // Fallback collections if no marketplace images are available
+  const fallbackCollections: Collection[] = [
     {
       id: 1,
       title: "Summer Fashion",
@@ -54,6 +68,9 @@ export const FeaturedCollections = () => {
     }
   ];
 
+  // Use marketplace images if available, otherwise use fallback collections
+  const displayedCollections = collections.length > 0 ? collections : fallbackCollections;
+
   const handleCollectionClick = (id: number, category: string) => {
     navigate(`/marketplace?category=${category}&collection=${id}`);
   };
@@ -63,73 +80,82 @@ export const FeaturedCollections = () => {
     if (!autoPlay) return;
     
     const intervalId = setInterval(() => {
-      setActiveIndex((current) => (current + 1) % collections.length);
+      setActiveIndex((current) => (current + 1) % displayedCollections.length);
     }, 5000); // Change slide every 5 seconds
     
     return () => clearInterval(intervalId);
-  }, [autoPlay, collections.length]);
+  }, [autoPlay, displayedCollections.length]);
 
   return (
     <div className="mb-10">
       <h2 className="text-2xl font-bold mb-4">Featured Collections</h2>
       
-      {/* Main Carousel */}
-      <div className="relative mb-8">
-        <Carousel className="w-full" setApi={(api) => {
-          if (api) {
-            api.on('select', () => {
-              setActiveIndex(api.selectedScrollSnap());
-            });
-          }
-        }}>
-          <CarouselContent>
-            {collections.map((collection) => (
-              <CarouselItem key={collection.id} className="cursor-pointer">
-                <div 
-                  className="relative h-64 sm:h-80 md:h-96 w-full overflow-hidden rounded-lg transition-all duration-300 transform hover:scale-[1.01]"
-                  onClick={() => handleCollectionClick(collection.id, collection.category)}
-                >
-                  <AspectRatio ratio={16/9}>
-                    <img 
-                      src={collection.imageUrl} 
-                      alt={collection.title} 
-                      className="w-full h-full object-cover transition-transform duration-5000 ease-in-out hover:scale-110"
-                    />
-                  </AspectRatio>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                  <Badge className="absolute top-2 right-2">
-                    {collection.itemCount} items
-                  </Badge>
-                  <div className="absolute bottom-0 left-0 p-6 w-full">
-                    <h3 className="font-bold text-xl text-white mb-1">{collection.title}</h3>
-                    <p className="text-white/90">{collection.description}</p>
-                  </div>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="left-2 bg-black/30 hover:bg-black/50 border-none text-white" />
-          <CarouselNext className="right-2 bg-black/30 hover:bg-black/50 border-none text-white" />
-        </Carousel>
-
-        {/* Indicator dots */}
-        <div className="flex justify-center mt-4 gap-2">
-          {collections.map((_, index) => (
-            <button 
-              key={index} 
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                index === activeIndex ? 'bg-primary scale-125' : 'bg-gray-400/50'
-              }`}
-              onClick={() => setActiveIndex(index)}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
+      {/* Loading state */}
+      {isLoading && (
+        <div className="h-64 sm:h-80 md:h-96 w-full flex items-center justify-center bg-muted rounded-lg">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
-      </div>
+      )}
+      
+      {/* Main Carousel */}
+      {!isLoading && (
+        <div className="relative mb-8">
+          <Carousel className="w-full" setApi={(api) => {
+            if (api) {
+              api.on('select', () => {
+                setActiveIndex(api.selectedScrollSnap());
+              });
+            }
+          }}>
+            <CarouselContent>
+              {displayedCollections.map((collection) => (
+                <CarouselItem key={collection.id} className="cursor-pointer">
+                  <div 
+                    className="relative h-64 sm:h-80 md:h-96 w-full overflow-hidden rounded-lg transition-all duration-300 transform hover:scale-[1.01]"
+                    onClick={() => handleCollectionClick(collection.id, collection.category)}
+                  >
+                    <AspectRatio ratio={16/9}>
+                      <img 
+                        src={collection.imageUrl} 
+                        alt={collection.title} 
+                        className="w-full h-full object-cover transition-transform duration-5000 ease-in-out hover:scale-110"
+                      />
+                    </AspectRatio>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    <Badge className="absolute top-2 right-2">
+                      {collection.itemCount} interactions
+                    </Badge>
+                    <div className="absolute bottom-0 left-0 p-6 w-full">
+                      <h3 className="font-bold text-xl text-white mb-1">{collection.title}</h3>
+                      <p className="text-white/90">{collection.description}</p>
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-2 bg-black/30 hover:bg-black/50 border-none text-white" />
+            <CarouselNext className="right-2 bg-black/30 hover:bg-black/50 border-none text-white" />
+          </Carousel>
+
+          {/* Indicator dots */}
+          <div className="flex justify-center mt-4 gap-2">
+            {displayedCollections.map((_, index) => (
+              <button 
+                key={index} 
+                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                  index === activeIndex ? 'bg-primary scale-125' : 'bg-gray-400/50'
+                }`}
+                onClick={() => setActiveIndex(index)}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Grid of smaller cards below */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {collections.map(collection => (
+        {displayedCollections.map(collection => (
           <Card 
             key={collection.id}
             className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
@@ -142,7 +168,7 @@ export const FeaturedCollections = () => {
                 className="w-full h-full object-cover"
               />
               <Badge className="absolute top-2 right-2">
-                {collection.itemCount} items
+                {collection.itemCount} interactions
               </Badge>
             </div>
             <CardContent className="p-4">
