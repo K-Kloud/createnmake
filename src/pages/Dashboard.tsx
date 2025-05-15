@@ -1,3 +1,4 @@
+
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
@@ -11,10 +12,11 @@ import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { NotificationCenter } from "@/components/NotificationCenter";
 
 const Dashboard = () => {
-  useAuthGuard();
-
+  const { isAuthenticated } = useAuthGuard();
   const navigate = useNavigate();
   const { session, user } = useAuth();
   
@@ -33,44 +35,46 @@ const Dashboard = () => {
     }
   }, [session, navigate]);
 
-  if (!session || !profile) {
+  if (!isAuthenticated || !profile) {
     return null;
   }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <div className="container px-4 py-24 flex-grow">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Sidebar */}
-          <div className="lg:col-span-3">
-            <div className="space-y-6">
-              {/* Profile Card */}
-              <ProfileCard 
-                profile={profile} 
-                userEmail={session.user.email} 
-                userId={session.user.id}
-              />
+      <ErrorBoundary>
+        <div className="container px-4 py-24 flex-grow">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Sidebar */}
+            <div className="lg:col-span-3">
+              <div className="space-y-6">
+                {/* Profile Card */}
+                <ProfileCard 
+                  profile={profile} 
+                  userEmail={session?.user.email} 
+                  userId={session?.user.id}
+                />
 
-              {/* Stats Overview */}
-              <DashboardStats
-                generatedImagesCount={generatedImagesCount}
-                productsCount={productsCount}
-                ordersCount={ordersCount}
-                likesCount={likesCount}
-              />
+                {/* Stats Overview */}
+                <DashboardStats
+                  generatedImagesCount={generatedImagesCount}
+                  productsCount={productsCount}
+                  ordersCount={ordersCount}
+                  likesCount={likesCount}
+                />
 
-              {/* Quick Actions */}
-              <QuickActions />
+                {/* Quick Actions */}
+                <QuickActions />
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="lg:col-span-9">
+              <DashboardTabs />
             </div>
           </div>
-
-          {/* Main Content */}
-          <div className="lg:col-span-9">
-            <DashboardTabs />
-          </div>
         </div>
-      </div>
+      </ErrorBoundary>
       <Footer />
     </div>
   );

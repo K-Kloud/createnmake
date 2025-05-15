@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -48,6 +49,7 @@ export function useNotificationSystem() {
           .from('user_notifications')
           .select('*')
           .eq('user_id', user.id)
+          .is('deleted_at', null)  // Only get non-deleted notifications
           .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -84,6 +86,10 @@ export function useNotificationSystem() {
         (payload) => {
           // Add new notification to state
           const newNotification = payload.new as Notification;
+          
+          // Skip deleted notifications
+          if (newNotification.deleted_at) return;
+          
           setNotifications(prev => [
             {
               ...newNotification,
@@ -143,7 +149,8 @@ export function useNotificationSystem() {
         .from('user_notifications')
         .update({ is_read: true })
         .eq('user_id', user.id)
-        .eq('is_read', false);
+        .eq('is_read', false)
+        .is('deleted_at', null);  // Only update non-deleted notifications
 
       if (error) throw error;
 
@@ -157,11 +164,36 @@ export function useNotificationSystem() {
     }
   };
 
+  // Soft delete a notification
+  const deleteNotification = async (notificationId: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('user_notifications')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', notificationId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // Update local state
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      const removedNotification = notifications.find(n => n.id === notificationId);
+      if (removedNotification && !removedNotification.is_read) {
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (error: any) {
+      console.error('Error deleting notification:', error.message);
+    }
+  };
+
   return {
     notifications,
     unreadCount,
     isLoading,
     markAsRead,
-    markAllAsRead
+    markAllAsRead,
+    deleteNotification
   };
 }

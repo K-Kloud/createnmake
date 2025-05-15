@@ -1,3 +1,4 @@
+
 import { Bell, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,71 +13,75 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export function NotificationCenter() {
-  useAuthGuard(); // Protect notifications from unauthenticated access
+  // Check authentication status
+  const { isAuthenticated } = useAuthGuard('/', false); // Second parameter means don't redirect, just check
 
   const { notifications, unreadCount, isLoading, markAsRead, markAllAsRead } = useNotificationSystem();
   const { user } = useAuth();
 
-  if (!user) return null;
+  if (!user || !isAuthenticated) return null;
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          {unreadCount > 0 && (
-            <Badge 
-              className="absolute -top-1 -right-1 px-1.5 py-0.5 min-w-[1.25rem] min-h-[1.25rem] flex items-center justify-center"
-              variant="destructive"
-            >
-              {unreadCount > 99 ? "99+" : unreadCount}
-            </Badge>
-          )}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="end" side="bottom">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="font-medium text-lg">Notifications</h2>
-          {unreadCount > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={markAllAsRead}
-              className="h-8 text-xs"
-            >
-              <Check className="mr-1 h-3 w-3" />
-              Mark all as read
-            </Button>
-          )}
-        </div>
-        <ScrollArea className="h-[380px]">
-          {isLoading ? (
-            <div className="p-4 space-y-4">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <NotificationSkeleton key={i} />
-              ))}
-            </div>
-          ) : notifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
-              <Bell className="h-12 w-12 mb-3 opacity-20" />
-              <p>No notifications yet</p>
-            </div>
-          ) : (
-            <ul className="divide-y">
-              {notifications.map((notification) => (
-                <NotificationItem 
-                  key={notification.id} 
-                  notification={notification} 
-                  onMarkAsRead={markAsRead} 
-                />
-              ))}
-            </ul>
-          )}
-        </ScrollArea>
-      </PopoverContent>
-    </Popover>
+    <ErrorBoundary>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="ghost" size="icon" className="relative">
+            <Bell className="h-5 w-5" />
+            {unreadCount > 0 && (
+              <Badge 
+                className="absolute -top-1 -right-1 px-1.5 py-0.5 min-w-[1.25rem] min-h-[1.25rem] flex items-center justify-center"
+                variant="destructive"
+              >
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </Badge>
+            )}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-80 p-0" align="end" side="bottom">
+          <div className="flex items-center justify-between p-4 border-b">
+            <h2 className="font-medium text-lg">Notifications</h2>
+            {unreadCount > 0 && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={markAllAsRead}
+                className="h-8 text-xs"
+              >
+                <Check className="mr-1 h-3 w-3" />
+                Mark all as read
+              </Button>
+            )}
+          </div>
+          <ScrollArea className="h-[380px]">
+            {isLoading ? (
+              <div className="p-4 space-y-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <NotificationSkeleton key={i} />
+                ))}
+              </div>
+            ) : notifications.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
+                <Bell className="h-12 w-12 mb-3 opacity-20" />
+                <p>No notifications yet</p>
+              </div>
+            ) : (
+              <ul className="divide-y">
+                {notifications.map((notification) => (
+                  <NotificationItem 
+                    key={notification.id} 
+                    notification={notification} 
+                    onMarkAsRead={markAsRead} 
+                  />
+                ))}
+              </ul>
+            )}
+          </ScrollArea>
+        </PopoverContent>
+      </Popover>
+    </ErrorBoundary>
   );
 }
 

@@ -2,14 +2,23 @@
 import { useEffect } from 'react';
 import { useAuth } from './useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from './use-toast';
 
-export function useAuthGuard() {
+export function useAuthGuard(redirectPath = '/') {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!loading && !user) {
-      navigate('/'); // Redirect to homepage if not authenticated
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to access this page",
+        variant: "destructive",
+      });
+      navigate(redirectPath);
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, navigate, redirectPath, toast]);
+
+  return { isAuthenticated: !!user, isLoading: loading };
 }
