@@ -8,6 +8,7 @@ export interface Notification {
   created_at: string;
   is_read: boolean;
   metadata?: Record<string, any>;
+  deleted_at?: string | null;
 }
 
 export enum NotificationType {
