@@ -13,7 +13,7 @@ export interface Notification {
   created_at: string;
   is_read: boolean;
   metadata?: Record<string, any>;
-  deleted_at?: string;
+  deleted_at?: string | null;
 }
 
 function normalizeMetadata(meta: any): Record<string, any> | undefined {
@@ -171,7 +171,9 @@ export function useNotificationSystem() {
     try {
       const { error } = await supabase
         .from('user_notifications')
-        .update({ deleted_at: new Date().toISOString() })
+        .update({ 
+          deleted_at: new Date().toISOString() 
+        })
         .eq('id', notificationId)
         .eq('user_id', user.id);
 

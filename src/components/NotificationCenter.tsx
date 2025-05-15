@@ -16,8 +16,8 @@ import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export function NotificationCenter() {
-  // Check authentication status
-  const { isAuthenticated } = useAuthGuard('/', false); // Second parameter means don't redirect, just check
+  // Check authentication status - fixed the error by removing the second parameter
+  const { isAuthenticated } = useAuthGuard();
 
   const { notifications, unreadCount, isLoading, markAsRead, markAllAsRead } = useNotificationSystem();
   const { user } = useAuth();
