@@ -65,8 +65,8 @@ export const Header = () => {
   return (
     <>
       <header className="fixed top-0 w-full z-50 glass-card">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between max-w-7xl">
+          <div className="flex items-center">
             <button 
               className="bg-transparent text-primary border border-primary px-4 py-2 text-xl font-bold rounded-md hover:bg-primary/10 transition-all duration-200 hover:shadow-sm hover:shadow-primary/20 active:scale-95" 
               onClick={() => navigate("/")}
@@ -74,14 +74,18 @@ export const Header = () => {
               openteknologies
             </button>
           </div>
-          <div className="flex items-center space-x-4">
-            <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+          <div className="hidden md:flex items-center justify-center flex-1">
             <Navigation />
-            <UserMenu 
-              session={session} 
-              profile={profile} 
-              onShowAuthDialog={() => setShowAuthDialog(true)} 
-            />
+          </div>
+          <div className="flex items-center gap-3">
+            <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+            <div className="hidden sm:block">
+              <UserMenu 
+                session={session} 
+                profile={profile} 
+                onShowAuthDialog={() => setShowAuthDialog(true)} 
+              />
+            </div>
           </div>
         </div>
       </header>
