@@ -37,7 +37,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               );
             }, 0);
           } else if (event === 'SIGNED_IN') {
-            // Remove the check for new_since_last_visit which doesn't exist on User type
             setTimeout(async () => {
               await sendSecurityAlert(
                 currentSession.user.id,

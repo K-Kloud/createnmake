@@ -31,9 +31,13 @@ export const SignUpForm = ({
 }: SignUpFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
     try {
       // Clean up existing state
       cleanupAuthState();
@@ -84,6 +88,8 @@ export const SignUpForm = ({
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -122,8 +128,8 @@ export const SignUpForm = ({
           required
         />
       </div>
-      <Button className="w-full" type="submit" disabled={isLoading}>
-        {isLoading ? (
+      <Button className="w-full" type="submit" disabled={isLoading || isSubmitting}>
+        {isLoading || isSubmitting ? (
           <>
             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             Creating account...

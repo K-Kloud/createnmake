@@ -17,7 +17,7 @@ export const sendNotification = async ({
   metadata = {}
 }: SendNotificationParams) => {
   try {
-    const { error } = await supabase.functions.invoke("send-notification", {
+    const { error } = await supabase.functions.invoke("user-notifications", {
       body: {
         userId,
         title,

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthDialog } from "./auth/AuthDialog";
@@ -8,6 +7,7 @@ import { Navigation } from "./header/Navigation";
 import { ThemeToggle } from "./header/ThemeToggle";
 import { UserMenu } from "./header/UserMenu";
 import { AuthProvider } from "@/hooks/useAuth";
+import { NotificationCenter } from "@/components/NotificationCenter";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -79,6 +79,7 @@ export const Header = () => {
           </div>
           <div className="flex items-center gap-3">
             <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+            <NotificationCenter />
             <div className="hidden sm:block">
               <UserMenu 
                 session={session} 
