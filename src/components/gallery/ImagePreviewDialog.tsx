@@ -3,9 +3,9 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ImageControls } from "./image-preview/ImageControls";
 import { useImagePermissions } from "./image-preview/useImagePermissions";
 import { useImageDeletion } from "./image-preview/useImageDeletion";
-import { X, ZoomIn, ZoomOut, Eye, EyeOff } from "lucide-react";
+import { X, ZoomIn, ZoomOut, Eye, EyeOff, Maximize, Minimize } from "lucide-react";
 import { Button } from "../ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface ImagePreviewDialogProps {
@@ -42,6 +42,7 @@ export const ImagePreviewDialog = ({
   const [isPromptVisible, setIsPromptVisible] = useState(isGeneratedImage ? false : showPrompt);
   const [currentZoom, setCurrentZoom] = useState(zoomLevel);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
 
   // Update visibility when showPrompt prop changes
   useEffect(() => {
@@ -89,6 +90,15 @@ export const ImagePreviewDialog = ({
     setCurrentZoom(Math.max(currentZoom - 0.5, 1));
   };
 
+  // Toggle maximized state
+  const toggleMaximized = () => {
+    setIsMaximized(!isMaximized);
+    // Reset zoom when toggling maximized state
+    if (!isMaximized) {
+      setCurrentZoom(1);
+    }
+  };
+
   const handleImageLoad = () => {
     setImageLoaded(true);
   };
@@ -102,20 +112,50 @@ export const ImagePreviewDialog = ({
     });
   };
   
+  // Handle keyboard controls
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      if (isMaximized) {
+        setIsMaximized(false);
+      } else {
+        onOpenChange(false);
+      }
+    } else if (e.key === '+' || e.key === '=') {
+      handleZoomInWithTracking();
+    } else if (e.key === '-') {
+      handleZoomOutWithTracking();
+    } else if (e.key === 'm') {
+      toggleMaximized();
+    }
+  }, [isMaximized, onOpenChange, handleZoomInWithTracking, handleZoomOutWithTracking]);
+
+  useEffect(() => {
+    if (open) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [open, handleKeyDown]);
+  
   const webpUrl = getWebpUrl(imageUrl);
   const avifUrl = getAvifUrl(imageUrl);
   
+  const dialogClasses = isMaximized 
+    ? "max-w-[100vw] max-h-[100vh] p-0 sm:p-0 inset-0 rounded-none bg-black/95 backdrop-blur-xl flex flex-col" 
+    : "max-w-[95vw] max-h-[95vh] p-1 sm:p-6 bg-background/95 backdrop-blur-sm flex flex-col";
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[95vw] max-h-[95vh] p-1 sm:p-6 bg-background/95 backdrop-blur-sm flex flex-col">
+      <DialogContent className={`${dialogClasses} z-[100]`}>
         <DialogTitle className="sr-only">Image Preview</DialogTitle>
         
-        <div className="relative flex-1 flex items-center justify-center w-full h-full min-h-[50vh]">
+        <div className="relative flex-1 flex items-center justify-center w-full h-full">
           <div 
-            className="w-full h-full flex justify-center items-center" 
+            className="w-full h-full flex justify-center items-center overflow-auto" 
             onDoubleClick={handleDoubleClick}
           >
-            <div className={`w-full h-full flex items-center justify-center ${isGeneratedImage ? 'max-w-5xl' : 'w-full'}`}>
+            <div className={`flex items-center justify-center ${isMaximized ? 'w-full h-full' : 'max-w-5xl'}`}>
               <div className="relative w-full h-full flex items-center justify-center">
                 {!imageLoaded && (
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -128,17 +168,25 @@ export const ImagePreviewDialog = ({
                   <img 
                     src={imageUrl} 
                     alt={prompt} 
-                    style={{ transform: `scale(${currentZoom})` }} 
-                    className="max-w-full max-h-[80vh] object-contain transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,157,0.25)]" 
+                    style={{ 
+                      transform: `scale(${currentZoom})`,
+                      maxWidth: isMaximized ? 'none' : '100%',
+                      maxHeight: isMaximized ? 'none' : '80vh',
+                    }} 
+                    className={`${
+                      isMaximized ? 'max-w-none' : 'max-w-full max-h-[80vh]'
+                    } object-contain transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,157,0.25)]`}
                     onLoad={handleImageLoad}
                     onError={handleImageError}
                     loading="eager"
                     decoding="async"
                   />
                 </picture>
-                <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 bg-background/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm">
-                  {currentZoom.toFixed(1)}x zoom
-                </div>
+                {imageLoaded && (
+                  <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 bg-background/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm">
+                    {currentZoom.toFixed(1)}x zoom
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -151,6 +199,10 @@ export const ImagePreviewDialog = ({
             <Button variant="secondary" size="icon" onClick={handleZoomOutWithTracking} className="bg-background/80 backdrop-blur-sm hover:bg-background/60">
               <ZoomOut className="h-4 w-4" />
               <span className="sr-only">Zoom Out</span>
+            </Button>
+            <Button variant="secondary" size="icon" onClick={toggleMaximized} className="bg-background/80 backdrop-blur-sm hover:bg-background/60">
+              {isMaximized ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+              <span className="sr-only">{isMaximized ? 'Exit Full Screen' : 'Full Screen'}</span>
             </Button>
             <Button variant="secondary" size="icon" onClick={() => setIsPromptVisible(!isPromptVisible)} className="bg-background/80 backdrop-blur-sm hover:bg-background/60">
               {isPromptVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -168,14 +220,16 @@ export const ImagePreviewDialog = ({
             </div>
           )}
           
-          <ImageControls 
-            zoomLevel={currentZoom} 
-            onZoomIn={handleZoomInWithTracking} 
-            onZoomOut={handleZoomOutWithTracking} 
-            onDelete={() => handleDelete(imageId, userId, canDelete)} 
-            canDelete={canDelete} 
-            isDeleting={isDeleting} 
-          />
+          {!isMaximized && (
+            <ImageControls 
+              zoomLevel={currentZoom} 
+              onZoomIn={handleZoomInWithTracking} 
+              onZoomOut={handleZoomOutWithTracking} 
+              onDelete={() => handleDelete(imageId, userId, canDelete)} 
+              canDelete={canDelete} 
+              isDeleting={isDeleting} 
+            />
+          )}
         </div>
       </DialogContent>
     </Dialog>

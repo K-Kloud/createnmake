@@ -39,7 +39,7 @@ export const PreviewDialog = ({
           <DialogTitle>Generated Image Preview</DialogTitle>
         </DialogHeader>
         <div 
-          className="bg-card/50 rounded-lg flex flex-col items-center justify-center min-h-[400px] gap-4"
+          className="bg-card/50 rounded-lg flex flex-col items-center justify-center min-h-[400px] gap-4 p-4"
         >
           {isGenerating ? (
             <GeneratingState />
