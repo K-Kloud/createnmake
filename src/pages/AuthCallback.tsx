@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { sendWelcomeNotification } from "@/services/notificationService";
-import { Icons } from "@/components/Icons"; // Add this import for Icons
+import { Icons } from "@/components/Icons"; 
 
 const AuthCallback = () => {
   const navigate = useNavigate();
@@ -30,10 +30,8 @@ const AuthCallback = () => {
             // Extract username from email or use a default
             const username = session.user.email?.split('@')[0] || 'user';
             
-            // Use RLS service role client to bypass RLS policies
-            const { data: serviceClient } = await supabase.auth.getSession();
-            
-            // Insert with service role client to bypass RLS
+            // Insert profile with the authenticated user
+            // The RLS policy now allows users to create their own profiles
             const { error } = await supabase
               .from("profiles")
               .insert({

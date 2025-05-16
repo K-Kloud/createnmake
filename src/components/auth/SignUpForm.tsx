@@ -62,18 +62,19 @@ export const SignUpForm = ({
       
       if (signUpError) throw signUpError;
 
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: data.user?.id,
-          username,
-          updated_at: new Date().toISOString(),
-        });
-
-      if (profileError) throw profileError;
-      
-      // Send welcome notification
       if (data.user) {
+        // Create profile directly (RLS now allows this)
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            username,
+            updated_at: new Date().toISOString(),
+          });
+  
+        if (profileError) console.error("Profile creation error:", profileError);
+        
+        // Send welcome notification
         await sendWelcomeNotification(data.user.id);
       }
 

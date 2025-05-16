@@ -75,7 +75,7 @@ export const usePhoneAuth = (
           .single();
           
         if (!existingProfile) {
-          // Insert directly with auth'd user (RLS should allow users to create their own profiles)
+          // Create profile using current authenticated session (RLS policies now allow this)
           const { error: profileError } = await supabase
             .from('profiles')
             .insert({
