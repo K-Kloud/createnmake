@@ -1,18 +1,16 @@
-
 export const cleanupAuthState = () => {
-  // Remove standard auth tokens
+  // Clear auth state from local storage
   localStorage.removeItem('supabase.auth.token');
+  sessionStorage.removeItem('supabase.auth.token');
   
-  // Remove all Supabase auth keys from localStorage
-  Object.keys(localStorage).forEach((key) => {
-    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-      localStorage.removeItem(key);
-    }
-  });
+  // Clear any additional auth-related data
+  const authKeys = Object.keys(localStorage).filter(key => 
+    key.startsWith('supabase.auth.') || key.includes('token') || key.includes('session')
+  );
   
-  // Remove from sessionStorage if in use
-  Object.keys(sessionStorage || {}).forEach((key) => {
-    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+  authKeys.forEach(key => {
+    localStorage.removeItem(key);
+    if (sessionStorage.getItem(key)) {
       sessionStorage.removeItem(key);
     }
   });

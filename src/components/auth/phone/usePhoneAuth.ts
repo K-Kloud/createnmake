@@ -67,21 +67,30 @@ export const usePhoneAuth = (
 
       // If it's a sign-up, create a profile record
       if (isSignUp && data?.user) {
-        // Use the username that was stored when sending the OTP
-        const { error: profileError } = await supabase
+        // Check if profile already exists
+        const { data: existingProfile } = await supabase
           .from('profiles')
-          .upsert({
-            id: data.user.id,
-            username: username,
-            updated_at: new Date().toISOString(),
-          });
-
-        if (profileError) {
-          console.error("Error creating profile:", profileError);
-          // Continue anyway as auth was successful
-        } else {
-          // Send welcome notification for new users
-          await sendWelcomeNotification(data.user.id);
+          .select('id')
+          .eq('id', data.user.id)
+          .single();
+          
+        if (!existingProfile) {
+          // Insert directly with auth'd user (RLS should allow users to create their own profiles)
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              id: data.user.id,
+              username: username || data.user.phone || 'user',
+              updated_at: new Date().toISOString(),
+            });
+          
+          if (profileError) {
+            console.error("Error creating profile:", profileError);
+            // Continue anyway as auth was successful
+          } else {
+            // Send welcome notification for new users
+            await sendWelcomeNotification(data.user.id);
+          }
         }
       }
 
