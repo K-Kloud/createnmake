@@ -1,3 +1,4 @@
+
 import {
   Loader2,
   Apple,
@@ -8,6 +9,10 @@ import {
   Instagram,
   Linkedin,
   Twitter,
+  LayoutDashboard,
+  Check,
+  Clock,
+  AlertCircle,
 } from "lucide-react";
 
 export const Icons = {
@@ -20,4 +25,8 @@ export const Icons = {
   instagram: Instagram,
   linkedin: Linkedin,
   twitter: Twitter,
+  layoutDashboard: LayoutDashboard,
+  check: Check,
+  clock: Clock,
+  alertCircle: AlertCircle,
 };
