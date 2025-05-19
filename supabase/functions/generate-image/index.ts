@@ -71,7 +71,16 @@ serve(async (req) => {
         );
       }
       
-      throw new Error(errorData.error?.message || 'Failed to generate image');
+      return new Response(
+        JSON.stringify({ 
+          error: errorData.error?.message || 'Failed to generate image',
+          details: errorData.error
+        }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
     }
 
     const data = await response.json();
@@ -98,6 +107,31 @@ serve(async (req) => {
 
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
+    // Check if the bucket exists, create if it doesn't
+    try {
+      const { data: bucketData, error: bucketCheckError } = await supabaseClient.storage
+        .getBucket('generated-images');
+      
+      if (bucketCheckError && bucketCheckError.message.includes('not found')) {
+        // Bucket doesn't exist, create it
+        const { data: newBucket, error: createError } = await supabaseClient.storage
+          .createBucket('generated-images', {
+            public: true,
+            fileSizeLimit: 5242880 // 5MB
+          });
+        
+        if (createError) {
+          console.error('Error creating bucket:', createError);
+          throw new Error('Failed to create storage bucket');
+        }
+        
+        console.log('Created storage bucket "generated-images"');
+      }
+    } catch (bucketError) {
+      console.error('Error checking/creating bucket:', bucketError);
+      // Continue anyway, the upload will fail if the bucket truly doesn't exist
+    }
+
     // Upload to Supabase Storage
     const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
     const { data: uploadData, error: uploadError } = await supabaseClient.storage
@@ -110,35 +144,7 @@ serve(async (req) => {
 
     if (uploadError) {
       console.error('Upload error:', uploadError);
-      
-      // Check if storage bucket doesn't exist
-      if (uploadError.message?.includes('storage/bucket-not-found')) {
-        // Try to create the bucket
-        try {
-          const { data: bucketData, error: bucketError } = await supabaseClient.storage.createBucket('generated-images', {
-            public: true,
-            fileSizeLimit: 5242880, // 5MB
-          });
-          
-          if (bucketError) throw bucketError;
-          
-          // Try upload again after bucket creation
-          const { data: retryData, error: retryError } = await supabaseClient.storage
-            .from('generated-images')
-            .upload(fileName, imageBlob, {
-              contentType: 'image/png',
-              cacheControl: '3600',
-              upsert: false
-            });
-            
-          if (retryError) throw retryError;
-        } catch (bucketOperationError) {
-          console.error('Failed to create bucket or retry upload:', bucketOperationError);
-          throw new Error('Failed to create storage bucket for images');
-        }
-      } else {
-        throw new Error('Failed to upload generated image');
-      }
+      throw new Error(`Failed to upload generated image: ${uploadError.message}`);
     }
 
     // Get the public URL
@@ -162,7 +168,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         error: error.message || 'An unexpected error occurred',
-        details: error.details || null
+        details: error.toString()
       }),
       { 
         status: 500,

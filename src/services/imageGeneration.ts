@@ -33,6 +33,12 @@ export const generateImage = async (params: GenerateImageParams) => {
 
     console.log('Function response:', data);
 
+    if (data.error) {
+      // Handle error returned by the function with 2xx status
+      console.error('Function returned an error:', data.error);
+      throw new Error(data.error || 'Error in image generation');
+    }
+
     if (!data.url) {
       console.error('Invalid response structure:', data);
       throw new Error(data.error || 'No image URL in response');
