@@ -4,3 +4,5 @@ project_id = "igkiffajkpfwdfxwokwg"
 verify_jwt = false
 [functions.user-notifications]
 verify_jwt = false
+[functions.generate-image]
+verify_jwt = false

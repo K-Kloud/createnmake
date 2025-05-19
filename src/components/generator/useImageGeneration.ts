@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { generateImage } from "@/services/imageGeneration";
@@ -61,8 +62,11 @@ export const useImageGeneration = () => {
       }
 
       // Generate the image and get back the Supabase storage URL
+      const combinedPrompt = `${selectedItem}: ${prompt}`;
+      console.log('Sending generation request with prompt:', combinedPrompt);
+      
       const result = await generateImage({
-        prompt: `${selectedItem}: ${prompt}`,
+        prompt: combinedPrompt,
         width: 1024,
         height: 1024,
         referenceImage: referenceImageBase64
@@ -72,12 +76,14 @@ export const useImageGeneration = () => {
         throw new Error('No image URL received from generation service');
       }
 
+      console.log('Received image URL:', result.url);
+
       // Create the database record with the permanent URL
       const { data: dbRecord, error: dbError } = await supabase
         .from('generated_images')
         .insert({
           user_id: session.user.id,
-          prompt: `${selectedItem}: ${prompt}`,
+          prompt: combinedPrompt,
           item_type: selectedItem,
           aspect_ratio: selectedRatio,
           status: 'completed',
@@ -91,14 +97,20 @@ export const useImageGeneration = () => {
 
       if (dbError) {
         console.error('Database error:', dbError);
-        throw dbError;
+        // Continue even if database record creation fails
+        // We don't want to block the UI if just the record creation fails
+        toast({
+          title: "Warning",
+          description: "Image was generated but couldn't be saved to your history",
+          variant: "default",
+        });
       }
 
       setGeneratedImageUrl(result.url);
       
       toast({
         title: "Image Generated",
-        description: "Your image has been generated and stored successfully",
+        description: "Your image has been generated successfully",
       });
     } catch (error: any) {
       console.error('Generation error:', error);

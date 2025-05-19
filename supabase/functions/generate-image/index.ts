@@ -36,6 +36,7 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not configured');
     }
 
+    // Updated API call with explicit dimensions and quality settings
     const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
@@ -48,19 +49,20 @@ serve(async (req) => {
         n: 1,
         size: "1024x1024",
         quality: "standard",
+        response_format: "url"
       }),
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      console.error('OpenAI API error:', error);
+      const errorData = await response.json();
+      console.error('OpenAI API error:', errorData);
       
       // Handle safety system rejections specifically
-      if (error.error?.message?.includes('safety system')) {
+      if (errorData.error?.message?.includes('safety system')) {
         return new Response(
           JSON.stringify({
             error: "Your prompt was flagged by our safety system. Please try rephrasing it or use different terms.",
-            details: error.error
+            details: errorData.error
           }),
           { 
             status: 400,
@@ -69,7 +71,7 @@ serve(async (req) => {
         );
       }
       
-      throw new Error(error.error?.message || 'Failed to generate image');
+      throw new Error(errorData.error?.message || 'Failed to generate image');
     }
 
     const data = await response.json();
@@ -108,7 +110,35 @@ serve(async (req) => {
 
     if (uploadError) {
       console.error('Upload error:', uploadError);
-      throw new Error('Failed to upload generated image');
+      
+      // Check if storage bucket doesn't exist
+      if (uploadError.message?.includes('storage/bucket-not-found')) {
+        // Try to create the bucket
+        try {
+          const { data: bucketData, error: bucketError } = await supabaseClient.storage.createBucket('generated-images', {
+            public: true,
+            fileSizeLimit: 5242880, // 5MB
+          });
+          
+          if (bucketError) throw bucketError;
+          
+          // Try upload again after bucket creation
+          const { data: retryData, error: retryError } = await supabaseClient.storage
+            .from('generated-images')
+            .upload(fileName, imageBlob, {
+              contentType: 'image/png',
+              cacheControl: '3600',
+              upsert: false
+            });
+            
+          if (retryError) throw retryError;
+        } catch (bucketOperationError) {
+          console.error('Failed to create bucket or retry upload:', bucketOperationError);
+          throw new Error('Failed to create storage bucket for images');
+        }
+      } else {
+        throw new Error('Failed to upload generated image');
+      }
     }
 
     // Get the public URL

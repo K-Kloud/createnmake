@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 export interface GenerateImageParams {
@@ -34,7 +35,7 @@ export const generateImage = async (params: GenerateImageParams) => {
 
     if (!data.url) {
       console.error('Invalid response structure:', data);
-      throw new Error('No image URL in response');
+      throw new Error(data.error || 'No image URL in response');
     }
 
     return data;
