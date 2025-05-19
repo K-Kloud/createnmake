@@ -39,7 +39,7 @@ export const useMarketplaceQuery = (session: Session | null) => {
         // Now, get the comments separately for each image
         const imagesWithComments = await Promise.all(
           images.map(async (image) => {
-            // Get comments for this image
+            // Get comments for this image with proper profile joins
             const { data: comments, error: commentsError } = await supabase
               .from('comments')
               .select(`
@@ -47,7 +47,11 @@ export const useMarketplaceQuery = (session: Session | null) => {
                 text,
                 created_at,
                 user_id,
-                profiles:user_id (username, avatar_url)
+                profiles:user_id (
+                  id, 
+                  username,
+                  avatar_url
+                )
               `)
               .eq('image_id', image.id);
 
@@ -56,7 +60,7 @@ export const useMarketplaceQuery = (session: Session | null) => {
               // Create a new object with the comments property
               return { ...image, comments: [] };
             } else {
-              // Now get replies for each comment
+              // Now get replies for each comment with proper profile joins
               const commentsWithReplies = await Promise.all(
                 (comments || []).map(async (comment) => {
                   const { data: replies, error: repliesError } = await supabase
@@ -66,7 +70,11 @@ export const useMarketplaceQuery = (session: Session | null) => {
                       text,
                       created_at,
                       user_id,
-                      profiles:user_id (username, avatar_url)
+                      profiles:user_id (
+                        id,
+                        username,
+                        avatar_url
+                      )
                     `)
                     .eq('comment_id', comment.id);
 

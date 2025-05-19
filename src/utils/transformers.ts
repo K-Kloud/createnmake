@@ -1,3 +1,4 @@
+
 import { GalleryImage, Comment, Reply } from "@/types/gallery";
 import { formatDistanceToNow } from "date-fns";
 
@@ -7,25 +8,25 @@ export const transformComments = (comments: any[]): Comment[] => {
     text: comment.text,
     user: {
       id: comment.user_id,
-      name: comment.profiles?.username || 'Anonymous',
+      name: comment.profiles?.username || 'Anonymous User',
       avatar: comment.profiles?.avatar_url || '/placeholder.svg'
     },
-    createdAt: new Date(comment.created_at),
+    createdAt: new Date(comment.created_at || Date.now()),
     replies: comment.comment_replies?.map((reply: any): Reply => ({
       id: reply.id,
       text: reply.text,
       user: {
         id: reply.user_id,
-        name: reply.profiles?.username || 'Anonymous',
+        name: reply.profiles?.username || 'Anonymous User',
         avatar: reply.profiles?.avatar_url || '/placeholder.svg'
       },
-      createdAt: new Date(reply.created_at)
+      createdAt: new Date(reply.created_at || Date.now())
     })) || []
   }));
 };
 
 export const transformImage = (image: any, userId?: string): GalleryImage => {
-  const createdAt = new Date(image.created_at);
+  const createdAt = new Date(image.created_at || Date.now());
   
   return {
     id: image.id,
@@ -36,7 +37,7 @@ export const transformImage = (image: any, userId?: string): GalleryImage => {
     comments: transformComments(image.comments || []),
     produced: 0,
     creator: {
-      name: image.profiles?.username || 'Anonymous',
+      name: image.profiles?.username || 'Anonymous User',
       avatar: image.profiles?.avatar_url || '/placeholder.svg'
     },
     createdAt,

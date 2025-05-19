@@ -1,6 +1,7 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { Session } from "@supabase/supabase-js";
+import { isValid, parseISO } from "date-fns";
 
 export const transformImageWithDefaultMetrics = (image: any, session: Session | null) => ({
   ...image,
@@ -25,24 +26,32 @@ export const transformImageWithMetrics = (image: any, session: Session | null, m
 });
 
 export const transformComments = (comments: any[] = []) => {
-  return comments.map(comment => ({
-    id: comment.id,
-    text: comment.text,
-    createdAt: new Date(comment.created_at),
-    user: {
-      id: comment.user_id,
-      name: comment.profiles?.username || 'Anonymous',
-      avatar: comment.profiles?.avatar_url || 'https://github.com/shadcn.png'
-    },
-    replies: comment.comment_replies?.map((reply: any) => ({
-      id: reply.id,
-      text: reply.text,
-      createdAt: new Date(reply.created_at),
+  return comments.map(comment => {
+    const createdDate = comment.created_at ? new Date(comment.created_at) : new Date();
+    
+    return {
+      id: comment.id,
+      text: comment.text,
+      createdAt: createdDate,
       user: {
-        id: reply.user_id,
-        name: reply.profiles?.username || 'Anonymous',
-        avatar: reply.profiles?.avatar_url || 'https://github.com/shadcn.png'
-      }
-    })) || []
-  })) || [];
+        id: comment.user_id,
+        name: comment.profiles?.username || 'Anonymous User',
+        avatar: comment.profiles?.avatar_url || 'https://github.com/shadcn.png'
+      },
+      replies: (comment.comment_replies || []).map((reply: any) => {
+        const replyDate = reply.created_at ? new Date(reply.created_at) : new Date();
+        
+        return {
+          id: reply.id,
+          text: reply.text,
+          createdAt: replyDate,
+          user: {
+            id: reply.user_id,
+            name: reply.profiles?.username || 'Anonymous User',
+            avatar: reply.profiles?.avatar_url || 'https://github.com/shadcn.png'
+          }
+        };
+      })
+    };
+  });
 };

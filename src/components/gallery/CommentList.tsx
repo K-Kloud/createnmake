@@ -9,6 +9,7 @@ import { Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
+import { getInitials } from "@/lib/utils";
 
 interface Reply {
   id: number;
@@ -83,16 +84,38 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
     }
   };
 
-  const formatDate = (date: Date | string) => {
-    if (!date) return 'No date';
+  const formatDate = (date: Date | string | null | undefined) => {
+    if (!date) return 'Recently';
     
-    const dateObj = typeof date === 'string' ? parseISO(date) : date;
+    let dateObj: Date;
     
-    if (!isValid(dateObj)) {
-      return 'Invalid date';
+    if (typeof date === 'string') {
+      try {
+        dateObj = parseISO(date);
+      } catch (error) {
+        console.error('Error parsing date string:', error, date);
+        return 'Invalid date';
+      }
+    } else {
+      dateObj = date;
     }
     
-    return format(dateObj, "MMM d, yyyy 'at' h:mm a");
+    if (!isValid(dateObj)) {
+      console.warn('Invalid date object:', dateObj);
+      return 'Recently';
+    }
+    
+    try {
+      return format(dateObj, "MMM d, yyyy 'at' h:mm a");
+    } catch (error) {
+      console.error('Error formatting date:', error, dateObj);
+      return 'Recently';
+    }
+  };
+
+  const getUserInitials = (name: string) => {
+    if (!name || name === 'Anonymous User') return '?';
+    return getInitials(name);
   };
 
   return (
@@ -102,13 +125,13 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
           <div className="flex space-x-3">
             <Avatar className="h-8 w-8">
               <AvatarImage src={comment.user.avatar} alt={comment.user.name} />
-              <AvatarFallback>{comment.user.name ? comment.user.name[0] : '?'}</AvatarFallback>
+              <AvatarFallback>{getUserInitials(comment.user.name)}</AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <span className="font-bold text-white text-sm">
-                    {comment.user.name || 'Anonymous User'}
+                    {comment.user.name}
                   </span>
                   <span className="text-xs text-gray-400">
                     {formatDate(comment.createdAt)}
@@ -163,12 +186,12 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
                   <div key={reply.id} className="flex space-x-3 mt-2">
                     <Avatar className="h-6 w-6">
                       <AvatarImage src={reply.user.avatar} alt={reply.user.name} />
-                      <AvatarFallback>{reply.user.name ? reply.user.name[0] : '?'}</AvatarFallback>
+                      <AvatarFallback>{getUserInitials(reply.user.name)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
                         <span className="font-medium text-sm">
-                          {reply.user.name || 'User'}
+                          {reply.user.name}
                         </span>
                         <span className="text-xs text-gray-400">
                           {formatDate(reply.createdAt)}
