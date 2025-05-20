@@ -24,28 +24,22 @@ const generateImage = async (params: {
   userId: string;
 }): Promise<ImageGenerationResult> => {
   try {
-    const response = await fetch("/api/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    // Update to use the Supabase edge function instead of a local API endpoint
+    const { data, error } = await supabase.functions.invoke("generate-image", {
+      body: {
         prompt: params.prompt,
         itemType: params.itemType,
         aspectRatio: params.aspectRatio,
         referenceImageUrl: params.referenceImageUrl,
-      }),
+      },
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error(`Image generation API error: ${response.status}`, errorData);
-      return { success: false, error: errorData.error || `API error (${response.status})` };
+    if (error) {
+      console.error(`Image generation API error:`, error);
+      return { success: false, error: error.message || `API error` };
     }
 
-    const data = await response.json();
-
-    if (!data.output_url) {
+    if (!data || !data.url) {
       console.error("No output URL in response", data);
       return { success: false, error: "No image URL returned from the API" };
     }
@@ -57,7 +51,7 @@ const generateImage = async (params: {
         {
           user_id: params.userId,
           prompt: params.prompt,
-          image_url: data.output_url,
+          image_url: data.url,
           item_type: params.itemType,
           aspect_ratio: params.aspectRatio,
           reference_image_url: params.referenceImageUrl,
@@ -68,10 +62,10 @@ const generateImage = async (params: {
     if (dbError) {
       console.error("Database error when saving image:", dbError);
       // We still return success even if DB save fails, as the image was generated
-      return { success: true, imageUrl: data.output_url };
+      return { success: true, imageUrl: data.url };
     }
 
-    return { success: true, imageUrl: data.output_url };
+    return { success: true, imageUrl: data.url };
   } catch (error: any) {
     console.error("Image generation error:", error);
     return { success: false, error: error.message || "Unknown error occurred" };

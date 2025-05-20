@@ -14,7 +14,7 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, width = 1024, height = 1024, referenceImage } = await req.json()
+    const { prompt, itemType, aspectRatio, referenceImageUrl } = await req.json()
     
     console.log('Generating image with prompt:', prompt)
 
@@ -36,6 +36,30 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not configured');
     }
 
+    // Get dimensions from aspect ratio
+    let width = 1024;
+    let height = 1024;
+
+    if (aspectRatio === 'portrait') {
+      width = 1080;
+      height = 1350;
+    } else if (aspectRatio === 'landscape' || aspectRatio === 'youtube') {
+      width = 1920;
+      height = 1080;
+    } else if (aspectRatio === 'story') {
+      width = 1080;
+      height = 1920;
+    } else if (aspectRatio === 'facebook' || aspectRatio === 'linkedin') {
+      width = 1200;
+      height = 630;
+    } else if (aspectRatio === 'twitter') {
+      width = 1600;
+      height = 900;
+    }
+
+    // Define size based on allowed DALL-E sizes
+    const size = width >= height ? "1024x1024" : "1024x1792"; 
+    
     // Updated API call with explicit dimensions and quality settings
     const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
@@ -47,7 +71,7 @@ serve(async (req) => {
         model: "dall-e-3",
         prompt: enhancedPrompt,
         n: 1,
-        size: "1024x1024",
+        size: size,
         quality: "standard",
         response_format: "url"
       }),
