@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Select,
@@ -23,9 +24,10 @@ const aspectRatios = {
 interface AspectRatioSelectProps {
   value: string;
   onChange: (value: string) => void;
+  disabled?: boolean; // Add optional disabled prop
 }
 
-export const AspectRatioSelect = ({ value, onChange }: AspectRatioSelectProps) => {
+export const AspectRatioSelect = ({ value, onChange, disabled }: AspectRatioSelectProps) => {
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium">Output Size</label>
@@ -40,6 +42,7 @@ export const AspectRatioSelect = ({ value, onChange }: AspectRatioSelectProps) =
                   ? 'bg-primary text-primary-foreground' 
                   : 'bg-card/30 hover:bg-card/50'
               }`}
+            disabled={disabled} // Use the disabled prop
           >
             <Icon className="w-4 h-4 mb-1" />
             <span className="text-xs text-center">{label}</span>
