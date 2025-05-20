@@ -1,107 +1,87 @@
+
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { ShieldCheck } from "lucide-react";
-import { useAdminAccess } from "@/hooks/useAdminAccess";
-import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { Bell } from "lucide-react";
-import { useNotifications } from "@/context/NotificationContext";
-import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Settings, LogOut, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { EnhancedNotificationBell } from "../notifications/EnhancedNotificationBell";
 
-interface UserMenuProps {
-  session: any;
-  profile: any;
-  onShowAuthDialog: () => void;
-}
-
-export const UserMenu = ({ session, profile, onShowAuthDialog }: UserMenuProps) => {
+export function UserMenu() {
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { isAdmin } = useAdminAccess();
-  
-  // Special case for kalux2@gmail.com
-  const isSpecialAdmin = session?.user?.email === "kalux2@gmail.com";
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Signed out successfully",
-      description: "You have been logged out of your account.",
-    });
-    navigate('/');
-  };
-
-  if (!session?.user) {
+  if (!user) {
     return (
-      <Button 
-        className="bg-primary hover:bg-primary-hover"
-        onClick={onShowAuthDialog}
-        aria-label="Sign in or register"
-      >
-        Get Started
+      <Button onClick={() => navigate("/auth")} variant="ghost" size="sm">
+        Sign In
       </Button>
     );
   }
 
-  const { unreadCount } = useNotifications();
+  const initials = user.email
+    ? user.email
+        .split("@")[0]
+        .split(".")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+    : "U";
+
+  const userProfileImage = user.user_metadata?.avatar_url;
 
   return (
     <div className="flex items-center gap-2">
-      {/* Add the notification bell for logged-in users */}
-      {session && <NotificationBell />}
+      <EnhancedNotificationBell />
       
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Avatar className="h-8 w-8 cursor-pointer" aria-label="User menu">
-            <AvatarImage src={profile?.avatar_url} alt={profile?.username || session.user.email} />
-            <AvatarFallback>{(profile?.username?.[0] || session.user.email?.[0])?.toUpperCase()}</AvatarFallback>
-          </Avatar>
+          <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+            <Avatar className="h-9 w-9">
+              <AvatarImage src={userProfileImage} alt={user.email || ""} />
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+          </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuItem onClick={() => navigate("/dashboard")}>
-            Dashboard
-          </DropdownMenuItem>
-          {(isAdmin || isSpecialAdmin) && (
-            <DropdownMenuItem onClick={() => navigate("/admin")}>
-              <ShieldCheck className="mr-2 h-4 w-4" />
-              Admin Panel
-            </DropdownMenuItem>
-          )}
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuLabel>
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">{user.email}</p>
+              <p className="text-xs leading-none text-muted-foreground">
+                {user.role || "User"}
+              </p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link to="/notifications" className="flex items-center justify-between w-full">
-              <span className="flex items-center">
-                <Bell className="mr-2 h-4 w-4" />
-                Notifications
-              </span>
-              {unreadCount > 0 && (
-                <Badge variant="destructive" className="ml-2 px-1.5 py-0.5 text-xs">
-                  {unreadCount > 99 ? '99+' : unreadCount}
-                </Badge>
-              )}
+            <Link to="/settings" className="flex items-center cursor-pointer">
+              <User className="mr-2 h-4 w-4" />
+              <span>Profile</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/settings")}>
-            Settings
+          <DropdownMenuItem asChild>
+            <Link to="/settings" className="flex items-center cursor-pointer">
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Settings</span>
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem 
-            onClick={handleSignOut}
-            className="text-red-500 focus:text-red-500"
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => signOut()}
           >
-            Sign Out
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Log out</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
   );
-};
+}

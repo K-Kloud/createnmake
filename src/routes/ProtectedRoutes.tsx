@@ -1,5 +1,5 @@
 
-import { Route } from "react-router-dom";
+import { Route, Fragment } from "react-router-dom";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 // Pages
@@ -15,10 +15,11 @@ import Admin from "@/pages/Admin";
 import Subscription from "@/pages/Subscription";
 import SubscriptionSuccess from "@/pages/subscription/Success";
 import SubscriptionCancel from "@/pages/subscription/Cancel";
+import { NotificationCenterPage } from "@/pages/NotificationCenterPage";
 
 export const ProtectedRoutes = () => {
   return (
-    <>
+    <Fragment>
       <Route path="/create" element={
         <ProtectedRoute>
           <Create />
@@ -47,6 +48,11 @@ export const ProtectedRoutes = () => {
       <Route path="/notifications" element={
         <ProtectedRoute>
           <Notifications />
+        </ProtectedRoute>
+      } />
+      <Route path="/notifications/center" element={
+        <ProtectedRoute>
+          <NotificationCenterPage />
         </ProtectedRoute>
       } />
       <Route path="/maker/:id" element={
@@ -81,6 +87,6 @@ export const ProtectedRoutes = () => {
           <Admin />
         </ProtectedRoute>
       } />
-    </>
+    </Fragment>
   );
 };
