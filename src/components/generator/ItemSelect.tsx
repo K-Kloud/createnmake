@@ -39,9 +39,11 @@ const additionalItems = [
   { value: "toy", label: "Toy Design" },
 ];
 
+// Combine all items for immediate availability
+const allItems = [...initialItems, ...additionalItems];
+
 // Ensure all item values have an entry in the keywordSuggestions
 const validateItemsInSuggestions = () => {
-  const allItems = [...initialItems, ...additionalItems];
   const missingSuggestions = allItems.filter(item => !keywordSuggestions[item.value]);
   
   if (missingSuggestions.length > 0) {
@@ -63,20 +65,16 @@ interface ItemSelectProps {
 
 export const ItemSelect = ({ value, onChange, disabled = false, isLoading = false }: ItemSelectProps) => {
   const [open, setOpen] = useState(false);
-  const [items, setItems] = useState([...initialItems]);
+  // Initialize with all items already included
+  const [items] = useState(allItems);
   const [loading, setLoading] = useState(false);
-
-  // Load all items immediately
-  useEffect(() => {
-    setItems([...initialItems, ...additionalItems]);
-  }, []);
 
   // For animation purposes only
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     if (newOpen) {
       setLoading(true);
-      // Simulate API delay
+      // Simulate API delay with proper cleanup
       const timer = setTimeout(() => {
         setLoading(false);
       }, 300);
@@ -90,7 +88,7 @@ export const ItemSelect = ({ value, onChange, disabled = false, isLoading = fals
   // Debug log to track selection
   useEffect(() => {
     if (value) {
-      console.log('Selected item:', value, selectedItem);
+      console.log('Selected item:', value, selectedItem || 'Item not found in options');
     }
   }, [value, selectedItem]);
 
