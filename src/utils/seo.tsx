@@ -1,9 +1,72 @@
-
 /**
  * Utility functions for SEO optimization
  */
 import React from 'react';
 import { StructuredDataProps } from '@/types/seo';
+import { Helmet } from "react-helmet";
+
+export interface SEOProps {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: string;
+  noIndex?: boolean;
+  keywords?: string[];
+}
+
+export const SEO = ({
+  title,
+  description,
+  canonical,
+  ogImage,
+  ogType = "website",
+  noIndex = false,
+  keywords = [],
+}: SEOProps) => {
+  const baseTitle = "Lovable Fashion Designer";
+  const siteUrl = window.location.origin;
+  const fullTitle = title ? `${title} | ${baseTitle}` : baseTitle;
+  const defaultDescription = 
+    "Design and create beautiful clothing and fashion items with AI. Generate garments, collaborate with makers, and bring your fashion ideas to reality.";
+  const metaDescription = description || defaultDescription;
+  const metaImage = ogImage || `${siteUrl}/og-image.png`;
+  const canonicalUrl = canonical || siteUrl;
+
+  return (
+    <Helmet>
+      <title>{fullTitle}</title>
+      <meta name="description" content={metaDescription} />
+      <link rel="canonical" href={canonicalUrl} />
+      
+      {/* Open Graph Tags */}
+      <meta property="og:title" content={fullTitle} />
+      <meta property="og:description" content={metaDescription} />
+      <meta property="og:image" content={metaImage} />
+      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:type" content={ogType} />
+      
+      {/* Twitter Card Tags */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={fullTitle} />
+      <meta name="twitter:description" content={metaDescription} />
+      <meta name="twitter:image" content={metaImage} />
+      
+      {/* Other Meta Tags */}
+      {keywords.length > 0 && (
+        <meta name="keywords" content={keywords.join(", ")} />
+      )}
+      
+      {/* Index Control */}
+      {noIndex && (
+        <>
+          <meta name="robots" content="noindex, nofollow" />
+          <meta name="googlebot" content="noindex, nofollow" />
+        </>
+      )}
+    </Helmet>
+  );
+};
 
 // Function to remove duplicate content with canonical URLs
 export const setCanonicalLink = (url: string) => {

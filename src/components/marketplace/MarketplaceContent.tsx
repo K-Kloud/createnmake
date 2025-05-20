@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { MarketplaceLoader } from "@/components/marketplace/MarketplaceLoader";
-import { MarketplaceGrid } from "@/components/marketplace/MarketplaceGrid";
+import { PaginatedMarketplace } from "@/components/marketplace/PaginatedMarketplace";
 import { GalleryImage } from "@/types/gallery";
 import { supabase } from "@/integrations/supabase/client";
 import { sendWelcomeNotification } from "@/services/notificationService";
 import { ProductDetail } from "@/components/marketplace/ProductDetail";
-import { Wishlist, WishlistItem } from "@/components/marketplace/Wishlist";
+import { Wishlist } from "@/components/marketplace/Wishlist";
 import { useToast } from "@/hooks/use-toast";
+import { ImageCard } from "@/components/gallery/ImageCard";
+import { useInView } from "react-intersection-observer";
 
 interface MarketplaceContentProps {
   isLoading: boolean;
@@ -17,6 +19,8 @@ interface MarketplaceContentProps {
   onAddReply: (imageId: number, commentId: number, reply: string) => void;
   onLoadMore: () => void;
   hasMore: boolean;
+  error?: Error | null;
+  onRetry?: () => void;
 }
 
 export const MarketplaceContent = ({
@@ -27,13 +31,15 @@ export const MarketplaceContent = ({
   onAddComment,
   onAddReply,
   onLoadMore,
-  hasMore
+  hasMore,
+  error,
+  onRetry
 }: MarketplaceContentProps) => {
   const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isProductDetailOpen, setIsProductDetailOpen] = useState(false);
   const [similarProducts, setSimilarProducts] = useState<GalleryImage[]>([]);
+  const [viewMode, setViewMode] = useState<"paginated" | "infinite">("paginated");
   
   // Check for new user session and send welcome notification
   useEffect(() => {
@@ -71,10 +77,6 @@ export const MarketplaceContent = ({
     setSimilarProducts(similar);
   };
 
-  if (isLoading) {
-    return <MarketplaceLoader />;
-  }
-
   const handleImageClick = (image: GalleryImage) => {
     setSelectedImage(image);
     
@@ -84,7 +86,7 @@ export const MarketplaceContent = ({
       setIsProductDetailOpen(true);
     } else {
       // Otherwise open regular preview
-      setIsPreviewOpen(true);
+      setIsProductDetailOpen(true);
     }
     
     onView(image.id);
@@ -100,34 +102,87 @@ export const MarketplaceContent = ({
     });
   };
 
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView && hasMore && viewMode === "infinite") {
+      onLoadMore();
+    }
+  }, [inView, hasMore, onLoadMore, viewMode]);
+
   return (
     <>
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex space-x-2">
+          <button 
+            onClick={() => setViewMode("paginated")}
+            className={`px-3 py-1 rounded-md ${viewMode === "paginated" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
+            aria-label="Switch to paginated view"
+          >
+            Paginated
+          </button>
+          <button 
+            onClick={() => setViewMode("infinite")}
+            className={`px-3 py-1 rounded-md ${viewMode === "infinite" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
+            aria-label="Switch to infinite scroll view"
+          >
+            Infinite Scroll
+          </button>
+        </div>
         <Wishlist onProductClick={handleImageClick} />
       </div>
       
-      <MarketplaceGrid
-        images={images}
-        onLike={onLike}
-        onView={onView}
-        onAddComment={onAddComment}
-        onAddReply={onAddReply}
-        onLoadMore={onLoadMore}
-        hasMore={hasMore}
-        onImageClick={handleImageClick}
-      />
+      {viewMode === "paginated" ? (
+        <PaginatedMarketplace
+          images={images}
+          isLoading={isLoading}
+          error={error}
+          onRetry={onRetry}
+          onLike={onLike}
+          onView={onView}
+          onAddComment={onAddComment}
+          onAddReply={onAddReply}
+          onImageClick={handleImageClick}
+        />
+      ) : (
+        <>
+          {isLoading && images.length === 0 ? (
+            <MarketplaceLoader />
+          ) : (
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {images.map((image) => (
+                  <div key={image.id} className="transform transition-all duration-300 hover:scale-[1.02]">
+                    <ImageCard
+                      image={image}
+                      onLike={onLike}
+                      onView={onView}
+                      onAddComment={onAddComment}
+                      onAddReply={onAddReply}
+                      onFullImageClick={() => handleImageClick(image)}
+                    />
+                  </div>
+                ))}
+              </div>
+              {hasMore && (
+                <div ref={ref} className="flex justify-center p-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
 
       {selectedImage && (
-        <>
-          <ProductDetail 
-            isOpen={isProductDetailOpen}
-            onClose={() => setIsProductDetailOpen(false)}
-            product={selectedImage}
-            onLike={onLike}
-            onShare={handleProductShare}
-            similarProducts={similarProducts}
-          />
-        </>
+        <ProductDetail 
+          isOpen={isProductDetailOpen}
+          onClose={() => setIsProductDetailOpen(false)}
+          product={selectedImage}
+          onLike={onLike}
+          onShare={handleProductShare}
+          similarProducts={similarProducts}
+        />
       )}
     </>
   );
