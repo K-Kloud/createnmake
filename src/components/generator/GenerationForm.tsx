@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Zap, Plus, ImageIcon, X } from "lucide-react";
+import { Loader2, Zap, Plus, ImageIcon, X, Paperclip, Mic, Send } from "lucide-react";
 import { ItemSelect } from "./ItemSelect";
 import { AspectRatioSelect } from "./AspectRatioSelect";
 import { ReferenceImageUpload } from "./ReferenceImageUpload";
@@ -10,6 +10,7 @@ import { KeywordSuggestions } from "./KeywordSuggestions";
 import { useSubscription } from "@/hooks/useSubscription";
 import { Progress } from "@/components/ui/progress";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface GenerationFormProps {
   prompt: string;
@@ -128,49 +129,93 @@ export const GenerationForm = ({
 
         <div className="space-y-2">
           <label className="text-sm font-medium">Prompt</label>
-          <div className="relative">
+          <div className="relative flex items-center bg-black/30 border border-white/10 rounded-lg overflow-hidden">
             <Input
               value={prompt}
               onChange={(e) => onPromptChange(e.target.value)}
-              placeholder={`Describe the ${selectedItem} you want to create...`}
-              className="bg-card/30 pr-14"
+              placeholder={`Ask anything, create anything...`}
+              className="border-0 bg-transparent pr-24 focus-visible:ring-0 focus-visible:ring-offset-0"
               disabled={isGenerating}
             />
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full shadow-md bg-primary hover:bg-primary/90 text-primary-foreground button-glow"
-                  size="icon"
-                  disabled={isGenerating}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-72 p-4">
-                <label 
-                  htmlFor="prompt-file-upload" 
-                  className={`
-                    flex flex-col items-center justify-center cursor-pointer
-                    ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}
-                  `}
-                >
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                    <ImageIcon className="h-6 w-6 text-primary" />
-                  </div>
-                  <span className="text-sm font-medium">Add reference image</span>
-                  <p className="text-xs text-muted-foreground mt-1">PNG, JPG, GIF up to 10MB</p>
-                  <input
-                    id="prompt-file-upload"
-                    name="prompt-file-upload"
-                    type="file"
-                    accept="image/*"
-                    className="sr-only"
-                    onChange={handleFileChange}
-                    disabled={isGenerating}
-                  />
-                </label>
-              </PopoverContent>
-            </Popover>
+            <div className="absolute right-2 flex items-center space-x-1">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full text-muted-foreground hover:bg-primary/20 hover:text-primary"
+                          disabled={isGenerating}
+                        >
+                          <Paperclip className="h-4 w-4" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-72 p-4">
+                        <label 
+                          htmlFor="prompt-file-upload" 
+                          className={`
+                            flex flex-col items-center justify-center cursor-pointer
+                            ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}
+                          `}
+                        >
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                            <ImageIcon className="h-6 w-6 text-primary" />
+                          </div>
+                          <span className="text-sm font-medium">Add reference image</span>
+                          <p className="text-xs text-muted-foreground mt-1">PNG, JPG, GIF up to 10MB</p>
+                          <input
+                            id="prompt-file-upload"
+                            name="prompt-file-upload"
+                            type="file"
+                            accept="image/*"
+                            className="sr-only"
+                            onChange={handleFileChange}
+                            disabled={isGenerating}
+                          />
+                        </label>
+                      </PopoverContent>
+                    </Popover>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p>Add reference image</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-full text-muted-foreground hover:bg-primary/20 hover:text-primary"
+                      disabled={isGenerating}
+                    >
+                      <Mic className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p>Voice input (coming soon)</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <Button
+                variant="ghost" 
+                size="icon"
+                className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                onClick={onGenerate}
+                disabled={isGenerating || !isSignedIn || !canGenerateImage || !prompt.trim()}
+              >
+                {isGenerating ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
 
