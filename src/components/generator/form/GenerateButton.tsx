@@ -16,7 +16,7 @@ export const GenerateButton = ({
   remainingImages 
 }: GenerateButtonProps) => {
   return (
-    <div className="pt-2">
+    <>
       <Button
         onClick={onClick}
         className="w-full"
@@ -37,6 +37,6 @@ export const GenerateButton = ({
           You have {remainingImages} image{remainingImages !== 1 ? 's' : ''} remaining this month
         </p>
       )}
-    </div>
+    </>
   );
 };
