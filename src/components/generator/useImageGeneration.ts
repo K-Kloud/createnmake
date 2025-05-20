@@ -1,9 +1,9 @@
 
 import { useState } from "react";
-import { useCreateImage } from "@/services/imageGeneration";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { useAuth } from "@/hooks/useAuth";
+import { useReferenceImageUpload } from "@/hooks/useReferenceImageUpload";
+import { useImageGenerationAPI } from "@/hooks/useImageGenerationAPI";
+import { useAuthDialog } from "@/hooks/useAuthDialog";
 import { useSubscription } from "@/hooks/useSubscription";
 
 export const useImageGeneration = () => {
@@ -11,10 +11,12 @@ export const useImageGeneration = () => {
   const [selectedItem, setSelectedItem] = useState("product");
   const [selectedRatio, setSelectedRatio] = useState("square");
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [referenceImage, setReferenceImage] = useState<File | null>(null);
-  const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const { toast } = useToast();
-  const { session } = useAuth();
+  
+  // Use our new smaller hooks
+  const { referenceImage, setReferenceImage, uploadReferenceImage } = useReferenceImageUpload();
+  const { createImage, isGenerating, generatedImageUrl } = useImageGenerationAPI();
+  const { authDialogOpen, setAuthDialogOpen, isSignedIn, session } = useAuthDialog();
   const { 
     subscriptionStatus, 
     canGenerateImage, 
@@ -22,25 +24,9 @@ export const useImageGeneration = () => {
     refetchStatus
   } = useSubscription();
 
-  // Create image mutation
-  const { mutate: createImage, isPending: isGenerating, data: generatedImageUrl } = useCreateImage({
-    onSuccess: () => {
-      setPreviewOpen(true);
-      // Refresh subscription status after generating an image
-      refetchStatus();
-    },
-    onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message || "Failed to generate image",
-      });
-    },
-  });
-
   // Handle generate button click
   const handleGenerate = async () => {
-    if (!session?.user) {
+    if (!isSignedIn) {
       setAuthDialogOpen(true);
       return;
     }
@@ -66,41 +52,11 @@ export const useImageGeneration = () => {
     }
 
     try {
+      // Upload reference image if provided
       let referenceImageUrl = null;
       if (referenceImage) {
-        // Check if reference-images bucket exists, create if it doesn't
-        const { data: buckets } = await supabase.storage.listBuckets();
-        if (!buckets?.some(bucket => bucket.name === "reference-images")) {
-          await supabase.storage.createBucket("reference-images", {
-            public: true,
-            fileSizeLimit: 10 * 1024 * 1024 // 10MB
-          });
-        }
-        
-        // Upload reference image to storage if provided
-        const { data, error } = await supabase.storage
-          .from("reference-images")
-          .upload(`${Date.now()}-${referenceImage.name}`, referenceImage, {
-            cacheControl: "3600",
-            upsert: false
-          });
-
-        if (error) {
-          console.error("Reference image upload error:", error);
-          toast({
-            variant: "destructive",
-            title: "Upload Error",
-            description: `Failed to upload reference image: ${error.message}`,
-          });
-          return;
-        }
-        
-        // Get public URL for the uploaded reference image
-        const { data: publicUrl } = supabase.storage
-          .from("reference-images")
-          .getPublicUrl(data.path);
-          
-        referenceImageUrl = publicUrl.publicUrl;
+        referenceImageUrl = await uploadReferenceImage(referenceImage);
+        if (!referenceImageUrl) return; // Upload failed
       }
 
       // Call the generate image function with all parameters
@@ -108,8 +64,14 @@ export const useImageGeneration = () => {
         prompt,
         itemType: selectedItem,
         aspectRatio: selectedRatio,
-        referenceImageUrl: referenceImageUrl,
+        referenceImageUrl,
       });
+      
+      // Open preview dialog when generation starts
+      setPreviewOpen(true);
+      
+      // Refresh subscription status after generating an image
+      refetchStatus();
     } catch (error: any) {
       console.error("Generation preparation error:", error);
       toast({

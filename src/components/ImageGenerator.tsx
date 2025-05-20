@@ -1,4 +1,3 @@
-
 import { useImageGeneration } from "./generator/useImageGeneration";
 import { GenerationForm } from "./generator/GenerationForm";
 import { PreviewDialog } from "./generator/PreviewDialog";
@@ -6,6 +5,7 @@ import { AuthDialog } from "./auth/AuthDialog";
 import { Card } from "./ui/card";
 
 export const ImageGenerator = () => {
+  // Keep using the same hook which internally uses the refactored hooks
   const {
     prompt,
     setPrompt,
