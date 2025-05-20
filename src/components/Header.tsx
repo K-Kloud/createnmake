@@ -1,19 +1,23 @@
+
+// This is an update to the existing Header.tsx file
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthDialog } from "./auth/AuthDialog";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Navigation } from "./header/Navigation";
 import { ThemeToggle } from "./header/ThemeToggle";
 import { UserMenu } from "./header/UserMenu";
 import { AuthProvider } from "@/hooks/useAuth";
 import { NotificationCenter } from "@/components/NotificationCenter";
+import { ResponsiveNavigation } from "./ResponsiveNavigation";
+import { useResponsive } from "@/hooks/useResponsive";
 
 export const Header = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true); // Set dark mode as default
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { isAtLeast } = useResponsive();
 
   // Set up auth state listener
   useEffect(() => {
@@ -52,7 +56,7 @@ export const Header = () => {
     enabled: !!session?.user?.id,
   });
 
-  // Add a new item to the navigation
+  // Main navigation items
   const mainNav = [
     {
       title: "Home",
@@ -76,6 +80,14 @@ export const Header = () => {
     },
   ];
 
+  // Add Dashboard link if user is logged in
+  if (session?.user) {
+    mainNav.push({
+      title: "Dashboard",
+      href: "/dashboard",
+    });
+  }
+
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
@@ -98,18 +110,30 @@ export const Header = () => {
               openteknologies
             </button>
           </div>
+          
+          {/* Use the ResponsiveNavigation component */}
           <div className="hidden md:flex items-center justify-center flex-1">
-            <Navigation />
+            <ResponsiveNavigation items={mainNav} />
           </div>
+          
           <div className="flex items-center gap-3">
             <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
-            <NotificationCenter />
-            <div className="hidden sm:block">
+            
+            {session?.user && (
+              <NotificationCenter />
+            )}
+            
+            <div className={isAtLeast('sm') ? 'block' : 'hidden'}>
               <UserMenu 
                 session={session} 
                 profile={profile} 
                 onShowAuthDialog={() => setShowAuthDialog(true)} 
               />
+            </div>
+            
+            {/* Mobile navigation */}
+            <div className="md:hidden">
+              <ResponsiveNavigation items={mainNav} />
             </div>
           </div>
         </div>

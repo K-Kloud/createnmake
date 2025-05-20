@@ -10,6 +10,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  refreshSession: () => Promise<Session | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -59,6 +60,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
+  const refreshSession = async () => {
+    try {
+      const { data } = await supabase.auth.getSession();
+      const refreshedSession = data.session;
+      if (refreshedSession) {
+        setSession(refreshedSession);
+        setUser(refreshedSession.user);
+      }
+      return refreshedSession;
+    } catch (error) {
+      console.error("Error refreshing session:", error);
+      return null;
+    }
+  };
+
   const signOut = async () => {
     try {
       // Clean up auth state
@@ -71,6 +87,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // Ignore errors
       }
       
+      // Clear local state
+      setSession(null);
+      setUser(null);
+      
       // Force page reload for a clean state
       window.location.href = '/';
     } catch (error) {
@@ -79,7 +99,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, loading, signOut }}>
+    <AuthContext.Provider value={{ 
+      session, 
+      user, 
+      loading, 
+      signOut,
+      refreshSession 
+    }}>
       {children}
     </AuthContext.Provider>
   );

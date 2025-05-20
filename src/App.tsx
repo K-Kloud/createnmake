@@ -1,6 +1,8 @@
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ErrorBoundary } from "react-error-boundary";
 
 // Pages
 import Index from "@/pages/Index";
@@ -19,108 +21,182 @@ import Admin from "@/pages/Admin";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/NotFound";
 import AuthCallback from "@/pages/AuthCallback";
+import Auth from "@/pages/Auth";
 import Subscription from "@/pages/Subscription";
 import SubscriptionSuccess from "@/pages/subscription/Success";
 import SubscriptionCancel from "@/pages/subscription/Cancel";
 
 // Components
 import "./App.css";
-import { Header } from "./components/Header";
-import { Footer } from "./components/Footer";
-import { Toaster } from "./components/ui/toaster";
 import { ThemeProvider } from "./components/theme-provider";
-import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ErrorFallback } from "./components/ErrorFallback";
+import { Toaster } from "./components/ui/toaster";
+import { AuthProvider } from "@/hooks/useAuth";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
-// CRM Pages
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <Helmet>
+          <title>Fashionify - AI Fashion & Furniture Design Generator</title>
+          <meta
+            name="description"
+            content="Create stunning fashion designs, furniture concepts, and more with AI. Turn your ideas into beautiful renderings instantly."
+          />
+        </Helmet>
+        <BrowserRouter>
+          <AuthProvider>
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Index />} />
+                <Route path="/features" element={<Features />} />
+                <Route path="/testimonials" element={<Testimonials />} />
+                <Route path="/faq" element={<FAQ />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
+                <Route path="/marketplace" element={<Marketplace />} />
+
+                {/* Protected Routes */}
+                <Route path="/create" element={
+                  <ProtectedRoute>
+                    <Create />
+                  </ProtectedRoute>
+                } />
+                <Route path="/design/:id" element={
+                  <ProtectedRoute>
+                    <Design />
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/designs" element={
+                  <ProtectedRoute>
+                    <Designs />
+                  </ProtectedRoute>
+                } />
+                <Route path="/orders" element={
+                  <ProtectedRoute>
+                    <Orders />
+                  </ProtectedRoute>
+                } />
+                <Route path="/maker/:id" element={
+                  <ProtectedRoute>
+                    <MakerDetail />
+                  </ProtectedRoute>
+                } />
+                <Route path="/settings" element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                } />
+                <Route path="/subscription" element={
+                  <ProtectedRoute>
+                    <Subscription />
+                  </ProtectedRoute>
+                } />
+                <Route path="/subscription/success" element={
+                  <ProtectedRoute>
+                    <SubscriptionSuccess />
+                  </ProtectedRoute>
+                } />
+                <Route path="/subscription/cancel" element={
+                  <ProtectedRoute>
+                    <SubscriptionCancel />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Admin Routes with extra protection */}
+                <Route path="/admin/*" element={
+                  <ProtectedRoute>
+                    <Admin />
+                  </ProtectedRoute>
+                } />
+
+                {/* CRM Routes */}
+                <Route path="/crm/*" element={
+                  <ProtectedRoute>
+                    <Routes>
+                      <Route path="/" element={<CRMDashboard />} />
+                      <Route path="/contacts" element={<CRMContacts />} />
+                      <Route path="/tasks" element={<CRMTasks />} />
+                      <Route path="/analytics" element={<CRMAnalytics />} />
+                      <Route path="/calendar" element={<CRMCalendar />} />
+                      <Route path="/communications" element={<CRMCommunications />} />
+                    </Routes>
+                  </ProtectedRoute>
+                } />
+
+                {/* Creator Routes */}
+                <Route path="/creator/*" element={
+                  <ProtectedRoute>
+                    <Routes>
+                      <Route path="/" element={<CreatorDashboardPage />} />
+                      <Route path="/onboarding" element={<CreatorOnboardingPage />} />
+                    </Routes>
+                  </ProtectedRoute>
+                } />
+
+                {/* Artisan Routes */}
+                <Route path="/artisan/*" element={
+                  <ProtectedRoute>
+                    <Routes>
+                      <Route path="/" element={<Artisan />} />
+                      <Route path="/onboarding" element={<ArtisanOnboarding />} />
+                    </Routes>
+                  </ProtectedRoute>
+                } />
+
+                {/* Manufacturer Routes */}
+                <Route path="/manufacturer/*" element={
+                  <ProtectedRoute>
+                    <Routes>
+                      <Route path="/" element={<Manufacturer />} />
+                      <Route path="/onboarding" element={<ManufacturerOnboarding />} />
+                    </Routes>
+                  </ProtectedRoute>
+                } />
+
+                {/* 404 Route */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              <Toaster />
+            </ErrorBoundary>
+          </AuthProvider>
+        </BrowserRouter>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+}
+
+// Import these components after the App function to avoid hoisting issues
 import CRMDashboard from "./pages/CRMDashboard";
 import CRMContacts from "./pages/CRMContacts";
 import CRMTasks from "./pages/CRMTasks";
 import CRMAnalytics from "./pages/CRMAnalytics";
 import CRMCalendar from "./pages/CRMCalendar";
 import CRMCommunications from "./pages/CRMCommunications";
-
-// Creator Pages
 import CreatorDashboardPage from "./pages/CreatorDashboardPage";
 import CreatorOnboardingPage from "./pages/CreatorOnboardingPage";
-
-// Artisan Pages
 import Artisan from "./pages/Artisan";
 import ArtisanOnboarding from "./pages/ArtisanOnboarding";
-
-// Manufacturer Pages
 import Manufacturer from "./pages/Manufacturer";
 import ManufacturerOnboarding from "./pages/ManufacturerOnboarding";
-
-function App() {
-  return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <Helmet>
-        <title>Fashionify - AI Fashion & Furniture Design Generator</title>
-        <meta
-          name="description"
-          content="Create stunning fashion designs, furniture concepts, and more with AI. Turn your ideas into beautiful renderings instantly."
-        />
-      </Helmet>
-      <BrowserRouter>
-        <ErrorBoundary>
-          <div className="flex flex-col min-h-[100dvh]">
-            <Header />
-            <div className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/features" element={<Features />} />
-                <Route path="/testimonials" element={<Testimonials />} />
-                <Route path="/faq" element={<FAQ />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/create" element={<Create />} />
-                <Route path="/design/:id" element={<Design />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/designs" element={<Designs />} />
-                <Route path="/marketplace" element={<Marketplace />} />
-                <Route path="/orders" element={<Orders />} />
-                <Route path="/maker/:id" element={<MakerDetail />} />
-                <Route path="/admin/*" element={<Admin />} />
-                <Route path="/settings" element={<Settings />} />
-
-                {/* New Subscription Routes */}
-                <Route path="/subscription" element={<Subscription />} />
-                <Route path="/subscription/success" element={<SubscriptionSuccess />} />
-                <Route path="/subscription/cancel" element={<SubscriptionCancel />} />
-
-                {/* Auth Callback */}
-                <Route path="/auth/callback" element={<AuthCallback />} />
-
-                {/* CRM Routes */}
-                <Route path="/crm" element={<CRMDashboard />} />
-                <Route path="/crm/contacts" element={<CRMContacts />} />
-                <Route path="/crm/tasks" element={<CRMTasks />} />
-                <Route path="/crm/analytics" element={<CRMAnalytics />} />
-                <Route path="/crm/calendar" element={<CRMCalendar />} />
-                <Route path="/crm/communications" element={<CRMCommunications />} />
-
-                {/* Creator Routes */}
-                <Route path="/creator" element={<CreatorDashboardPage />} />
-                <Route path="/creator/onboarding" element={<CreatorOnboardingPage />} />
-
-                {/* Artisan Routes */}
-                <Route path="/artisan" element={<Artisan />} />
-                <Route path="/artisan/onboarding" element={<ArtisanOnboarding />} />
-
-                {/* Manufacturer Routes */}
-                <Route path="/manufacturer" element={<Manufacturer />} />
-                <Route path="/manufacturer/onboarding" element={<ManufacturerOnboarding />} />
-
-                {/* 404 Route */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </div>
-            <Footer />
-            <Toaster />
-          </div>
-        </ErrorBoundary>
-      </BrowserRouter>
-    </ThemeProvider>
-  );
-}
 
 export default App;
