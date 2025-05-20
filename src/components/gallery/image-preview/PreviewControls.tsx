@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ZoomIn, ZoomOut, Maximize, Minimize, Eye, EyeOff, X } from "lucide-react";
+import { KeyboardShortcutsButton } from "./KeyboardShortcutsHelp";
 
 interface PreviewControlsProps {
   isMaximized: boolean;
@@ -39,6 +40,7 @@ export const PreviewControls = ({
         {isPromptVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         <span className="sr-only">{isPromptVisible ? 'Hide' : 'Show'} Prompt</span>
       </Button>
+      <KeyboardShortcutsButton />
       <Button variant="secondary" size="icon" onClick={onClose} className="bg-background/80 backdrop-blur-sm hover:bg-background/60">
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>

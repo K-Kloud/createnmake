@@ -89,10 +89,12 @@ export const usePreviewDialog = ({
       handleZoomIn();
     } else if (e.key === '-') {
       handleZoomOut();
-    } else if (e.key === 'm') {
+    } else if (e.key === 'm' || e.key === 'M') {
       toggleMaximized();
+    } else if (e.key === 'p' || e.key === 'P') {
+      togglePromptVisibility();
     }
-  }, [isMaximized, onOpenChange, handleZoomIn, handleZoomOut, toggleMaximized]);
+  }, [isMaximized, onOpenChange, handleZoomIn, handleZoomOut, toggleMaximized, togglePromptVisibility]);
 
   useEffect(() => {
     if (open) {
