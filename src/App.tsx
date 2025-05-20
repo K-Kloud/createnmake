@@ -1,6 +1,5 @@
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Helmet } from "react-helmet";
 
 // Pages
@@ -120,7 +119,6 @@ function App() {
           </div>
         </ErrorBoundary>
       </BrowserRouter>
-      <ReactQueryDevtools initialIsOpen={false} />
     </ThemeProvider>
   );
 }
