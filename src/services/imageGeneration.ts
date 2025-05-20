@@ -1,3 +1,4 @@
+
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -36,15 +37,21 @@ const generateImage = async (params: {
       }),
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error(`Image generation API error: ${response.status}`, errorData);
+      return { success: false, error: errorData.error || `API error (${response.status})` };
+    }
+
     const data = await response.json();
 
-    if (response.status !== 200) {
-      console.error(`Image generation failed: ${data.error}`);
-      return { success: false, error: data.error };
+    if (!data.output_url) {
+      console.error("No output URL in response", data);
+      return { success: false, error: "No image URL returned from the API" };
     }
 
     // Save the generated image details to Supabase
-    const { data: imageRecord, error: dbError } = await supabase
+    const { error: dbError } = await supabase
       .from("generated_images")
       .insert([
         {
@@ -56,18 +63,18 @@ const generateImage = async (params: {
           reference_image_url: params.referenceImageUrl,
           status: 'completed'
         },
-      ])
-      .select()
+      ]);
 
     if (dbError) {
-      console.error("DB insert error:", dbError);
-      return { success: false, error: "Failed to save image details" };
+      console.error("Database error when saving image:", dbError);
+      // We still return success even if DB save fails, as the image was generated
+      return { success: true, imageUrl: data.output_url };
     }
 
     return { success: true, imageUrl: data.output_url };
   } catch (error: any) {
     console.error("Image generation error:", error);
-    return { success: false, error: error.message };
+    return { success: false, error: error.message || "Unknown error occurred" };
   }
 };
 
@@ -78,17 +85,6 @@ export const useCreateImage = (options?: UseMutationOptions<string, Error, Image
     mutationFn: async (params) => {
       if (!session?.user) {
         throw new Error("You need to be logged in to generate images");
-      }
-
-      // Check if reference image bucket exists, if not create it
-      const { data: buckets } = await supabase.storage.listBuckets();
-      const refImageBucket = buckets?.find(b => b.name === "reference-images");
-      
-      if (!refImageBucket) {
-        await supabase.storage.createBucket("reference-images", {
-          public: true,
-          fileSizeLimit: 10 * 1024 * 1024, // 10MB limit
-        });
       }
       
       // Generate the image using the service function

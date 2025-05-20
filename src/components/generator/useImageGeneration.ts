@@ -65,37 +65,59 @@ export const useImageGeneration = () => {
       return;
     }
 
-    let referenceImageUrl = null;
-    if (referenceImage) {
-      // Upload reference image to storage if provided
-      const { data, error } = await supabase.storage
-        .from("reference-images")
-        .upload(`${Date.now()}-${referenceImage.name}`, referenceImage);
-
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to upload reference image",
-        });
-        return;
-      }
-      
-      // Get public URL for the uploaded reference image
-      const { data: publicUrl } = supabase.storage
-        .from("reference-images")
-        .getPublicUrl(data.path);
+    try {
+      let referenceImageUrl = null;
+      if (referenceImage) {
+        // Check if reference-images bucket exists, create if it doesn't
+        const { data: buckets } = await supabase.storage.listBuckets();
+        if (!buckets?.some(bucket => bucket.name === "reference-images")) {
+          await supabase.storage.createBucket("reference-images", {
+            public: true,
+            fileSizeLimit: 10 * 1024 * 1024 // 10MB
+          });
+        }
         
-      referenceImageUrl = publicUrl.publicUrl;
-    }
+        // Upload reference image to storage if provided
+        const { data, error } = await supabase.storage
+          .from("reference-images")
+          .upload(`${Date.now()}-${referenceImage.name}`, referenceImage, {
+            cacheControl: "3600",
+            upsert: false
+          });
 
-    // Call the generate image function with all parameters
-    createImage({
-      prompt,
-      itemType: selectedItem,
-      aspectRatio: selectedRatio,
-      referenceImageUrl: referenceImageUrl,
-    });
+        if (error) {
+          console.error("Reference image upload error:", error);
+          toast({
+            variant: "destructive",
+            title: "Upload Error",
+            description: `Failed to upload reference image: ${error.message}`,
+          });
+          return;
+        }
+        
+        // Get public URL for the uploaded reference image
+        const { data: publicUrl } = supabase.storage
+          .from("reference-images")
+          .getPublicUrl(data.path);
+          
+        referenceImageUrl = publicUrl.publicUrl;
+      }
+
+      // Call the generate image function with all parameters
+      createImage({
+        prompt,
+        itemType: selectedItem,
+        aspectRatio: selectedRatio,
+        referenceImageUrl: referenceImageUrl,
+      });
+    } catch (error: any) {
+      console.error("Generation preparation error:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to prepare for image generation",
+      });
+    }
   };
 
   return {

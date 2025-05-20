@@ -60,17 +60,19 @@ export const ReferenceImageUpload = ({
           </Button>
         </div>
       ) : (
-        <div className="relative">
+        <div className="border-2 border-dashed border-border rounded-md p-4 text-center">
           <label 
             htmlFor="file-upload" 
             className={`
-              fixed bottom-8 right-8 z-10 rounded-full bg-primary hover:bg-primary/80 
-              shadow-lg w-12 h-12 flex items-center justify-center cursor-pointer
-              transition-all duration-300 hover:scale-110 hover:shadow-primary/30
+              flex flex-col items-center justify-center cursor-pointer
               ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
             `}
           >
-            <Plus className="h-6 w-6 text-primary-foreground" />
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+              <Plus className="h-6 w-6 text-primary" />
+            </div>
+            <span className="text-sm font-medium">Add reference image</span>
+            <p className="text-xs text-muted-foreground mt-1">PNG, JPG, GIF up to 10MB</p>
             <input
               id="file-upload"
               name="file-upload"
@@ -81,7 +83,6 @@ export const ReferenceImageUpload = ({
               disabled={disabled}
             />
           </label>
-          <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB</p>
         </div>
       )}
     </div>
