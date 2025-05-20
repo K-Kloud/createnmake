@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ImagePreviewDialog } from "@/components/gallery/ImagePreviewDialog";
 import { PreviewActions } from "./PreviewActions";
 import { Maximize2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ImagePreviewProps {
   generatedImageUrl: string;
@@ -11,6 +12,7 @@ interface ImagePreviewProps {
   zoomLevel?: number;
   onZoomIn?: () => void;
   onZoomOut?: () => void;
+  prompt?: string;
 }
 
 export const ImagePreview = ({ 
@@ -18,7 +20,8 @@ export const ImagePreview = ({
   onLike,
   zoomLevel = 1,
   onZoomIn,
-  onZoomOut 
+  onZoomOut,
+  prompt = ""
 }: ImagePreviewProps) => {
   const { toast } = useToast();
   const [isFullScreenPreview, setIsFullScreenPreview] = useState(false);
@@ -74,13 +77,14 @@ export const ImagePreview = ({
             }}
           />
           <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg">
-            <button 
+            <Button 
               className="bg-background/80 backdrop-blur-sm p-2 rounded-full hover:bg-background/60"
               onClick={handleFullScreenPreview}
+              variant="secondary"
             >
               <Maximize2 className="h-5 w-5" />
               <span className="sr-only">View full screen</span>
-            </button>
+            </Button>
           </div>
         </div>
         <PreviewActions generatedImageUrl={generatedImageUrl} />
@@ -91,7 +95,7 @@ export const ImagePreview = ({
           open={isFullScreenPreview}
           onOpenChange={setIsFullScreenPreview}
           imageUrl={generatedImageUrl}
-          prompt=""
+          prompt={prompt}
           zoomLevel={localZoomLevel}
           onZoomIn={handleZoomIn}
           onZoomOut={handleZoomOut}

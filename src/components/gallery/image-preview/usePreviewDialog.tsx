@@ -8,6 +8,7 @@ interface PreviewDialogHookProps {
   initialZoom?: number;
   imageId?: number;
   onLike?: (imageId: number) => void;
+  allowDownload?: boolean;
 }
 
 export const usePreviewDialog = ({
@@ -15,7 +16,8 @@ export const usePreviewDialog = ({
   onOpenChange,
   initialZoom = 1,
   imageId,
-  onLike
+  onLike,
+  allowDownload = true
 }: PreviewDialogHookProps) => {
   const { toast } = useToast();
   const [isPromptVisible, setIsPromptVisible] = useState(false);
@@ -66,6 +68,89 @@ export const usePreviewDialog = ({
     });
   }, [toast]);
 
+  // Handle download
+  const handleDownload = useCallback(async (imageUrl?: string) => {
+    if (!imageUrl) {
+      toast({
+        title: "Error",
+        description: "No image available to download",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Create a temporary anchor element
+      const link = document.createElement('a');
+      link.href = imageUrl;
+      link.download = `generated-image-${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast({
+        title: "Success",
+        description: "Image downloaded successfully",
+      });
+    } catch (error) {
+      console.error('Download error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to download image. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
+
+  // Handle share
+  const handleShare = useCallback(async (imageUrl?: string) => {
+    if (!imageUrl) {
+      toast({
+        title: "Error",
+        description: "No image available to share",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Check out my generated image!',
+          text: 'I created this image using AI',
+          url: imageUrl
+        });
+        
+        toast({
+          title: "Success",
+          description: "Image shared successfully",
+        });
+      } else {
+        // Fallback to copying URL
+        await navigator.clipboard.writeText(imageUrl);
+        toast({
+          title: "Success",
+          description: "Image URL copied to clipboard",
+        });
+      }
+    } catch (error) {
+      console.error('Share error:', error);
+      if (error.name !== 'AbortError') {
+        toast({
+          title: "Error",
+          description: "Failed to share image. URL copied to clipboard instead.",
+          variant: "destructive",
+        });
+        // Attempt to copy URL as fallback
+        try {
+          await navigator.clipboard.writeText(imageUrl);
+        } catch (clipboardError) {
+          console.error('Clipboard error:', clipboardError);
+        }
+      }
+    }
+  }, [toast]);
+
   // Handle double-click to like the image
   const handleDoubleClick = useCallback(() => {
     if (onLike && imageId) {
@@ -93,8 +178,14 @@ export const usePreviewDialog = ({
       toggleMaximized();
     } else if (e.key === 'p' || e.key === 'P') {
       togglePromptVisibility();
+    } else if (e.key === 'd' || e.key === 'D') {
+      // No image URL passed here, will need to be called from component with the URL
+      if (allowDownload) handleDownload();
+    } else if (e.key === 's' || e.key === 'S') {
+      // No image URL passed here, will need to be called from component with the URL
+      handleShare();
     }
-  }, [isMaximized, onOpenChange, handleZoomIn, handleZoomOut, toggleMaximized, togglePromptVisibility]);
+  }, [isMaximized, onOpenChange, handleZoomIn, handleZoomOut, toggleMaximized, togglePromptVisibility, handleDownload, handleShare, allowDownload]);
 
   useEffect(() => {
     if (open) {
@@ -120,6 +211,8 @@ export const usePreviewDialog = ({
     handleImageLoad,
     handleImageError,
     handleDoubleClick,
+    handleDownload,
+    handleShare,
     toast
   };
 };

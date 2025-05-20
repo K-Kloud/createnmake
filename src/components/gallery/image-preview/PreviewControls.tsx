@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ZoomIn, ZoomOut, Maximize, Minimize, Eye, EyeOff, X } from "lucide-react";
+import { ZoomIn, ZoomOut, Maximize, Minimize, Eye, EyeOff, X, Download, Share2 } from "lucide-react";
 import { KeyboardShortcutsButton } from "./KeyboardShortcutsHelp";
 
 interface PreviewControlsProps {
@@ -11,6 +11,9 @@ interface PreviewControlsProps {
   onToggleMaximized: () => void;
   onTogglePrompt: () => void;
   onClose: () => void;
+  onDownload?: () => void;
+  onShare?: () => void;
+  hasDownloadActions?: boolean;
 }
 
 export const PreviewControls = ({
@@ -20,10 +23,13 @@ export const PreviewControls = ({
   onZoomOut,
   onToggleMaximized,
   onTogglePrompt,
-  onClose
+  onClose,
+  onDownload,
+  onShare,
+  hasDownloadActions = false
 }: PreviewControlsProps) => {
   return (
-    <div className="absolute top-2 right-2 flex space-x-2">
+    <div className="absolute top-2 right-2 flex flex-wrap gap-2">
       <Button variant="secondary" size="icon" onClick={onZoomIn} className="bg-background/80 backdrop-blur-sm hover:bg-background/60">
         <ZoomIn className="h-4 w-4" />
         <span className="sr-only">Zoom In</span>
@@ -41,6 +47,24 @@ export const PreviewControls = ({
         <span className="sr-only">{isPromptVisible ? 'Hide' : 'Show'} Prompt</span>
       </Button>
       <KeyboardShortcutsButton />
+      
+      {hasDownloadActions && (
+        <>
+          {onDownload && (
+            <Button variant="secondary" size="icon" onClick={onDownload} className="bg-background/80 backdrop-blur-sm hover:bg-background/60">
+              <Download className="h-4 w-4" />
+              <span className="sr-only">Download</span>
+            </Button>
+          )}
+          {onShare && (
+            <Button variant="secondary" size="icon" onClick={onShare} className="bg-background/80 backdrop-blur-sm hover:bg-background/60">
+              <Share2 className="h-4 w-4" />
+              <span className="sr-only">Share</span>
+            </Button>
+          )}
+        </>
+      )}
+      
       <Button variant="secondary" size="icon" onClick={onClose} className="bg-background/80 backdrop-blur-sm hover:bg-background/60">
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>

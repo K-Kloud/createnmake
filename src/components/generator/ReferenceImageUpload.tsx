@@ -5,9 +5,14 @@ import { useToast } from "@/components/ui/use-toast";
 interface ReferenceImageUploadProps {
   referenceImage: File | null;
   onUpload: (file: File | null) => void;
+  disabled?: boolean;
 }
 
-export const ReferenceImageUpload = ({ referenceImage, onUpload }: ReferenceImageUploadProps) => {
+export const ReferenceImageUpload = ({ 
+  referenceImage, 
+  onUpload, 
+  disabled = false 
+}: ReferenceImageUploadProps) => {
   const { toast } = useToast();
 
   const convertToWebP = async (file: File): Promise<File> => {
@@ -104,11 +109,16 @@ export const ReferenceImageUpload = ({ referenceImage, onUpload }: ReferenceImag
         className="hidden"
         accept="image/*"
         onChange={handleImageUpload}
+        disabled={disabled}
       />
       <label
         htmlFor="imageUpload"
-        className="absolute -bottom-3 right-2 inline-flex items-center justify-center size-8 rounded-full bg-primary hover:bg-primary-hover text-white cursor-pointer transition-colors hover:scale-110 animate-bounce-slow"
-        title="Upload a reference image for AI to use as inspiration (WebP format, max 4MB)"
+        className={`absolute -bottom-3 right-2 inline-flex items-center justify-center size-8 rounded-full ${
+          disabled 
+            ? 'bg-primary/50 cursor-not-allowed' 
+            : 'bg-primary hover:bg-primary-hover cursor-pointer transition-colors hover:scale-110 animate-bounce-slow'
+        } text-white`}
+        title={disabled ? "Cannot upload during generation" : "Upload a reference image for AI to use as inspiration (WebP format, max 4MB)"}
       >
         <Plus className="size-4" />
       </label>

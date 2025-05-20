@@ -46,6 +46,8 @@ export const KeyboardShortcutsHelp = ({ isOpen, onClose }: KeyboardShortcutsHelp
     { keys: ["-"], description: "Zoom out" },
     { keys: ["M"], description: "Toggle maximized mode" },
     { keys: ["P"], description: "Toggle prompt visibility" },
+    { keys: ["D"], description: "Download image" },
+    { keys: ["S"], description: "Share image" },
     { keys: ["Double Click"], description: "Like image" }
   ];
 
@@ -99,6 +101,8 @@ export const KeyboardShortcutsButton = () => {
                   { keys: ["-"], description: "Zoom out" },
                   { keys: ["M"], description: "Toggle maximized mode" },
                   { keys: ["P"], description: "Toggle prompt visibility" },
+                  { keys: ["D"], description: "Download image" },
+                  { keys: ["S"], description: "Share image" },
                   { keys: ["Double Click"], description: "Like image" }
                 ].map((shortcut, index) => (
                   <ShortcutItem 

@@ -61,14 +61,17 @@ export const useImageGeneration = () => {
         });
       }
 
+      // Get dimensions based on selected ratio
+      const dimensions = getDimensionsForRatio(selectedRatio);
+
       // Generate the image and get back the Supabase storage URL
       const combinedPrompt = `${selectedItem}: ${prompt}`;
       console.log('Sending generation request with prompt:', combinedPrompt);
       
       const result = await generateImage({
         prompt: combinedPrompt,
-        width: 1024,
-        height: 1024,
+        width: dimensions.width,
+        height: dimensions.height,
         referenceImage: referenceImageBase64
       });
       
@@ -109,8 +112,8 @@ export const useImageGeneration = () => {
       setGeneratedImageUrl(result.url);
       
       toast({
-        title: "Image Generated",
-        description: "Your image has been generated successfully",
+        title: "Design Generated",
+        description: "Your design has been generated successfully",
       });
     } catch (error: any) {
       console.error('Generation error:', error);
@@ -122,6 +125,22 @@ export const useImageGeneration = () => {
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  // Helper function to get width/height based on selected ratio
+  const getDimensionsForRatio = (ratio: string) => {
+    const ratioMap = {
+      "square": { width: 1024, height: 1024 },
+      "portrait": { width: 1024, height: 1280 },
+      "landscape": { width: 1280, height: 1024 },
+      "story": { width: 1024, height: 1792 },
+      "youtube": { width: 1280, height: 720 },
+      "facebook": { width: 1200, height: 630 },
+      "twitter": { width: 1200, height: 675 },
+      "linkedin": { width: 1200, height: 627 }
+    };
+
+    return ratioMap[ratio as keyof typeof ratioMap] || { width: 1024, height: 1024 };
   };
 
   return {

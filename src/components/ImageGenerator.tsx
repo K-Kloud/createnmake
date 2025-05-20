@@ -3,6 +3,7 @@ import { useImageGeneration } from "./generator/useImageGeneration";
 import { GenerationForm } from "./generator/GenerationForm";
 import { PreviewDialog } from "./generator/PreviewDialog";
 import { AuthDialog } from "./auth/AuthDialog";
+import { Card } from "./ui/card";
 
 export const ImageGenerator = () => {
   const {
@@ -32,7 +33,7 @@ export const ImageGenerator = () => {
 
   return (
     <div className="space-y-8 animate-float">
-      <div className="glass-card p-6 rounded-xl space-y-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(110,89,165,0.5)] hover:border-primary/50">
+      <Card className="glass-card p-6 rounded-xl space-y-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(110,89,165,0.5)] hover:border-primary/50">
         <GenerationForm
           prompt={prompt}
           onPromptChange={setPrompt}
@@ -53,9 +54,10 @@ export const ImageGenerator = () => {
           isGenerating={isGenerating}
           selectedRatio={selectedRatio}
           generatedImageUrl={generatedImageUrl}
+          prompt={prompt}
           onLike={handleLikeImage}
         />
-      </div>
+      </Card>
 
       <AuthDialog 
         isOpen={authDialogOpen} 

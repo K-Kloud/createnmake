@@ -16,6 +16,7 @@ interface PreviewDialogProps {
   isGenerating: boolean;
   selectedRatio: string;
   generatedImageUrl?: string;
+  prompt?: string;
   onLike?: (imageId: number) => void;
 }
 
@@ -25,6 +26,7 @@ export const PreviewDialog = ({
   isGenerating,
   selectedRatio,
   generatedImageUrl,
+  prompt = "",
   onLike 
 }: PreviewDialogProps) => {
   const { 
@@ -32,14 +34,16 @@ export const PreviewDialog = ({
     setIsFullScreenPreview,
     zoomLevel,
     handleZoomIn,
-    handleZoomOut
+    handleZoomOut,
+    handleDownload,
+    handleShare
   } = usePreviewDialog();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl">
         <DialogHeader>
-          <DialogTitle>Generated Image Preview</DialogTitle>
+          <DialogTitle>Generated Design Preview</DialogTitle>
         </DialogHeader>
         <div 
           className="bg-card/50 rounded-lg flex flex-col items-center justify-center min-h-[400px] gap-4 p-4"
@@ -48,7 +52,8 @@ export const PreviewDialog = ({
             <GeneratingState />
           ) : generatedImageUrl ? (
             <ImagePreview 
-              generatedImageUrl={generatedImageUrl} 
+              generatedImageUrl={generatedImageUrl}
+              prompt={prompt}
               onLike={onLike}
               zoomLevel={zoomLevel}
               onZoomIn={handleZoomIn}
