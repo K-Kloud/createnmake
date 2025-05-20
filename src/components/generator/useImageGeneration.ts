@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useReferenceImageUpload } from "@/hooks/useReferenceImageUpload";
@@ -8,7 +7,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 
 export const useImageGeneration = () => {
   const [prompt, setPrompt] = useState("");
-  const [selectedItem, setSelectedItem] = useState("product");
+  const [selectedItem, setSelectedItem] = useState("tops");
   const [selectedRatio, setSelectedRatio] = useState("square");
   const [previewOpen, setPreviewOpen] = useState(false);
   const { toast } = useToast();
