@@ -12,7 +12,7 @@ export function useSubscription() {
   const userId = session?.user?.id;
 
   // Fetch subscription plans
-  const { data: plans, isLoading: plansLoading } = useQuery<SubscriptionPlan[]>({
+  const { data: plans, isLoading: plansLoading } = useQuery({
     queryKey: ["subscriptionPlans"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -21,7 +21,16 @@ export function useSubscription() {
         .order("price", { ascending: true });
         
       if (error) throw error;
-      return data;
+      
+      // Transform the features JSON to ensure it's an array of strings
+      return data.map(plan => ({
+        ...plan,
+        features: typeof plan.features === 'string' 
+          ? JSON.parse(plan.features) 
+          : Array.isArray(plan.features) 
+            ? plan.features 
+            : []
+      })) as SubscriptionPlan[];
     },
     enabled: true,
   });
@@ -32,7 +41,7 @@ export function useSubscription() {
     isLoading: statusLoading,
     error: statusError,
     refetch: refetchStatus
-  } = useQuery<SubscriptionStatus>({
+  } = useQuery({
     queryKey: ["subscriptionStatus", userId],
     queryFn: async () => {
       if (!session?.access_token) throw new Error("Not authenticated");
@@ -46,7 +55,7 @@ export function useSubscription() {
       if (error) throw error;
       if (!data.success) throw new Error(data.error || "Failed to check subscription");
       
-      return data.subscription;
+      return data.subscription as SubscriptionStatus;
     },
     enabled: !!userId && !!session?.access_token,
   });

@@ -54,7 +54,10 @@ export const GenerationForm = ({
   // Handle subscription upgrade click
   const handleUpgrade = () => {
     // Get the basic plan (or first available plan)
-    const basicPlan = plans?.find(plan => plan.name.toLowerCase() === 'basic') || plans?.[1];
+    const basicPlan = plans && plans.length > 0 
+      ? plans.find(plan => plan.name.toLowerCase() === 'basic') || plans[1]
+      : undefined;
+      
     if (basicPlan) {
       subscribe(basicPlan.id);
     }
@@ -108,7 +111,7 @@ export const GenerationForm = ({
       )}
 
       <div className="space-y-4">
-        <ItemSelect value={selectedItem} onChange={onItemChange} disabled={isGenerating} />
+        <ItemSelect value={selectedItem} onChange={onItemChange} />
 
         <div className="space-y-2">
           <label className="text-sm font-medium">Prompt</label>
@@ -130,13 +133,11 @@ export const GenerationForm = ({
         <AspectRatioSelect 
           value={selectedRatio} 
           onChange={onRatioChange}
-          disabled={isGenerating} 
         />
 
         <ReferenceImageUpload
-          onFileSelected={onReferenceImageUpload}
-          selectedFile={referenceImage}
-          disabled={isGenerating}
+          onUpload={onReferenceImageUpload}
+          file={referenceImage}
         />
 
         <div className="pt-2">

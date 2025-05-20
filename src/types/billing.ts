@@ -40,7 +40,7 @@ export interface SubscriptionPlan {
   currency: string
   monthly_image_limit: number
   description?: string
-  features?: string[]
+  features: string[]
   is_active?: boolean
 }
 

@@ -1,131 +1,92 @@
 
-import { Plus } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ImageIcon, X } from "lucide-react";
 
 interface ReferenceImageUploadProps {
-  referenceImage: File | null;
   onUpload: (file: File | null) => void;
+  file: File | null;
   disabled?: boolean;
 }
 
 export const ReferenceImageUpload = ({ 
-  referenceImage, 
   onUpload, 
+  file, 
   disabled = false 
 }: ReferenceImageUploadProps) => {
-  const { toast } = useToast();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const convertToWebP = async (file: File): Promise<File> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          reject(new Error('Failed to get canvas context'));
-          return;
-        }
-        
-        ctx.drawImage(img, 0, 0);
-        
-        // Use WebP format with quality of 0.8 (80%)
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const webpFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.webp'), {
-              type: 'image/webp'
-            });
-            resolve(webpFile);
-          } else {
-            reject(new Error('Failed to convert image to WebP'));
-          }
-        }, 'image/webp', 0.8);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0] || null;
+    
+    if (selectedFile) {
+      onUpload(selectedFile);
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        setPreviewUrl(fileReader.result as string);
       };
-      
-      img.onerror = () => reject(new Error('Failed to load image'));
-      img.src = URL.createObjectURL(file);
-    });
-  };
-
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    try {
-      // Check initial file size
-      if (file.size > 4 * 1024 * 1024) { // 4MB limit
-        toast({
-          title: "File too large",
-          description: "Please upload an image smaller than 4MB",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      if (!file.type.startsWith('image/')) {
-        toast({
-          title: "Invalid file type",
-          description: "Please upload an image file",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Convert to WebP for better compression
-      const webpFile = file.type === 'image/webp' ? file : await convertToWebP(file);
-      
-      // Check converted file size
-      if (webpFile.size > 4 * 1024 * 1024) {
-        toast({
-          title: "Converted file too large",
-          description: "The converted WebP file is too large. Please try with a smaller image.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      onUpload(webpFile);
-      toast({
-        title: "Image uploaded",
-        description: "Your reference image has been uploaded successfully. The AI will use this as inspiration.",
-      });
-    } catch (error) {
-      console.error('Image upload error:', error);
-      toast({
-        title: "Upload failed",
-        description: "Failed to process the image. Please try again with a different image.",
-        variant: "destructive",
-      });
+      fileReader.readAsDataURL(selectedFile);
+    } else {
+      onUpload(null);
+      setPreviewUrl(null);
     }
   };
 
+  const handleClearFile = () => {
+    onUpload(null);
+    setPreviewUrl(null);
+  };
+
   return (
-    <div className="relative">
-      <input
-        type="file"
-        id="imageUpload"
-        className="hidden"
-        accept="image/*"
-        onChange={handleImageUpload}
-        disabled={disabled}
-      />
-      <label
-        htmlFor="imageUpload"
-        className={`absolute -bottom-3 right-2 inline-flex items-center justify-center size-8 rounded-full ${
-          disabled 
-            ? 'bg-primary/50 cursor-not-allowed' 
-            : 'bg-primary hover:bg-primary-hover cursor-pointer transition-colors hover:scale-110 animate-bounce-slow'
-        } text-white`}
-        title={disabled ? "Cannot upload during generation" : "Upload a reference image for AI to use as inspiration (WebP format, max 4MB)"}
-      >
-        <Plus className="size-4" />
-      </label>
-      {referenceImage && (
-        <p className="text-sm text-white/70 absolute -bottom-8 right-12">
-          {referenceImage.name}
-        </p>
+    <div className="space-y-2">
+      <label className="text-sm font-medium">Reference Image (Optional)</label>
+      
+      {file && previewUrl ? (
+        <div className="relative">
+          <img 
+            src={previewUrl} 
+            alt="Reference" 
+            className="w-full rounded-md object-cover max-h-48"
+          />
+          <Button
+            type="button"
+            variant="destructive"
+            size="icon"
+            className="absolute top-2 right-2 h-6 w-6"
+            onClick={handleClearFile}
+            disabled={disabled}
+          >
+            <X className="h-3 w-3" />
+          </Button>
+        </div>
+      ) : (
+        <div className="flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-md h-32">
+          <div className="space-y-2 text-center">
+            <ImageIcon className="mx-auto h-8 w-8 text-muted-foreground" />
+            <div className="flex flex-col items-center text-xs text-muted-foreground">
+              <label 
+                htmlFor="file-upload" 
+                className="relative cursor-pointer rounded-md bg-background px-2 py-1 text-primary hover:text-primary/80 transition-colors"
+              >
+                {disabled ? (
+                  <span>Upload Disabled</span>
+                ) : (
+                  <span>Upload an image</span>
+                )}
+                <input
+                  id="file-upload"
+                  name="file-upload"
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={handleFileChange}
+                  disabled={disabled}
+                />
+              </label>
+              <p className="text-xs">PNG, JPG, GIF up to 10MB</p>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
