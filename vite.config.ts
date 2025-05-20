@@ -32,8 +32,6 @@ export default defineConfig(({ mode }) => ({
       'react',
       'react-dom',
       'react/jsx-runtime',
-      '@radix-ui/react-context',
-      '@radix-ui/react-slot',
       '@tanstack/react-query'
     ],
     force: true
@@ -56,8 +54,6 @@ export default defineConfig(({ mode }) => ({
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'ui-components': [
-            '@radix-ui/react-context',
-            '@radix-ui/react-slot',
             '@radix-ui/react-aspect-ratio'
           ],
           'data-fetching': ['@tanstack/react-query'],
