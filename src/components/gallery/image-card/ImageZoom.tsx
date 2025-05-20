@@ -20,8 +20,6 @@ export const ImageZoom = ({
   const [zoomFactor, setZoomFactor] = useState(1);
 
   // Generate WebP and AVIF URLs from original image URL if needed
-  // This assumes your server can convert on-the-fly with URL parameters
-  // or that you have already pre-generated these formats
   const getWebpUrl = (url: string) => {
     // If the URL already ends with .webp, use it as is
     if (url.toLowerCase().endsWith('.webp')) return url;
@@ -81,29 +79,19 @@ export const ImageZoom = ({
     }
   };
 
-  // Handle image click for full-screen expansion
-  const handleExpandClick = (e: React.MouseEvent) => {
-    // Only proceed if we're not zoomed (otherwise let zoom controls handle the click)
-    if (!isZoomed) {
-      onImageClick();
-    }
-  };
-
   const webpUrl = getWebpUrl(imageUrl);
   const avifUrl = getAvifUrl(imageUrl);
 
   return (
     <div 
       className="relative group cursor-pointer h-auto w-full" 
+      onClick={onImageClick} // Make the entire container clickable to open preview
       onDoubleClick={onDoubleClick}
     >
       <AspectRatio ratio={16/9} className="h-full w-full">
         <picture>
-          {/* AVIF format - best compression but less supported */}
           <source srcSet={avifUrl} type="image/avif" />
-          {/* WebP format - good compression and widely supported */}
           <source srcSet={webpUrl} type="image/webp" />
-          {/* Fallback to original format */}
           <img
             src={imageUrl}
             alt={alt}
@@ -130,7 +118,7 @@ export const ImageZoom = ({
         onToggleZoom={toggleZoom}
         onZoomIn={increaseZoom}
         onZoomOut={decreaseZoom}
-        onExpandClick={handleExpandClick}
+        onExpandClick={onImageClick} // Update to use the main click handler
       />
     </div>
   );

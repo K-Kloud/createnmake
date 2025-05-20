@@ -8,20 +8,44 @@ import { Maximize2 } from "lucide-react";
 interface ImagePreviewProps {
   generatedImageUrl: string;
   onLike?: (imageId: number) => void;
+  zoomLevel?: number;
+  onZoomIn?: () => void;
+  onZoomOut?: () => void;
 }
 
-export const ImagePreview = ({ generatedImageUrl, onLike }: ImagePreviewProps) => {
+export const ImagePreview = ({ 
+  generatedImageUrl, 
+  onLike,
+  zoomLevel = 1,
+  onZoomIn,
+  onZoomOut 
+}: ImagePreviewProps) => {
   const { toast } = useToast();
   const [isFullScreenPreview, setIsFullScreenPreview] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(1);
   const [showPrompt, setShowPrompt] = useState(false);
 
+  const localZoomLevel = zoomLevel || 1;
+  
   const handleZoomIn = () => {
-    setZoomLevel(prev => Math.min(prev + 0.25, 3));
+    if (onZoomIn) {
+      onZoomIn();
+    } else {
+      toast({
+        title: "Zoom in",
+        description: "Image zoomed in.",
+      });
+    }
   };
 
   const handleZoomOut = () => {
-    setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
+    if (onZoomOut) {
+      onZoomOut();
+    } else {
+      toast({
+        title: "Zoom out",
+        description: "Image zoomed out.",
+      });
+    }
   };
 
   const handleFullScreenPreview = (e: React.MouseEvent) => {
@@ -39,7 +63,7 @@ export const ImagePreview = ({ generatedImageUrl, onLike }: ImagePreviewProps) =
           <img 
             src={generatedImageUrl} 
             alt="Generated preview" 
-            className="rounded-lg max-h-[500px] max-w-full object-contain transition-all"
+            className="rounded-lg max-h-[500px] max-w-full object-contain transition-all hover:scale-105 duration-300"
             onError={(e) => {
               e.currentTarget.src = '/placeholder.svg';
               toast({
@@ -68,7 +92,7 @@ export const ImagePreview = ({ generatedImageUrl, onLike }: ImagePreviewProps) =
           onOpenChange={setIsFullScreenPreview}
           imageUrl={generatedImageUrl}
           prompt=""
-          zoomLevel={zoomLevel}
+          zoomLevel={localZoomLevel}
           onZoomIn={handleZoomIn}
           onZoomOut={handleZoomOut}
           showPrompt={showPrompt}

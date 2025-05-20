@@ -5,7 +5,7 @@ import { useImagePermissions } from "./image-preview/useImagePermissions";
 import { useImageDeletion } from "./image-preview/useImageDeletion";
 import { X, ZoomIn, ZoomOut, Eye, EyeOff, Maximize, Minimize } from "lucide-react";
 import { Button } from "../ui/button";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface ImagePreviewDialogProps {
@@ -18,9 +18,9 @@ interface ImagePreviewDialogProps {
   onZoomOut: () => void;
   imageId?: number;
   userId?: string;
-  showPrompt?: boolean; // Default prop
-  isGeneratedImage?: boolean; // New prop to identify generated images
-  onLike?: (imageId: number) => void; // Add onLike prop
+  showPrompt?: boolean;
+  isGeneratedImage?: boolean;
+  onLike?: (imageId: number) => void;
 }
 
 export const ImagePreviewDialog = ({
@@ -38,11 +38,20 @@ export const ImagePreviewDialog = ({
   onLike
 }: ImagePreviewDialogProps) => {
   const { toast } = useToast();
-  // Initialize with showPrompt prop but hide by default for generated images
   const [isPromptVisible, setIsPromptVisible] = useState(isGeneratedImage ? false : showPrompt);
   const [currentZoom, setCurrentZoom] = useState(zoomLevel);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [isMaximized, setIsMaximized] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(true); // Start maximized by default
+  const [isEntering, setIsEntering] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Animation effect when opening
+  useEffect(() => {
+    if (open) {
+      setIsEntering(true);
+      setTimeout(() => setIsEntering(false), 300);
+    }
+  }, [open]);
 
   // Update visibility when showPrompt prop changes
   useEffect(() => {
@@ -145,9 +154,19 @@ export const ImagePreviewDialog = ({
     ? "max-w-[100vw] max-h-[100vh] p-0 sm:p-0 inset-0 rounded-none bg-black/95 backdrop-blur-xl flex flex-col" 
     : "max-w-[95vw] max-h-[95vh] p-1 sm:p-6 bg-background/95 backdrop-blur-sm flex flex-col";
   
+  const imageClasses = `
+    ${isMaximized ? 'max-w-none' : 'max-w-full max-h-[80vh]'} 
+    object-contain transition-all duration-300 
+    ${isEntering ? 'scale-110 opacity-0' : 'scale-100 opacity-100'}
+    hover:shadow-[0_0_30px_rgba(0,255,157,0.25)]
+  `;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`${dialogClasses} z-[100]`}>
+      <DialogContent 
+        ref={dialogRef}
+        className={`${dialogClasses} z-[100] transition-all duration-300`}
+      >
         <DialogTitle className="sr-only">Image Preview</DialogTitle>
         
         <div className="relative flex-1 flex items-center justify-center w-full h-full">
@@ -173,9 +192,7 @@ export const ImagePreviewDialog = ({
                       maxWidth: isMaximized ? 'none' : '100%',
                       maxHeight: isMaximized ? 'none' : '80vh',
                     }} 
-                    className={`${
-                      isMaximized ? 'max-w-none' : 'max-w-full max-h-[80vh]'
-                    } object-contain transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,157,0.25)]`}
+                    className={imageClasses}
                     onLoad={handleImageLoad}
                     onError={handleImageError}
                     loading="eager"

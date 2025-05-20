@@ -29,7 +29,10 @@ export const PreviewDialog = ({
 }: PreviewDialogProps) => {
   const { 
     isFullScreenPreview,
-    setIsFullScreenPreview 
+    setIsFullScreenPreview,
+    zoomLevel,
+    handleZoomIn,
+    handleZoomOut
   } = usePreviewDialog();
 
   return (
@@ -46,7 +49,10 @@ export const PreviewDialog = ({
           ) : generatedImageUrl ? (
             <ImagePreview 
               generatedImageUrl={generatedImageUrl} 
-              onLike={onLike} 
+              onLike={onLike}
+              zoomLevel={zoomLevel}
+              onZoomIn={handleZoomIn}
+              onZoomOut={handleZoomOut} 
             />
           ) : (
             <EmptyPreview />
