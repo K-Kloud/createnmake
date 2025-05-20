@@ -111,7 +111,12 @@ export const GenerationForm = ({
       )}
 
       <div className="space-y-4">
-        <ItemSelect value={selectedItem} onChange={onItemChange} />
+        <ItemSelect 
+          value={selectedItem} 
+          onChange={onItemChange} 
+          disabled={isGenerating}
+          isLoading={isGenerating}
+        />
 
         <div className="space-y-2">
           <label className="text-sm font-medium">Prompt</label>
@@ -133,11 +138,13 @@ export const GenerationForm = ({
         <AspectRatioSelect 
           value={selectedRatio} 
           onChange={onRatioChange}
+          disabled={isGenerating}
         />
 
         <ReferenceImageUpload
           onUpload={onReferenceImageUpload}
           file={referenceImage}
+          disabled={isGenerating}
         />
 
         <div className="pt-2">
