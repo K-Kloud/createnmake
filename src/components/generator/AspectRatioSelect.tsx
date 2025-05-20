@@ -34,42 +34,27 @@ export const AspectRatioSelect = ({ value, onChange, disabled = false }: AspectR
   return (
     <div>
       <label className="text-sm font-medium">Output Size</label>
-      <div className="flex items-center space-x-2 mt-2">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="p-2 rounded-md bg-primary/10 text-primary">
-                <Scaling className="w-4 h-4" />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Select output aspect ratio</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        
-        <Select 
-          value={value} 
-          onValueChange={onChange} 
-          disabled={disabled}
-        >
-          <SelectTrigger className="w-full bg-card/30">
-            <SelectValue placeholder="Select aspect ratio" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {Object.entries(aspectRatios).map(([key, { label, icon: Icon }]) => (
-                <SelectItem key={key} value={key} className="flex items-center">
-                  <div className="flex items-center space-x-2">
-                    <Icon className="w-4 h-4 mr-2" />
-                    <span>{label}</span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
+      <Select 
+        value={value} 
+        onValueChange={onChange} 
+        disabled={disabled}
+      >
+        <SelectTrigger className="w-full bg-card/30 mt-2">
+          <SelectValue placeholder="Select aspect ratio" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            {Object.entries(aspectRatios).map(([key, { label, icon: Icon }]) => (
+              <SelectItem key={key} value={key} className="flex items-center">
+                <div className="flex items-center space-x-2">
+                  <Icon className="w-4 h-4 mr-2" />
+                  <span>{label}</span>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
       <p className="text-sm text-center text-white/60 mt-1">
         Size: {selectedRatio.width}x{selectedRatio.height}px
       </p>
