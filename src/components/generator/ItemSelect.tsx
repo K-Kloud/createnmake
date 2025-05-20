@@ -17,26 +17,60 @@ import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { keywordSuggestions } from "./keywordSuggestions.data";
 
-// Initial items that are always available
-const initialItems = [
-  { value: "product", label: "Product Design" },
-  { value: "fashion", label: "Fashion Design" },
-  { value: "furniture", label: "Furniture Design" },
-  { value: "interior", label: "Interior Design" },
-  { value: "accessory", label: "Accessory Design" },
-  { value: "packaging", label: "Packaging Design" },
+// Transform the clothing items into a format suitable for the component
+const clothingCategories = [
+  { value: "tops", label: "Tops" },
+  { value: "bottoms", label: "Bottoms" },
+  { value: "dresses", label: "Dresses" },
+  { value: "outerwear", label: "Outerwear" },
+  { value: "suits", label: "Suits & Sets" },
+  { value: "jumpsuits", label: "Jumpsuits & Rompers" },
+  { value: "activewear", label: "Activewear & Swimwear" },
+  { value: "undergarments", label: "Undergarments & Loungewear" },
+  { value: "accessories", label: "Accessories" },
+  { value: "footwear", label: "Footwear" },
+  { value: "traditional", label: "Traditional & Cultural" },
+  { value: "fashion-styles", label: "Fashion Styles" },
 ];
 
-// Additional items that will be loaded dynamically
+// Initial clothing types are the main categories that are always available
+const initialItems = clothingCategories;
+
+// Additional items for specific clothing items within categories
 const additionalItems = [
-  { value: "jewelry", label: "Jewelry Design" },
-  { value: "footwear", label: "Footwear Design" },
-  { value: "lighting", label: "Lighting Design" },
-  { value: "textile", label: "Textile Design" },
-  { value: "gadget", label: "Gadget Design" },
-  { value: "homeware", label: "Homeware Design" },
-  { value: "automotive", label: "Automotive Design" },
-  { value: "toy", label: "Toy Design" },
+  // Tops
+  { value: "t-shirt", label: "T-Shirt" },
+  { value: "blouse", label: "Blouse" },
+  { value: "sweater", label: "Sweater" },
+  { value: "cardigan", label: "Cardigan" },
+  { value: "hoodie", label: "Hoodie" },
+  
+  // Bottoms
+  { value: "jeans", label: "Jeans" },
+  { value: "trousers", label: "Trousers" },
+  { value: "skirt", label: "Skirt" },
+  { value: "shorts", label: "Shorts" },
+  { value: "leggings", label: "Leggings" },
+  
+  // Outerwear
+  { value: "jacket", label: "Jacket" },
+  { value: "coat", label: "Coat" },
+  { value: "blazer", label: "Blazer" },
+  { value: "parka", label: "Parka" },
+  { value: "vest", label: "Vest" },
+  
+  // Dresses
+  { value: "maxi-dress", label: "Maxi Dress" },
+  { value: "cocktail-dress", label: "Cocktail Dress" },
+  { value: "sundress", label: "Sundress" },
+  { value: "sheath-dress", label: "Sheath Dress" },
+  
+  // Styles
+  { value: "minimalist", label: "Minimalist" },
+  { value: "bohemian", label: "Bohemian" },
+  { value: "vintage", label: "Vintage" },
+  { value: "streetwear", label: "Streetwear" },
+  { value: "athleisure", label: "Athleisure" },
 ];
 
 // Combine all items for immediate availability
@@ -111,7 +145,7 @@ export const ItemSelect = ({ value, onChange, disabled = false, isLoading = fals
               </>
             ) : (
               <>
-                {selectedItem ? selectedItem.label : "Select item type..."}
+                {selectedItem ? selectedItem.label : "Select clothing type..."}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </>
             )}
@@ -123,8 +157,8 @@ export const ItemSelect = ({ value, onChange, disabled = false, isLoading = fals
           sideOffset={5}
         >
           <Command>
-            <CommandInput placeholder="Search item type..." />
-            <CommandEmpty>No item type found.</CommandEmpty>
+            <CommandInput placeholder="Search clothing type..." />
+            <CommandEmpty>No clothing type found.</CommandEmpty>
             <CommandGroup>
               {loading ? (
                 <div className="flex items-center justify-center py-6">

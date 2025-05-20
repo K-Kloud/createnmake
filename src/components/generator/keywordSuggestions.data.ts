@@ -1,75 +1,63 @@
 
+// Update the keywordSuggestions object to include clothing-specific keywords
 export const keywordSuggestions: Record<string, string[]> = {
-  // Men's Wear
-  "mens-formal-suit": ["tailored", "slim-fit", "double-breasted", "pinstripe", "classic"],
-  "mens-tuxedo": ["black-tie", "satin-lapel", "formal", "classic", "fitted"],
-  "mens-dress-shirt": ["oxford", "french-cuff", "spread-collar", "fitted", "cotton"],
-  "mens-waistcoat": ["formal", "fitted", "textured", "lapelled", "traditional"],
-  "mens-casual-shirt": ["relaxed", "cotton", "patterned", "short-sleeve", "linen"],
-  "mens-jeans": ["slim-fit", "straight-leg", "distressed", "dark-wash", "vintage"],
-  "mens-dashiki": ["embroidered", "colorful", "traditional", "festive", "patterned"],
-  "mens-agbada": ["embroidered", "grand", "ceremonial", "flowing", "royal"],
-  "mens-kaftan": ["embroidered", "casual", "summer", "comfortable", "elegant"],
-
-  // Women's Wear
-  "womens-formal-dress": ["elegant", "fitted", "floor-length", "structured", "sophisticated"],
-  "womens-gown": ["evening", "flowing", "embellished", "luxurious", "dramatic"],
-  "womens-blouse": ["silk", "ruffled", "fitted", "feminine", "classic"],
-  "womens-pencil-skirt": ["high-waisted", "fitted", "professional", "classic", "tailored"],
-  "womens-iro-buba": ["traditional", "embroidered", "ceremonial", "elegant", "cultural"],
-  "womens-wrapper": ["ankara", "lace", "embroidered", "festive", "traditional"],
-
-  // Traditional African
-  "african-kente": ["woven", "geometric", "colorful", "ceremonial", "royal"],
-  "african-kitenge": ["printed", "vibrant", "flowing", "patterned", "cultural"],
-  "african-aso-ebi": ["coordinated", "celebratory", "elegant", "festive", "traditional"],
+  // Original suggestions
+  "product": ["minimalist", "modern", "sustainable", "functional", "innovative"],
+  "fashion": ["trendy", "sustainable", "luxury", "streetwear", "vintage"],
+  "furniture": ["minimalist", "mid-century", "industrial", "scandinavian", "organic"],
+  "interior": ["minimalist", "bohemian", "industrial", "scandinavian", "sustainable"],
+  "accessory": ["minimalist", "statement", "luxury", "handcrafted", "versatile"],
+  "packaging": ["sustainable", "minimalist", "premium", "innovative", "colorful"],
+  "jewelry": ["vintage", "statement", "minimalist", "handcrafted", "gemstone"],
+  "footwear": ["comfortable", "athletic", "sustainable", "dressy", "casual"],
+  "lighting": ["pendant", "ambient", "minimalist", "industrial", "smart"],
+  "textile": ["organic", "printed", "sustainable", "geometric", "textured"],
+  "gadget": ["smart", "portable", "innovative", "sustainable", "minimal"],
+  "homeware": ["practical", "decorative", "sustainable", "artisanal", "modular"],
+  "automotive": ["electric", "sleek", "autonomous", "innovative", "sustainable"],
+  "toy": ["educational", "sustainable", "interactive", "colorful", "wooden"],
   
-  // Contemporary African
-  "modern-ankara-jacket": ["contemporary", "fusion", "structured", "bold", "stylish"],
-  "modern-african-jumpsuit": ["modern", "printed", "fitted", "elegant", "versatile"],
-  "modern-streetwear": ["urban", "bold", "contemporary", "cultural", "trendy"],
-
-  // Furniture
-  "dining-table": ["solid wood", "extendable", "rustic", "modern", "handcrafted"],
-  "coffee-table": ["wooden", "glass-top", "storage", "minimalist", "artisanal"],
-  "bed-frame": ["platform", "four-poster", "sleigh", "storage", "traditional"],
-  "bookshelf": ["floating", "ladder", "built-in", "modular", "industrial"],
-  "cabinet": ["display", "storage", "vintage", "modern", "hand-painted"],
-  "chair": ["dining", "accent", "rocking", "upholstered", "carved"],
-  "bench": ["storage", "entryway", "garden", "dining", "decorative"],
-  "side-table": ["nesting", "round", "vintage", "modern", "hand-carved"],
+  // Clothing categories
+  "tops": ["casual", "formal", "layered", "sleeveless", "oversized", "cropped"],
+  "bottoms": ["high-waisted", "tapered", "distressed", "flared", "slim-fit"],
+  "dresses": ["floral", "wrap", "bodycon", "maxi", "midi", "mini", "a-line"],
+  "outerwear": ["waterproof", "insulated", "lightweight", "oversized", "cropped"],
+  "suits": ["tailored", "slim-fit", "double-breasted", "pinstripe", "tuxedo"],
+  "jumpsuits": ["wide-leg", "utility", "playful", "elegant", "casual"],
+  "activewear": ["moisture-wicking", "compression", "seamless", "breathable"],
+  "undergarments": ["lace", "cotton", "seamless", "supportive", "comfortable"],
+  "accessories": ["statement", "layered", "handcrafted", "vintage", "minimalist"],
+  "footwear": ["leather", "suede", "canvas", "chunky", "platform", "flat"],
+  "traditional": ["embroidered", "handwoven", "ceremonial", "cultural", "authentic"],
   
-  // Home Textiles
-  "quilt": ["patchwork", "modern", "traditional", "hand-stitched", "custom"],
-  "duvet-cover": ["cotton", "linen", "printed", "embroidered", "organic"],
-  "throw-pillow": ["decorative", "embroidered", "textured", "custom", "patterned"],
-  "curtains": ["blackout", "sheer", "lined", "patterned", "custom-length"],
-  "table-runner": ["embroidered", "quilted", "festive", "modern", "traditional"],
-  "area-rug": ["hand-woven", "vintage-style", "modern", "geometric", "traditional"],
-  "tapestry": ["wall-hanging", "hand-woven", "modern", "traditional", "custom"],
+  // Specific clothing items
+  "t-shirt": ["graphic", "plain", "oversized", "fitted", "vintage", "organic cotton"],
+  "blouse": ["silk", "ruffled", "button-up", "floral", "sheer", "flowing"],
+  "sweater": ["cable-knit", "cashmere", "turtleneck", "crewneck", "oversized"],
+  "cardigan": ["chunky", "longline", "button-up", "draped", "lightweight"],
+  "hoodie": ["graphic", "zip-up", "pullover", "oversized", "cropped"],
+  "jeans": ["high-waisted", "distressed", "skinny", "boyfriend", "straight-leg"],
+  "trousers": ["tailored", "wide-leg", "cargo", "chino", "pleated"],
+  "skirt": ["pleated", "mini", "midi", "maxi", "pencil", "a-line"],
+  "shorts": ["denim", "athletic", "high-waisted", "bermuda", "cargo"],
+  "leggings": ["high-waisted", "athletic", "faux-leather", "printed", "seamless"],
+  "jacket": ["denim", "leather", "bomber", "utility", "cropped"],
+  "coat": ["trench", "wool", "puffer", "oversized", "belted"],
+  "blazer": ["tailored", "oversized", "double-breasted", "linen", "cropped"],
+  "parka": ["fur-lined", "fishtail", "insulated", "waterproof", "hooded"],
+  "vest": ["quilted", "utility", "suit", "knit", "faux-fur"],
+  "maxi-dress": ["floral", "flowing", "bohemian", "tiered", "slip"],
+  "cocktail-dress": ["sequin", "lace", "satin", "form-fitting", "one-shoulder"],
+  "sundress": ["floral", "lightweight", "strappy", "tiered", "printed"],
+  "sheath-dress": ["fitted", "professional", "minimal", "sleeveless", "knee-length"],
   
-  // Decor & Accessories
-  "wall-art": ["mixed-media", "textile", "sculptural", "modern", "traditional"],
-  "ceramic-vase": ["hand-thrown", "glazed", "sculptural", "modern", "decorative"],
-  "decorative-bowl": ["ceramic", "wooden", "metal", "hand-crafted", "painted"],
-  "candle-holder": ["metal", "ceramic", "wooden", "modern", "traditional"],
-  "mirror-frame": ["carved", "gilded", "modern", "vintage-style", "custom"],
-  "lamp": ["table", "floor", "pendant", "ceramic", "metal"],
-  "basket": ["woven", "storage", "decorative", "natural", "custom"],
+  // Fashion Styles
+  "minimalist": ["clean lines", "neutral colors", "simple silhouettes", "high-quality", "timeless"],
+  "bohemian": ["flowy", "layered", "textured", "earth tones", "mixed patterns"],
+  "vintage": ["retro", "classic", "second-hand", "period-inspired", "nostalgic"],
+  "streetwear": ["urban", "logo-driven", "casual", "oversized", "athletic influence"],
+  "athleisure": ["sporty", "functional", "comfortable", "technical fabrics", "streamlined"],
   
-  // Default item types from dropdown
-  "product": ["innovative", "sustainable", "functional", "elegant", "minimalist"],
-  "fashion": ["trendy", "sustainable", "seasonal", "handcrafted", "avant-garde"],
-  "furniture": ["functional", "ergonomic", "statement", "sustainable", "modular"],
-  "interior": ["cozy", "minimalist", "bohemian", "industrial", "scandinavian"],
-  "accessory": ["statement", "versatile", "handcrafted", "functional", "elegant"],
-  "packaging": ["sustainable", "minimal", "premium", "innovative", "eco-friendly"],
-  "jewelry": ["statement", "delicate", "gemstone", "gold", "silver"],
-  "footwear": ["comfortable", "stylish", "sustainable", "athletic", "formal"],
-  "lighting": ["ambient", "statement", "energy-efficient", "pendant", "floor"],
-  "textile": ["sustainable", "patterned", "handwoven", "organic", "recycled"],
-  "gadget": ["innovative", "portable", "smart", "eco-friendly", "multifunctional"],
-  "homeware": ["practical", "decorative", "handcrafted", "eco-friendly", "modern"],
-  "automotive": ["aerodynamic", "futuristic", "sustainable", "luxury", "compact"],
-  "toy": ["educational", "sustainable", "interactive", "wooden", "creative"],
+  // Fashion-styles category
+  "fashion-styles": ["minimalist", "bohemian", "vintage", "streetwear", "preppy", "gothic"]
 };
