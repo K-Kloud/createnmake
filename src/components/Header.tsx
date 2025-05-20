@@ -1,4 +1,3 @@
-
 // This is an update to the existing Header.tsx file
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "./header/ThemeToggle";
 import { UserMenu } from "./header/UserMenu";
 import { AuthProvider } from "@/hooks/useAuth";
-import { NotificationCenter } from "@/components/NotificationCenter";
+import { EnhancedNotificationCenter } from "@/components/notifications/EnhancedNotificationCenter";
 import { ResponsiveNavigation } from "./ResponsiveNavigation";
 import { useResponsive } from "@/hooks/useResponsive";
 
@@ -120,7 +119,7 @@ export const Header = () => {
             <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
             
             {session?.user && (
-              <NotificationCenter />
+              <EnhancedNotificationCenter />
             )}
             
             <div className={isAtLeast('sm') ? 'block' : 'hidden'}>

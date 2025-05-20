@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -25,6 +24,7 @@ import Auth from "@/pages/Auth";
 import Subscription from "@/pages/Subscription";
 import SubscriptionSuccess from "@/pages/subscription/Success";
 import SubscriptionCancel from "@/pages/subscription/Cancel";
+import Notifications from "@/pages/Notifications"; // Add this import
 
 // Components
 import "./App.css";
@@ -33,6 +33,7 @@ import { ErrorFallback } from "./components/ErrorFallback";
 import { Toaster } from "./components/ui/toaster";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { NotificationProvider } from "@/context/NotificationContext";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -58,126 +59,133 @@ function App() {
         </Helmet>
         <BrowserRouter>
           <AuthProvider>
-            <ErrorBoundary FallbackComponent={ErrorFallback}>
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<Index />} />
-                <Route path="/features" element={<Features />} />
-                <Route path="/testimonials" element={<Testimonials />} />
-                <Route path="/faq" element={<FAQ />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/auth/callback" element={<AuthCallback />} />
-                <Route path="/marketplace" element={<Marketplace />} />
+            <NotificationProvider>
+              <ErrorBoundary FallbackComponent={ErrorFallback}>
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<Index />} />
+                  <Route path="/features" element={<Features />} />
+                  <Route path="/testimonials" element={<Testimonials />} />
+                  <Route path="/faq" element={<FAQ />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
+                  <Route path="/marketplace" element={<Marketplace />} />
 
-                {/* Protected Routes */}
-                <Route path="/create" element={
-                  <ProtectedRoute>
-                    <Create />
-                  </ProtectedRoute>
-                } />
-                <Route path="/design/:id" element={
-                  <ProtectedRoute>
-                    <Design />
-                  </ProtectedRoute>
-                } />
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="/designs" element={
-                  <ProtectedRoute>
-                    <Designs />
-                  </ProtectedRoute>
-                } />
-                <Route path="/orders" element={
-                  <ProtectedRoute>
-                    <Orders />
-                  </ProtectedRoute>
-                } />
-                <Route path="/maker/:id" element={
-                  <ProtectedRoute>
-                    <MakerDetail />
-                  </ProtectedRoute>
-                } />
-                <Route path="/settings" element={
-                  <ProtectedRoute>
-                    <Settings />
-                  </ProtectedRoute>
-                } />
-                <Route path="/subscription" element={
-                  <ProtectedRoute>
-                    <Subscription />
-                  </ProtectedRoute>
-                } />
-                <Route path="/subscription/success" element={
-                  <ProtectedRoute>
-                    <SubscriptionSuccess />
-                  </ProtectedRoute>
-                } />
-                <Route path="/subscription/cancel" element={
-                  <ProtectedRoute>
-                    <SubscriptionCancel />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Admin Routes with extra protection */}
-                <Route path="/admin/*" element={
-                  <ProtectedRoute>
-                    <Admin />
-                  </ProtectedRoute>
-                } />
+                  {/* Protected Routes */}
+                  <Route path="/create" element={
+                    <ProtectedRoute>
+                      <Create />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/design/:id" element={
+                    <ProtectedRoute>
+                      <Design />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/designs" element={
+                    <ProtectedRoute>
+                      <Designs />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/orders" element={
+                    <ProtectedRoute>
+                      <Orders />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/notifications" element={
+                    <ProtectedRoute>
+                      <Notifications />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/maker/:id" element={
+                    <ProtectedRoute>
+                      <MakerDetail />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/settings" element={
+                    <ProtectedRoute>
+                      <Settings />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/subscription" element={
+                    <ProtectedRoute>
+                      <Subscription />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/subscription/success" element={
+                    <ProtectedRoute>
+                      <SubscriptionSuccess />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/subscription/cancel" element={
+                    <ProtectedRoute>
+                      <SubscriptionCancel />
+                    </ProtectedRoute>
+                  } />
+                  
+                  {/* Admin Routes with extra protection */}
+                  <Route path="/admin/*" element={
+                    <ProtectedRoute>
+                      <Admin />
+                    </ProtectedRoute>
+                  } />
 
-                {/* CRM Routes */}
-                <Route path="/crm/*" element={
-                  <ProtectedRoute>
-                    <Routes>
-                      <Route path="/" element={<CRMDashboard />} />
-                      <Route path="/contacts" element={<CRMContacts />} />
-                      <Route path="/tasks" element={<CRMTasks />} />
-                      <Route path="/analytics" element={<CRMAnalytics />} />
-                      <Route path="/calendar" element={<CRMCalendar />} />
-                      <Route path="/communications" element={<CRMCommunications />} />
-                    </Routes>
-                  </ProtectedRoute>
-                } />
+                  {/* CRM Routes */}
+                  <Route path="/crm/*" element={
+                    <ProtectedRoute>
+                      <Routes>
+                        <Route path="/" element={<CRMDashboard />} />
+                        <Route path="/contacts" element={<CRMContacts />} />
+                        <Route path="/tasks" element={<CRMTasks />} />
+                        <Route path="/analytics" element={<CRMAnalytics />} />
+                        <Route path="/calendar" element={<CRMCalendar />} />
+                        <Route path="/communications" element={<CRMCommunications />} />
+                      </Routes>
+                    </ProtectedRoute>
+                  } />
 
-                {/* Creator Routes */}
-                <Route path="/creator/*" element={
-                  <ProtectedRoute>
-                    <Routes>
-                      <Route path="/" element={<CreatorDashboardPage />} />
-                      <Route path="/onboarding" element={<CreatorOnboardingPage />} />
-                    </Routes>
-                  </ProtectedRoute>
-                } />
+                  {/* Creator Routes */}
+                  <Route path="/creator/*" element={
+                    <ProtectedRoute>
+                      <Routes>
+                        <Route path="/" element={<CreatorDashboardPage />} />
+                        <Route path="/onboarding" element={<CreatorOnboardingPage />} />
+                      </Routes>
+                    </ProtectedRoute>
+                  } />
 
-                {/* Artisan Routes */}
-                <Route path="/artisan/*" element={
-                  <ProtectedRoute>
-                    <Routes>
-                      <Route path="/" element={<Artisan />} />
-                      <Route path="/onboarding" element={<ArtisanOnboarding />} />
-                    </Routes>
-                  </ProtectedRoute>
-                } />
+                  {/* Artisan Routes */}
+                  <Route path="/artisan/*" element={
+                    <ProtectedRoute>
+                      <Routes>
+                        <Route path="/" element={<Artisan />} />
+                        <Route path="/onboarding" element={<ArtisanOnboarding />} />
+                      </Routes>
+                    </ProtectedRoute>
+                  } />
 
-                {/* Manufacturer Routes */}
-                <Route path="/manufacturer/*" element={
-                  <ProtectedRoute>
-                    <Routes>
-                      <Route path="/" element={<Manufacturer />} />
-                      <Route path="/onboarding" element={<ManufacturerOnboarding />} />
-                    </Routes>
-                  </ProtectedRoute>
-                } />
+                  {/* Manufacturer Routes */}
+                  <Route path="/manufacturer/*" element={
+                    <ProtectedRoute>
+                      <Routes>
+                        <Route path="/" element={<Manufacturer />} />
+                        <Route path="/onboarding" element={<ManufacturerOnboarding />} />
+                      </Routes>
+                    </ProtectedRoute>
+                  } />
 
-                {/* 404 Route */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <Toaster />
-            </ErrorBoundary>
+                  {/* 404 Route */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                <Toaster />
+              </ErrorBoundary>
+            </NotificationProvider>
           </AuthProvider>
         </BrowserRouter>
       </ThemeProvider>

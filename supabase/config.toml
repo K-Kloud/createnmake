@@ -1,6 +1,6 @@
 
-# A string used to distinguish different Supabase projects on the same host. Defaults to the working
-# directory name when running `supabase init`.
+# This file defines the configuration for the local Supabase project
+
 project_id = "igkiffajkpfwdfxwokwg"
 
 [api]
@@ -44,9 +44,13 @@ file_size_limit = "50MiB"
 site_url = "http://localhost:3000"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
 additional_redirect_urls = ["https://localhost:3000"]
-# How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 seconds (one
-# week).
+# How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
+# If disabled, the refresh token will never expire.
+enable_refresh_token_rotation = true
+# Allows refresh tokens to be reused after expiry, up to the specified interval in seconds.
+# Requires enable_refresh_token_rotation = true.
+refresh_token_reuse_interval = 10
 # Allow/disallow new user signups to your project.
 enable_signup = true
 
@@ -59,38 +63,150 @@ double_confirm_changes = true
 # If enabled, users need to confirm their email address before signing in.
 enable_confirmations = false
 
-# Use an external OAuth provider. The full list of providers are: "apple", "azure", "bitbucket",
-# "discord", "facebook", "github", "gitlab", "google", "keycloak", "linkedin", "notion", "twitch",
-# "twitter", "slack", "spotify", "workos", "zoom".
+[auth.sms]
+# Allow/disallow new user signups via SMS to your project.
+enable_signup = true
+# If enabled, users need to confirm their phone number before signing in.
+enable_confirmations = false
+
 [auth.external.apple]
 enabled = false
 client_id = ""
 secret = ""
 # Overrides the default auth redirectUrl.
 redirect_uri = ""
-# Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
-# or any other third-party OIDC providers.
-url = ""
+# For apple login on native mobile platforms
+# https://docs.supabase.com/reference/javascript/auth-signinwithoauth#sign-in-using-apple-on-ios
+native_redirect_options = { "scheme" = "io.supabase.example", "ios_bundle_id" = "io.supabase.example" }
+
+[auth.external.azure]
+enabled = false
+client_id = ""
+secret = ""
+url = "https://login.microsoftonline.com/<tenant>/oauth2/v2.0"
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
+
+[auth.external.bitbucket]
+enabled = false
+client_id = ""
+secret = ""
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
+
+[auth.external.discord]
+enabled = false
+client_id = ""
+secret = ""
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
+
+[auth.external.facebook]
+enabled = false
+client_id = ""
+secret = ""
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
+
+[auth.external.figma]
+enabled = false
+client_id = ""
+secret = ""
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
 
 [auth.external.github]
-enabled = true
-client_id = "env(SUPABASE_AUTH_GITHUB_CLIENT_ID)"
-secret = "env(SUPABASE_AUTH_GITHUB_SECRET)"
+enabled = false
+client_id = ""
+secret = ""
 # Overrides the default auth redirectUrl.
 redirect_uri = ""
-# Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
-# or any other third-party OIDC providers.
-url = ""
+
+[auth.external.gitlab]
+enabled = false
+client_id = ""
+secret = ""
+url = "https://gitlab.com"
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
 
 [auth.external.google]
-enabled = true
-client_id = "env(SUPABASE_AUTH_GOOGLE_CLIENT_ID)"
-secret = "env(SUPABASE_AUTH_GOOGLE_SECRET)"
+enabled = false
+client_id = ""
+secret = ""
 # Overrides the default auth redirectUrl.
 redirect_uri = ""
-# Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
-# or any other third-party OIDC providers.
+
+[auth.external.keycloak]
+enabled = false
+client_id = ""
+secret = ""
 url = ""
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
+
+[auth.external.linkedin]
+enabled = false
+client_id = ""
+secret = ""
+url = "https://www.linkedin.com"
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
+
+[auth.external.notion]
+enabled = false
+client_id = ""
+secret = ""
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
+
+[auth.external.twitch]
+enabled = false
+client_id = ""
+secret = ""
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
+
+[auth.external.twitter]
+enabled = false
+client_id = ""
+secret = ""
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
+
+[auth.external.slack]
+enabled = false
+client_id = ""
+secret = ""
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
+
+[auth.external.spotify]
+enabled = false
+client_id = ""
+secret = ""
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
+
+[auth.external.twilio]
+enabled = false
+account_sid = ""
+auth_token = ""
+messaging_service_sid = ""
+
+[auth.external.workos]
+enabled = false
+client_id = ""
+secret = ""
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
+
+[auth.external.zoom]
+enabled = false
+client_id = ""
+secret = ""
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
 
 [analytics]
 enabled = false
@@ -101,18 +217,6 @@ gcp_project_id = ""
 gcp_project_number = ""
 gcp_jwt_path = "supabase/gcloud.json"
 
-# Function to receive Stripe webhook events
-[functions.webhook-stripe]
-verify_jwt = false
-
-# Function to check subscription status
-[functions.check-subscription]
-verify_jwt = true
-
-# Function to create a Stripe checkout session
-[functions.create-checkout]
-verify_jwt = true
-
-# Function to access Stripe customer portal
-[functions.customer-portal]
-verify_jwt = true
+# Enable realtime functionality
+[realtime]
+enabled = true
