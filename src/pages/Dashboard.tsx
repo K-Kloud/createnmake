@@ -55,13 +55,8 @@ const Dashboard = () => {
                   userId={session?.user.id}
                 />
 
-                {/* Stats Overview */}
-                <DashboardStats
-                  generatedImagesCount={generatedImagesCount}
-                  productsCount={productsCount}
-                  ordersCount={ordersCount}
-                  likesCount={likesCount}
-                />
+                {/* Stats Overview - removed props as DashboardStats gets data from hook */}
+                <DashboardStats />
 
                 {/* Quick Actions */}
                 <QuickActions />

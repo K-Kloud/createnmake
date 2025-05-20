@@ -62,26 +62,26 @@ export function DashboardStats() {
         <StatsCard
           title="Designs Generated"
           value={generatedImagesCount || 0}
-          icon={<ImageIcon />}
+          icon={ImageIcon}
           description="Total AI designs created"
           href="/designs"
         />
         <StatsCard
           title="Likes Received"
           value={likesCount || 0}
-          icon={<HeartIcon />}
+          icon={HeartIcon}
           description="Across all your designs"
         />
         <StatsCard
           title="Products Listed"
           value={productsCount || 0}
-          icon={<PackageIcon />}
+          icon={PackageIcon}
           description="Items available for sale"
         />
         <StatsCard
           title="Orders"
           value={ordersCount || 0}
-          icon={<ShoppingCartIcon />}
+          icon={ShoppingCartIcon}
           description="Orders placed or received"
           href="/orders"
         />
