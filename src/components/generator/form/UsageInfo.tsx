@@ -5,20 +5,34 @@ import { Progress } from "@/components/ui/progress";
 import { Zap } from "lucide-react";
 
 interface UsageInfoProps {
-  imagesGenerated: number;
-  monthlyImageLimit: number;
-  tier: string;
-  canGenerateImage: boolean;
-  onUpgrade: () => void;
+  imagesGenerated?: number;
+  monthlyImageLimit?: number;
+  tier?: string;
+  canGenerateImage?: boolean;
+  onUpgrade?: () => void;
+  isSignedIn?: boolean;
 }
 
 export const UsageInfo = ({ 
-  imagesGenerated, 
-  monthlyImageLimit, 
-  tier, 
-  canGenerateImage,
-  onUpgrade 
+  imagesGenerated = 0, 
+  monthlyImageLimit = 5, 
+  tier = "free", 
+  canGenerateImage = true,
+  onUpgrade = () => console.log('Upgrade clicked'),
+  isSignedIn = false
 }: UsageInfoProps) => {
+  
+  // If the user is not signed in, show a simplified version
+  if (!isSignedIn) {
+    return (
+      <Card className="bg-muted/50">
+        <CardContent className="pt-4 pb-3 px-4 text-center text-sm">
+          <p>Sign in to generate images and track your usage</p>
+        </CardContent>
+      </Card>
+    );
+  }
+  
   return (
     <Card className="bg-muted/50">
       <CardContent className="pt-4 pb-3 px-4">

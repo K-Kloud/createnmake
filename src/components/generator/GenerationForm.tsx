@@ -63,7 +63,7 @@ export const GenerationForm = ({
 
       {referenceImage && (
         <ReferenceImageDisplay
-          referenceImage={referenceImage}
+          file={referenceImage}
           onRemove={() => onReferenceImageUpload(null)}
         />
       )}
@@ -71,7 +71,7 @@ export const GenerationForm = ({
       {showKeywords && (
         <KeywordSuggestions
           selectedItem={selectedItem}
-          onSuggestionClick={(suggestion) => {
+          onKeywordClick={(suggestion) => {
             const newPrompt = prompt ? `${prompt} ${suggestion}` : suggestion;
             onPromptChange(newPrompt);
           }}

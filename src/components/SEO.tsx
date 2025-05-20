@@ -1,6 +1,20 @@
 
 import { useEffect } from "react";
-import { SEOProps } from "@/types/seo";
+
+export interface SEOProps {
+  title: string;
+  description: string;
+  canonicalUrl?: string;
+  ogImage?: string;
+  ogType?: string;
+  metaTags?: MetaTag[];
+}
+
+interface MetaTag {
+  name?: string;
+  property?: string;
+  content: string;
+}
 
 export const SEO = ({
   title,
