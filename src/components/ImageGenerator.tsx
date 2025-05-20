@@ -22,7 +22,10 @@ export const ImageGenerator = () => {
     setAuthDialogOpen,
     generatedImageUrl,
     session,
-    handleGenerate
+    handleGenerate,
+    subscriptionStatus,
+    canGenerateImage,
+    remainingImages,
   } = useImageGeneration();
 
   // Add function to handle liking images if needed

@@ -367,6 +367,56 @@ export type Database = {
           },
         ]
       }
+      creator_subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean | null
+          created_at: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
+          plan_id: number
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan_id: number
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan_id?: number
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_tasks: {
         Row: {
           assignee_id: string | null
@@ -841,10 +891,15 @@ export type Database = {
           business_name: string | null
           business_type: string | null
           created_at: string | null
+          creator_tier: string | null
           id: string
+          images_generated_count: number | null
           is_artisan: boolean | null
+          is_creator: boolean | null
+          monthly_image_limit: number | null
           phone: string | null
           specialties: string[] | null
+          subscription_updated_at: string | null
           updated_at: string | null
           username: string | null
         }
@@ -855,10 +910,15 @@ export type Database = {
           business_name?: string | null
           business_type?: string | null
           created_at?: string | null
+          creator_tier?: string | null
           id: string
+          images_generated_count?: number | null
           is_artisan?: boolean | null
+          is_creator?: boolean | null
+          monthly_image_limit?: number | null
           phone?: string | null
           specialties?: string[] | null
+          subscription_updated_at?: string | null
           updated_at?: string | null
           username?: string | null
         }
@@ -869,10 +929,15 @@ export type Database = {
           business_name?: string | null
           business_type?: string | null
           created_at?: string | null
+          creator_tier?: string | null
           id?: string
+          images_generated_count?: number | null
           is_artisan?: boolean | null
+          is_creator?: boolean | null
+          monthly_image_limit?: number | null
           phone?: string | null
           specialties?: string[] | null
+          subscription_updated_at?: string | null
           updated_at?: string | null
           username?: string | null
         }
@@ -922,6 +987,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      subscription_plans: {
+        Row: {
+          created_at: string | null
+          currency: string
+          description: string | null
+          features: Json | null
+          id: number
+          is_active: boolean | null
+          monthly_image_limit: number
+          name: string
+          price: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          currency?: string
+          description?: string | null
+          features?: Json | null
+          id?: number
+          is_active?: boolean | null
+          monthly_image_limit: number
+          name: string
+          price: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string
+          description?: string | null
+          features?: Json | null
+          id?: number
+          is_active?: boolean | null
+          monthly_image_limit?: number
+          name?: string
+          price?: number
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       subscriptions: {
         Row: {

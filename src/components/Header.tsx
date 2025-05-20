@@ -52,6 +52,30 @@ export const Header = () => {
     enabled: !!session?.user?.id,
   });
 
+  // Add a new item to the navigation
+  const mainNav = [
+    {
+      title: "Home",
+      href: "/",
+    },
+    {
+      title: "Features",
+      href: "/features",
+    },
+    {
+      title: "Create",
+      href: "/create",
+    },
+    {
+      title: "Marketplace",
+      href: "/marketplace",
+    },
+    {
+      title: "Subscription",
+      href: "/subscription",
+    },
+  ];
+
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
