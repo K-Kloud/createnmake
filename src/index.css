@@ -9,6 +9,8 @@
     --foreground: 0 0% 0%;  /* Changed to black */
     --card: 0 0% 98%;
     --card-foreground: 0 0% 0%;  /* Changed to black */
+    --popover: 168 70% 7%;  /* Updated for better visibility */
+    --popover-foreground: 0 0% 98%;  /* Updated for contrast */
     --border: 168 70% 90%;
     --input: 168 70% 90%;
     --ring: 156 100% 50%;
@@ -20,6 +22,8 @@
     --foreground: 156 100% 50%;
     --card: 168 100% 5%;
     --card-foreground: 156 100% 50%;
+    --popover: 168 70% 7%;  /* Updated for better visibility */
+    --popover-foreground: 0 0% 98%;  /* Updated for contrast */
     --border: 168 70% 10%;
     --input: 168 70% 10%;
     --ring: 156 100% 50%;
@@ -43,6 +47,7 @@
   }
 }
 
+/* Keep existing classes */
 .glass-card {
   @apply bg-card/30 backdrop-blur-md border border-primary/20 shadow-xl rounded-[var(--radius)] hover:shadow-primary/20 transition-all duration-300;
 }
@@ -65,6 +70,15 @@
 
 .input-glow {
   @apply transition-shadow duration-300 rounded-[var(--radius)] focus:shadow-md focus:shadow-primary/30;
+}
+
+/* Added styles for improved dropdown visibility */
+[data-radix-popper-content-wrapper] {
+  z-index: 100 !important;
+}
+
+.dropdown-content {
+  @apply bg-black/80 backdrop-blur-md border border-white/10 z-50 shadow-lg;
 }
 
 /* Responsive container class */

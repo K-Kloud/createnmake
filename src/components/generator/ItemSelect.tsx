@@ -63,10 +63,10 @@ interface ItemSelectProps {
 
 export const ItemSelect = ({ value, onChange, disabled = false, isLoading = false }: ItemSelectProps) => {
   const [open, setOpen] = useState(false);
-  const [items, setItems] = useState(initialItems);
+  const [items, setItems] = useState([...initialItems]);
   const [loading, setLoading] = useState(false);
 
-  // Load all items immediately to prevent issues with keyword suggestions
+  // Load all items immediately
   useEffect(() => {
     setItems([...initialItems, ...additionalItems]);
   }, []);
@@ -74,18 +74,25 @@ export const ItemSelect = ({ value, onChange, disabled = false, isLoading = fals
   // For animation purposes only
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
-    if (newOpen && items.length === initialItems.length) {
+    if (newOpen) {
       setLoading(true);
       // Simulate API delay
       const timer = setTimeout(() => {
         setLoading(false);
-      }, 600);
+      }, 300);
       
       return () => clearTimeout(timer);
     }
   };
 
   const selectedItem = items.find((item) => item.value === value);
+
+  // Debug log to track selection
+  useEffect(() => {
+    if (value) {
+      console.log('Selected item:', value, selectedItem);
+    }
+  }, [value, selectedItem]);
 
   return (
     <div className="space-y-2">
@@ -112,7 +119,11 @@ export const ItemSelect = ({ value, onChange, disabled = false, isLoading = fals
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0">
+        <PopoverContent 
+          className="w-full p-0 z-50 shadow-lg border border-white/10 bg-popover" 
+          align="start"
+          sideOffset={5}
+        >
           <Command>
             <CommandInput placeholder="Search item type..." />
             <CommandEmpty>No item type found.</CommandEmpty>
@@ -125,10 +136,13 @@ export const ItemSelect = ({ value, onChange, disabled = false, isLoading = fals
                 items.map((item) => (
                   <CommandItem
                     key={item.value}
-                    onSelect={() => {
-                      onChange(item.value);
+                    value={item.value}
+                    onSelect={(currentValue) => {
+                      console.log('Item selected:', currentValue);
+                      onChange(currentValue);
                       setOpen(false);
                     }}
+                    className="cursor-pointer hover:bg-accent hover:text-accent-foreground"
                   >
                     <Check
                       className={cn(
