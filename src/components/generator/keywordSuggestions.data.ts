@@ -9,7 +9,6 @@ export const keywordSuggestions: Record<string, string[]> = {
   "accessory": ["minimalist", "statement", "luxury", "handcrafted", "versatile"],
   "packaging": ["sustainable", "minimalist", "premium", "innovative", "colorful"],
   "jewelry": ["vintage", "statement", "minimalist", "handcrafted", "gemstone"],
-  "footwear": ["comfortable", "athletic", "sustainable", "dressy", "casual"],
   "lighting": ["pendant", "ambient", "minimalist", "industrial", "smart"],
   "textile": ["organic", "printed", "sustainable", "geometric", "textured"],
   "gadget": ["smart", "portable", "innovative", "sustainable", "minimal"],
@@ -27,7 +26,7 @@ export const keywordSuggestions: Record<string, string[]> = {
   "activewear": ["moisture-wicking", "compression", "seamless", "breathable"],
   "undergarments": ["lace", "cotton", "seamless", "supportive", "comfortable"],
   "accessories": ["statement", "layered", "handcrafted", "vintage", "minimalist"],
-  "footwear": ["leather", "suede", "canvas", "chunky", "platform", "flat"],
+  "shoes": ["leather", "suede", "canvas", "chunky", "platform", "flat"],
   "traditional": ["embroidered", "handwoven", "ceremonial", "cultural", "authentic"],
   
   // Specific clothing items
