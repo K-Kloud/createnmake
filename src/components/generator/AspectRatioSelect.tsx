@@ -8,7 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Square, Smartphone, Monitor, LayoutGrid, Image } from "lucide-react";
+import { Square, Smartphone, Monitor, LayoutGrid, Image, AspectRatio } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const aspectRatios = {
   "square": { width: 1080, height: 1080, label: "1:1", icon: Square },
@@ -28,29 +29,49 @@ interface AspectRatioSelectProps {
 }
 
 export const AspectRatioSelect = ({ value, onChange, disabled = false }: AspectRatioSelectProps) => {
+  const selectedRatio = aspectRatios[value];
+  
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium">Output Size</label>
-      <div className="flex justify-center overflow-x-auto space-x-2 pb-2">
-        {Object.entries(aspectRatios).map(([key, { label, icon: Icon }]) => (
-          <button
-            key={key}
-            onClick={() => onChange(key)}
-            className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors min-w-[70px] 
-              ${
-                value === key 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-card/30 hover:bg-card/50'
-              } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-            disabled={disabled}
-          >
-            <Icon className="w-4 h-4 mb-1" />
-            <span className="text-xs text-center">{label}</span>
-          </button>
-        ))}
+      <div className="flex items-center space-x-2">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="p-2 rounded-md bg-primary/10 text-primary">
+                <AspectRatio className="w-4 h-4" />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Select output aspect ratio</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        
+        <Select 
+          value={value} 
+          onValueChange={onChange} 
+          disabled={disabled}
+        >
+          <SelectTrigger className="w-full bg-card/30">
+            <SelectValue placeholder="Select aspect ratio" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {Object.entries(aspectRatios).map(([key, { label, icon: Icon }]) => (
+                <SelectItem key={key} value={key} className="flex items-center">
+                  <div className="flex items-center space-x-2">
+                    <Icon className="w-4 h-4 mr-2" />
+                    <span>{label}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
       <p className="text-sm text-center text-white/60">
-        Size: {aspectRatios[value].width}x{aspectRatios[value].height}px
+        Size: {selectedRatio.width}x{selectedRatio.height}px
       </p>
     </div>
   );
