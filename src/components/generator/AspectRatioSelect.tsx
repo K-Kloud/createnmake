@@ -8,8 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Square, Smartphone, Monitor, LayoutGrid, Image, Scaling } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Square, Smartphone, Monitor, LayoutGrid, Image } from "lucide-react";
 
 const aspectRatios = {
   "square": { width: 1080, height: 1080, label: "1:1", icon: Square },
