@@ -32,9 +32,9 @@ export const AspectRatioSelect = ({ value, onChange, disabled = false }: AspectR
   const selectedRatio = aspectRatios[value];
   
   return (
-    <div className="space-y-2">
+    <div>
       <label className="text-sm font-medium">Output Size</label>
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 mt-2">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -70,7 +70,7 @@ export const AspectRatioSelect = ({ value, onChange, disabled = false }: AspectR
           </SelectContent>
         </Select>
       </div>
-      <p className="text-sm text-center text-white/60">
+      <p className="text-sm text-center text-white/60 mt-1">
         Size: {selectedRatio.width}x{selectedRatio.height}px
       </p>
     </div>
