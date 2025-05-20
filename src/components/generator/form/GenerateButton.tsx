@@ -1,5 +1,4 @@
 
-import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
 interface GenerateButtonProps {
@@ -17,21 +16,6 @@ export const GenerateButton = ({
 }: GenerateButtonProps) => {
   return (
     <>
-      <Button
-        onClick={onClick}
-        className="w-full"
-        disabled={isGenerating || disabled}
-      >
-        {isGenerating ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Generating...
-          </>
-        ) : (
-          "Generate Design"
-        )}
-      </Button>
-
       {remainingImages !== undefined && remainingImages > 0 && (
         <p className="text-xs text-center mt-2 text-muted-foreground">
           You have {remainingImages} image{remainingImages !== 1 ? 's' : ''} remaining this month
