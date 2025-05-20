@@ -1,9 +1,8 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Zap, Plus, ImageIcon } from "lucide-react";
+import { Loader2, Zap, Plus, ImageIcon, X } from "lucide-react";
 import { ItemSelect } from "./ItemSelect";
 import { AspectRatioSelect } from "./AspectRatioSelect";
 import { ReferenceImageUpload } from "./ReferenceImageUpload";
