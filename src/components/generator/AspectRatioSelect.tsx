@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Square, Smartphone, Monitor, LayoutGrid, Image, AspectRatio } from "lucide-react";
+import { Square, Smartphone, Monitor, LayoutGrid, Image, Scaling } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const aspectRatios = {
@@ -39,7 +39,7 @@ export const AspectRatioSelect = ({ value, onChange, disabled = false }: AspectR
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="p-2 rounded-md bg-primary/10 text-primary">
-                <AspectRatio className="w-4 h-4" />
+                <Scaling className="w-4 h-4" />
               </div>
             </TooltipTrigger>
             <TooltipContent>
