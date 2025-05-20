@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { 
   NavigationMenu,
   NavigationMenuContent,
@@ -8,10 +8,16 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
 
 export const Navigation = () => {
+  const location = useLocation();
+  
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
+  
   return (
     <NavigationMenu>
       <NavigationMenuList>
@@ -78,8 +84,25 @@ export const Navigation = () => {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Button variant="ghost" asChild>
+          <Button 
+            variant={isActive("/marketplace") ? "default" : "ghost"} 
+            asChild
+            className={cn(
+              isActive("/marketplace") && "bg-primary text-primary-foreground"
+            )}
+          >
             <Link to="/marketplace">OpenMarket</Link>
+          </Button>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Button 
+            variant={isActive("/subscription") ? "default" : "ghost"} 
+            asChild
+            className={cn(
+              isActive("/subscription") && "bg-primary text-primary-foreground"
+            )}
+          >
+            <Link to="/subscription">Pricing</Link>
           </Button>
         </NavigationMenuItem>
       </NavigationMenuList>

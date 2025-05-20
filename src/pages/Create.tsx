@@ -1,8 +1,6 @@
 
 import { ImageGenerator } from "@/components/ImageGenerator";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { SEO } from "@/components/SEO";
+import { MainLayout } from "@/components/layouts/MainLayout";
 import { useEffect } from "react";
 
 const Create = () => {
@@ -12,12 +10,12 @@ const Create = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <SEO 
-        title="Create Custom Design | AI-Powered Generation"
-        description="Create custom designs with our AI-powered image generator. Generate unique clothing, furniture, and accessories with just a text prompt."
-      />
-      <Header />
+    <MainLayout
+      seo={{
+        title: "Create Custom Design | AI-Powered Generation",
+        description: "Create custom designs with our AI-powered image generator. Generate unique clothing, furniture, and accessories with just a text prompt."
+      }}
+    >
       <div className="container px-4 py-16 md:py-24 flex-grow">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold mb-2 text-primary hover:brightness-125 transition-all duration-300 rounded-lg">
@@ -30,8 +28,7 @@ const Create = () => {
           <ImageGenerator />
         </div>
       </div>
-      <Footer />
-    </div>
+    </MainLayout>
   );
 };
 

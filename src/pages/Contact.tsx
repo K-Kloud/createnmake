@@ -1,6 +1,5 @@
 
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import { MainLayout } from "@/components/layouts/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,12 +7,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 
 const Contact = () => {
-  const phoneNumber = "+44 7438306305"; // Updated to the new phone number
+  const phoneNumber = "+44 7438306305";
   const whatsappLink = `https://wa.me/${phoneNumber.replace(/[^0-9]/g, '')}`;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+    <MainLayout
+      seo={{
+        title: "Contact Us | Get in Touch",
+        description: "Have a question or need assistance? Get in touch with our team today."
+      }}
+    >
       <div className="container px-4 py-24 flex-grow">
         <h1 className="text-4xl font-bold mb-8 gradient-text">Contact Us</h1>
         
@@ -88,8 +91,7 @@ const Contact = () => {
           </div>
         </div>
       </div>
-      <Footer />
-    </div>
+    </MainLayout>
   );
 };
 

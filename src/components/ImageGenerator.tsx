@@ -49,6 +49,8 @@ export const ImageGenerator = () => {
           onGenerate={handleGenerate}
           isGenerating={isGenerating}
           isSignedIn={!!session?.user}
+          remainingImages={remainingImages}
+          showItemPreviews={true}
         />
 
         <PreviewDialog
@@ -69,3 +71,5 @@ export const ImageGenerator = () => {
     </div>
   );
 };
+
+export default ImageGenerator;

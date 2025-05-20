@@ -1,13 +1,13 @@
 
-import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
+import { PromptInput } from "./form/PromptInput";
 import { ItemSelect } from "./ItemSelect";
 import { AspectRatioSelect } from "./AspectRatioSelect";
-import { KeywordSuggestions } from "./KeywordSuggestions";
-import { useSubscription } from "@/hooks/useSubscription";
-import { UsageInfo } from "./form/UsageInfo";
-import { PromptInput } from "./form/PromptInput";
 import { ReferenceImageDisplay } from "./form/ReferenceImageDisplay";
+import { KeywordSuggestions } from "./KeywordSuggestions";
 import { GenerateButton } from "./form/GenerateButton";
+import { UsageInfo } from "./form/UsageInfo";
+import { ItemTypePreviews } from "./form/ItemTypePreviews";
 
 interface GenerationFormProps {
   prompt: string;
@@ -20,7 +20,9 @@ interface GenerationFormProps {
   onReferenceImageUpload: (file: File | null) => void;
   onGenerate: () => void;
   isGenerating: boolean;
-  isSignedIn: boolean;
+  isSignedIn?: boolean;
+  remainingImages?: number;
+  showItemPreviews?: boolean;
 }
 
 export const GenerationForm = ({
@@ -34,90 +36,72 @@ export const GenerationForm = ({
   onReferenceImageUpload,
   onGenerate,
   isGenerating,
-  isSignedIn,
+  isSignedIn = false,
+  remainingImages,
+  showItemPreviews = false
 }: GenerationFormProps) => {
-  const { 
-    subscriptionStatus, 
-    canGenerateImage, 
-    remainingImages,
-    subscribe,
-    plans 
-  } = useSubscription();
+  const [showKeywords, setShowKeywords] = useState(true);
 
-  // Handle keyword click to add to prompt
-  const handleKeywordClick = (keyword: string) => {
-    onPromptChange(prompt ? `${prompt}, ${keyword}` : keyword);
-  };
-
-  // Handle subscription upgrade click
-  const handleUpgrade = () => {
-    // Get the basic plan (or first available plan)
-    const basicPlan = plans && plans.length > 0 
-      ? plans.find(plan => plan.name.toLowerCase() === 'basic') || plans[1]
-      : undefined;
-      
-    if (basicPlan) {
-      subscribe(basicPlan.id);
+  const handleItemChange = (value: string) => {
+    onItemChange(value);
+    if (!prompt || prompt.length < 10) {
+      // If the prompt is empty or very short, show keywords
+      setShowKeywords(true);
     }
   };
-
+  
   return (
-    <div className="space-y-6">
-      {/* Subscription usage info */}
-      {isSignedIn && subscriptionStatus && (
-        <UsageInfo 
-          imagesGenerated={subscriptionStatus.images_generated}
-          monthlyImageLimit={subscriptionStatus.monthly_image_limit}
-          tier={subscriptionStatus.tier}
-          canGenerateImage={canGenerateImage}
-          onUpgrade={handleUpgrade}
+    <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); onGenerate(); }}>
+      <PromptInput
+        prompt={prompt}
+        onPromptChange={onPromptChange}
+        onReferenceImageUpload={onReferenceImageUpload}
+        onGenerate={onGenerate}
+        isGenerating={isGenerating}
+        disabled={!isSignedIn}
+      />
+
+      {referenceImage && (
+        <ReferenceImageDisplay
+          referenceImage={referenceImage}
+          onRemove={() => onReferenceImageUpload(null)}
         />
       )}
 
-      <div className="space-y-4">
-        <ItemSelect 
-          value={selectedItem} 
-          onChange={onItemChange} 
-          disabled={isGenerating}
-          isLoading={isGenerating}
+      {showKeywords && (
+        <KeywordSuggestions
+          selectedItem={selectedItem}
+          onSuggestionClick={(suggestion) => {
+            const newPrompt = prompt ? `${prompt} ${suggestion}` : suggestion;
+            onPromptChange(newPrompt);
+          }}
+        />
+      )}
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <ItemSelect
+          value={selectedItem}
+          onChange={handleItemChange}
         />
 
-        <PromptInput
-          prompt={prompt}
-          onPromptChange={onPromptChange}
-          onReferenceImageUpload={onReferenceImageUpload}
-          onGenerate={onGenerate}
-          isGenerating={isGenerating}
-          disabled={!isSignedIn || !canGenerateImage}
-        />
-
-        <KeywordSuggestions 
-          selectedItem={selectedItem} 
-          onKeywordClick={handleKeywordClick}
-          disabled={isGenerating} 
-        />
-
-        <AspectRatioSelect 
-          value={selectedRatio} 
+        <AspectRatioSelect
+          value={selectedRatio}
           onChange={onRatioChange}
-          disabled={isGenerating}
-        />
-
-        {referenceImage && (
-          <ReferenceImageDisplay
-            file={referenceImage}
-            onRemove={() => onReferenceImageUpload(null)}
-            disabled={isGenerating}
-          />
-        )}
-
-        <GenerateButton
-          onClick={onGenerate}
-          isGenerating={isGenerating}
-          disabled={!isSignedIn || !canGenerateImage}
-          remainingImages={isSignedIn ? remainingImages : undefined}
         />
       </div>
-    </div>
+
+      {showItemPreviews && (
+        <ItemTypePreviews selectedItem={selectedItem} />
+      )}
+
+      <GenerateButton
+        onClick={onGenerate}
+        isGenerating={isGenerating}
+        disabled={!prompt.trim() || !isSignedIn}
+        remainingImages={remainingImages}
+      />
+
+      <UsageInfo isSignedIn={isSignedIn} />
+    </form>
   );
 };
