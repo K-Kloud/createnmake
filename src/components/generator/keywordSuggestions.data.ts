@@ -1,3 +1,4 @@
+
 export const keywordSuggestions: Record<string, string[]> = {
   // Men's Wear
   "mens-formal-suit": ["tailored", "slim-fit", "double-breasted", "pinstripe", "classic"],
@@ -55,4 +56,20 @@ export const keywordSuggestions: Record<string, string[]> = {
   "mirror-frame": ["carved", "gilded", "modern", "vintage-style", "custom"],
   "lamp": ["table", "floor", "pendant", "ceramic", "metal"],
   "basket": ["woven", "storage", "decorative", "natural", "custom"],
+  
+  // Default item types from dropdown
+  "product": ["innovative", "sustainable", "functional", "elegant", "minimalist"],
+  "fashion": ["trendy", "sustainable", "seasonal", "handcrafted", "avant-garde"],
+  "furniture": ["functional", "ergonomic", "statement", "sustainable", "modular"],
+  "interior": ["cozy", "minimalist", "bohemian", "industrial", "scandinavian"],
+  "accessory": ["statement", "versatile", "handcrafted", "functional", "elegant"],
+  "packaging": ["sustainable", "minimal", "premium", "innovative", "eco-friendly"],
+  "jewelry": ["statement", "delicate", "gemstone", "gold", "silver"],
+  "footwear": ["comfortable", "stylish", "sustainable", "athletic", "formal"],
+  "lighting": ["ambient", "statement", "energy-efficient", "pendant", "floor"],
+  "textile": ["sustainable", "patterned", "handwoven", "organic", "recycled"],
+  "gadget": ["innovative", "portable", "smart", "eco-friendly", "multifunctional"],
+  "homeware": ["practical", "decorative", "handcrafted", "eco-friendly", "modern"],
+  "automotive": ["aerodynamic", "futuristic", "sustainable", "luxury", "compact"],
+  "toy": ["educational", "sustainable", "interactive", "wooden", "creative"],
 };

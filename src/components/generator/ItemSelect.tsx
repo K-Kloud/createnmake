@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
+import { keywordSuggestions } from "./keywordSuggestions.data";
 
 // Initial items that are always available
 const initialItems = [
@@ -38,6 +39,21 @@ const additionalItems = [
   { value: "toy", label: "Toy Design" },
 ];
 
+// Ensure all item values have an entry in the keywordSuggestions
+const validateItemsInSuggestions = () => {
+  const allItems = [...initialItems, ...additionalItems];
+  const missingSuggestions = allItems.filter(item => !keywordSuggestions[item.value]);
+  
+  if (missingSuggestions.length > 0) {
+    console.warn('Missing keyword suggestions for:', missingSuggestions.map(item => item.value));
+  }
+};
+
+// Run validation in development
+if (process.env.NODE_ENV === 'development') {
+  validateItemsInSuggestions();
+}
+
 interface ItemSelectProps {
   value: string;
   onChange: (value: string) => void;
@@ -50,24 +66,31 @@ export const ItemSelect = ({ value, onChange, disabled = false, isLoading = fals
   const [items, setItems] = useState(initialItems);
   const [loading, setLoading] = useState(false);
 
-  // Simulate loading additional items when dropdown is opened
+  // Load all items immediately to prevent issues with keyword suggestions
   useEffect(() => {
-    if (open && items.length === initialItems.length) {
+    setItems([...initialItems, ...additionalItems]);
+  }, []);
+
+  // For animation purposes only
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (newOpen && items.length === initialItems.length) {
       setLoading(true);
       // Simulate API delay
       const timer = setTimeout(() => {
-        setItems([...initialItems, ...additionalItems]);
         setLoading(false);
       }, 600);
       
       return () => clearTimeout(timer);
     }
-  }, [open, items.length]);
+  };
+
+  const selectedItem = items.find((item) => item.value === value);
 
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium">Item Type</label>
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -83,9 +106,7 @@ export const ItemSelect = ({ value, onChange, disabled = false, isLoading = fals
               </>
             ) : (
               <>
-                {value
-                  ? items.find((item) => item.value === value)?.label || initialItems.find((item) => item.value === value)?.label
-                  : "Select item type..."}
+                {selectedItem ? selectedItem.label : "Select item type..."}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </>
             )}
