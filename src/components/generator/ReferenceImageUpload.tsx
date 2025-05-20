@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ImageIcon, X, Plus } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface ReferenceImageUploadProps {
   onUpload: (file: File | null) => void;
@@ -60,29 +61,42 @@ export const ReferenceImageUpload = ({
           </Button>
         </div>
       ) : (
-        <div className="border-2 border-dashed border-border rounded-md p-4 text-center">
-          <label 
-            htmlFor="file-upload" 
-            className={`
-              flex flex-col items-center justify-center cursor-pointer
-              ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
-            `}
-          >
-            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-              <Plus className="h-6 w-6 text-primary" />
-            </div>
-            <span className="text-sm font-medium">Add reference image</span>
-            <p className="text-xs text-muted-foreground mt-1">PNG, JPG, GIF up to 10MB</p>
-            <input
-              id="file-upload"
-              name="file-upload"
-              type="file"
-              accept="image/*"
-              className="sr-only"
-              onChange={handleFileChange}
-              disabled={disabled}
-            />
-          </label>
+        <div className="relative h-48 border-2 border-dashed border-border rounded-md p-4 flex items-center justify-center">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                className="absolute bottom-4 right-4 h-10 w-10 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground animate-bounce-slow button-glow"
+                size="icon"
+                disabled={disabled}
+              >
+                <Plus className="h-6 w-6" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-72 p-4">
+              <label 
+                htmlFor="file-upload" 
+                className={`
+                  flex flex-col items-center justify-center cursor-pointer
+                  ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+                `}
+              >
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                  <ImageIcon className="h-6 w-6 text-primary" />
+                </div>
+                <span className="text-sm font-medium">Add reference image</span>
+                <p className="text-xs text-muted-foreground mt-1">PNG, JPG, GIF up to 10MB</p>
+                <input
+                  id="file-upload"
+                  name="file-upload"
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={handleFileChange}
+                  disabled={disabled}
+                />
+              </label>
+            </PopoverContent>
+          </Popover>
         </div>
       )}
     </div>
