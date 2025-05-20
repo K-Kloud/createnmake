@@ -47,6 +47,14 @@
   @apply bg-card/30 backdrop-blur-md border border-primary/20 shadow-xl rounded-[var(--radius)] hover:shadow-primary/20 transition-all duration-300;
 }
 
+.modern-input {
+  @apply bg-black/30 border border-white/10 text-white placeholder:text-white/50 rounded-lg p-3;
+}
+
+.modern-card {
+  @apply bg-black/50 border border-white/10 backdrop-blur-md rounded-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,157,0.3)] hover:border-primary/40;
+}
+
 .gradient-text {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary rounded-[var(--radius)];
 }

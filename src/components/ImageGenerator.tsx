@@ -36,7 +36,7 @@ export const ImageGenerator = () => {
 
   return (
     <div className="space-y-8 animate-float">
-      <Card className="glass-card p-6 rounded-xl space-y-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(110,89,165,0.5)] hover:border-primary/50">
+      <Card className="bg-black/50 border border-white/10 backdrop-blur-md p-6 rounded-xl space-y-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,157,0.3)] hover:border-primary/40">
         <GenerationForm
           prompt={prompt}
           onPromptChange={setPrompt}
