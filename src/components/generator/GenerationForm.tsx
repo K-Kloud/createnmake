@@ -3,13 +3,14 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Zap } from "lucide-react";
+import { Loader2, Zap, Plus, ImageIcon } from "lucide-react";
 import { ItemSelect } from "./ItemSelect";
 import { AspectRatioSelect } from "./AspectRatioSelect";
 import { ReferenceImageUpload } from "./ReferenceImageUpload";
 import { KeywordSuggestions } from "./KeywordSuggestions";
 import { useSubscription } from "@/hooks/useSubscription";
 import { Progress } from "@/components/ui/progress";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface GenerationFormProps {
   prompt: string;
@@ -49,6 +50,14 @@ export const GenerationForm = ({
   // Handle keyword click to add to prompt
   const handleKeywordClick = (keyword: string) => {
     onPromptChange(prompt ? `${prompt}, ${keyword}` : keyword);
+  };
+
+  // Handle file change for reference image
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0] || null;
+    if (selectedFile) {
+      onReferenceImageUpload(selectedFile);
+    }
   };
 
   // Handle subscription upgrade click
@@ -120,13 +129,50 @@ export const GenerationForm = ({
 
         <div className="space-y-2">
           <label className="text-sm font-medium">Prompt</label>
-          <Input
-            value={prompt}
-            onChange={(e) => onPromptChange(e.target.value)}
-            placeholder={`Describe the ${selectedItem} you want to create...`}
-            className="bg-card/30"
-            disabled={isGenerating}
-          />
+          <div className="relative">
+            <Input
+              value={prompt}
+              onChange={(e) => onPromptChange(e.target.value)}
+              placeholder={`Describe the ${selectedItem} you want to create...`}
+              className="bg-card/30 pr-14"
+              disabled={isGenerating}
+            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full shadow-md bg-primary hover:bg-primary/90 text-primary-foreground button-glow"
+                  size="icon"
+                  disabled={isGenerating}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-72 p-4">
+                <label 
+                  htmlFor="prompt-file-upload" 
+                  className={`
+                    flex flex-col items-center justify-center cursor-pointer
+                    ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}
+                  `}
+                >
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                    <ImageIcon className="h-6 w-6 text-primary" />
+                  </div>
+                  <span className="text-sm font-medium">Add reference image</span>
+                  <p className="text-xs text-muted-foreground mt-1">PNG, JPG, GIF up to 10MB</p>
+                  <input
+                    id="prompt-file-upload"
+                    name="prompt-file-upload"
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={handleFileChange}
+                    disabled={isGenerating}
+                  />
+                </label>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
 
         <KeywordSuggestions 
@@ -141,11 +187,28 @@ export const GenerationForm = ({
           disabled={isGenerating}
         />
 
-        <ReferenceImageUpload
-          onUpload={onReferenceImageUpload}
-          file={referenceImage}
-          disabled={isGenerating}
-        />
+        {referenceImage && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Reference Image</label>
+            <div className="relative">
+              <img 
+                src={URL.createObjectURL(referenceImage)} 
+                alt="Reference" 
+                className="w-full rounded-md object-cover max-h-48"
+              />
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon"
+                className="absolute top-2 right-2 h-6 w-6"
+                onClick={() => onReferenceImageUpload(null)}
+                disabled={isGenerating}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+        )}
 
         <div className="pt-2">
           <Button
