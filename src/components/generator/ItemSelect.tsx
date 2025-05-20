@@ -1,5 +1,5 @@
 
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -29,9 +29,10 @@ interface ItemSelectProps {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  loading?: boolean;
 }
 
-export const ItemSelect = ({ value, onChange, disabled = false }: ItemSelectProps) => {
+export const ItemSelect = ({ value, onChange, disabled = false, loading = false }: ItemSelectProps) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -44,12 +45,21 @@ export const ItemSelect = ({ value, onChange, disabled = false }: ItemSelectProp
             role="combobox"
             aria-expanded={open}
             className="w-full justify-between bg-card/30"
-            disabled={disabled}
+            disabled={disabled || loading}
           >
-            {value
-              ? items.find((item) => item.value === value)?.label
-              : "Select item type..."}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <span>Loading item types...</span>
+              </>
+            ) : (
+              <>
+                {value
+                  ? items.find((item) => item.value === value)?.label
+                  : "Select item type..."}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0">
