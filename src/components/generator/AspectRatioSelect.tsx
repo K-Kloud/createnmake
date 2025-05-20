@@ -8,7 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Square, Smartphone, Monitor, LayoutGrid, Image, Scaling } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Square, Smartphone, Monitor, LayoutGrid, Image, Scaling, Plus } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const aspectRatios = {
@@ -69,6 +70,15 @@ export const AspectRatioSelect = ({ value, onChange, disabled = false }: AspectR
             </SelectGroup>
           </SelectContent>
         </Select>
+        
+        <Button 
+          variant="secondary" 
+          size="sm" 
+          className="flex-shrink-0"
+          disabled={disabled}
+        >
+          <Plus className="w-4 h-4" />
+        </Button>
       </div>
       <p className="text-sm text-center text-white/60">
         Size: {selectedRatio.width}x{selectedRatio.height}px
