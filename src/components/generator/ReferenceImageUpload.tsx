@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, X } from "lucide-react";
+import { ImageIcon, X, Plus } from "lucide-react";
 
 interface ReferenceImageUploadProps {
   onUpload: (file: File | null) => void;
@@ -60,32 +60,28 @@ export const ReferenceImageUpload = ({
           </Button>
         </div>
       ) : (
-        <div className="flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-md h-32">
-          <div className="space-y-2 text-center">
-            <ImageIcon className="mx-auto h-8 w-8 text-muted-foreground" />
-            <div className="flex flex-col items-center text-xs text-muted-foreground">
-              <label 
-                htmlFor="file-upload" 
-                className="relative cursor-pointer rounded-md bg-background px-2 py-1 text-primary hover:text-primary/80 transition-colors"
-              >
-                {disabled ? (
-                  <span>Upload Disabled</span>
-                ) : (
-                  <span>Upload an image</span>
-                )}
-                <input
-                  id="file-upload"
-                  name="file-upload"
-                  type="file"
-                  accept="image/*"
-                  className="sr-only"
-                  onChange={handleFileChange}
-                  disabled={disabled}
-                />
-              </label>
-              <p className="text-xs">PNG, JPG, GIF up to 10MB</p>
-            </div>
-          </div>
+        <div className="relative">
+          <label 
+            htmlFor="file-upload" 
+            className={`
+              fixed bottom-8 right-8 z-10 rounded-full bg-primary hover:bg-primary/80 
+              shadow-lg w-12 h-12 flex items-center justify-center cursor-pointer
+              transition-all duration-300 hover:scale-110 hover:shadow-primary/30
+              ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+            `}
+          >
+            <Plus className="h-6 w-6 text-primary-foreground" />
+            <input
+              id="file-upload"
+              name="file-upload"
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={handleFileChange}
+              disabled={disabled}
+            />
+          </label>
+          <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB</p>
         </div>
       )}
     </div>
