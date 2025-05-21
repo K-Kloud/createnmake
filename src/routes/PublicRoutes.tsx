@@ -1,5 +1,5 @@
 
-import { Route, Fragment } from "react-router-dom";
+import { Route } from "react-router-dom";
 
 // Pages
 import Index from "@/pages/Index";
@@ -13,7 +13,7 @@ import Marketplace from "@/pages/Marketplace";
 
 export const PublicRoutes = () => {
   return (
-    <Fragment>
+    <>
       <Route path="/" element={<Index />} />
       <Route path="/features" element={<Features />} />
       <Route path="/testimonials" element={<Testimonials />} />
@@ -22,6 +22,6 @@ export const PublicRoutes = () => {
       <Route path="/auth" element={<Auth />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/marketplace" element={<Marketplace />} />
-    </Fragment>
+    </>
   );
 };
