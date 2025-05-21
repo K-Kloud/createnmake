@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -18,12 +17,10 @@ import { Bell } from "lucide-react";
 import { useNotifications } from "@/context/NotificationContext";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Session } from "@supabase/supabase-js";
-import { Profile } from "@/types";
 
 interface UserMenuProps {
-  session: Session | null;
-  profile: Profile | null;
+  session: any;
+  profile: any;
   onShowAuthDialog: () => void;
 }
 
