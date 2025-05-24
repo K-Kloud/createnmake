@@ -23,7 +23,7 @@ export const ImageOverlay = ({
 }: ImageOverlayProps) => {
   return (
     <div 
-      className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center w-full h-full"
+      className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-100 transition-all duration-300 flex items-center justify-center w-full h-full"
       onClick={onExpandClick} // Add click handler to expand the image
     >
       {isZoomed ? (
