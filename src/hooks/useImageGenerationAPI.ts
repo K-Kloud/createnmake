@@ -12,13 +12,28 @@ export const useImageGenerationAPI = () => {
     data: generatedImageUrl 
   } = useCreateImage({
     onSuccess: () => {
-      // Success will be handled by parent component
+      toast({
+        title: "Success!",
+        description: "Your image has been generated successfully.",
+      });
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error("Image generation error:", error);
+      
+      // Show enhanced error message with suggestions
+      const errorMessage = error.message || "Failed to generate image";
+      const suggestions = error.suggestions || [];
+      
+      let description = errorMessage;
+      if (suggestions.length > 0) {
+        description += "\n\nSuggestions:\n• " + suggestions.join("\n• ");
+      }
+      
       toast({
         variant: "destructive",
-        title: "Error",
-        description: error.message || "Failed to generate image",
+        title: "Generation Failed",
+        description: description,
+        duration: 8000, // Show longer for detailed messages
       });
     },
   });

@@ -14,6 +14,7 @@ interface ImageGenerationResult {
   success: boolean;
   imageUrl?: string;
   error?: string;
+  suggestions?: string[];
 }
 
 const generateImage = async (params: {
@@ -24,7 +25,7 @@ const generateImage = async (params: {
   userId: string;
 }): Promise<ImageGenerationResult> => {
   try {
-    // Update to use the Supabase edge function instead of a local API endpoint
+    // Update to use the Supabase edge function
     const { data, error } = await supabase.functions.invoke("generate-image", {
       body: {
         prompt: params.prompt,
@@ -36,12 +37,38 @@ const generateImage = async (params: {
 
     if (error) {
       console.error(`Image generation API error:`, error);
-      return { success: false, error: error.message || `API error` };
+      
+      // Handle different types of errors
+      if (error.message?.includes('safety') || error.message?.includes('policy')) {
+        return { 
+          success: false, 
+          error: "Your prompt was flagged by our content policy. Please try rephrasing with more appropriate terms.",
+          suggestions: [
+            "Focus on clothing design and fashion elements",
+            "Use descriptive but appropriate language",
+            "Avoid potentially sensitive content"
+          ]
+        };
+      }
+      
+      return { 
+        success: false, 
+        error: error.message || `API error`,
+        suggestions: error.suggestions || []
+      };
     }
 
     if (!data || !data.url) {
       console.error("No output URL in response", data);
-      return { success: false, error: "No image URL returned from the API" };
+      return { 
+        success: false, 
+        error: "No image URL returned from the API. Please try again.",
+        suggestions: [
+          "Check your internet connection",
+          "Try a different prompt",
+          "Wait a moment and try again"
+        ]
+      };
     }
 
     // Save the generated image details to Supabase
@@ -68,7 +95,29 @@ const generateImage = async (params: {
     return { success: true, imageUrl: data.url };
   } catch (error: any) {
     console.error("Image generation error:", error);
-    return { success: false, error: error.message || "Unknown error occurred" };
+    
+    // Handle network errors
+    if (error.name === 'TypeError' && error.message?.includes('fetch')) {
+      return { 
+        success: false, 
+        error: "Network error. Please check your connection and try again.",
+        suggestions: [
+          "Check your internet connection",
+          "Try refreshing the page",
+          "Wait a moment and try again"
+        ]
+      };
+    }
+    
+    return { 
+      success: false, 
+      error: error.message || "Unknown error occurred",
+      suggestions: [
+        "Try rephrasing your prompt",
+        "Make sure your prompt is clear and appropriate",
+        "Contact support if the issue persists"
+      ]
+    };
   }
 };
 
@@ -91,7 +140,10 @@ export const useCreateImage = (options?: UseMutationOptions<string, Error, Image
       });
 
       if (!result.success || !result.imageUrl) {
-        throw new Error(result.error || "Failed to generate image");
+        const error = new Error(result.error || "Failed to generate image");
+        // Attach suggestions to the error for better user feedback
+        (error as any).suggestions = result.suggestions;
+        throw error;
       }
 
       return result.imageUrl;
