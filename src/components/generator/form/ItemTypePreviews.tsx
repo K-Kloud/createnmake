@@ -1,14 +1,13 @@
-
 import { useState, useEffect } from 'react';
 import { cn } from "@/lib/utils";
-
 interface ItemTypePreviewsProps {
   selectedItem: string;
 }
-
-export const ItemTypePreviews = ({ selectedItem }: ItemTypePreviewsProps) => {
+export const ItemTypePreviews = ({
+  selectedItem
+}: ItemTypePreviewsProps) => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  
+
   // Map of item types to example images (these would be actual URLs in a real implementation)
   const itemPreviewMap: Record<string, string> = {
     tops: "https://via.placeholder.com/300x300?text=Tops+Example",
@@ -18,7 +17,6 @@ export const ItemTypePreviews = ({ selectedItem }: ItemTypePreviewsProps) => {
     accessories: "https://via.placeholder.com/300x300?text=Accessories+Example",
     shoes: "https://via.placeholder.com/300x300?text=Shoes+Example"
   };
-  
   useEffect(() => {
     if (selectedItem && itemPreviewMap[selectedItem]) {
       setPreviewImage(itemPreviewMap[selectedItem]);
@@ -26,22 +24,11 @@ export const ItemTypePreviews = ({ selectedItem }: ItemTypePreviewsProps) => {
       setPreviewImage(null);
     }
   }, [selectedItem]);
-  
   if (!previewImage) return null;
-  
-  return (
-    <div className="mt-4 rounded-lg overflow-hidden relative">
-      <img
-        src={previewImage}
-        alt={`${selectedItem} example`}
-        className={cn(
-          "w-full h-auto opacity-50 transition-opacity duration-300",
-          "hover:opacity-70"
-        )}
-      />
+  return <div className="mt-4 rounded-lg overflow-hidden relative">
+      
       <div className="absolute bottom-2 right-2 bg-background/80 px-2 py-1 rounded text-xs">
         Example only
       </div>
-    </div>
-  );
+    </div>;
 };
