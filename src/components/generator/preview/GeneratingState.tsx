@@ -1,7 +1,11 @@
 
 import { Loader } from "lucide-react";
 
-export const GeneratingState = () => {
+interface GeneratingStateProps {
+  selectedRatio: string;
+}
+
+export const GeneratingState = ({ selectedRatio }: GeneratingStateProps) => {
   const steps = [
     "Interpreting prompt...",
     "Gathering inspiration...",

@@ -37,9 +37,7 @@ export const ImagePreview = ({ imageUrl, prompt, onLike }: ImagePreviewProps) =>
       </AspectRatio>
       
       <PreviewActions
-        imageUrl={imageUrl}
-        prompt={prompt}
-        onLike={onLike}
+        generatedImageUrl={imageUrl}
       />
     </div>
   );

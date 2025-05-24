@@ -1,7 +1,11 @@
 
 import { ImageIcon } from "lucide-react";
 
-export const EmptyPreview = () => {
+interface EmptyPreviewProps {
+  selectedRatio: string;
+}
+
+export const EmptyPreview = ({ selectedRatio }: EmptyPreviewProps) => {
   return (
     <div className="flex flex-col items-center justify-center py-12 space-y-4 text-center">
       <div className="rounded-full bg-muted p-6">
