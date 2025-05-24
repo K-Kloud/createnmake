@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MoveUpRight } from "lucide-react";
+import { MoveUpRight, PlusCircle, Store, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const QuickActions = () => {
@@ -18,7 +18,10 @@ export const QuickActions = () => {
             asChild
           >
             <Link to="/create">
-              Create New Design
+              <span className="flex items-center gap-2">
+                <PlusCircle className="h-4 w-4" />
+                Create New Design
+              </span>
               <MoveUpRight className="h-4 w-4" />
             </Link>
           </Button>
@@ -28,7 +31,10 @@ export const QuickActions = () => {
             asChild
           >
             <Link to="/marketplace">
-              Browse Marketplace
+              <span className="flex items-center gap-2">
+                <Store className="h-4 w-4" />
+                Browse Marketplace
+              </span>
               <MoveUpRight className="h-4 w-4" />
             </Link>
           </Button>
@@ -38,7 +44,10 @@ export const QuickActions = () => {
             asChild
           >
             <Link to="/designs">
-              View All Designs
+              <span className="flex items-center gap-2">
+                <Eye className="h-4 w-4" />
+                View All Designs
+              </span>
               <MoveUpRight className="h-4 w-4" />
             </Link>
           </Button>

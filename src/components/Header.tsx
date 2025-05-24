@@ -1,4 +1,4 @@
-// This is an update to the existing Header.tsx file
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthDialog } from "./auth/AuthDialog";
@@ -6,7 +6,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "./header/ThemeToggle";
 import { UserMenu } from "./header/UserMenu";
-import { AuthProvider } from "@/hooks/useAuth";
 import { EnhancedNotificationCenter } from "@/components/notifications/EnhancedNotificationCenter";
 import { ResponsiveNavigation } from "./ResponsiveNavigation";
 import { useResponsive } from "@/hooks/useResponsive";
@@ -55,7 +54,7 @@ export const Header = () => {
     enabled: !!session?.user?.id,
   });
 
-  // Main navigation items
+  // Main navigation items - only include valid routes
   const mainNav = [
     {
       title: "Home",
@@ -73,18 +72,20 @@ export const Header = () => {
       title: "Marketplace",
       href: "/marketplace",
     },
-    {
-      title: "Subscription",
-      href: "/subscription",
-    },
   ];
 
-  // Add Dashboard link if user is logged in
+  // Add authenticated user routes
   if (session?.user) {
-    mainNav.push({
-      title: "Dashboard",
-      href: "/dashboard",
-    });
+    mainNav.push(
+      {
+        title: "Dashboard",
+        href: "/dashboard",
+      },
+      {
+        title: "Subscription",
+        href: "/subscription",
+      }
+    );
   }
 
   useEffect(() => {
@@ -110,7 +111,7 @@ export const Header = () => {
             </button>
           </div>
           
-          {/* Use the ResponsiveNavigation component */}
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center justify-center flex-1">
             <ResponsiveNavigation items={mainNav} />
           </div>

@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useResponsive } from "@/hooks/useResponsive";
 import { Button } from "@/components/ui/button";
 import { 
@@ -12,6 +12,7 @@ import {
   Menu, 
   X 
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface NavigationItem {
   title: string;
@@ -29,9 +30,14 @@ export const ResponsiveNavigation = ({
 }: ResponsiveNavigationProps) => {
   const { isAtLeast } = useResponsive();
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
   const handleItemClick = () => {
     setIsOpen(false);
+  };
+
+  const isActive = (href: string) => {
+    return location.pathname === href;
   };
 
   // If the screen is at least medium sized, render horizontal links
@@ -42,7 +48,10 @@ export const ResponsiveNavigation = ({
           <Link 
             key={item.href}
             to={item.href}
-            className="text-sm font-medium transition-colors hover:text-primary"
+            className={cn(
+              "text-sm font-medium transition-colors hover:text-primary",
+              isActive(item.href) && "text-primary"
+            )}
           >
             {item.title}
           </Link>
@@ -73,7 +82,10 @@ export const ResponsiveNavigation = ({
               <Link
                 key={item.href}
                 to={item.href}
-                className="px-2 py-3 text-lg font-medium hover:text-primary hover:bg-muted/50 rounded-md transition-colors"
+                className={cn(
+                  "px-2 py-3 text-lg font-medium hover:text-primary hover:bg-muted/50 rounded-md transition-colors",
+                  isActive(item.href) && "text-primary bg-muted/50"
+                )}
                 onClick={handleItemClick}
               >
                 {item.title}
