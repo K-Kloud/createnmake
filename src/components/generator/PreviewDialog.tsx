@@ -1,14 +1,8 @@
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { usePreviewDialog } from "./preview/usePreviewDialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { EmptyPreview } from "./preview/EmptyPreview";
 import { GeneratingState } from "./preview/GeneratingState";
 import { ImagePreview } from "./preview/ImagePreview";
-import { EmptyPreview } from "./preview/EmptyPreview";
 
 interface PreviewDialogProps {
   open: boolean;
@@ -16,53 +10,53 @@ interface PreviewDialogProps {
   isGenerating: boolean;
   selectedRatio: string;
   generatedImageUrl?: string;
-  prompt?: string;
-  onLike?: (imageId: number) => void;
+  prompt: string;
+  onLike: (imageId: number) => void;
 }
 
-export const PreviewDialog = ({ 
-  open, 
-  onOpenChange, 
+export const PreviewDialog = ({
+  open,
+  onOpenChange,
   isGenerating,
   selectedRatio,
   generatedImageUrl,
-  prompt = "",
-  onLike 
+  prompt,
+  onLike
 }: PreviewDialogProps) => {
-  const { 
-    isFullScreenPreview,
-    setIsFullScreenPreview,
-    zoomLevel,
-    handleZoomIn,
-    handleZoomOut,
-    handleDownload,
-    handleShare
-  } = usePreviewDialog();
+  console.log("🎬 PreviewDialog props:", {
+    open,
+    isGenerating,
+    selectedRatio,
+    hasGeneratedImageUrl: !!generatedImageUrl,
+    generatedImageUrl,
+    prompt
+  });
+
+  const renderContent = () => {
+    if (isGenerating) {
+      console.log("⏳ Rendering generating state");
+      return <GeneratingState selectedRatio={selectedRatio} />;
+    }
+    
+    if (generatedImageUrl) {
+      console.log("🖼️ Rendering image preview with URL:", generatedImageUrl);
+      return (
+        <ImagePreview
+          imageUrl={generatedImageUrl}
+          prompt={prompt}
+          onLike={onLike}
+        />
+      );
+    }
+    
+    console.log("📭 Rendering empty preview");
+    return <EmptyPreview selectedRatio={selectedRatio} />;
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
-        <DialogHeader>
-          <DialogTitle>Generated Design Preview</DialogTitle>
-        </DialogHeader>
-        <div 
-          className="bg-card/50 rounded-lg flex flex-col items-center justify-center min-h-[400px] gap-4 p-4"
-        >
-          {isGenerating ? (
-            <GeneratingState />
-          ) : generatedImageUrl ? (
-            <ImagePreview 
-              generatedImageUrl={generatedImageUrl}
-              prompt={prompt}
-              onLike={onLike}
-              zoomLevel={zoomLevel}
-              onZoomIn={handleZoomIn}
-              onZoomOut={handleZoomOut} 
-            />
-          ) : (
-            <EmptyPreview />
-          )}
-        </div>
+      <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-auto">
+        {renderContent()}
       </DialogContent>
     </Dialog>
   );

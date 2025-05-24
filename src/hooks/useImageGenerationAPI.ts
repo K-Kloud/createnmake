@@ -11,14 +11,15 @@ export const useImageGenerationAPI = () => {
     isPending: isGenerating, 
     data: generatedImageUrl 
   } = useCreateImage({
-    onSuccess: () => {
+    onSuccess: (imageUrl) => {
+      console.log("🎉 Image generation successful! URL:", imageUrl);
       toast({
         title: "Success!",
         description: "Your image has been generated successfully.",
       });
     },
     onError: (error: any) => {
-      console.error("Image generation error:", error);
+      console.error("💥 Image generation error in hook:", error);
       
       // Show enhanced error message with suggestions
       const errorMessage = error.message || "Failed to generate image";
@@ -36,6 +37,12 @@ export const useImageGenerationAPI = () => {
         duration: 8000, // Show longer for detailed messages
       });
     },
+  });
+
+  console.log("🔄 useImageGenerationAPI state:", {
+    isGenerating,
+    hasGeneratedUrl: !!generatedImageUrl,
+    generatedImageUrl
   });
 
   return {

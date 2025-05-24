@@ -25,7 +25,16 @@ const generateImage = async (params: {
   userId: string;
 }): Promise<ImageGenerationResult> => {
   try {
+    console.log("🚀 Starting image generation with params:", {
+      prompt: params.prompt,
+      itemType: params.itemType,
+      aspectRatio: params.aspectRatio,
+      hasReferenceImage: !!params.referenceImageUrl,
+      userId: params.userId
+    });
+
     // Update to use the Supabase edge function
+    console.log("📡 Calling Supabase edge function 'generate-image'...");
     const { data, error } = await supabase.functions.invoke("generate-image", {
       body: {
         prompt: params.prompt,
@@ -35,8 +44,10 @@ const generateImage = async (params: {
       },
     });
 
+    console.log("📡 Edge function response:", { data, error });
+
     if (error) {
-      console.error(`Image generation API error:`, error);
+      console.error(`❌ Image generation API error:`, error);
       
       // Handle different types of errors
       if (error.message?.includes('safety') || error.message?.includes('policy')) {
@@ -58,8 +69,10 @@ const generateImage = async (params: {
       };
     }
 
+    console.log("✅ Edge function data received:", data);
+
     if (!data || !data.url) {
-      console.error("No output URL in response", data);
+      console.error("❌ No output URL in response", data);
       return { 
         success: false, 
         error: "No image URL returned from the API. Please try again.",
@@ -71,7 +84,10 @@ const generateImage = async (params: {
       };
     }
 
+    console.log("🖼️ Image URL received:", data.url);
+
     // Save the generated image details to Supabase
+    console.log("💾 Saving image details to database...");
     const { error: dbError } = await supabase
       .from("generated_images")
       .insert([
@@ -87,14 +103,15 @@ const generateImage = async (params: {
       ]);
 
     if (dbError) {
-      console.error("Database error when saving image:", dbError);
+      console.error("❌ Database error when saving image:", dbError);
       // We still return success even if DB save fails, as the image was generated
       return { success: true, imageUrl: data.url };
     }
 
+    console.log("✅ Image saved to database successfully");
     return { success: true, imageUrl: data.url };
   } catch (error: any) {
-    console.error("Image generation error:", error);
+    console.error("💥 Image generation error:", error);
     
     // Handle network errors
     if (error.name === 'TypeError' && error.message?.includes('fetch')) {
@@ -126,9 +143,14 @@ export const useCreateImage = (options?: UseMutationOptions<string, Error, Image
 
   return useMutation<string, Error, ImageGenerationParams>({
     mutationFn: async (params) => {
+      console.log("🎯 useCreateImage mutation called with params:", params);
+      
       if (!session?.user) {
+        console.error("❌ User not authenticated");
         throw new Error("You need to be logged in to generate images");
       }
+      
+      console.log("👤 User authenticated:", session.user.id);
       
       // Generate the image using the service function
       const result = await generateImage({
@@ -139,13 +161,17 @@ export const useCreateImage = (options?: UseMutationOptions<string, Error, Image
         userId: session.user.id
       });
 
+      console.log("📊 Generation result:", result);
+
       if (!result.success || !result.imageUrl) {
+        console.error("❌ Generation failed:", result.error);
         const error = new Error(result.error || "Failed to generate image");
         // Attach suggestions to the error for better user feedback
         (error as any).suggestions = result.suggestions;
         throw error;
       }
 
+      console.log("✅ Returning image URL:", result.imageUrl);
       return result.imageUrl;
     },
     ...options,

@@ -24,14 +24,29 @@ export const useImageGeneration = () => {
     refetchStatus
   } = useSubscription();
 
+  console.log("🎨 useImageGeneration state:", {
+    prompt,
+    selectedItem,
+    selectedRatio,
+    previewOpen,
+    isGenerating,
+    hasGeneratedImageUrl: !!generatedImageUrl,
+    isSignedIn,
+    canGenerateImage
+  });
+
   // Handle generate button click
   const handleGenerate = async () => {
+    console.log("🎯 handleGenerate called");
+    
     if (!isSignedIn) {
+      console.log("❌ User not signed in, opening auth dialog");
       setAuthDialogOpen(true);
       return;
     }
 
     if (!prompt.trim()) {
+      console.log("❌ Empty prompt");
       toast({
         variant: "destructive",
         title: "Error",
@@ -42,6 +57,7 @@ export const useImageGeneration = () => {
 
     // Check subscription limits
     if (!canGenerateImage) {
+      console.log("❌ Generation limit reached");
       // Prompt for upgrade
       toast({
         variant: "destructive",
@@ -52,28 +68,40 @@ export const useImageGeneration = () => {
     }
 
     try {
+      console.log("🖼️ Starting image generation process...");
+      
       // Upload reference image if provided
       let referenceImageUrl = null;
       if (referenceImage) {
+        console.log("📎 Uploading reference image...");
         referenceImageUrl = await uploadReferenceImage(referenceImage);
-        if (!referenceImageUrl) return; // Upload failed
+        if (!referenceImageUrl) {
+          console.log("❌ Reference image upload failed");
+          return; // Upload failed
+        }
+        console.log("✅ Reference image uploaded:", referenceImageUrl);
       }
 
-      // Call the generate image function with all parameters
-      createImage({
+      const generateParams = {
         prompt,
         itemType: selectedItem,
         aspectRatio: selectedRatio,
         referenceImageUrl,
-      });
+      };
+
+      console.log("🚀 Calling createImage with params:", generateParams);
+
+      // Call the generate image function with all parameters
+      createImage(generateParams);
       
       // Open preview dialog when generation starts
+      console.log("🎬 Opening preview dialog");
       setPreviewOpen(true);
       
       // Refresh subscription status after generating an image
       refetchStatus();
     } catch (error: any) {
-      console.error("Generation preparation error:", error);
+      console.error("💥 Generation preparation error:", error);
       toast({
         variant: "destructive",
         title: "Error",
