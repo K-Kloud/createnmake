@@ -16,9 +16,15 @@ serve(async (req) => {
   try {
     const { prompt, itemType, aspectRatio, referenceImageUrl } = await req.json()
     
-    console.log('Generating image with prompt:', prompt)
+    console.log('🚀 Starting image generation with params:', {
+      prompt,
+      itemType,
+      aspectRatio,
+      hasReferenceImage: !!referenceImageUrl
+    })
 
     if (!prompt) {
+      console.error('❌ No prompt provided')
       return new Response(
         JSON.stringify({ error: "Prompt is required" }),
         { 
@@ -31,6 +37,7 @@ serve(async (req) => {
     // Enhanced content filtering and prompt optimization
     const sanitizedPrompt = sanitizePrompt(prompt);
     if (!sanitizedPrompt) {
+      console.error('❌ Prompt sanitization failed')
       return new Response(
         JSON.stringify({ 
           error: "Your prompt contains content that cannot be processed. Please try rephrasing with different terms.",
@@ -45,37 +52,43 @@ serve(async (req) => {
 
     // Create professional, detailed prompt based on item type
     const enhancedPrompt = createEnhancedPrompt(sanitizedPrompt, itemType);
+    console.log('📝 Enhanced prompt created:', enhancedPrompt)
 
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     if (!OPENAI_API_KEY) {
+      console.error('❌ OPENAI_API_KEY not configured')
       throw new Error('OPENAI_API_KEY is not configured');
     }
 
     // Get dimensions from aspect ratio
     const size = getDimensionsFromAspectRatio(aspectRatio);
-
-    console.log('Using enhanced prompt:', enhancedPrompt);
-    console.log('Image size:', size);
+    console.log('📐 Image size determined:', size)
 
     // Call OpenAI API with retry logic
+    console.log('🎨 Calling OpenAI API...')
     const response = await callOpenAIWithRetry(OPENAI_API_KEY, enhancedPrompt, size);
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('OpenAI API error:', errorData);
-      
+      console.error('❌ OpenAI API error:', errorData);
       return handleOpenAIError(errorData);
     }
 
     const data = await response.json();
+    console.log('✅ OpenAI response received:', { hasData: !!data, hasUrl: !!data?.data?.[0]?.url })
+
     if (!data?.data?.[0]?.url) {
-      throw new Error('No image URL in OpenAI response');
+      console.error('❌ No image URL in OpenAI response')
+      throw new Error('No image URL returned from the API');
     }
 
     const imageUrl = data.data[0].url;
+    console.log('🖼️ Image URL received from OpenAI:', imageUrl)
 
     // Process and store the image
+    console.log('💾 Processing and storing image...')
     const publicUrl = await processAndStoreImage(imageUrl);
+    console.log('✅ Image stored with public URL:', publicUrl)
 
     return new Response(
       JSON.stringify({ url: publicUrl, prompt: enhancedPrompt }),
@@ -87,7 +100,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error('Error in generate-image function:', error);
+    console.error('💥 Error in generate-image function:', error);
     
     return new Response(
       JSON.stringify({ 
@@ -168,6 +181,7 @@ function getDimensionsFromAspectRatio(aspectRatio: string): string {
 async function callOpenAIWithRetry(apiKey: string, prompt: string, size: string, retries = 2): Promise<Response> {
   for (let i = 0; i <= retries; i++) {
     try {
+      console.log(`🔄 OpenAI API attempt ${i + 1}/${retries + 1}`)
       const response = await fetch('https://api.openai.com/v1/images/generations', {
         method: 'POST',
         headers: {
@@ -184,9 +198,10 @@ async function callOpenAIWithRetry(apiKey: string, prompt: string, size: string,
         }),
       });
 
+      console.log(`📡 OpenAI API response status: ${response.status}`)
       return response;
     } catch (error) {
-      console.error(`Attempt ${i + 1} failed:`, error);
+      console.error(`❌ OpenAI API attempt ${i + 1} failed:`, error);
       if (i === retries) throw error;
       await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))); // Exponential backoff
     }
@@ -198,6 +213,8 @@ async function callOpenAIWithRetry(apiKey: string, prompt: string, size: string,
 function handleOpenAIError(errorData: any): Response {
   let errorMessage = "Failed to generate image";
   let statusCode = 500;
+
+  console.error('🔍 Analyzing OpenAI error:', errorData)
 
   if (errorData.error) {
     const error = errorData.error;
@@ -234,28 +251,37 @@ function handleOpenAIError(errorData: any): Response {
 }
 
 async function processAndStoreImage(imageUrl: string): Promise<string> {
+  console.log('📥 Fetching generated image from OpenAI...')
+  
   // Fetch the generated image
   const imageResponse = await fetch(imageUrl);
   if (!imageResponse.ok) {
+    console.error('❌ Failed to fetch generated image:', imageResponse.status)
     throw new Error('Failed to fetch generated image');
   }
   const imageBlob = await imageResponse.blob();
+  console.log('✅ Image fetched successfully, size:', imageBlob.size)
 
   // Create Supabase client
   const supabaseUrl = Deno.env.get('SUPABASE_URL');
   const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
   if (!supabaseUrl || !supabaseKey) {
+    console.error('❌ Supabase configuration missing')
     throw new Error('Supabase configuration is missing');
   }
 
   const supabaseClient = createClient(supabaseUrl, supabaseKey);
+  console.log('🔧 Supabase client created')
 
   // Ensure bucket exists
+  console.log('🪣 Ensuring storage bucket exists...')
   await ensureBucketExists(supabaseClient);
 
   // Upload to Supabase Storage
   const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
+  console.log('📤 Uploading to storage with filename:', fileName)
+  
   const { data: uploadData, error: uploadError } = await supabaseClient.storage
     .from('generated-images')
     .upload(fileName, imageBlob, {
@@ -265,39 +291,49 @@ async function processAndStoreImage(imageUrl: string): Promise<string> {
     });
 
   if (uploadError) {
-    console.error('Upload error:', uploadError);
+    console.error('❌ Upload error:', uploadError);
     throw new Error(`Failed to upload generated image: ${uploadError.message}`);
   }
+
+  console.log('✅ Image uploaded successfully:', uploadData)
 
   // Get the public URL
   const { data: { publicUrl } } = supabaseClient.storage
     .from('generated-images')
     .getPublicUrl(fileName);
 
+  console.log('🌐 Public URL generated:', publicUrl)
   return publicUrl;
 }
 
 async function ensureBucketExists(supabaseClient: any) {
   try {
+    console.log('🔍 Checking if generated-images bucket exists...')
     const { data: bucketData, error: bucketCheckError } = await supabaseClient.storage
       .getBucket('generated-images');
     
     if (bucketCheckError && bucketCheckError.message.includes('not found')) {
+      console.log('🆕 Creating generated-images bucket...')
       const { data: newBucket, error: createError } = await supabaseClient.storage
         .createBucket('generated-images', {
           public: true,
-          fileSizeLimit: 5242880 // 5MB
+          fileSizeLimit: 10485760 // 10MB
         });
       
       if (createError) {
-        console.error('Error creating bucket:', createError);
+        console.error('❌ Error creating bucket:', createError);
         throw new Error('Failed to create storage bucket');
       }
       
-      console.log('Created storage bucket "generated-images"');
+      console.log('✅ Created storage bucket "generated-images"');
+    } else if (bucketCheckError) {
+      console.error('❌ Error checking bucket:', bucketCheckError);
+      throw new Error('Failed to check storage bucket');
+    } else {
+      console.log('✅ Bucket already exists');
     }
   } catch (bucketError) {
-    console.error('Error checking/creating bucket:', bucketError);
+    console.error('❌ Error in bucket operations:', bucketError);
     // Continue anyway, the upload will fail if the bucket truly doesn't exist
   }
 }

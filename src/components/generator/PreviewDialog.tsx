@@ -33,11 +33,13 @@ export const PreviewDialog = ({
   });
 
   const renderContent = () => {
+    // Show generating state while image is being created
     if (isGenerating) {
       console.log("⏳ Rendering generating state");
       return <GeneratingState selectedRatio={selectedRatio} />;
     }
     
+    // Show image if we have a URL
     if (generatedImageUrl) {
       console.log("🖼️ Rendering image preview with URL:", generatedImageUrl);
       return (
@@ -49,6 +51,7 @@ export const PreviewDialog = ({
       );
     }
     
+    // Show empty state by default
     console.log("📭 Rendering empty preview");
     return <EmptyPreview selectedRatio={selectedRatio} />;
   };

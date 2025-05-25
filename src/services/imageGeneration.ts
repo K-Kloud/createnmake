@@ -33,7 +33,7 @@ const generateImage = async (params: {
       userId: params.userId
     });
 
-    // Update to use the Supabase edge function
+    // Call the Supabase edge function
     console.log("📡 Calling Supabase edge function 'generate-image'...");
     const { data, error } = await supabase.functions.invoke("generate-image", {
       body: {

@@ -9,7 +9,9 @@ export const useImageGenerationAPI = () => {
   const { 
     mutate: createImage, 
     isPending: isGenerating, 
-    data: generatedImageUrl 
+    data: generatedImageUrl,
+    error,
+    isSuccess
   } = useCreateImage({
     onSuccess: (imageUrl) => {
       console.log("🎉 Image generation successful! URL:", imageUrl);
@@ -42,12 +44,16 @@ export const useImageGenerationAPI = () => {
   console.log("🔄 useImageGenerationAPI state:", {
     isGenerating,
     hasGeneratedUrl: !!generatedImageUrl,
-    generatedImageUrl
+    generatedImageUrl,
+    isSuccess,
+    hasError: !!error
   });
 
   return {
     createImage,
     isGenerating,
-    generatedImageUrl
+    generatedImageUrl,
+    error,
+    isSuccess
   };
 };
