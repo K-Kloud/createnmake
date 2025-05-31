@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { MarketplaceLoader } from "@/components/marketplace/MarketplaceLoader";
 import { PaginatedMarketplace } from "@/components/marketplace/PaginatedMarketplace";
@@ -7,7 +8,7 @@ import { sendWelcomeNotification } from "@/services/notificationService";
 import { ProductDetail } from "@/components/marketplace/ProductDetail";
 import { Wishlist } from "@/components/marketplace/Wishlist";
 import { useToast } from "@/hooks/use-toast";
-import { ImageCard } from "@/components/gallery/ImageCard";
+import { ImprovedImageGallery } from "@/components/gallery/ImprovedImageGallery";
 import { useInView } from "react-intersection-observer";
 
 interface MarketplaceContentProps {
@@ -39,21 +40,22 @@ export const MarketplaceContent = ({
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [isProductDetailOpen, setIsProductDetailOpen] = useState(false);
   const [similarProducts, setSimilarProducts] = useState<GalleryImage[]>([]);
-  const [viewMode, setViewMode] = useState<"paginated" | "infinite">("paginated");
+  const [viewMode, setViewMode] = useState<"paginated" | "infinite">("infinite");
   
   // Check for new user session and send welcome notification
   useEffect(() => {
     const checkAndSendWelcome = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session?.user?.id) {
-        // Check local storage to see if we've sent a welcome notification before
-        const welcomeSent = localStorage.getItem(`welcome_sent_${data.session.user.id}`);
-        if (!welcomeSent) {
-          // Send welcome notification
-          await sendWelcomeNotification(data.session.user.id);
-          // Mark that we've sent a welcome notification
-          localStorage.setItem(`welcome_sent_${data.session.user.id}`, 'true');
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data.session?.user?.id) {
+          const welcomeSent = localStorage.getItem(`welcome_sent_${data.session.user.id}`);
+          if (!welcomeSent) {
+            await sendWelcomeNotification(data.session.user.id);
+            localStorage.setItem(`welcome_sent_${data.session.user.id}`, 'true');
+          }
         }
+      } catch (error) {
+        console.error("Error sending welcome notification:", error);
       }
     };
     
@@ -61,8 +63,6 @@ export const MarketplaceContent = ({
   }, []);
 
   const fetchSimilarProducts = (product: GalleryImage) => {
-    // Filter existing images to find similar items based on prompt keywords
-    // In a real app, this would be an API call to get recommended products
     const keywords = product.prompt?.toLowerCase().split(' ') || [];
     const similar = images
       .filter(img => img.id !== product.id)
@@ -78,14 +78,13 @@ export const MarketplaceContent = ({
   };
 
   const handleImageClick = (image: GalleryImage) => {
+    console.log("🖼️ Image clicked:", image.id, image.url);
     setSelectedImage(image);
     
     if (image.price) {
-      // If image has a price, open product detail
       fetchSimilarProducts(image);
       setIsProductDetailOpen(true);
     } else {
-      // Otherwise open regular preview
       setIsProductDetailOpen(true);
     }
     
@@ -105,10 +104,21 @@ export const MarketplaceContent = ({
   const { ref, inView } = useInView();
 
   useEffect(() => {
-    if (inView && hasMore && viewMode === "infinite") {
+    if (inView && hasMore && viewMode === "infinite" && !isLoading) {
       onLoadMore();
     }
-  }, [inView, hasMore, onLoadMore, viewMode]);
+  }, [inView, hasMore, onLoadMore, viewMode, isLoading]);
+
+  // Debug logging
+  useEffect(() => {
+    console.log("📊 MarketplaceContent state:", {
+      isLoading,
+      imageCount: images.length,
+      hasMore,
+      error: !!error,
+      viewMode
+    });
+  }, [isLoading, images.length, hasMore, error, viewMode]);
 
   return (
     <>
@@ -145,33 +155,19 @@ export const MarketplaceContent = ({
           onImageClick={handleImageClick}
         />
       ) : (
-        <>
-          {isLoading && images.length === 0 ? (
-            <MarketplaceLoader />
-          ) : (
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {images.map((image) => (
-                  <div key={image.id} className="transform transition-all duration-300 hover:scale-[1.02]">
-                    <ImageCard
-                      image={image}
-                      onLike={onLike}
-                      onView={onView}
-                      onAddComment={onAddComment}
-                      onAddReply={onAddReply}
-                      onFullImageClick={() => handleImageClick(image)}
-                    />
-                  </div>
-                ))}
-              </div>
-              {hasMore && (
-                <div ref={ref} className="flex justify-center p-4">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                </div>
-              )}
-            </div>
-          )}
-        </>
+        <ImprovedImageGallery
+          images={images}
+          onLike={onLike}
+          onView={onView}
+          onAddComment={onAddComment}
+          onAddReply={onAddReply}
+          onLoadMore={onLoadMore}
+          hasMore={hasMore}
+          onImageClick={handleImageClick}
+          isLoading={isLoading}
+          error={error}
+          onRetry={onRetry}
+        />
       )}
 
       {selectedImage && (

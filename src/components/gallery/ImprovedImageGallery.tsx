@@ -3,10 +3,9 @@ import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { ImageCard } from "@/components/gallery/ImageCard";
 import { GalleryImage } from "@/types/gallery";
-import { OptimizedImage } from "@/components/ui/optimized-image";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
 import { Button } from "@/components/ui/button";
-import { RefreshCcw } from "lucide-react";
+import { RefreshCcw, AlertCircle } from "lucide-react";
 
 interface ImprovedImageGalleryProps {
   images: GalleryImage[];
@@ -41,29 +40,45 @@ export const ImprovedImageGallery = ({
 
   useEffect(() => {
     if (inView && hasMore && !isLoading && !error) {
+      console.log("🔄 Loading more images due to scroll");
       onLoadMore();
     }
   }, [inView, hasMore, onLoadMore, isLoading, error]);
 
   useEffect(() => {
     if (!isLoading && images.length === 0 && !error) {
+      console.log("📭 Gallery is empty");
       setIsEmpty(true);
     } else {
       setIsEmpty(false);
     }
   }, [images, isLoading, error]);
 
+  // Network error detection
+  const isNetworkError = error?.message?.includes('fetch') || 
+                        error?.message?.includes('network') ||
+                        error?.message?.includes('Failed to fetch');
+
   if (error) {
+    console.error("❌ Gallery error:", error);
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
-        <h3 className="text-xl font-semibold mb-4">Failed to load images</h3>
-        <p className="text-muted-foreground mb-6">
-          {error.message || "There was a problem loading the gallery"}
+        <AlertCircle className="h-12 w-12 text-destructive mb-4" />
+        <h3 className="text-xl font-semibold mb-4">
+          {isNetworkError ? "Connection Problem" : "Failed to load images"}
+        </h3>
+        <p className="text-muted-foreground mb-6 max-w-md">
+          {isNetworkError 
+            ? "Please check your internet connection and try again."
+            : error.message || "There was a problem loading the gallery. This might be a temporary issue."
+          }
         </p>
-        <Button onClick={onRetry} className="flex items-center gap-2">
-          <RefreshCcw className="h-4 w-4" />
-          Try Again
-        </Button>
+        {onRetry && (
+          <Button onClick={onRetry} className="flex items-center gap-2">
+            <RefreshCcw className="h-4 w-4" />
+            Try Again
+          </Button>
+        )}
       </div>
     );
   }
@@ -86,8 +101,14 @@ export const ImprovedImageGallery = ({
       <div className="flex flex-col items-center justify-center p-12 text-center">
         <h3 className="text-xl font-semibold">No images found</h3>
         <p className="text-muted-foreground mt-2">
-          There are no images to display at the moment
+          There are no images to display at the moment. Try refreshing the page or check back later.
         </p>
+        {onRetry && (
+          <Button onClick={onRetry} variant="outline" className="mt-4">
+            <RefreshCcw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+        )}
       </div>
     );
   }

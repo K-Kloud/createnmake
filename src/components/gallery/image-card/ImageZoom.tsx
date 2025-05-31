@@ -18,44 +18,17 @@ export const ImageZoom = ({
 }: ImageZoomProps) => {
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomFactor, setZoomFactor] = useState(1);
-
-  // Generate WebP and AVIF URLs from original image URL if needed
-  const getWebpUrl = (url: string) => {
-    // If the URL already ends with .webp, use it as is
-    if (url.toLowerCase().endsWith('.webp')) return url;
-    
-    // For Supabase and other storage services that use query parameters
-    if (url.includes('?')) {
-      return `${url}&format=webp`;
-    }
-    
-    // For simple file extensions
-    const urlWithoutExt = url.substring(0, url.lastIndexOf('.')) || url;
-    return `${urlWithoutExt}.webp`;
-  };
-  
-  const getAvifUrl = (url: string) => {
-    // If the URL already ends with .avif, use it as is
-    if (url.toLowerCase().endsWith('.avif')) return url;
-    
-    // For Supabase and other storage services that use query parameters
-    if (url.includes('?')) {
-      return `${url}&format=avif`;
-    }
-    
-    // For simple file extensions
-    const urlWithoutExt = url.substring(0, url.lastIndexOf('.')) || url;
-    return `${urlWithoutExt}.avif`;
-  };
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   // Toggle zoom effect
   const toggleZoom = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent triggering the click handler for opening the preview
+    e.stopPropagation();
     if (isZoomed) {
       setZoomFactor(1);
       setIsZoomed(false);
     } else {
-      setZoomFactor(2); // Initial zoom level on click
+      setZoomFactor(2);
       setIsZoomed(true);
     }
   };
@@ -79,37 +52,67 @@ export const ImageZoom = ({
     }
   };
 
-  const webpUrl = getWebpUrl(imageUrl);
-  const avifUrl = getAvifUrl(imageUrl);
+  const handleImageLoad = () => {
+    console.log("✅ Image loaded successfully:", imageUrl);
+    setImageLoaded(true);
+    setImageError(false);
+  };
+
+  const handleImageError = () => {
+    console.error("❌ Image failed to load:", imageUrl);
+    setImageError(true);
+    setImageLoaded(false);
+  };
 
   return (
     <div 
       className="relative group cursor-pointer h-auto w-full" 
-      onClick={onImageClick} // Make the entire container clickable to open preview
+      onClick={onImageClick}
       onDoubleClick={onDoubleClick}
     >
       <AspectRatio ratio={16/9} className="h-full w-full">
-        <picture>
-          <source srcSet={avifUrl} type="image/avif" />
-          <source srcSet={webpUrl} type="image/webp" />
-          <img
-            src={imageUrl}
-            alt={alt}
-            width="800"
-            height="450"
-            className="w-full h-full object-cover transition-all duration-300"
-            loading="lazy"
-            decoding="async"
-            style={{
-              transform: isZoomed ? `scale(${zoomFactor})` : 'none',
-              transformOrigin: 'center',
-              filter: isZoomed ? 'brightness(110%)' : 'none'
-            }}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = '/placeholder.svg';
-            }}
-          />
-        </picture>
+        {!imageLoaded && !imageError && (
+          <div className="w-full h-full bg-muted/20 animate-pulse flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        )}
+        
+        {imageError && (
+          <div className="w-full h-full bg-muted/40 flex items-center justify-center">
+            <div className="text-center p-4">
+              <div className="text-muted-foreground text-sm">Failed to load image</div>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setImageError(false);
+                  setImageLoaded(false);
+                }}
+                className="text-xs text-primary hover:underline mt-1"
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        )}
+
+        <img
+          src={imageUrl}
+          alt={alt}
+          width="800"
+          height="450"
+          className={`w-full h-full object-cover transition-all duration-300 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          loading="lazy"
+          decoding="async"
+          style={{
+            transform: isZoomed ? `scale(${zoomFactor})` : 'none',
+            transformOrigin: 'center',
+            filter: isZoomed ? 'brightness(110%)' : 'none'
+          }}
+          onLoad={handleImageLoad}
+          onError={handleImageError}
+        />
       </AspectRatio>
       
       <ImageOverlay 
@@ -118,7 +121,7 @@ export const ImageZoom = ({
         onToggleZoom={toggleZoom}
         onZoomIn={increaseZoom}
         onZoomOut={decreaseZoom}
-        onExpandClick={onImageClick} // Update to use the main click handler
+        onExpandClick={onImageClick}
       />
     </div>
   );

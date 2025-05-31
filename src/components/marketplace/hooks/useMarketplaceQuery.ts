@@ -14,10 +14,11 @@ export const useMarketplaceQuery = (session: Session | null) => {
     queryKey: ['marketplace-images'],
     queryFn: async ({ pageParam = 0 }) => {
       try {
+        console.log(`🔍 Fetching marketplace images - page ${pageParam}`);
         const from = pageParam * ITEMS_PER_PAGE;
         const to = from + ITEMS_PER_PAGE - 1;
 
-        // First, get the images with proper profile relationships
+        // Get images with profile relationships
         const { data: images, error } = await supabase
           .from('generated_images')
           .select(`
@@ -32,38 +33,51 @@ export const useMarketplaceQuery = (session: Session | null) => {
           .order('created_at', { ascending: false })
           .range(from, to);
 
-        if (error) throw error;
+        if (error) {
+          console.error("❌ Error fetching images:", error);
+          throw error;
+        }
 
-        if (!images) return [];
+        if (!images || images.length === 0) {
+          console.log("📭 No images found for this page");
+          return [];
+        }
 
-        // Now, get the comments separately for each image
-        const imagesWithComments = await Promise.all(
+        console.log(`✅ Found ${images.length} images`);
+
+        // Process images in parallel for better performance
+        const processedImages = await Promise.allSettled(
           images.map(async (image) => {
-            // Get comments for this image with proper profile joins
-            const { data: comments, error: commentsError } = await supabase
-              .from('comments')
-              .select(`
-                id,
-                text,
-                created_at,
-                user_id,
-                profiles:user_id (
-                  id, 
-                  username,
-                  avatar_url
-                )
-              `)
-              .eq('image_id', image.id);
+            try {
+              // Validate image URL
+              if (!image.image_url) {
+                console.warn(`⚠️ Image ${image.id} has no URL`);
+                return null;
+              }
 
-            if (commentsError) {
-              console.error('Error fetching comments for image', image.id, ':', commentsError);
-              // Create a new object with the comments property
-              return { ...image, comments: [] };
-            } else {
-              // Now get replies for each comment with proper profile joins
+              // Log image URL for debugging
+              console.log(`🖼️ Processing image ${image.id}:`, image.image_url);
+
+              // Get comments with replies
+              const { data: comments } = await supabase
+                .from('comments')
+                .select(`
+                  id,
+                  text,
+                  created_at,
+                  user_id,
+                  profiles:user_id (
+                    id, 
+                    username,
+                    avatar_url
+                  )
+                `)
+                .eq('image_id', image.id);
+
+              // Get replies for comments
               const commentsWithReplies = await Promise.all(
                 (comments || []).map(async (comment) => {
-                  const { data: replies, error: repliesError } = await supabase
+                  const { data: replies } = await supabase
                     .from('comment_replies')
                     .select(`
                       id,
@@ -78,55 +92,47 @@ export const useMarketplaceQuery = (session: Session | null) => {
                     `)
                     .eq('comment_id', comment.id);
 
-                  if (repliesError) {
-                    console.error('Error fetching replies for comment', comment.id, ':', repliesError);
-                    // Add comment_replies as a new property
-                    return { ...comment, comment_replies: [] };
-                  } else {
-                    // Add comment_replies as a new property
-                    return { ...comment, comment_replies: replies || [] };
-                  }
+                  return { ...comment, comment_replies: replies || [] };
                 })
               );
-              // Create a new object with the comments property
-              return { ...image, comments: commentsWithReplies || [] };
-            }
-          })
-        );
 
-        const imagesWithMetrics = await Promise.all(
-          imagesWithComments.map(async (image) => {
-            try {
-              const { data: metrics, error: metricsError } = await supabase
+              // Get metrics
+              const { data: metrics } = await supabase
                 .rpc('get_image_metrics', { p_image_id: image.id });
-
-              if (metricsError) {
-                console.error('Error fetching metrics for image', image.id, ':', metricsError);
-                return transformImageWithDefaultMetrics(image, session);
-              }
 
               const metricsMap = (metrics || []).reduce((acc, metric) => {
                 acc[metric.metric_type] = metric.total_value;
                 return acc;
               }, {});
 
-              return transformImageWithMetrics(image, session, metricsMap);
+              const imageWithComments = { ...image, comments: commentsWithReplies };
+              
+              return transformImageWithMetrics(imageWithComments, session, metricsMap);
             } catch (error) {
-              console.error('Error processing image metrics:', error);
+              console.error(`❌ Error processing image ${image.id}:`, error);
               return transformImageWithDefaultMetrics(image, session);
             }
           })
         );
 
-        return imagesWithMetrics;
+        // Filter out failed transformations and null values
+        const validImages = processedImages
+          .filter((result): result is PromiseFulfilledResult<any> => 
+            result.status === 'fulfilled' && result.value !== null
+          )
+          .map(result => result.value);
+
+        console.log(`✅ Successfully processed ${validImages.length} images`);
+        return validImages;
+
       } catch (error) {
-        console.error('Error in marketplace query:', error);
+        console.error('💥 Error in marketplace query:', error);
         toast({
           title: "Error Loading Images",
           description: "There was a problem loading the marketplace images. Please try refreshing the page.",
           variant: "destructive",
         });
-        return [];
+        throw error;
       }
     },
     getNextPageParam: (lastPage, allPages) => {
@@ -135,5 +141,9 @@ export const useMarketplaceQuery = (session: Session | null) => {
     initialPageParam: 0,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    retry: (failureCount, error) => {
+      console.error(`🔄 Query retry attempt ${failureCount}:`, error);
+      return failureCount < 2; // Retry up to 2 times
+    },
   });
 };
