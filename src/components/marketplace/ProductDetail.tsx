@@ -329,10 +329,7 @@ export const ProductDetail = ({
               
               <Alert>
                 <Info className="h-4 w-4" />
-                <AlertDescription className="text-xs">
-                  By purchasing, you're directly supporting independent creators. 
-                  70% of the product price goes to the creator.
-                </AlertDescription>
+                <AlertDescription className="text-xs">By purchasing, you're directly supporting independent creators.</AlertDescription>
               </Alert>
               
               <div className="flex items-center gap-2">
