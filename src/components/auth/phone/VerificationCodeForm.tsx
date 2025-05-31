@@ -7,6 +7,7 @@ import {
   InputOTPGroup,
   InputOTPSlot
 } from "@/components/ui/input-otp";
+import { useEffect, useRef } from "react";
 
 interface VerificationCodeFormProps {
   phoneNumber: string;
@@ -25,6 +26,26 @@ export const VerificationCodeForm = ({
   verificationCode,
   setVerificationCode
 }: VerificationCodeFormProps) => {
+  const otpRef = useRef<HTMLDivElement>(null);
+
+  // Auto-focus the OTP input when component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const firstInput = otpRef.current?.querySelector('input');
+      if (firstInput) {
+        firstInput.focus();
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleInputChange = (value: string) => {
+    if (!isLoading) {
+      setVerificationCode(value);
+    }
+  };
+
   return (
     <form onSubmit={onVerify} className="space-y-4">
       <div className="space-y-2">
@@ -33,19 +54,37 @@ export const VerificationCodeForm = ({
           We've sent a 6-digit code to {phoneNumber}
         </p>
         <div className="flex justify-center py-4">
-          <InputOTP
-            maxLength={6}
-            value={verificationCode}
-            onChange={(value) => setVerificationCode(value)}
-            render={({ slots }) => (
+          <div ref={otpRef} onClick={() => {
+            if (!isLoading) {
+              const firstInput = otpRef.current?.querySelector('input');
+              if (firstInput) {
+                firstInput.focus();
+              }
+            }
+          }}>
+            <InputOTP
+              maxLength={6}
+              value={verificationCode}
+              onChange={handleInputChange}
+              disabled={isLoading}
+              className={isLoading ? "opacity-50 cursor-not-allowed" : ""}
+            >
               <InputOTPGroup>
-                {slots.map((slot, index) => (
-                  <InputOTPSlot key={index} {...slot} index={index} />
-                ))}
+                <InputOTPSlot index={0} />
+                <InputOTPSlot index={1} />
+                <InputOTPSlot index={2} />
+                <InputOTPSlot index={3} />
+                <InputOTPSlot index={4} />
+                <InputOTPSlot index={5} />
               </InputOTPGroup>
-            )}
-          />
+            </InputOTP>
+          </div>
         </div>
+        {isLoading && (
+          <p className="text-xs text-center text-muted-foreground">
+            Verifying your code...
+          </p>
+        )}
       </div>
       
       <div className="space-y-2 mt-4">
@@ -68,6 +107,7 @@ export const VerificationCodeForm = ({
           variant="ghost"
           onClick={onBack}
           className="w-full mt-2"
+          disabled={isLoading}
         >
           Back to Sign In
         </Button>
