@@ -45,7 +45,7 @@ export const AdminUsersList = () => {
         console.log("No super admin found. You can add yourself as super admin.");
         toast({
           title: "Super Admin Setup",
-          description: "No super admin found. You can add yourself by clicking 'Add Admin' with your email."
+          description: "No super admin found. You can add yourself by clicking 'Add Admin' with your email and selecting 'Super Admin' role."
         });
       }
     }
