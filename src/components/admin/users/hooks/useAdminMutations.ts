@@ -43,7 +43,7 @@ export const useAdminMutations = () => {
         }
 
         // Use the service role to bypass RLS for the special case
-        const { error } = await supabase.rpc('add_admin_role', {
+        const { error } = await supabase.rpc('add_admin_role' as any, {
           target_user_id: currentUserId,
           admin_role: role
         });
@@ -111,7 +111,7 @@ export const useAdminMutations = () => {
       }
 
       // Try to use RPC function first, fallback to direct insert
-      const { error: rpcError } = await supabase.rpc('add_admin_role', {
+      const { error: rpcError } = await supabase.rpc('add_admin_role' as any, {
         target_user_id: targetUserId,
         admin_role: role
       });

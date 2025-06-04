@@ -1122,6 +1122,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_admin_role: {
+        Args: { target_user_id: string; admin_role: string }
+        Returns: undefined
+      }
       analyze_user_activity: {
         Args: { lookback_days?: number; usage_threshold?: number }
         Returns: {
