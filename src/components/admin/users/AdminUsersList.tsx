@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, UserPlus, Search } from "lucide-react";
 import { useAdminUsers } from "./hooks/useAdminUsers";
 import { useAdminMutations } from "./hooks/useAdminMutations";
@@ -11,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const AdminUsersList = () => {
   const [emailInput, setEmailInput] = useState("");
+  const [selectedRole, setSelectedRole] = useState<"admin" | "super_admin">("admin");
   const [searchTerm, setSearchTerm] = useState("");
   const [superAdminExists, setSuperAdminExists] = useState(false);
   const [hasCheckedSuperAdmin, setHasCheckedSuperAdmin] = useState(false);
@@ -52,8 +54,12 @@ export const AdminUsersList = () => {
   const handleAddAdmin = (e: React.FormEvent) => {
     e.preventDefault();
     if (emailInput.trim()) {
-      addAdminMutation.mutate(emailInput.trim());
+      addAdminMutation.mutate({ 
+        emailOrUsername: emailInput.trim(), 
+        role: selectedRole 
+      });
       setEmailInput("");
+      setSelectedRole("admin");
     }
   };
 
@@ -67,6 +73,15 @@ export const AdminUsersList = () => {
             onChange={(e) => setEmailInput(e.target.value)}
             className="flex-1"
           />
+          <Select value={selectedRole} onValueChange={(value: "admin" | "super_admin") => setSelectedRole(value)}>
+            <SelectTrigger className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value="super_admin">Super Admin</SelectItem>
+            </SelectContent>
+          </Select>
           <Button
             type="submit"
             disabled={!emailInput.trim() || addAdminMutation.isPending}

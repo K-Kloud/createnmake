@@ -19,7 +19,7 @@ export const useAdminMutations = () => {
   };
 
   const addAdminMutation = useMutation({
-    mutationFn: async (emailOrUsername: string) => {
+    mutationFn: async ({ emailOrUsername, role }: { emailOrUsername: string; role: "admin" | "super_admin" }) => {
       // Special case for kalux2@gmail.com - check if they already exist as admin
       if (emailOrUsername === "kalux2@gmail.com") {
         // Get current session to use the authenticated user's ID
@@ -41,12 +41,12 @@ export const useAdminMutations = () => {
           throw new Error("User is already an admin");
         }
 
-        // Add super_admin role using the authenticated user's ID
+        // Add the specified role using the authenticated user's ID
         const { error } = await supabase
           .from("admin_roles")
           .insert([{ 
             user_id: currentUserId, 
-            role: "super_admin" 
+            role: role 
           }]);
 
         if (error) throw error;
@@ -84,7 +84,7 @@ export const useAdminMutations = () => {
         throw new Error("User is already an admin");
       }
 
-      // Check if the current user is a super_admin
+      // Check if the current user is a super_admin (only super admins can add other admins)
       const { data: session } = await supabase.auth.getSession();
       if (!session?.session?.user) {
         throw new Error("You must be logged in to add admins");
@@ -96,10 +96,10 @@ export const useAdminMutations = () => {
         throw new Error("Only super admins can add other admins");
       }
 
-      // Add admin role
+      // Add the specified role
       const { error } = await supabase
         .from("admin_roles")
-        .insert([{ user_id: userId, role: "admin" }]);
+        .insert([{ user_id: userId, role: role }]);
 
       if (error) throw error;
 
