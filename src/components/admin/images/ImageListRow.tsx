@@ -1,6 +1,7 @@
+
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Eye, Trash, Check, X } from "lucide-react";
+import { Eye, Trash, Check, X, Edit } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,12 @@ export const ImageListRow = ({
   onCancel,
   onEditDataChange,
 }: ImageListRowProps) => {
+  const handleDeleteClick = () => {
+    if (window.confirm('Are you sure you want to delete this image? This action cannot be undone.')) {
+      onDelete();
+    }
+  };
+
   return (
     <TableRow key={image.id}>
       <TableCell>
@@ -132,15 +139,17 @@ export const ImageListRow = ({
                 size="icon"
                 onClick={() => onEdit?.(image)}
                 disabled={isDeleting}
+                title="Edit image"
               >
-                <Eye className="h-4 w-4" />
+                <Edit className="h-4 w-4" />
               </Button>
               <Button
                 variant="outline"
                 size="icon"
-                onClick={onDelete}
+                onClick={handleDeleteClick}
                 disabled={isDeleting}
-                className="text-destructive hover:text-destructive"
+                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                title="Delete image"
               >
                 <Trash className="h-4 w-4" />
               </Button>
