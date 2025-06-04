@@ -36,21 +36,29 @@ export const useAdminMutations = () => {
           .from("admin_roles")
           .select("*")
           .eq("user_id", currentUserId)
-          .single();
+          .maybeSingle();
 
         if (existingRole) {
           throw new Error("User is already an admin");
         }
 
-        // Add the specified role using the authenticated user's ID
-        const { error } = await supabase
-          .from("admin_roles")
-          .insert([{ 
-            user_id: currentUserId, 
-            role: role 
-          }]);
+        // Use the service role to bypass RLS for the special case
+        const { error } = await supabase.rpc('add_admin_role', {
+          target_user_id: currentUserId,
+          admin_role: role
+        });
 
-        if (error) throw error;
+        if (error) {
+          // Fallback: try direct insert
+          const { error: insertError } = await supabase
+            .from("admin_roles")
+            .insert([{ 
+              user_id: currentUserId, 
+              role: role 
+            }]);
+          
+          if (insertError) throw insertError;
+        }
 
         return { userId: currentUserId };
       }
@@ -62,47 +70,28 @@ export const useAdminMutations = () => {
         throw new Error("Only super admins can add other admins");
       }
 
-      // Try to find the user by email first (in auth.users via profiles)
+      // Try to find the user by email first
       let targetUserId: string | null = null;
 
-      // First try to find by email in profiles table
+      // First, try to find by email in auth.users via profiles
       const { data: userByEmail, error: emailError } = await supabase
         .from("profiles")
         .select("id")
         .eq("id", emailOrUsername)
-        .single();
+        .maybeSingle();
 
-      if (!emailError && userByEmail) {
+      if (userByEmail) {
         targetUserId = userByEmail.id;
       } else {
-        // If not found by direct ID, try to find by username
+        // Try to find by username in profiles
         const { data: userByUsername, error: usernameError } = await supabase
           .from("profiles")
           .select("id")
           .eq("username", emailOrUsername)
-          .single();
+          .maybeSingle();
 
-        if (!usernameError && userByUsername) {
+        if (userByUsername) {
           targetUserId = userByUsername.id;
-        }
-      }
-
-      // If still not found, check if it's an email by querying auth users through a function
-      // Since we can't directly query auth.users, we'll try a different approach
-      if (!targetUserId) {
-        // Try to find user by making a query that would match email patterns
-        const { data: allProfiles } = await supabase
-          .from("profiles")
-          .select("id, username")
-          .not("username", "is", null);
-
-        // Check if any profile has this email as username (some users might use email as username)
-        const matchingProfile = allProfiles?.find(profile => 
-          profile.username === emailOrUsername
-        );
-
-        if (matchingProfile) {
-          targetUserId = matchingProfile.id;
         }
       }
 
@@ -115,18 +104,26 @@ export const useAdminMutations = () => {
         .from("admin_roles")
         .select("*")
         .eq("user_id", targetUserId)
-        .single();
+        .maybeSingle();
 
       if (existingRole) {
         throw new Error("User is already an admin");
       }
 
-      // Add the specified role
-      const { error } = await supabase
-        .from("admin_roles")
-        .insert([{ user_id: targetUserId, role: role }]);
+      // Try to use RPC function first, fallback to direct insert
+      const { error: rpcError } = await supabase.rpc('add_admin_role', {
+        target_user_id: targetUserId,
+        admin_role: role
+      });
 
-      if (error) throw error;
+      if (rpcError) {
+        // Fallback to direct insert
+        const { error: insertError } = await supabase
+          .from("admin_roles")
+          .insert([{ user_id: targetUserId, role: role }]);
+
+        if (insertError) throw insertError;
+      }
 
       return { userId: targetUserId };
     },
@@ -161,7 +158,7 @@ export const useAdminMutations = () => {
         .from("admin_roles")
         .select("role")
         .eq("user_id", userId)
-        .single();
+        .maybeSingle();
         
       if (targetUserRole?.role === "super_admin") {
         throw new Error("Super admins cannot be removed");
