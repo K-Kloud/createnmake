@@ -13,6 +13,7 @@ export const AdminUsersList = () => {
   const [emailInput, setEmailInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [superAdminExists, setSuperAdminExists] = useState(false);
+  const [hasCheckedSuperAdmin, setHasCheckedSuperAdmin] = useState(false);
   const { toast } = useToast();
 
   const { data: adminUsers, isLoading, refetch } = useAdminUsers();
@@ -29,28 +30,24 @@ export const AdminUsersList = () => {
     getSession();
   }, []);
 
-  // Check if super admin exists
+  // Check if super admin exists and handle auto-assignment
   useEffect(() => {
-    if (adminUsers) {
+    if (adminUsers && !hasCheckedSuperAdmin) {
       const existingSuperAdmin = adminUsers.find(admin => admin.role === "super_admin");
       setSuperAdminExists(!!existingSuperAdmin);
+      setHasCheckedSuperAdmin(true);
       
-      // If current user is kalux2@gmail.com and no super admin exists, automatically add them
-      if (!existingSuperAdmin && !isLoading && !addAdminMutation.isPending && 
+      // If current user is kalux2@gmail.com and no super admin exists, show message but don't auto-add
+      if (!existingSuperAdmin && !isLoading && 
           currentUserEmail === "kalux2@gmail.com") {
-        console.log("Adding kalux2@gmail.com as super_admin automatically");
-        addAdminMutation.mutate("kalux2@gmail.com", {
-          onSuccess: () => {
-            toast({
-              title: "Super Admin Created",
-              description: "You've been granted super admin privileges."
-            });
-            refetch();
-          }
+        console.log("No super admin found. You can add yourself as super admin.");
+        toast({
+          title: "Super Admin Setup",
+          description: "No super admin found. You can add yourself by clicking 'Add Admin' with your email."
         });
       }
     }
-  }, [adminUsers, isLoading, addAdminMutation, currentUserEmail, refetch, toast]);
+  }, [adminUsers, isLoading, currentUserEmail, hasCheckedSuperAdmin, toast]);
 
   const handleAddAdmin = (e: React.FormEvent) => {
     e.preventDefault();

@@ -20,64 +20,38 @@ export const useAdminMutations = () => {
 
   const addAdminMutation = useMutation({
     mutationFn: async (emailOrUsername: string) => {
-      // If the email is kalux2@gmail.com and doesn't exist, create profile and add as super_admin
+      // Special case for kalux2@gmail.com - check if they already exist as admin
       if (emailOrUsername === "kalux2@gmail.com") {
-        // Check if the user exists in the profiles table
-        const { data: existingProfile } = await supabase
-          .from("profiles")
-          .select("id")
-          .eq("username", emailOrUsername)
+        // Get current session to use the authenticated user's ID
+        const { data: session } = await supabase.auth.getSession();
+        if (!session?.session?.user || session.session.user.email !== "kalux2@gmail.com") {
+          throw new Error("Only kalux2@gmail.com can grant themselves super admin privileges");
+        }
+
+        const currentUserId = session.session.user.id;
+
+        // Check if they're already an admin
+        const { data: existingRole } = await supabase
+          .from("admin_roles")
+          .select("*")
+          .eq("user_id", currentUserId)
           .single();
 
-        if (!existingProfile) {
-          // Create a new profile for this special case
-          // In a real app, you'd use Auth API to create a user, but we're simulating it here
-          const { data: newProfile, error: profileError } = await supabase
-            .from("profiles")
-            .insert({
-              username: emailOrUsername,
-              id: crypto.randomUUID() // Generate a UUID for this user
-            })
-            .select()
-            .single();
-
-          if (profileError) throw profileError;
-          
-          // Add as super_admin
-          const { error } = await supabase
-            .from("admin_roles")
-            .insert([{ 
-              user_id: newProfile.id, 
-              role: "super_admin" 
-            }]);
-
-          if (error) throw error;
-          
-          return { userId: newProfile.id };
-        } else {
-          // If profile exists, check if they're already an admin
-          const { data: existingRole } = await supabase
-            .from("admin_roles")
-            .select("*")
-            .eq("user_id", existingProfile.id)
-            .single();
-
-          if (existingRole) {
-            throw new Error("User is already an admin");
-          }
-
-          // Add super_admin role
-          const { error } = await supabase
-            .from("admin_roles")
-            .insert([{ 
-              user_id: existingProfile.id, 
-              role: "super_admin" 
-            }]);
-
-          if (error) throw error;
-
-          return { userId: existingProfile.id };
+        if (existingRole) {
+          throw new Error("User is already an admin");
         }
+
+        // Add super_admin role using the authenticated user's ID
+        const { error } = await supabase
+          .from("admin_roles")
+          .insert([{ 
+            user_id: currentUserId, 
+            role: "super_admin" 
+          }]);
+
+        if (error) throw error;
+
+        return { userId: currentUserId };
       }
 
       // Regular admin user addition flow
