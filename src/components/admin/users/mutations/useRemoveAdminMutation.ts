@@ -2,7 +2,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { checkIfSuperAdmin } from "../utils/adminRoleUtils";
+import { checkCurrentUserIsSuperAdmin, logAdminOperation } from "../utils/secureAdminUtils";
 
 export const useRemoveAdminMutation = () => {
   const queryClient = useQueryClient();
@@ -15,7 +15,7 @@ export const useRemoveAdminMutation = () => {
         throw new Error("You must be logged in to remove admins");
       }
       
-      const isCurrentUserSuperAdmin = await checkIfSuperAdmin(session.session.user.id);
+      const isCurrentUserSuperAdmin = await checkCurrentUserIsSuperAdmin();
       
       // Check if target user is super_admin
       const { data: targetUserRole } = await supabase
@@ -25,11 +25,19 @@ export const useRemoveAdminMutation = () => {
         .maybeSingle();
         
       if (targetUserRole?.role === "super_admin") {
+        await logAdminOperation("remove_attempt", userId, "super_admin", false);
         throw new Error("Super admins cannot be removed");
       }
       
       if (!isCurrentUserSuperAdmin) {
+        await logAdminOperation("remove_attempt", userId, targetUserRole?.role || "unknown", false);
         throw new Error("Only super admins can remove other admins");
+      }
+
+      // Prevent self-removal
+      if (session.session.user.id === userId) {
+        await logAdminOperation("remove_attempt", userId, targetUserRole?.role || "unknown", false);
+        throw new Error("You cannot remove your own admin role");
       }
 
       const { error } = await supabase
@@ -37,7 +45,14 @@ export const useRemoveAdminMutation = () => {
         .delete()
         .eq("user_id", userId);
 
-      if (error) throw error;
+      if (error) {
+        await logAdminOperation("remove", userId, targetUserRole?.role || "unknown", false);
+        throw error;
+      }
+
+      // Log successful operation
+      await logAdminOperation("remove", userId, targetUserRole?.role || "unknown", true);
+      
       return { userId };
     },
     onSuccess: () => {

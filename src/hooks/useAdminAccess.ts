@@ -1,6 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { checkUserAdminRole } from "@/components/admin/users/utils/secureAdminUtils";
 
 export const useAdminAccess = () => {
   // First query: Get the current session
@@ -20,26 +21,9 @@ export const useAdminAccess = () => {
     queryFn: async () => {
       if (!session?.user?.id) return false;
       
-      // Special case for kalux2@gmail.com
-      if (session.user.email === "kalux2@gmail.com") {
-        console.log("Special admin account detected:", session.user.email);
-        return true;
-      }
-      
-      // Check the admin_roles table
+      // Use secure admin role checking (no more hardcoded backdoors)
       try {
-        const { data, error } = await supabase
-          .from('admin_roles')
-          .select('role')
-          .eq('user_id', session.user.id)
-          .in('role', ['admin', 'super_admin']);
-
-        if (error) {
-          console.error('Error checking admin status:', error);
-          return false;
-        }
-
-        return data && data.length > 0;
+        return await checkUserAdminRole(session.user.id);
       } catch (err) {
         console.error('Exception checking admin status:', err);
         return false;
@@ -51,7 +35,7 @@ export const useAdminAccess = () => {
   });
 
   return {
-    isAdmin: !!isAdmin || (session?.user?.email === "kalux2@gmail.com"),
+    isAdmin: !!isAdmin,
     isLoading: sessionLoading || adminCheckLoading,
     session
   };

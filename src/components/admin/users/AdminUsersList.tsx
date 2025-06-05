@@ -32,24 +32,24 @@ export const AdminUsersList = () => {
     getSession();
   }, []);
 
-  // Check if super admin exists and handle auto-assignment
+  // Check if super admin exists
   useEffect(() => {
     if (adminUsers && !hasCheckedSuperAdmin) {
       const existingSuperAdmin = adminUsers.find(admin => admin.role === "super_admin");
       setSuperAdminExists(!!existingSuperAdmin);
       setHasCheckedSuperAdmin(true);
       
-      // If current user is kalux2@gmail.com and no super admin exists, show message but don't auto-add
-      if (!existingSuperAdmin && !isLoading && 
-          currentUserEmail === "kalux2@gmail.com") {
-        console.log("No super admin found. You can add yourself as super admin.");
+      // Show message if no super admin exists
+      if (!existingSuperAdmin && !isLoading) {
+        console.log("No super admin found. System requires manual super admin assignment through database.");
         toast({
-          title: "Super Admin Setup",
-          description: "No super admin found. You can add yourself by clicking 'Add Admin' with your email and selecting 'Super Admin' role."
+          title: "Super Admin Setup Required",
+          description: "No super admin found. Please contact system administrator to assign the first super admin role.",
+          variant: "destructive"
         });
       }
     }
-  }, [adminUsers, isLoading, currentUserEmail, hasCheckedSuperAdmin, toast]);
+  }, [adminUsers, isLoading, hasCheckedSuperAdmin, toast]);
 
   const handleAddAdmin = (e: React.FormEvent) => {
     e.preventDefault();

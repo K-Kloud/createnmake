@@ -2,8 +2,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { checkIfSuperAdmin, findUserByEmailOrUsername, checkIfUserIsAlreadyAdmin, addAdminRoleToDatabase } from "../utils/adminRoleUtils";
-import { handleSpecialAdminCase } from "../utils/specialCaseHandler";
+import { checkCurrentUserIsSuperAdmin, findUserSecurely, logAdminOperation } from "../utils/secureAdminUtils";
 
 export const useAddAdminMutation = () => {
   const queryClient = useQueryClient();
@@ -17,42 +16,56 @@ export const useAddAdminMutation = () => {
       }
 
       const currentUserId = session.session.user.id;
-      const currentUserEmail = session.session.user.email;
 
-      // Handle special case first
-      const specialCaseResult = await handleSpecialAdminCase(
-        emailOrUsername, 
-        currentUserEmail, 
-        currentUserId, 
-        role
-      );
-
-      if (specialCaseResult) {
-        return specialCaseResult;
-      }
-
-      // For all other cases, check if current user is super admin
-      const isCurrentUserSuperAdmin = await checkIfSuperAdmin(currentUserId);
+      // Check if current user is super admin (no more hardcoded backdoors)
+      const isCurrentUserSuperAdmin = await checkCurrentUserIsSuperAdmin();
       
       if (!isCurrentUserSuperAdmin) {
+        await logAdminOperation("add_attempt", emailOrUsername, role, false);
         throw new Error("Only super admins can add other admins");
       }
 
-      // Find the target user
-      const targetUserId = await findUserByEmailOrUsername(emailOrUsername);
+      // Find the target user securely
+      const targetUserId = await findUserSecurely(emailOrUsername);
 
       if (!targetUserId) {
+        await logAdminOperation("add_attempt", emailOrUsername, role, false);
         throw new Error(`No user found with email/username: ${emailOrUsername}. Make sure the user has registered and has a profile.`);
       }
 
       // Check if user is already an admin
-      const isAlreadyAdmin = await checkIfUserIsAlreadyAdmin(targetUserId);
+      const { data: existingRole } = await supabase
+        .from("admin_roles")
+        .select("*")
+        .eq("user_id", targetUserId)
+        .maybeSingle();
 
-      if (isAlreadyAdmin) {
+      if (existingRole) {
+        await logAdminOperation("add_attempt", targetUserId, role, false);
         throw new Error("User is already an admin");
       }
 
-      await addAdminRoleToDatabase(targetUserId, role);
+      // Add admin role using the RPC function
+      const { error: rpcError } = await supabase.rpc('add_admin_role' as any, {
+        target_user_id: targetUserId,
+        admin_role: role
+      });
+
+      if (rpcError) {
+        // Fallback to direct insert
+        const { error: insertError } = await supabase
+          .from("admin_roles")
+          .insert([{ user_id: targetUserId, role: role }]);
+
+        if (insertError) {
+          await logAdminOperation("add", targetUserId, role, false);
+          throw insertError;
+        }
+      }
+
+      // Log successful operation
+      await logAdminOperation("add", targetUserId, role, true);
+      
       return { userId: targetUserId };
     },
     onSuccess: () => {

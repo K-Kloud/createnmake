@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { useAuth } from './useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './use-toast';
+import { supabase } from "@/integrations/supabase/client";
+import { checkUserAdminRole } from "@/components/admin/users/utils/secureAdminUtils";
 
 export function useAuthGuard(redirectPath = '/auth', requireAdmin = false) {
   const { user, loading } = useAuth();
@@ -28,13 +30,9 @@ export function useAuthGuard(redirectPath = '/auth', requireAdmin = false) {
       const checkAdminStatus = async () => {
         setCheckingAdmin(true);
         try {
-          const { data, error } = await supabase
-            .from('admin_roles')
-            .select('role')
-            .eq('user_id', user.id)
-            .single();
+          const isUserAdmin = await checkUserAdminRole(user.id);
           
-          if (error || !data) {
+          if (!isUserAdmin) {
             toast({
               title: "Access denied",
               description: "You don't have permission to access this page",
@@ -63,5 +61,3 @@ export function useAuthGuard(redirectPath = '/auth', requireAdmin = false) {
     isAdmin: isAdmin 
   };
 }
-
-import { supabase } from "@/integrations/supabase/client";
