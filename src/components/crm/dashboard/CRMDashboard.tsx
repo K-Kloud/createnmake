@@ -1,7 +1,9 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TaskFilters } from "@/components/crm/TaskFilters";
 import { TaskList } from "@/components/crm/TaskList";
+import { GoogleSheetsSync } from "@/components/crm/GoogleSheetsSync";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Plus, Download, BarChart, CheckCircle, AlertCircle, ClockIcon } from "lucide-react";
@@ -174,6 +176,7 @@ export const CRMDashboard = () => {
           <TabsTrigger value="list">List View</TabsTrigger>
           <TabsTrigger value="kanban">Kanban</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="google-sheets">Google Sheets</TabsTrigger>
         </TabsList>
         
         <TabsContent value="list" className="space-y-6">
@@ -214,6 +217,10 @@ export const CRMDashboard = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="google-sheets">
+          <GoogleSheetsSync />
         </TabsContent>
       </Tabs>
     </div>

@@ -424,6 +424,7 @@ export type Database = {
           created_at: string | null
           description: string
           due_date: string
+          google_sheets_row_id: string | null
           id: number
           owner_id: string | null
           priority: string
@@ -437,6 +438,7 @@ export type Database = {
           created_at?: string | null
           description: string
           due_date: string
+          google_sheets_row_id?: string | null
           id?: number
           owner_id?: string | null
           priority: string
@@ -450,6 +452,7 @@ export type Database = {
           created_at?: string | null
           description?: string
           due_date?: string
+          google_sheets_row_id?: string | null
           id?: number
           owner_id?: string | null
           priority?: string
@@ -641,6 +644,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      google_sheets_config: {
+        Row: {
+          created_at: string | null
+          id: number
+          last_sync_at: string | null
+          sheet_name: string
+          spreadsheet_id: string
+          sync_enabled: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          last_sync_at?: string | null
+          sheet_name?: string
+          spreadsheet_id: string
+          sync_enabled?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          last_sync_at?: string | null
+          sheet_name?: string
+          spreadsheet_id?: string
+          sync_enabled?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       image_likes: {
         Row: {
@@ -1056,6 +1092,42 @@ export type Database = {
           start_date?: string
           status?: string
           subscription_id?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sync_logs: {
+        Row: {
+          completed_at: string | null
+          error_message: string | null
+          id: number
+          metadata: Json | null
+          records_affected: number | null
+          started_at: string | null
+          status: string
+          sync_type: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          error_message?: string | null
+          id?: number
+          metadata?: Json | null
+          records_affected?: number | null
+          started_at?: string | null
+          status?: string
+          sync_type: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          error_message?: string | null
+          id?: number
+          metadata?: Json | null
+          records_affected?: number | null
+          started_at?: string | null
+          status?: string
+          sync_type?: string
           user_id?: string
         }
         Relationships: []

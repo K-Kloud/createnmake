@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { TaskFilters } from "@/components/crm/TaskFilters";
 import { TaskList } from "@/components/crm/TaskList";
+import { GoogleSheetsSync } from "@/components/crm/GoogleSheetsSync";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CRMTask } from "@/types/crm";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const CRMTasks = () => {
   const [filterValues, setFilterValues] = useState({});
@@ -81,26 +83,39 @@ const CRMTasks = () => {
             </Button>
           </div>
           
-          <TaskFilters onFilterChange={handleFilterChange} />
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Task Management</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="text-center py-10">
-                  <p className="text-muted-foreground">Loading tasks...</p>
-                </div>
-              ) : tasks && tasks.length > 0 ? (
-                <TaskList tasks={tasks} />
-              ) : (
-                <div className="text-center py-10">
-                  <p className="text-muted-foreground">No tasks found matching your filters.</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <Tabs defaultValue="tasks">
+            <TabsList>
+              <TabsTrigger value="tasks">Tasks</TabsTrigger>
+              <TabsTrigger value="google-sheets">Google Sheets Sync</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="tasks" className="space-y-6">
+              <TaskFilters onFilterChange={handleFilterChange} />
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Task Management</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <div className="text-center py-10">
+                      <p className="text-muted-foreground">Loading tasks...</p>
+                    </div>
+                  ) : tasks && tasks.length > 0 ? (
+                    <TaskList tasks={tasks} />
+                  ) : (
+                    <div className="text-center py-10">
+                      <p className="text-muted-foreground">No tasks found matching your filters.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="google-sheets">
+              <GoogleSheetsSync />
+            </TabsContent>
+          </Tabs>
         </div>
       </CRMLayout>
     </>
