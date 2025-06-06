@@ -2,24 +2,16 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { sanitizeHtml } from "@/utils/security"
 
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, ...props }, ref) => {
-    // Sanitize value to prevent XSS
-    const sanitizeValue = (value: string) => {
-      if (typeof value !== 'string') return value;
-      // Remove potential XSS vectors while preserving normal content
-      return value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-                  .replace(/javascript:/gi, '')
-                  .replace(/on\w+\s*=/gi, '');
-    };
-
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      // Sanitize input value
-      const sanitizedValue = sanitizeValue(e.target.value);
+      // Sanitize textarea input to prevent XSS
+      const sanitizedValue = sanitizeHtml(e.target.value);
       if (sanitizedValue !== e.target.value) {
         e.target.value = sanitizedValue;
       }

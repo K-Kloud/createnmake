@@ -7,7 +7,7 @@ import { ImageFilters } from "@/components/admin/ImageFilters";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Database, Loader2, Users, CalendarRange } from "lucide-react";
+import { Database, Loader2, CalendarRange } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminStats } from "@/components/admin/stats/AdminStats";
@@ -91,72 +91,6 @@ const Admin = () => {
   }
 
   if (!isAdmin) {
-    // Special case for kalux2@gmail.com
-    if (session?.user?.email === "kalux2@gmail.com") {
-      console.error("Special admin user kalux2@gmail.com was denied access despite override");
-      
-      // Force grant access to continue anyway since this is a special case
-      return (
-        <div className="min-h-screen bg-background flex flex-col">
-          <Header />
-          <main className="flex-grow container px-4 py-8">
-            <div className="flex items-center gap-2 mb-8">
-              <Database className="h-6 w-6" />
-              <h1 className="text-3xl font-bold">Admin Dashboard (Special Access)</h1>
-            </div>
-            
-            <Tabs defaultValue="users" className="space-y-8">
-              <TabsList>
-                <TabsTrigger value="images">Images</TabsTrigger>
-                <TabsTrigger value="stats">Stats</TabsTrigger>
-                <TabsTrigger value="portfolios">Portfolios</TabsTrigger>
-                <TabsTrigger value="users">Users</TabsTrigger>
-                <TabsTrigger value="taskflow">
-                  <CalendarRange className="mr-2 h-4 w-4" />
-                  Task Workflow
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="users">
-                <UserManagement />
-              </TabsContent>
-
-              <TabsContent value="images">
-                <div className="space-y-8">
-                  <ImageFilters 
-                    searchTerm={searchTerm}
-                    onSearchChange={setSearchTerm}
-                  />
-                  <div className="rounded-lg border bg-card">
-                    <ImageList 
-                      images={images || []}
-                      onDelete={handleDelete}
-                      isLoading={loadingImages}
-                    />
-                  </div>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="stats">
-                <AdminStats />
-              </TabsContent>
-
-              <TabsContent value="portfolios">
-                <div className="rounded-lg border bg-card">
-                  <AdminPortfolio />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="taskflow">
-                <TaskWorkflow />
-              </TabsContent>
-            </Tabs>
-          </main>
-          <Footer />
-        </div>
-      );
-    }
-
     // Use session check to differentiate between not logged in and not admin
     if (!session) {
       // User is not logged in

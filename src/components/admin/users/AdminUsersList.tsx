@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, UserPlus, Search, Shield } from "lucide-react";
+import { Loader2, UserPlus, Search, Shield, AlertTriangle } from "lucide-react";
 import { useAdminUsers } from "./hooks/useAdminUsers";
 import { useAdminMutations } from "./hooks/useAdminMutations";
 import { AdminUsersTable } from "./components/AdminUsersTable";
@@ -47,21 +47,29 @@ export const AdminUsersList = () => {
         console.log("No super admin found. System requires manual super admin assignment through database.");
         toast({
           title: "Super Admin Setup Required",
-          description: "No super admin found. Please contact system administrator to assign the first super admin role.",
+          description: "No super admin found. Contact system administrator to assign the first super admin role through the database.",
           variant: "destructive"
         });
       }
     }
   }, [adminUsers, isLoading, hasCheckedSuperAdmin, toast]);
 
-  // Validate input on change
+  // Enhanced input validation
   const handleInputChange = (value: string) => {
     const sanitizedValue = sanitizeHtml(value);
     setEmailInput(sanitizedValue);
     
-    // Validate input
-    if (sanitizedValue && !isValidEmail(sanitizedValue) && !isValidUsername(sanitizedValue)) {
-      setInputError("Please enter a valid email address or username");
+    // Comprehensive validation
+    if (sanitizedValue) {
+      if (!isValidEmail(sanitizedValue) && !isValidUsername(sanitizedValue)) {
+        setInputError("Please enter a valid email address or username (3-50 characters, alphanumeric, underscore, hyphen only)");
+      } else if (sanitizedValue.length < 3) {
+        setInputError("Input must be at least 3 characters long");
+      } else if (sanitizedValue.length > 254) {
+        setInputError("Input is too long (max 254 characters)");
+      } else {
+        setInputError("");
+      }
     } else {
       setInputError("");
     }
@@ -81,6 +89,12 @@ export const AdminUsersList = () => {
     
     const sanitizedInput = sanitizeHtml(emailInput.trim());
     
+    // Additional security check
+    if (sanitizedInput.length < 3 || sanitizedInput.length > 254) {
+      setInputError("Invalid input length");
+      return;
+    }
+    
     addAdminMutation.mutate({ 
       emailOrUsername: sanitizedInput, 
       role: selectedRole 
@@ -91,13 +105,23 @@ export const AdminUsersList = () => {
 
   return (
     <div className="space-y-6">
-      {/* Security Notice */}
+      {/* Enhanced Security Notice */}
       <Alert>
         <Shield className="h-4 w-4" />
         <AlertDescription>
-          Admin operations are logged and monitored. Only super admins can manage other admin accounts.
+          Admin operations are logged and monitored. Only super admins can manage other admin accounts. All inputs are sanitized for security.
         </AlertDescription>
       </Alert>
+
+      {/* Warning if no super admin exists */}
+      {hasCheckedSuperAdmin && !superAdminExists && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Critical:</strong> No super admin found in the system. Contact your system administrator to bootstrap the first super admin through the database.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
         <form onSubmit={handleAddAdmin} className="flex-1 flex space-x-2">
@@ -107,6 +131,7 @@ export const AdminUsersList = () => {
               value={emailInput}
               onChange={(e) => handleInputChange(e.target.value)}
               className={inputError ? "border-red-500" : ""}
+              maxLength={254}
             />
             {inputError && (
               <p className="text-sm text-red-500 mt-1">{inputError}</p>
@@ -141,6 +166,7 @@ export const AdminUsersList = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(sanitizeHtml(e.target.value))}
             className="pl-8"
+            maxLength={100}
           />
         </div>
       </div>

@@ -2,26 +2,20 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { sanitizeHtml } from "@/utils/security"
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
-    // Sanitize value to prevent XSS
-    const sanitizeValue = (value: string) => {
-      if (typeof value !== 'string') return value;
-      // Remove potential XSS vectors while preserving normal content
-      return value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-                  .replace(/javascript:/gi, '')
-                  .replace(/on\w+\s*=/gi, '');
-    };
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      // Sanitize input value
-      const sanitizedValue = sanitizeValue(e.target.value);
-      if (sanitizedValue !== e.target.value) {
-        e.target.value = sanitizedValue;
+      // Only sanitize text inputs, not passwords or other sensitive fields
+      if (type === 'text' || type === 'email' || type === 'search' || !type) {
+        const sanitizedValue = sanitizeHtml(e.target.value);
+        if (sanitizedValue !== e.target.value) {
+          e.target.value = sanitizedValue;
+        }
       }
       props.onChange?.(e);
     };

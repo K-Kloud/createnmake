@@ -1,5 +1,9 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { RateLimiter, sanitizeHtml, isValidEmail, isValidUsername } from "@/utils/security";
+
+// Rate limiter for admin operations
+const adminRateLimiter = new RateLimiter(10, 60000); // 10 operations per minute
 
 /**
  * Securely check if a user has a specific admin role using the new SECURITY DEFINER function
@@ -95,7 +99,7 @@ export const findUserSecurely = async (emailOrUsername: string): Promise<string 
   }
 
   // Sanitize input to prevent XSS
-  const sanitizedInput = emailOrUsername.trim().toLowerCase().replace(/[<>]/g, '');
+  const sanitizedInput = sanitizeHtml(emailOrUsername.trim().toLowerCase());
   
   // Additional validation for suspicious patterns
   if (/[<>{}()\[\]\\\/]/.test(sanitizedInput)) {
@@ -103,19 +107,24 @@ export const findUserSecurely = async (emailOrUsername: string): Promise<string 
   }
 
   try {
-    const isEmail = sanitizedInput.includes('@') && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedInput);
+    // Check if it's a valid email format
+    const isEmail = isValidEmail(sanitizedInput);
     
     if (isEmail) {
-      // For email lookup, we need to search through profiles that might have stored emails
-      // Since we can't directly query auth.users, we'll search by username/email in profiles
+      // For email lookup, search profiles by username (which might contain email)
       const { data: userByEmail } = await supabase
         .from("profiles")
         .select("id")
-        .or(`username.ilike.${sanitizedInput}`)
+        .ilike("username", sanitizedInput)
         .maybeSingle();
 
       if (userByEmail) {
         return userByEmail.id;
+      }
+    } else {
+      // Validate username format
+      if (!isValidUsername(sanitizedInput)) {
+        throw new Error("Invalid username format");
       }
     }
 
@@ -148,7 +157,12 @@ export const validateAdminOperation = async (operation: string): Promise<boolean
       return false;
     }
 
-    // Check rate limiting - max 10 admin operations per minute
+    // Check rate limiting
+    if (!adminRateLimiter.isAllowed(session.session.user.id)) {
+      throw new Error("Rate limit exceeded: Too many admin operations. Please wait before trying again.");
+    }
+
+    // Check recent operations in audit logs - max 20 admin operations per minute
     const oneMinuteAgo = new Date(Date.now() - 60000).toISOString();
     
     const { data: recentOperations } = await supabase
@@ -158,7 +172,7 @@ export const validateAdminOperation = async (operation: string): Promise<boolean
       .like("action", "admin_%")
       .gte("action_time", oneMinuteAgo);
 
-    if (recentOperations && recentOperations.length >= 10) {
+    if (recentOperations && recentOperations.length >= 20) {
       throw new Error("Rate limit exceeded: Too many admin operations. Please wait before trying again.");
     }
 
@@ -173,6 +187,11 @@ export const validateAdminOperation = async (operation: string): Promise<boolean
  * Enhanced security validation for admin mutations
  */
 export const validateAdminMutation = async (targetUserId: string, operation: string): Promise<void> => {
+  // Sanitize target user ID
+  if (!targetUserId || typeof targetUserId !== 'string') {
+    throw new Error("Invalid target user ID");
+  }
+
   // Validate operation is allowed
   if (!await validateAdminOperation(operation)) {
     throw new Error("Admin operation validation failed");
@@ -190,5 +209,38 @@ export const validateAdminMutation = async (targetUserId: string, operation: str
   if (session?.session?.user?.id === targetUserId && ['remove', 'demote'].includes(operation)) {
     await logAdminOperation(`${operation}_self_attempt`, targetUserId, "unknown", false);
     throw new Error("You cannot perform this operation on your own account");
+  }
+};
+
+/**
+ * Secure function to bootstrap the first super admin
+ * This should only be used during initial setup
+ */
+export const bootstrapSuperAdmin = async (userId: string): Promise<boolean> => {
+  try {
+    // Check if any super admin already exists
+    const { data: existingSuperAdmin } = await supabase
+      .from("admin_roles")
+      .select("user_id")
+      .eq("role", "super_admin")
+      .maybeSingle();
+
+    if (existingSuperAdmin) {
+      throw new Error("Super admin already exists. Cannot bootstrap another one.");
+    }
+
+    // Add the first super admin
+    const { error } = await supabase
+      .from("admin_roles")
+      .insert([{ user_id: userId, role: "super_admin" }]);
+
+    if (error) throw error;
+
+    await logAdminOperation("bootstrap_super_admin", userId, "super_admin", true);
+    return true;
+  } catch (error) {
+    console.error("Error bootstrapping super admin:", error);
+    await logAdminOperation("bootstrap_super_admin_failed", userId, "super_admin", false, { error: error.message });
+    return false;
   }
 };
