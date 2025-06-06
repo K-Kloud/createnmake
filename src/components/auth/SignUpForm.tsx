@@ -12,14 +12,36 @@ import { sanitizeInput } from "@/utils/security";
 
 interface SignUpFormProps {
   isLoading: boolean;
+  email?: string;
+  setEmail?: (email: string) => void;
+  password?: string;
+  setPassword?: (password: string) => void;
+  username?: string;
+  setUsername?: (username: string) => void;
 }
 
-export const SignUpForm = ({ isLoading }: SignUpFormProps) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
+export const SignUpForm = ({ 
+  isLoading, 
+  email: externalEmail, 
+  setEmail: setExternalEmail, 
+  password: externalPassword, 
+  setPassword: setExternalPassword,
+  username: externalUsername,
+  setUsername: setExternalUsername
+}: SignUpFormProps) => {
+  const [internalEmail, setInternalEmail] = useState("");
+  const [internalPassword, setInternalPassword] = useState("");
+  const [internalUsername, setInternalUsername] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
+
+  // Use either external state (if provided) or internal state
+  const email = externalEmail !== undefined ? externalEmail : internalEmail;
+  const setEmail = setExternalEmail || setInternalEmail;
+  const password = externalPassword !== undefined ? externalPassword : internalPassword;
+  const setPassword = setExternalPassword || setInternalPassword;
+  const username = externalUsername !== undefined ? externalUsername : internalUsername;
+  const setUsername = setExternalUsername || setInternalUsername;
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
