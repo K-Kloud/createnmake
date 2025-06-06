@@ -2,200 +2,121 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { validatePasswordStrength } from "@/utils/passwordValidation";
+import { useToast } from "@/components/ui/use-toast";
 import { PasswordStrengthIndicator } from "./PasswordStrengthIndicator";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
-import { sanitizeHtml } from "@/utils/security";
+import { validatePassword } from "@/utils/passwordValidation";
+import { sanitizeInput } from "@/utils/security";
 
 interface SignUpFormProps {
-  onToggleMode: () => void;
+  isLoading: boolean;
 }
 
-export const SignUpForm = ({ onToggleMode }: SignUpFormProps) => {
+export const SignUpForm = ({ isLoading }: SignUpFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [username, setUsername] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(sanitizeHtml(e.target.value));
-  };
-
-  const handlePasswordChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPassword = e.target.value;
-    setPassword(newPassword);
-    
-    if (newPassword) {
-      const validation = await validatePasswordStrength(newPassword);
-      setPasswordErrors(validation.errors);
-    } else {
-      setPasswordErrors([]);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (loading) return;
-
-    // Input validation
-    if (!email.trim() || !password || !confirmPassword) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all fields.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      toast({
-        title: "Password Mismatch",
-        description: "Passwords do not match.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     // Validate password strength
-    const passwordValidation = await validatePasswordStrength(password);
-    if (!passwordValidation.isValid) {
+    if (!validatePassword(password)) {
       toast({
         title: "Weak Password",
-        description: "Please choose a stronger password.",
-        variant: "destructive"
+        description: "Password must meet all security requirements.",
+        variant: "destructive",
       });
       return;
     }
+    
+    // Sanitize inputs
+    const sanitizedEmail = sanitizeInput(email);
+    const sanitizedUsername = sanitizeInput(username);
+    
+    const { error } = await supabase.auth.signUp({
+      email: sanitizedEmail,
+      password,
+      options: {
+        data: {
+          username: sanitizedUsername,
+        },
+      },
+    });
 
-    setLoading(true);
-
-    try {
-      // Clean up any existing auth state before signup
-      try {
-        await supabase.auth.signOut({ scope: 'global' });
-      } catch (err) {
-        // Ignore cleanup errors
-      }
-
-      const redirectUrl = `${window.location.origin}/`;
-      
-      const { data, error } = await supabase.auth.signUp({
-        email: sanitizeHtml(email.trim()),
-        password,
-        options: {
-          emailRedirectTo: redirectUrl
-        }
-      });
-
-      if (error) {
-        if (error.message.includes('already registered')) {
-          toast({
-            title: "Account Exists",
-            description: "An account with this email already exists. Please sign in instead.",
-            variant: "destructive"
-          });
-          onToggleMode();
-        } else {
-          toast({
-            title: "Sign Up Failed",
-            description: error.message,
-            variant: "destructive"
-          });
-        }
-        return;
-      }
-
-      if (data.user && !data.session) {
-        toast({
-          title: "Check Your Email",
-          description: "Please check your email for a confirmation link before signing in.",
-        });
-      } else if (data.user && data.session) {
-        toast({
-          title: "Welcome!",
-          description: "Your account has been created successfully.",
-        });
-        // Force page reload for clean state
-        window.location.href = '/';
-      }
-    } catch (error) {
-      console.error("Sign up error:", error);
+    if (error) {
       toast({
         title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive"
+        description: error.message,
+        variant: "destructive",
       });
-    } finally {
-      setLoading(false);
+    } else {
+      toast({
+        title: "Success",
+        description: "Please check your email to confirm your account.",
+      });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Alert>
-        <AlertTriangle className="h-4 w-4" />
-        <AlertDescription>
-          Use a strong password with at least 8 characters, including uppercase, lowercase, numbers, and special characters.
-        </AlertDescription>
-      </Alert>
-
-      <div>
+    <form onSubmit={handleSignUp} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="username">Username</Label>
         <Input
+          id="username"
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+          disabled={isLoading}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
           type="email"
-          placeholder="Email"
           value={email}
-          onChange={handleEmailChange}
-          disabled={loading}
+          onChange={(e) => setEmail(e.target.value)}
           required
-          maxLength={254}
+          disabled={isLoading}
         />
       </div>
-      
-      <div>
-        <Input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={handlePasswordChange}
-          disabled={loading}
-          required
-          maxLength={128}
-        />
-        <PasswordStrengthIndicator password={password} errors={passwordErrors} />
+      <div className="space-y-2">
+        <Label htmlFor="password">Password</Label>
+        <div className="relative">
+          <Input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            disabled={isLoading}
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+            onClick={() => setShowPassword(!showPassword)}
+            disabled={isLoading}
+          >
+            {showPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+        <PasswordStrengthIndicator password={password} />
       </div>
-      
-      <div>
-        <Input
-          type="password"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          disabled={loading}
-          required
-          maxLength={128}
-        />
-      </div>
-      
-      <Button type="submit" className="w-full" disabled={loading || passwordErrors.length > 0}>
-        {loading ? "Creating Account..." : "Sign Up"}
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? "Creating account..." : "Create Account"}
       </Button>
-      
-      <div className="text-center">
-        <button
-          type="button"
-          onClick={onToggleMode}
-          className="text-sm text-blue-600 hover:underline"
-          disabled={loading}
-        >
-          Already have an account? Sign in
-        </button>
-      </div>
     </form>
   );
 };
