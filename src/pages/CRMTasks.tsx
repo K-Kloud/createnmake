@@ -52,14 +52,14 @@ const CRMTasks = () => {
       if (error) throw error;
       
       return data.map(task => ({
-        id: String(task.id), // Convert to string explicitly
+        id: String(task.id),
         description: task.description,
         company: task.company,
-        task_type: task.task_type as CRMTask['task_type'], // Type casting to ensure compatibility
+        task_type: task.task_type as CRMTask['task_type'],
         status: task.status as CRMTask['status'],
         priority: task.priority as CRMTask['priority'],
         due_date: task.due_date,
-        assignees: [{ initials: 'AI', color: 'bg-blue-500' }], // Default assignee for now
+        assignees: [{ initials: 'AI', color: 'bg-blue-500' }],
       }));
     }
   });

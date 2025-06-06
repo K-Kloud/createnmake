@@ -426,7 +426,7 @@ export type Database = {
           due_date: string
           google_sheets_row_id: string | null
           id: number
-          owner_id: string | null
+          owner_id: string
           priority: string
           status: string
           task_type: string
@@ -440,7 +440,7 @@ export type Database = {
           due_date: string
           google_sheets_row_id?: string | null
           id?: number
-          owner_id?: string | null
+          owner_id: string
           priority: string
           status: string
           task_type: string
@@ -454,7 +454,7 @@ export type Database = {
           due_date?: string
           google_sheets_row_id?: string | null
           id?: number
-          owner_id?: string | null
+          owner_id?: string
           priority?: string
           status?: string
           task_type?: string
@@ -578,7 +578,7 @@ export type Database = {
           tags: string[] | null
           title: string | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
           views: number | null
         }
         Insert: {
@@ -598,7 +598,7 @@ export type Database = {
           tags?: string[] | null
           title?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
           views?: number | null
         }
         Update: {
@@ -618,7 +618,7 @@ export type Database = {
           tags?: string[] | null
           title?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
           views?: number | null
         }
         Relationships: [
@@ -1226,6 +1226,10 @@ export type Database = {
       }
       is_current_user_super_admin: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      validate_password_strength: {
+        Args: { password: string }
         Returns: boolean
       }
     }

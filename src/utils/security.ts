@@ -1,89 +1,13 @@
 
-/**
- * Enhanced security utility functions for input validation and sanitization
- */
-
-/**
- * Comprehensive HTML sanitization to prevent XSS attacks
- */
-export const sanitizeHtml = (input: string): string => {
-  if (typeof input !== 'string') return input;
-  
-  return input
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
-    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
-    .replace(/<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi, '')
-    .replace(/<form\b[^<]*(?:(?!<\/form>)<[^<]*)*<\/form>/gi, '')
-    .replace(/javascript:/gi, '')
-    .replace(/vbscript:/gi, '')
-    .replace(/data:text\/html/gi, '')
-    .replace(/on\w+\s*=/gi, '')
-    .replace(/expression\s*\(/gi, '')
-    .replace(/url\s*\(/gi, '')
-    .replace(/&#/g, '')
-    .replace(/&\w+;/g, '');
-};
-
-/**
- * Validate email format with enhanced security checks
- */
-export const isValidEmail = (email: string): boolean => {
-  if (!email || typeof email !== 'string') return false;
-  
-  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-  
-  return emailRegex.test(email) && 
-         email.length <= 254 && 
-         email.length >= 5 &&
-         !email.includes('..') && // Prevent consecutive dots
-         !email.startsWith('.') && 
-         !email.endsWith('.');
-};
-
-/**
- * Validate username format (alphanumeric, underscore, hyphen only)
- */
-export const isValidUsername = (username: string): boolean => {
-  if (!username || typeof username !== 'string') return false;
-  
-  const usernameRegex = /^[a-zA-Z0-9_-]+$/;
-  return usernameRegex.test(username) && 
-         username.length >= 3 && 
-         username.length <= 50 &&
-         !username.startsWith('-') &&
-         !username.endsWith('-');
-};
-
-/**
- * Validate password strength
- */
-export const isStrongPassword = (password: string): boolean => {
-  if (!password || typeof password !== 'string') return false;
-  
-  // At least 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special char
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  return passwordRegex.test(password);
-};
-
-/**
- * Enhanced rate limiting utility with memory cleanup
- */
+// Rate limiter for client-side operations
 export class RateLimiter {
   private attempts: Map<string, number[]> = new Map();
-  private cleanupInterval: NodeJS.Timeout;
-  
-  constructor(
-    private maxAttempts: number = 5,
-    private windowMs: number = 60000 // 1 minute
-  ) {
-    // Clean up old entries every 5 minutes
-    this.cleanupInterval = setInterval(() => this.cleanup(), 300000);
-  }
 
-  isAllowed(identifier: string): boolean {
+  constructor(private maxAttempts: number, private windowMs: number) {}
+
+  isAllowed(key: string): boolean {
     const now = Date.now();
-    const userAttempts = this.attempts.get(identifier) || [];
+    const userAttempts = this.attempts.get(key) || [];
     
     // Remove old attempts outside the window
     const validAttempts = userAttempts.filter(time => now - time < this.windowMs);
@@ -94,107 +18,78 @@ export class RateLimiter {
     
     // Add current attempt
     validAttempts.push(now);
-    this.attempts.set(identifier, validAttempts);
+    this.attempts.set(key, validAttempts);
     
     return true;
   }
 
-  reset(identifier: string): void {
-    this.attempts.delete(identifier);
-  }
-
-  private cleanup(): void {
-    const now = Date.now();
-    for (const [identifier, attempts] of this.attempts.entries()) {
-      const validAttempts = attempts.filter(time => now - time < this.windowMs);
-      if (validAttempts.length === 0) {
-        this.attempts.delete(identifier);
-      } else {
-        this.attempts.set(identifier, validAttempts);
-      }
-    }
-  }
-
-  destroy(): void {
-    if (this.cleanupInterval) {
-      clearInterval(this.cleanupInterval);
-    }
-    this.attempts.clear();
+  reset(key: string): void {
+    this.attempts.delete(key);
   }
 }
 
-/**
- * CSRF token generation and validation
- */
-export const generateCSRFToken = (): string => {
+// HTML sanitization function
+export function sanitizeHtml(input: string): string {
+  if (typeof input !== 'string') return '';
+  
+  return input
+    .replace(/[<>]/g, '') // Remove < and >
+    .replace(/javascript:/gi, '') // Remove javascript: protocol
+    .replace(/on\w+=/gi, '') // Remove event handlers
+    .trim();
+}
+
+// Email validation
+export function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email) && email.length <= 254;
+}
+
+// Username validation (alphanumeric, underscore, hyphen only)
+export function isValidUsername(username: string): boolean {
+  const usernameRegex = /^[a-zA-Z0-9_-]{3,50}$/;
+  return usernameRegex.test(username);
+}
+
+// CSRF token generator (for future use)
+export function generateCSRFToken(): string {
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
   return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-};
+}
 
-/**
- * Secure session storage with encryption-like obfuscation
- */
-export const secureStorage = {
-  set: (key: string, value: any): void => {
-    try {
-      const obfuscated = btoa(JSON.stringify(value));
-      sessionStorage.setItem(`sec_${key}`, obfuscated);
-    } catch (error) {
-      console.error('Failed to store secure data:', error);
-    }
-  },
-  
-  get: (key: string): any => {
-    try {
-      const stored = sessionStorage.getItem(`sec_${key}`);
-      if (!stored) return null;
-      return JSON.parse(atob(stored));
-    } catch (error) {
-      console.error('Failed to retrieve secure data:', error);
-      return null;
-    }
-  },
-  
-  remove: (key: string): void => {
-    sessionStorage.removeItem(`sec_${key}`);
-  }
-};
+// Secure random string generator
+export function generateSecureId(length: number = 16): string {
+  const array = new Uint8Array(length);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+}
 
-/**
- * Content Security Policy helper
- */
-export const getCSPHeader = (): string => {
-  return [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: https:",
-    "font-src 'self' data:",
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
-    "frame-ancestors 'none'",
-    "base-uri 'self'",
-    "form-action 'self'"
-  ].join('; ');
-};
+// Input length validation
+export function validateInputLength(input: string, min: number, max: number): boolean {
+  return input.length >= min && input.length <= max;
+}
 
-/**
- * Input sanitization for different contexts
- */
-export const sanitizers = {
-  text: (input: string): string => {
-    return sanitizeHtml(input).trim();
-  },
+// Detect potential XSS patterns
+export function containsXSS(input: string): boolean {
+  const xssPatterns = [
+    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+    /<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi,
+    /javascript:/gi,
+    /vbscript:/gi,
+    /on\w+\s*=/gi,
+    /<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi,
+    /<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi
+  ];
   
-  numeric: (input: string): string => {
-    return input.replace(/[^0-9.-]/g, '');
-  },
-  
-  alphanumeric: (input: string): string => {
-    return input.replace(/[^a-zA-Z0-9]/g, '');
-  },
-  
-  filename: (input: string): string => {
-    return input.replace(/[^a-zA-Z0-9._-]/g, '').substring(0, 255);
-  }
-};
+  return xssPatterns.some(pattern => pattern.test(input));
+}
+
+// Validate file upload (basic)
+export function isValidFileType(file: File, allowedTypes: string[]): boolean {
+  return allowedTypes.includes(file.type);
+}
+
+export function isValidFileSize(file: File, maxSizeBytes: number): boolean {
+  return file.size <= maxSizeBytes;
+}

@@ -9,12 +9,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TaskFilter } from "@/types/crm";
+import { sanitizeHtml } from "@/utils/security";
 
 interface TaskFiltersProps {
   onFilterChange: (filters: Partial<TaskFilter>) => void;
 }
 
 export const TaskFilters = ({ onFilterChange }: TaskFiltersProps) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const sanitized = sanitizeHtml(e.target.value);
+    onFilterChange({ search: sanitized });
+  };
+
   return (
     <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:space-x-4">
       <div className="relative flex-1">
@@ -22,7 +28,8 @@ export const TaskFilters = ({ onFilterChange }: TaskFiltersProps) => {
         <Input
           placeholder="Search tasks..."
           className="pl-8"
-          onChange={(e) => onFilterChange({ search: e.target.value })}
+          onChange={handleSearchChange}
+          maxLength={100}
         />
       </div>
       

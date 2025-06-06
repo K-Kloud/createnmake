@@ -2,43 +2,46 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Icons } from "@/components/Icons";
-import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cleanupAuthState } from "@/utils/auth";
-import { MFAVerify } from "./MFAVerify";
+import { sanitizeHtml } from "@/utils/security";
 
 interface SignInFormProps {
-  email: string;
-  setEmail: (email: string) => void;
-  password: string;
-  setPassword: (password: string) => void;
-  isLoading: boolean;
-  onForgotPassword: () => void;
+  onToggleMode: () => void;
 }
 
-export const SignInForm = ({
-  email,
-  setEmail,
-  password,
-  setPassword,
-  isLoading,
-  onForgotPassword,
-}: SignInFormProps) => {
+export const SignInForm = ({ onToggleMode }: SignInFormProps) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const [needsMFA, setNeedsMFA] = useState(false);
-  const [mfaFactorId, setMfaFactorId] = useState("");
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(sanitizeHtml(e.target.value));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (loading) return;
+
+    if (!email.trim() || !password) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter both email and password.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      // Clean up existing state
+      // Clean up existing auth state
       cleanupAuthState();
       
-      // Attempt global sign out
+      // Attempt global sign out first
       try {
         await supabase.auth.signOut({ scope: 'global' });
       } catch (err) {
@@ -46,113 +49,93 @@ export const SignInForm = ({
       }
 
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: sanitizeHtml(email.trim()),
         password,
       });
-      
-      if (error) throw error;
 
-      // Check if MFA is required
-      if (data?.session === null && data?.user === null) {
-        // This means MFA is required
-        const factors = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-        
-        if (factors.data.nextLevel === 'aal2' && factors.data.currentLevel === 'aal1') {
-          // Find the next factor ID from authenticator methods
-          const authMethods = factors.data.currentAuthenticationMethods || [];
-          if (authMethods.length > 0 && authMethods[0]) {
-            // Access the id property from the authentication method
-            // We need to use a type assertion since the AMREntry type 
-            // doesn't explicitly define an id property
-            const factorId = (authMethods[0] as any).factorId || (authMethods[0] as any).id;
-            
-            if (factorId) {
-              setMfaFactorId(factorId);
-              setNeedsMFA(true);
-              return;
-            }
-          }
+      if (error) {
+        if (error.message.includes('Email not confirmed')) {
+          toast({
+            title: "Email Not Confirmed",
+            description: "Please check your email and click the confirmation link before signing in.",
+            variant: "destructive"
+          });
+        } else if (error.message.includes('Invalid login credentials')) {
+          toast({
+            title: "Invalid Credentials",
+            description: "Please check your email and password and try again.",
+            variant: "destructive"
+          });
+        } else {
+          toast({
+            title: "Sign In Failed",
+            description: error.message,
+            variant: "destructive"
+          });
         }
+        return;
       }
-      
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully signed in.",
-      });
-      
-      // Force page reload
-      window.location.href = '/dashboard';
-    } catch (error: any) {
+
+      if (data.user) {
+        toast({
+          title: "Welcome back!",
+          description: "You have been signed in successfully.",
+        });
+        // Force page reload for clean state
+        window.location.href = '/';
+      }
+    } catch (error) {
+      console.error("Sign in error:", error);
       toast({
         title: "Error",
-        description: error.message,
-        variant: "destructive",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
       });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleMFAComplete = () => {
-    toast({
-      title: "Welcome back!",
-      description: "You have successfully signed in.",
-    });
-    
-    // Force page reload
-    window.location.href = '/dashboard';
-  };
-
-  if (needsMFA) {
-    return (
-      <MFAVerify 
-        factorId={mfaFactorId} 
-        onComplete={handleMFAComplete}
-        onCancel={() => setNeedsMFA(false)}
-      />
-    );
-  }
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="signin-email">Email</Label>
+      <div>
         <Input
-          id="signin-email"
           type="email"
-          placeholder="Enter your email"
+          placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleEmailChange}
+          disabled={loading}
           required
+          maxLength={254}
         />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="signin-password">Password</Label>
+      
+      <div>
         <Input
-          id="signin-password"
           type="password"
-          placeholder="Enter your password"
+          placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          disabled={loading}
           required
+          maxLength={128}
         />
       </div>
-      <Button
-        type="button"
-        variant="link"
-        className="px-0 text-sm"
-        onClick={onForgotPassword}
-      >
-        Forgot password?
+      
+      <Button type="submit" className="w-full" disabled={loading}>
+        {loading ? "Signing In..." : "Sign In"}
       </Button>
-      <Button className="w-full" type="submit" disabled={isLoading}>
-        {isLoading ? (
-          <>
-            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            Signing in...
-          </>
-        ) : (
-          "Sign In"
-        )}
-      </Button>
+      
+      <div className="text-center">
+        <button
+          type="button"
+          onClick={onToggleMode}
+          className="text-sm text-blue-600 hover:underline"
+          disabled={loading}
+        >
+          Don't have an account? Sign up
+        </button>
+      </div>
     </form>
   );
 };
