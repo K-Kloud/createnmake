@@ -3,12 +3,14 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, UserPlus, Search } from "lucide-react";
+import { Loader2, UserPlus, Search, Shield } from "lucide-react";
 import { useAdminUsers } from "./hooks/useAdminUsers";
 import { useAdminMutations } from "./hooks/useAdminMutations";
 import { AdminUsersTable } from "./components/AdminUsersTable";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { sanitizeHtml, isValidEmail, isValidUsername } from "@/utils/security";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const AdminUsersList = () => {
   const [emailInput, setEmailInput] = useState("");
@@ -16,6 +18,7 @@ export const AdminUsersList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [superAdminExists, setSuperAdminExists] = useState(false);
   const [hasCheckedSuperAdmin, setHasCheckedSuperAdmin] = useState(false);
+  const [inputError, setInputError] = useState("");
   const { toast } = useToast();
 
   const { data: adminUsers, isLoading, refetch } = useAdminUsers();
@@ -51,28 +54,64 @@ export const AdminUsersList = () => {
     }
   }, [adminUsers, isLoading, hasCheckedSuperAdmin, toast]);
 
+  // Validate input on change
+  const handleInputChange = (value: string) => {
+    const sanitizedValue = sanitizeHtml(value);
+    setEmailInput(sanitizedValue);
+    
+    // Validate input
+    if (sanitizedValue && !isValidEmail(sanitizedValue) && !isValidUsername(sanitizedValue)) {
+      setInputError("Please enter a valid email address or username");
+    } else {
+      setInputError("");
+    }
+  };
+
   const handleAddAdmin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (emailInput.trim()) {
-      addAdminMutation.mutate({ 
-        emailOrUsername: emailInput.trim(), 
-        role: selectedRole 
-      });
-      setEmailInput("");
-      setSelectedRole("admin");
+    
+    if (!emailInput.trim()) {
+      setInputError("Email or username is required");
+      return;
     }
+    
+    if (inputError) {
+      return;
+    }
+    
+    const sanitizedInput = sanitizeHtml(emailInput.trim());
+    
+    addAdminMutation.mutate({ 
+      emailOrUsername: sanitizedInput, 
+      role: selectedRole 
+    });
+    setEmailInput("");
+    setSelectedRole("admin");
   };
 
   return (
     <div className="space-y-6">
+      {/* Security Notice */}
+      <Alert>
+        <Shield className="h-4 w-4" />
+        <AlertDescription>
+          Admin operations are logged and monitored. Only super admins can manage other admin accounts.
+        </AlertDescription>
+      </Alert>
+
       <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
         <form onSubmit={handleAddAdmin} className="flex-1 flex space-x-2">
-          <Input
-            placeholder="User email or username"
-            value={emailInput}
-            onChange={(e) => setEmailInput(e.target.value)}
-            className="flex-1"
-          />
+          <div className="flex-1">
+            <Input
+              placeholder="User email or username"
+              value={emailInput}
+              onChange={(e) => handleInputChange(e.target.value)}
+              className={inputError ? "border-red-500" : ""}
+            />
+            {inputError && (
+              <p className="text-sm text-red-500 mt-1">{inputError}</p>
+            )}
+          </div>
           <Select value={selectedRole} onValueChange={(value: "admin" | "super_admin") => setSelectedRole(value)}>
             <SelectTrigger className="w-40">
               <SelectValue />
@@ -84,7 +123,7 @@ export const AdminUsersList = () => {
           </Select>
           <Button
             type="submit"
-            disabled={!emailInput.trim() || addAdminMutation.isPending}
+            disabled={!emailInput.trim() || addAdminMutation.isPending || !!inputError}
           >
             {addAdminMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -100,7 +139,7 @@ export const AdminUsersList = () => {
           <Input
             placeholder="Search admins..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(sanitizeHtml(e.target.value))}
             className="pl-8"
           />
         </div>

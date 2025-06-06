@@ -1133,6 +1133,10 @@ export type Database = {
           total_usage: number
         }[]
       }
+      check_user_admin_role_secure: {
+        Args: { target_user_id: string; required_role?: string }
+        Returns: boolean
+      }
       cleanup_expired_api_keys: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1147,6 +1151,10 @@ export type Database = {
       increment_views: {
         Args: { image_id: number }
         Returns: undefined
+      }
+      is_current_user_super_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
       }
     }
     Enums: {

@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { useAuth } from './useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './use-toast';
-import { supabase } from "@/integrations/supabase/client";
 import { checkUserAdminRole } from "@/components/admin/users/utils/secureAdminUtils";
 
 export function useAuthGuard(redirectPath = '/auth', requireAdmin = false) {

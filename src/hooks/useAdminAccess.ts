@@ -15,13 +15,13 @@ export const useAdminAccess = () => {
     refetchOnWindowFocus: true,
   });
 
-  // Second query: Check if the user is an admin
+  // Second query: Check if the user is an admin using secure function
   const { data: isAdmin, isLoading: adminCheckLoading } = useQuery({
     queryKey: ['isAdmin', session?.user?.id],
     queryFn: async () => {
       if (!session?.user?.id) return false;
       
-      // Use secure admin role checking (no more hardcoded backdoors)
+      // Use secure admin role checking
       try {
         return await checkUserAdminRole(session.user.id);
       } catch (err) {

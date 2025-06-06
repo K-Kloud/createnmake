@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { checkUserAdminRole } from "@/components/admin/users/utils/secureAdminUtils";
 
 export const useImagePermissions = (userId?: string) => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -19,14 +20,13 @@ export const useImagePermissions = (userId?: string) => {
     const checkAdminStatus = async () => {
       if (session?.user?.id) {
         setCurrentUserId(session.user.id);
-        const { data: adminRoles } = await supabase
-          .from('admin_roles')
-          .select('role')
-          .eq('user_id', session.user.id)
-          .eq('role', 'admin')
-          .single();
-        
-        setIsAdmin(!!adminRoles);
+        try {
+          const adminStatus = await checkUserAdminRole(session.user.id);
+          setIsAdmin(adminStatus);
+        } catch (error) {
+          console.error("Error checking admin status:", error);
+          setIsAdmin(false);
+        }
       }
     };
 

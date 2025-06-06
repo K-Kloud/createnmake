@@ -1,16 +1,10 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { checkUserAdminRole } from "./secureAdminUtils";
 
 export const checkIfSuperAdmin = async (userId: string): Promise<boolean> => {
   try {
-    const { data } = await supabase
-      .from("admin_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "super_admin")
-      .single();
-    
-    return !!data;
+    return await checkUserAdminRole(userId, "super_admin");
   } catch (error) {
     console.error("Error checking super admin status:", error);
     return false;
@@ -18,16 +12,16 @@ export const checkIfSuperAdmin = async (userId: string): Promise<boolean> => {
 };
 
 export const findUserByEmailOrUsername = async (emailOrUsername: string): Promise<string | null> => {
-  // Input validation
+  // Input validation and sanitization
   if (!emailOrUsername || emailOrUsername.length < 3) {
     throw new Error("Invalid email or username format");
   }
 
-  // Sanitize input
-  const sanitizedInput = emailOrUsername.trim();
+  // Sanitize input to prevent XSS
+  const sanitizedInput = emailOrUsername.trim().toLowerCase().replace(/[<>]/g, '');
 
   try {
-    // Try to find by username in profiles (more reliable than email lookup)
+    // Try to find by username in profiles
     const { data: userByUsername } = await supabase
       .from("profiles")
       .select("id")

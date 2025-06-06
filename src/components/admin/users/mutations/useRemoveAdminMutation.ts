@@ -2,20 +2,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { checkCurrentUserIsSuperAdmin, logAdminOperation } from "../utils/secureAdminUtils";
+import { logAdminOperation, validateAdminMutation } from "../utils/secureAdminUtils";
 
 export const useRemoveAdminMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (userId: string) => {
-      // Check if current user is super_admin before allowing removal
-      const { data: session } = await supabase.auth.getSession();
-      if (!session?.session?.user) {
-        throw new Error("You must be logged in to remove admins");
-      }
-      
-      const isCurrentUserSuperAdmin = await checkCurrentUserIsSuperAdmin();
+      // Validate the admin mutation
+      await validateAdminMutation(userId, "remove");
       
       // Check if target user is super_admin
       const { data: targetUserRole } = await supabase
@@ -25,19 +20,8 @@ export const useRemoveAdminMutation = () => {
         .maybeSingle();
         
       if (targetUserRole?.role === "super_admin") {
-        await logAdminOperation("remove_attempt", userId, "super_admin", false);
+        await logAdminOperation("remove_attempt", userId, "super_admin", false, { reason: "cannot_remove_super_admin" });
         throw new Error("Super admins cannot be removed");
-      }
-      
-      if (!isCurrentUserSuperAdmin) {
-        await logAdminOperation("remove_attempt", userId, targetUserRole?.role || "unknown", false);
-        throw new Error("Only super admins can remove other admins");
-      }
-
-      // Prevent self-removal
-      if (session.session.user.id === userId) {
-        await logAdminOperation("remove_attempt", userId, targetUserRole?.role || "unknown", false);
-        throw new Error("You cannot remove your own admin role");
       }
 
       const { error } = await supabase
@@ -46,7 +30,7 @@ export const useRemoveAdminMutation = () => {
         .eq("user_id", userId);
 
       if (error) {
-        await logAdminOperation("remove", userId, targetUserRole?.role || "unknown", false);
+        await logAdminOperation("remove", userId, targetUserRole?.role || "unknown", false, { error: error.message });
         throw error;
       }
 
