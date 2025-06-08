@@ -2,22 +2,20 @@
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/Icons";
 import { useToast } from "@/hooks/use-toast";
-import { Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
-import { sendWelcomeNotification } from "@/services/notificationService";
 
 interface SocialButtonsProps {
-  onPhoneAuth: () => void;
+  isLoading: boolean;
 }
 
-export const SocialButtons = ({ onPhoneAuth }: SocialButtonsProps) => {
+export const SocialButtons = ({ isLoading }: SocialButtonsProps) => {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
     try {
-      setIsLoading(true);
+      setIsGoogleLoading(true);
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -33,7 +31,7 @@ export const SocialButtons = ({ onPhoneAuth }: SocialButtonsProps) => {
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setIsGoogleLoading(false);
     }
   };
 
@@ -43,22 +41,14 @@ export const SocialButtons = ({ onPhoneAuth }: SocialButtonsProps) => {
         className="w-full"
         variant="outline"
         onClick={handleGoogleSignIn}
-        disabled={isLoading}
+        disabled={isLoading || isGoogleLoading}
       >
-        {isLoading ? (
+        {isGoogleLoading ? (
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
         ) : (
           <Icons.google className="mr-2 h-4 w-4" />
         )}
         Continue with Google
-      </Button>
-      <Button
-        className="w-full"
-        variant="outline"
-        onClick={onPhoneAuth}
-      >
-        <Phone className="mr-2 h-4 w-4" />
-        Continue with Phone
       </Button>
     </div>
   );
