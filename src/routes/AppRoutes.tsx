@@ -9,6 +9,7 @@ import Testimonials from "@/pages/Testimonials";
 import FAQ from "@/pages/FAQ";
 import Contact from "@/pages/Contact";
 import Auth from "@/pages/Auth";
+import ResetPassword from "@/pages/ResetPassword";
 import AuthCallback from "@/pages/AuthCallback";
 import Marketplace from "@/pages/Marketplace";
 import NotFound from "@/pages/NotFound";
@@ -43,6 +44,7 @@ export const AppRoutes = () => {
       <Route path="/faq" element={<FAQ />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/auth" element={<Auth />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/marketplace" element={<Marketplace />} />
 
