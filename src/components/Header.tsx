@@ -7,7 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "./header/ThemeToggle";
 import { UserMenu } from "./header/UserMenu";
 import { EnhancedNotificationCenter } from "@/components/notifications/EnhancedNotificationCenter";
-import { ResponsiveNavigation } from "./ResponsiveNavigation";
+import { MainNavigationMenu } from "./navigation/NavigationMenu";
+import { MobileNavigationMenu } from "./navigation/MobileNavigationMenu";
 import { useResponsive } from "@/hooks/useResponsive";
 
 export const Header = () => {
@@ -54,40 +55,6 @@ export const Header = () => {
     enabled: !!session?.user?.id,
   });
 
-  // Main navigation items - only include valid routes
-  const mainNav = [
-    {
-      title: "Home",
-      href: "/",
-    },
-    {
-      title: "Features",
-      href: "/features",
-    },
-    {
-      title: "Create",
-      href: "/create",
-    },
-    {
-      title: "Marketplace",
-      href: "/marketplace",
-    },
-  ];
-
-  // Add authenticated user routes
-  if (session?.user) {
-    mainNav.push(
-      {
-        title: "Dashboard",
-        href: "/dashboard",
-      },
-      {
-        title: "Subscription",
-        href: "/subscription",
-      }
-    );
-  }
-
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
@@ -102,6 +69,7 @@ export const Header = () => {
     <>
       <header className="fixed top-0 w-full z-50 glass-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between max-w-7xl">
+          {/* Logo */}
           <div className="flex items-center">
             <button 
               className="bg-transparent text-primary border border-primary px-4 py-2 text-xl font-bold rounded-md hover:bg-primary/10 transition-all duration-200 hover:shadow-sm hover:shadow-primary/20 active:scale-95" 
@@ -113,9 +81,14 @@ export const Header = () => {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center justify-center flex-1">
-            <ResponsiveNavigation items={mainNav} />
+            <MainNavigationMenu 
+              user={session?.user || null}
+              profile={profile}
+              onShowAuthDialog={() => setShowAuthDialog(true)}
+            />
           </div>
           
+          {/* Right side controls */}
           <div className="flex items-center gap-3">
             <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
             
@@ -123,6 +96,7 @@ export const Header = () => {
               <EnhancedNotificationCenter />
             )}
             
+            {/* Desktop User Menu */}
             <div className={isAtLeast('sm') ? 'block' : 'hidden'}>
               <UserMenu 
                 session={session} 
@@ -133,7 +107,11 @@ export const Header = () => {
             
             {/* Mobile navigation */}
             <div className="md:hidden">
-              <ResponsiveNavigation items={mainNav} />
+              <MobileNavigationMenu 
+                user={session?.user || null}
+                profile={profile}
+                onShowAuthDialog={() => setShowAuthDialog(true)}
+              />
             </div>
           </div>
         </div>
