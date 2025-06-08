@@ -45,12 +45,35 @@ export const Header = () => {
     queryKey: ['profile', session?.user?.id],
     queryFn: async () => {
       if (!session?.user?.id) return null;
-      const { data } = await supabase
+      
+      // Get basic profile data
+      const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', session.user.id)
         .single();
-      return data;
+
+      if (!profileData) return null;
+
+      // Check if user is a manufacturer
+      const { data: manufacturerData } = await supabase
+        .from('manufacturers')
+        .select('id')
+        .eq('id', session.user.id)
+        .single();
+
+      // Check if user is an admin
+      const { data: adminData } = await supabase
+        .from('admin_roles')
+        .select('role')
+        .eq('user_id', session.user.id)
+        .single();
+
+      return {
+        ...profileData,
+        is_manufacturer: !!manufacturerData,
+        is_admin: !!adminData
+      };
     },
     enabled: !!session?.user?.id,
   });
