@@ -15,6 +15,8 @@ export interface Profile {
   updated_at: string | null
   is_creator: boolean | null
   is_artisan: boolean | null
+  is_manufacturer: boolean | null
+  is_admin: boolean | null
   address: string | null
   bio: string | null
   business_name: string | null
