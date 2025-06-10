@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthDialog } from "./auth/AuthDialog";
@@ -10,6 +9,8 @@ import { EnhancedNotificationCenter } from "@/components/notifications/EnhancedN
 import { MainNavigationMenu } from "./navigation/NavigationMenu";
 import { MobileNavigationMenu } from "./navigation/MobileNavigationMenu";
 import { useResponsive } from "@/hooks/useResponsive";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export const Header = () => {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const { isAtLeast } = useResponsive();
+  const { t } = useTranslation('common');
 
   // Set up auth state listener
   useEffect(() => {
@@ -113,6 +115,7 @@ export const Header = () => {
           
           {/* Right side controls */}
           <div className="flex items-center gap-3">
+            <LanguageSwitcher />
             <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
             
             {session?.user && (

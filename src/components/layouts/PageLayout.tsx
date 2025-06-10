@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
+import { useTranslation } from "react-i18next";
 
 interface BreadcrumbItem {
   title: string;
@@ -26,6 +27,8 @@ export const PageLayout = ({
   showBreadcrumbs = true,
   className = "" 
 }: PageLayoutProps) => {
+  const { t } = useTranslation('common');
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />

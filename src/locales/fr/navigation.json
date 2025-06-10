@@ -1,0 +1,83 @@
+
+{
+  "main": {
+    "home": "Accueil",
+    "features": "Fonctionnalités",
+    "marketplace": "Marché",
+    "create": "Créer",
+    "pricing": "Tarifs",
+    "about": "À propos",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "testimonials": "Témoignages"
+  },
+  "explore": {
+    "title": "Explorer",
+    "features": "Fonctionnalités",
+    "marketplace": "Marché",
+    "create": "Créer",
+    "subscription": "Tarifs"
+  },
+  "createManage": {
+    "title": "Créer et Gérer",
+    "dashboard": "Tableau de bord",
+    "designs": "Mes créations",
+    "orders": "Commandes",
+    "notifications": "Notifications"
+  },
+  "professionalTools": {
+    "title": "Outils Professionnels",
+    "crm": "CRM",
+    "creatorTools": "Outils Créateur",
+    "artisanHub": "Hub Artisan",
+    "manufacturing": "Fabrication"
+  },
+  "creators": {
+    "title": "Créateurs",
+    "dashboard": "Tableau de bord Créateur",
+    "onboarding": "Devenir Créateur",
+    "education": "Formation Créateur",
+    "analytics": "Analyses Créateur"
+  },
+  "artisans": {
+    "title": "Artisans",
+    "dashboard": "Tableau de bord Artisan",
+    "onboarding": "Devenir Artisan",
+    "portfolio": "Mon Portfolio",
+    "quotes": "Demandes de Devis"
+  },
+  "manufacturers": {
+    "title": "Fabricants",
+    "dashboard": "Tableau de bord Fabricant",
+    "onboarding": "Devenir Fabricant",
+    "orders": "Commandes de Fabrication",
+    "categories": "Catégories"
+  },
+  "admin": {
+    "title": "Administration",
+    "dashboard": "Tableau de bord Admin",
+    "users": "Gestion Utilisateurs",
+    "content": "Gestion Contenu",
+    "analytics": "Analyses"
+  },
+  "account": {
+    "myDesigns": "Mes créations",
+    "orders": "Commandes",
+    "notifications": "Notifications",
+    "settings": "Paramètres",
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire"
+  },
+  "community": {
+    "testimonials": "Témoignages",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "dashboard": "Tableau de bord"
+  },
+  "platform": {
+    "features": "Fonctionnalités",
+    "marketplace": "Marché",
+    "create": "Créer",
+    "pricing": "Tarifs"
+  }
+}

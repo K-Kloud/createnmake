@@ -1,0 +1,83 @@
+
+{
+  "main": {
+    "home": "Home",
+    "features": "Features",
+    "marketplace": "Marketplace",
+    "create": "Create",
+    "pricing": "Pricing",
+    "about": "About",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "testimonials": "Testimonials"
+  },
+  "explore": {
+    "title": "Explore",
+    "features": "Features",
+    "marketplace": "Marketplace",
+    "create": "Create",
+    "subscription": "Pricing"
+  },
+  "createManage": {
+    "title": "Create & Manage",
+    "dashboard": "Dashboard",
+    "designs": "My Designs",
+    "orders": "Orders",
+    "notifications": "Notifications"
+  },
+  "professionalTools": {
+    "title": "Professional Tools",
+    "crm": "CRM",
+    "creatorTools": "Creator Tools",
+    "artisanHub": "Artisan Hub",
+    "manufacturing": "Manufacturing"
+  },
+  "creators": {
+    "title": "Creators",
+    "dashboard": "Creator Dashboard",
+    "onboarding": "Become a Creator",
+    "education": "Creator Education",
+    "analytics": "Creator Analytics"
+  },
+  "artisans": {
+    "title": "Artisans",
+    "dashboard": "Artisan Dashboard",
+    "onboarding": "Become an Artisan",
+    "portfolio": "My Portfolio",
+    "quotes": "Quote Requests"
+  },
+  "manufacturers": {
+    "title": "Manufacturers",
+    "dashboard": "Manufacturer Dashboard",
+    "onboarding": "Become a Manufacturer",
+    "orders": "Manufacturing Orders",
+    "categories": "Categories"
+  },
+  "admin": {
+    "title": "Administration",
+    "dashboard": "Admin Dashboard",
+    "users": "User Management",
+    "content": "Content Management",
+    "analytics": "Analytics"
+  },
+  "account": {
+    "myDesigns": "My Designs",
+    "orders": "Orders",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "signIn": "Sign In",
+    "signUp": "Sign Up"
+  },
+  "community": {
+    "testimonials": "Testimonials",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "dashboard": "Dashboard"
+  },
+  "platform": {
+    "features": "Features",
+    "marketplace": "Marketplace",
+    "create": "Create",
+    "pricing": "Pricing"
+  }
+}

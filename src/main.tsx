@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "./index.css";
 import "./App.css";
+import "./lib/i18n"; // Import i18n configuration
 
 // Create a client
 const queryClient = new QueryClient({

@@ -1,0 +1,66 @@
+
+{
+  "titles": {
+    "dashboard": "Tableau de bord",
+    "myDashboard": "Mon tableau de bord",
+    "overview": "Aperçu",
+    "stats": "Statistiques",
+    "quickActions": "Actions rapides",
+    "recentActivity": "Activité récente"
+  },
+  "stats": {
+    "totalDesigns": "Total des créations",
+    "totalEarnings": "Gains totaux",
+    "totalOrders": "Total des commandes",
+    "totalProducts": "Total des produits",
+    "thisMonth": "Ce mois",
+    "lastMonth": "Mois dernier",
+    "growth": "Croissance",
+    "views": "Vues",
+    "likes": "J'aime",
+    "downloads": "Téléchargements"
+  },
+  "tabs": {
+    "overview": "Aperçu",
+    "designs": "Créations",
+    "orders": "Commandes",
+    "earnings": "Gains",
+    "products": "Produits"
+  },
+  "actions": {
+    "createDesign": "Créer une nouvelle création",
+    "viewMarketplace": "Voir le marché",
+    "manageOrders": "Gérer les commandes",
+    "updateProfile": "Mettre à jour le profil",
+    "viewAnalytics": "Voir les analyses",
+    "exportData": "Exporter les données"
+  },
+  "orders": {
+    "noOrders": "Aucune commande pour le moment",
+    "exploreMarketplace": "Explorer le marché",
+    "orderNumber": "Commande #",
+    "status": "Statut",
+    "date": "Date",
+    "total": "Total",
+    "pending": "En attente",
+    "processing": "En cours",
+    "completed": "Terminé",
+    "cancelled": "Annulé"
+  },
+  "earnings": {
+    "totalEarnings": "Gains totaux",
+    "monthlyEarnings": "Gains mensuels",
+    "dailyAverage": "Moyenne quotidienne",
+    "topPerforming": "Meilleure performance",
+    "revenueGrowth": "Croissance du chiffre d'affaires"
+  },
+  "profile": {
+    "welcome": "Bienvenue",
+    "editProfile": "Modifier le profil",
+    "viewProfile": "Voir le profil",
+    "profilePicture": "Photo de profil",
+    "personalInfo": "Informations personnelles",
+    "contactInfo": "Informations de contact",
+    "preferences": "Préférences"
+  }
+}

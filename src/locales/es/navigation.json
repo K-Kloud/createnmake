@@ -1,0 +1,83 @@
+
+{
+  "main": {
+    "home": "Inicio",
+    "features": "Características",
+    "marketplace": "Mercado",
+    "create": "Crear",
+    "pricing": "Precios",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "faq": "Preguntas frecuentes",
+    "testimonials": "Testimonios"
+  },
+  "explore": {
+    "title": "Explorar",
+    "features": "Características",
+    "marketplace": "Mercado",
+    "create": "Crear",
+    "subscription": "Precios"
+  },
+  "createManage": {
+    "title": "Crear y Gestionar",
+    "dashboard": "Panel de control",
+    "designs": "Mis diseños",
+    "orders": "Pedidos",
+    "notifications": "Notificaciones"
+  },
+  "professionalTools": {
+    "title": "Herramientas Profesionales",
+    "crm": "CRM",
+    "creatorTools": "Herramientas de Creador",
+    "artisanHub": "Centro de Artesanos",
+    "manufacturing": "Fabricación"
+  },
+  "creators": {
+    "title": "Creadores",
+    "dashboard": "Panel de Creador",
+    "onboarding": "Ser Creador",
+    "education": "Educación para Creadores",
+    "analytics": "Analíticas de Creador"
+  },
+  "artisans": {
+    "title": "Artesanos",
+    "dashboard": "Panel de Artesano",
+    "onboarding": "Ser Artesano",
+    "portfolio": "Mi Portafolio",
+    "quotes": "Solicitudes de Cotización"
+  },
+  "manufacturers": {
+    "title": "Fabricantes",
+    "dashboard": "Panel de Fabricante",
+    "onboarding": "Ser Fabricante",
+    "orders": "Órdenes de Fabricación",
+    "categories": "Categorías"
+  },
+  "admin": {
+    "title": "Administración",
+    "dashboard": "Panel de Administración",
+    "users": "Gestión de Usuarios",
+    "content": "Gestión de Contenido",
+    "analytics": "Analíticas"
+  },
+  "account": {
+    "myDesigns": "Mis diseños",
+    "orders": "Pedidos",
+    "notifications": "Notificaciones",
+    "settings": "Configuración",
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse"
+  },
+  "community": {
+    "testimonials": "Testimonios",
+    "faq": "Preguntas frecuentes",
+    "contact": "Contacto",
+    "dashboard": "Panel de control"
+  },
+  "platform": {
+    "features": "Características",
+    "marketplace": "Mercado",
+    "create": "Crear",
+    "pricing": "Precios"
+  }
+}

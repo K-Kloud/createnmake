@@ -3,6 +3,7 @@ import { Hero } from "@/components/Hero";
 import { Suspense, lazy, useEffect } from "react";
 import { addStructuredData } from "@/utils/seo";
 import { MainLayout } from "@/components/layouts/MainLayout";
+import { useTranslation } from "react-i18next";
 
 // Lazy load non-critical components
 const ImageGenerator = lazy(() => import("@/components/ImageGenerator").then(module => ({ default: module.ImageGenerator })));
@@ -10,6 +11,8 @@ const OpenMarketSection = lazy(() => import("@/components/OpenMarketSection").th
 const ChatBot = lazy(() => import("@/components/ChatBot").then(module => ({ default: module.ChatBot })));
 
 const Index = () => {
+  const { t } = useTranslation('common');
+
   // Add structured data for SEO
   useEffect(() => {
     const cleanup = addStructuredData('Organization', {
@@ -37,7 +40,7 @@ const Index = () => {
     >
       <Hero />
       <div className="container px-4 py-16">
-        <Suspense fallback={<div className="h-64 w-full flex items-center justify-center">Loading generator...</div>}>
+        <Suspense fallback={<div className="h-64 w-full flex items-center justify-center">{t('common.loading')}</div>}>
           <div className="image-generator">
             <ImageGenerator />
           </div>

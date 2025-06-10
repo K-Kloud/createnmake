@@ -1,0 +1,66 @@
+
+{
+  "titles": {
+    "dashboard": "Dashboard",
+    "myDashboard": "My Dashboard",
+    "overview": "Overview",
+    "stats": "Statistics",
+    "quickActions": "Quick Actions",
+    "recentActivity": "Recent Activity"
+  },
+  "stats": {
+    "totalDesigns": "Total Designs",
+    "totalEarnings": "Total Earnings",
+    "totalOrders": "Total Orders",
+    "totalProducts": "Total Products",
+    "thisMonth": "This Month",
+    "lastMonth": "Last Month",
+    "growth": "Growth",
+    "views": "Views",
+    "likes": "Likes",
+    "downloads": "Downloads"
+  },
+  "tabs": {
+    "overview": "Overview",
+    "designs": "Designs",
+    "orders": "Orders",
+    "earnings": "Earnings",
+    "products": "Products"
+  },
+  "actions": {
+    "createDesign": "Create New Design",
+    "viewMarketplace": "View Marketplace",
+    "manageOrders": "Manage Orders",
+    "updateProfile": "Update Profile",
+    "viewAnalytics": "View Analytics",
+    "exportData": "Export Data"
+  },
+  "orders": {
+    "noOrders": "No orders yet",
+    "exploreMarketplace": "Explore marketplace",
+    "orderNumber": "Order #",
+    "status": "Status",
+    "date": "Date",
+    "total": "Total",
+    "pending": "Pending",
+    "processing": "Processing",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "earnings": {
+    "totalEarnings": "Total Earnings",
+    "monthlyEarnings": "Monthly Earnings",
+    "dailyAverage": "Daily Average",
+    "topPerforming": "Top Performing",
+    "revenueGrowth": "Revenue Growth"
+  },
+  "profile": {
+    "welcome": "Welcome",
+    "editProfile": "Edit Profile",
+    "viewProfile": "View Profile",
+    "profilePicture": "Profile Picture",
+    "personalInfo": "Personal Information",
+    "contactInfo": "Contact Information",
+    "preferences": "Preferences"
+  }
+}

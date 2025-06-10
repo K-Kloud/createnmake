@@ -2,8 +2,11 @@
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const NotFound = () => {
+  const { t } = useTranslation(['common', 'navigation']);
+
   return (
     <MainLayout
       seo={{
@@ -20,10 +23,10 @@ const NotFound = () => {
           </p>
           <div className="space-y-4">
             <Button asChild className="w-full">
-              <Link to="/">Return to Home</Link>
+              <Link to="/">{t('navigation:main.home')}</Link>
             </Button>
             <Button variant="outline" asChild className="w-full">
-              <Link to="/create">Create New Design</Link>
+              <Link to="/create">{t('navigation:main.create')}</Link>
             </Button>
           </div>
         </div>
