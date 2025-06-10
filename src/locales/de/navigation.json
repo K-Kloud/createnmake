@@ -1,0 +1,109 @@
+
+{
+  "main": {
+    "home": "Startseite",
+    "features": "Funktionen",
+    "marketplace": "Marktplatz",
+    "create": "Erstellen",
+    "pricing": "Preise",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "faq": "FAQ",
+    "testimonials": "Testimonials",
+    "navigation": "Navigation"
+  },
+  "explore": {
+    "title": "Entdecken",
+    "features": "Funktionen",
+    "marketplace": "Marktplatz",
+    "create": "Erstellen",
+    "subscription": "Preise"
+  },
+  "createManage": {
+    "title": "Erstellen & Verwalten",
+    "dashboard": "Dashboard",
+    "designs": "Meine Designs",
+    "orders": "Bestellungen",
+    "notifications": "Benachrichtigungen"
+  },
+  "professionalTools": {
+    "title": "Professionelle Tools",
+    "crm": "CRM",
+    "creatorTools": "Creator-Tools",
+    "artisanHub": "Handwerker-Hub",
+    "manufacturing": "Fertigung"
+  },
+  "creators": {
+    "title": "Ersteller",
+    "dashboard": "Ersteller-Dashboard",
+    "onboarding": "Ersteller werden",
+    "education": "Ersteller-Bildung",
+    "analytics": "Ersteller-Analytik"
+  },
+  "artisans": {
+    "title": "Handwerker",
+    "dashboard": "Handwerker-Dashboard",
+    "onboarding": "Handwerker werden",
+    "portfolio": "Mein Portfolio",
+    "quotes": "Angebotanfragen"
+  },
+  "manufacturers": {
+    "title": "Hersteller",
+    "dashboard": "Hersteller-Dashboard",
+    "onboarding": "Hersteller werden",
+    "orders": "Fertigungsaufträge",
+    "categories": "Kategorien"
+  },
+  "crm": {
+    "title": "CRM",
+    "dashboard": "CRM-Dashboard",
+    "contacts": "Kontakte",
+    "tasks": "Aufgaben",
+    "calendar": "Kalender",
+    "analytics": "Analytik",
+    "communications": "Kommunikation"
+  },
+  "creator": {
+    "title": "Ersteller",
+    "dashboard": "Ersteller-Dashboard",
+    "onboarding": "Ersteller-Onboarding"
+  },
+  "artisan": {
+    "title": "Handwerker",
+    "dashboard": "Handwerker-Dashboard",
+    "onboarding": "Handwerker-Onboarding"
+  },
+  "manufacturer": {
+    "title": "Hersteller",
+    "dashboard": "Hersteller-Dashboard",
+    "onboarding": "Hersteller-Onboarding"
+  },
+  "admin": {
+    "title": "Administration",
+    "dashboard": "Admin-Dashboard",
+    "users": "Benutzerverwaltung",
+    "content": "Inhaltsverwaltung",
+    "analytics": "Analytik"
+  },
+  "account": {
+    "myDesigns": "Meine Designs",
+    "orders": "Bestellungen",
+    "notifications": "Benachrichtigungen",
+    "settings": "Einstellungen",
+    "signIn": "Anmelden",
+    "signUp": "Registrieren",
+    "myAccount": "Mein Konto"
+  },
+  "community": {
+    "testimonials": "Testimonials",
+    "faq": "FAQ",
+    "contact": "Kontakt",
+    "dashboard": "Dashboard"
+  },
+  "platform": {
+    "features": "Funktionen",
+    "marketplace": "Marktplatz",
+    "create": "Erstellen",
+    "pricing": "Preise"
+  }
+}

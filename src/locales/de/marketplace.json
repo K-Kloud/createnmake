@@ -1,0 +1,45 @@
+
+{
+  "title": "Marktplatz",
+  "search": "Designs durchsuchen...",
+  "filters": {
+    "all": "Alle",
+    "categories": "Kategorien",
+    "priceRange": "Preisbereich",
+    "sortBy": "Sortieren nach",
+    "newest": "Neueste",
+    "popular": "Beliebt",
+    "priceAsc": "Preis: Niedrig zu Hoch",
+    "priceDesc": "Preis: Hoch zu Niedrig"
+  },
+  "categories": {
+    "all": "Alle Kategorien",
+    "fashion": "Mode",
+    "accessories": "Accessoires",
+    "home": "Zuhause",
+    "art": "Kunst",
+    "tech": "Technologie"
+  },
+  "actions": {
+    "like": "Gefällt mir",
+    "unlike": "Gefällt mir nicht mehr",
+    "share": "Teilen",
+    "purchase": "Kaufen",
+    "addToCart": "In den Warenkorb",
+    "viewDetails": "Details anzeigen"
+  },
+  "product": {
+    "description": "Beschreibung",
+    "price": "Preis",
+    "creator": "Ersteller",
+    "tags": "Tags",
+    "reviews": "Bewertungen",
+    "specifications": "Spezifikationen"
+  },
+  "messages": {
+    "noResults": "Keine Designs gefunden",
+    "tryDifferentSearch": "Versuchen Sie einen anderen Suchbegriff",
+    "loadingMore": "Weitere laden...",
+    "endOfResults": "Ende der Ergebnisse erreicht"
+  }
+}

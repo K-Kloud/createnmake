@@ -1,0 +1,109 @@
+
+{
+  "main": {
+    "home": "Home",
+    "features": "Funzionalità",
+    "marketplace": "Mercato",
+    "create": "Crea",
+    "pricing": "Prezzi",
+    "about": "Chi siamo",
+    "contact": "Contatto",
+    "faq": "FAQ",
+    "testimonials": "Testimonianze",
+    "navigation": "Navigazione"
+  },
+  "explore": {
+    "title": "Esplora",
+    "features": "Funzionalità",
+    "marketplace": "Mercato",
+    "create": "Crea",
+    "subscription": "Prezzi"
+  },
+  "createManage": {
+    "title": "Crea e Gestisci",
+    "dashboard": "Dashboard",
+    "designs": "I miei Design",
+    "orders": "Ordini",
+    "notifications": "Notifiche"
+  },
+  "professionalTools": {
+    "title": "Strumenti Professionali",
+    "crm": "CRM",
+    "creatorTools": "Strumenti Creator",
+    "artisanHub": "Hub Artigiano",
+    "manufacturing": "Produzione"
+  },
+  "creators": {
+    "title": "Creatori",
+    "dashboard": "Dashboard Creator",
+    "onboarding": "Diventa Creator",
+    "education": "Educazione Creator",
+    "analytics": "Analytics Creator"
+  },
+  "artisans": {
+    "title": "Artigiani",
+    "dashboard": "Dashboard Artigiano",
+    "onboarding": "Diventa Artigiano",
+    "portfolio": "Il mio Portfolio",
+    "quotes": "Richieste Preventivo"
+  },
+  "manufacturers": {
+    "title": "Produttori",
+    "dashboard": "Dashboard Produttore",
+    "onboarding": "Diventa Produttore",
+    "orders": "Ordini di Produzione",
+    "categories": "Categorie"
+  },
+  "crm": {
+    "title": "CRM",
+    "dashboard": "Dashboard CRM",
+    "contacts": "Contatti",
+    "tasks": "Attività",
+    "calendar": "Calendario",
+    "analytics": "Analytics",
+    "communications": "Comunicazioni"
+  },
+  "creator": {
+    "title": "Creator",
+    "dashboard": "Dashboard Creator",
+    "onboarding": "Onboarding Creator"
+  },
+  "artisan": {
+    "title": "Artigiano",
+    "dashboard": "Dashboard Artigiano",
+    "onboarding": "Onboarding Artigiano"
+  },
+  "manufacturer": {
+    "title": "Produttore",
+    "dashboard": "Dashboard Produttore",
+    "onboarding": "Onboarding Produttore"
+  },
+  "admin": {
+    "title": "Amministrazione",
+    "dashboard": "Dashboard Admin",
+    "users": "Gestione Utenti",
+    "content": "Gestione Contenuti",
+    "analytics": "Analytics"
+  },
+  "account": {
+    "myDesigns": "I miei Design",
+    "orders": "Ordini",
+    "notifications": "Notifiche",
+    "settings": "Impostazioni",
+    "signIn": "Accedi",
+    "signUp": "Registrati",
+    "myAccount": "Il mio Account"
+  },
+  "community": {
+    "testimonials": "Testimonianze",
+    "faq": "FAQ",
+    "contact": "Contatto",
+    "dashboard": "Dashboard"
+  },
+  "platform": {
+    "features": "Funzionalità",
+    "marketplace": "Mercato",
+    "create": "Crea",
+    "pricing": "Prezzi"
+  }
+}

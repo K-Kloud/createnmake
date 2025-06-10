@@ -1,0 +1,35 @@
+
+{
+  "title": "ダッシュボード",
+  "welcome": "おかえりなさい",
+  "overview": "概要",
+  "stats": {
+    "totalDesigns": "総デザイン数",
+    "totalViews": "総閲覧数",
+    "totalLikes": "総いいね数",
+    "totalSales": "総売上",
+    "earnings": "収益",
+    "orders": "注文"
+  },
+  "quickActions": {
+    "title": "クイックアクション",
+    "createDesign": "デザイン作成",
+    "viewMarketplace": "マーケットプレイス表示",
+    "manageOrders": "注文管理",
+    "viewProfile": "プロフィール表示"
+  },
+  "recentActivity": {
+    "title": "最近のアクティビティ",
+    "noActivity": "最近のアクティビティはありません"
+  },
+  "designs": {
+    "title": "マイデザイン",
+    "noDesigns": "まだデザインを作成していません",
+    "createFirst": "最初のデザインを作成"
+  },
+  "orders": {
+    "title": "注文",
+    "noOrders": "まだ注文はありません",
+    "exploreMarketplace": "マーケットプレイスを探索"
+  }
+}

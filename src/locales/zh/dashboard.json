@@ -1,0 +1,35 @@
+
+{
+  "title": "仪表板",
+  "welcome": "欢迎回来",
+  "overview": "概览",
+  "stats": {
+    "totalDesigns": "总设计数",
+    "totalViews": "总浏览量",
+    "totalLikes": "总点赞数",
+    "totalSales": "总销售额",
+    "earnings": "收益",
+    "orders": "订单"
+  },
+  "quickActions": {
+    "title": "快速操作",
+    "createDesign": "创建设计",
+    "viewMarketplace": "查看市场",
+    "manageOrders": "管理订单",
+    "viewProfile": "查看个人资料"
+  },
+  "recentActivity": {
+    "title": "最近活动",
+    "noActivity": "暂无最近活动"
+  },
+  "designs": {
+    "title": "我的设计",
+    "noDesigns": "您还没有创建任何设计",
+    "createFirst": "创建您的第一个设计"
+  },
+  "orders": {
+    "title": "订单",
+    "noOrders": "您还没有任何订单",
+    "exploreMarketplace": "探索市场"
+  }
+}

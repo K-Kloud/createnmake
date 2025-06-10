@@ -1,0 +1,109 @@
+
+{
+  "main": {
+    "home": "ホーム",
+    "features": "機能",
+    "marketplace": "マーケットプレイス",
+    "create": "作成",
+    "pricing": "料金",
+    "about": "会社概要",
+    "contact": "お問い合わせ",
+    "faq": "よくある質問",
+    "testimonials": "お客様の声",
+    "navigation": "ナビゲーション"
+  },
+  "explore": {
+    "title": "探索",
+    "features": "機能",
+    "marketplace": "マーケットプレイス",
+    "create": "作成",
+    "subscription": "料金"
+  },
+  "createManage": {
+    "title": "作成・管理",
+    "dashboard": "ダッシュボード",
+    "designs": "マイデザイン",
+    "orders": "注文",
+    "notifications": "通知"
+  },
+  "professionalTools": {
+    "title": "プロツール",
+    "crm": "CRM",
+    "creatorTools": "クリエイターツール",
+    "artisanHub": "職人ハブ",
+    "manufacturing": "製造"
+  },
+  "creators": {
+    "title": "クリエイター",
+    "dashboard": "クリエイターダッシュボード",
+    "onboarding": "クリエイターになる",
+    "education": "クリエイター教育",
+    "analytics": "クリエイター分析"
+  },
+  "artisans": {
+    "title": "職人",
+    "dashboard": "職人ダッシュボード",
+    "onboarding": "職人になる",
+    "portfolio": "マイポートフォリオ",
+    "quotes": "見積依頼"
+  },
+  "manufacturers": {
+    "title": "製造業者",
+    "dashboard": "製造業者ダッシュボード",
+    "onboarding": "製造業者になる",
+    "orders": "製造注文",
+    "categories": "カテゴリ"
+  },
+  "crm": {
+    "title": "CRM",
+    "dashboard": "CRMダッシュボード",
+    "contacts": "連絡先",
+    "tasks": "タスク",
+    "calendar": "カレンダー",
+    "analytics": "分析",
+    "communications": "コミュニケーション"
+  },
+  "creator": {
+    "title": "クリエイター",
+    "dashboard": "クリエイターダッシュボード",
+    "onboarding": "クリエイターオンボーディング"
+  },
+  "artisan": {
+    "title": "職人",
+    "dashboard": "職人ダッシュボード",
+    "onboarding": "職人オンボーディング"
+  },
+  "manufacturer": {
+    "title": "製造業者",
+    "dashboard": "製造業者ダッシュボード",
+    "onboarding": "製造業者オンボーディング"
+  },
+  "admin": {
+    "title": "管理",
+    "dashboard": "管理ダッシュボード",
+    "users": "ユーザー管理",
+    "content": "コンテンツ管理",
+    "analytics": "分析"
+  },
+  "account": {
+    "myDesigns": "マイデザイン",
+    "orders": "注文",
+    "notifications": "通知",
+    "settings": "設定",
+    "signIn": "ログイン",
+    "signUp": "サインアップ",
+    "myAccount": "マイアカウント"
+  },
+  "community": {
+    "testimonials": "お客様の声",
+    "faq": "よくある質問",
+    "contact": "お問い合わせ",
+    "dashboard": "ダッシュボード"
+  },
+  "platform": {
+    "features": "機能",
+    "marketplace": "マーケットプレイス",
+    "create": "作成",
+    "pricing": "料金"
+  }
+}

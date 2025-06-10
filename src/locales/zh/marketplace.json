@@ -1,0 +1,45 @@
+
+{
+  "title": "市场",
+  "search": "搜索设计...",
+  "filters": {
+    "all": "全部",
+    "categories": "分类",
+    "priceRange": "价格范围",
+    "sortBy": "排序方式",
+    "newest": "最新",
+    "popular": "热门",
+    "priceAsc": "价格：低到高",
+    "priceDesc": "价格：高到低"
+  },
+  "categories": {
+    "all": "所有分类",
+    "fashion": "时尚",
+    "accessories": "配饰",
+    "home": "家居",
+    "art": "艺术",
+    "tech": "科技"
+  },
+  "actions": {
+    "like": "点赞",
+    "unlike": "取消点赞",
+    "share": "分享",
+    "purchase": "购买",
+    "addToCart": "加入购物车",
+    "viewDetails": "查看详情"
+  },
+  "product": {
+    "description": "描述",
+    "price": "价格",
+    "creator": "创作者",
+    "tags": "标签",
+    "reviews": "评价",
+    "specifications": "规格"
+  },
+  "messages": {
+    "noResults": "未找到设计",
+    "tryDifferentSearch": "尝试不同的搜索",
+    "loadingMore": "加载更多...",
+    "endOfResults": "已到最后"
+  }
+}

@@ -1,0 +1,109 @@
+
+{
+  "main": {
+    "home": "首页",
+    "features": "功能特色",
+    "marketplace": "市场",
+    "create": "创建",
+    "pricing": "定价",
+    "about": "关于我们",
+    "contact": "联系我们",
+    "faq": "常见问题",
+    "testimonials": "用户评价",
+    "navigation": "导航"
+  },
+  "explore": {
+    "title": "探索",
+    "features": "功能特色",
+    "marketplace": "市场",
+    "create": "创建",
+    "subscription": "定价"
+  },
+  "createManage": {
+    "title": "创建和管理",
+    "dashboard": "仪表板",
+    "designs": "我的设计",
+    "orders": "订单",
+    "notifications": "通知"
+  },
+  "professionalTools": {
+    "title": "专业工具",
+    "crm": "客户关系管理",
+    "creatorTools": "创作者工具",
+    "artisanHub": "工匠中心",
+    "manufacturing": "制造"
+  },
+  "creators": {
+    "title": "创作者",
+    "dashboard": "创作者仪表板",
+    "onboarding": "成为创作者",
+    "education": "创作者教育",
+    "analytics": "创作者分析"
+  },
+  "artisans": {
+    "title": "工匠",
+    "dashboard": "工匠仪表板",
+    "onboarding": "成为工匠",
+    "portfolio": "我的作品集",
+    "quotes": "报价请求"
+  },
+  "manufacturers": {
+    "title": "制造商",
+    "dashboard": "制造商仪表板",
+    "onboarding": "成为制造商",
+    "orders": "制造订单",
+    "categories": "分类"
+  },
+  "crm": {
+    "title": "客户关系管理",
+    "dashboard": "CRM仪表板",
+    "contacts": "联系人",
+    "tasks": "任务",
+    "calendar": "日历",
+    "analytics": "分析",
+    "communications": "沟通"
+  },
+  "creator": {
+    "title": "创作者",
+    "dashboard": "创作者仪表板",
+    "onboarding": "创作者入门"
+  },
+  "artisan": {
+    "title": "工匠",
+    "dashboard": "工匠仪表板",
+    "onboarding": "工匠入门"
+  },
+  "manufacturer": {
+    "title": "制造商",
+    "dashboard": "制造商仪表板",
+    "onboarding": "制造商入门"
+  },
+  "admin": {
+    "title": "管理",
+    "dashboard": "管理仪表板",
+    "users": "用户管理",
+    "content": "内容管理",
+    "analytics": "分析"
+  },
+  "account": {
+    "myDesigns": "我的设计",
+    "orders": "订单",
+    "notifications": "通知",
+    "settings": "设置",
+    "signIn": "登录",
+    "signUp": "注册",
+    "myAccount": "我的账户"
+  },
+  "community": {
+    "testimonials": "用户评价",
+    "faq": "常见问题",
+    "contact": "联系我们",
+    "dashboard": "仪表板"
+  },
+  "platform": {
+    "features": "功能特色",
+    "marketplace": "市场",
+    "create": "创建",
+    "pricing": "定价"
+  }
+}

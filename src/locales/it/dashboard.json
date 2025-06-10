@@ -1,0 +1,35 @@
+
+{
+  "title": "Dashboard",
+  "welcome": "Bentornato",
+  "overview": "Panoramica",
+  "stats": {
+    "totalDesigns": "Totale Design",
+    "totalViews": "Totale Visualizzazioni",
+    "totalLikes": "Totale Mi Piace",
+    "totalSales": "Totale Vendite",
+    "earnings": "Guadagni",
+    "orders": "Ordini"
+  },
+  "quickActions": {
+    "title": "Azioni Rapide",
+    "createDesign": "Crea Design",
+    "viewMarketplace": "Visualizza Mercato",
+    "manageOrders": "Gestisci Ordini",
+    "viewProfile": "Visualizza Profilo"
+  },
+  "recentActivity": {
+    "title": "Attività Recente",
+    "noActivity": "Nessuna attività recente"
+  },
+  "designs": {
+    "title": "I miei Design",
+    "noDesigns": "Non hai ancora creato nessun design",
+    "createFirst": "Crea il tuo primo design"
+  },
+  "orders": {
+    "title": "Ordini",
+    "noOrders": "Non hai ancora ordini",
+    "exploreMarketplace": "Esplora Mercato"
+  }
+}

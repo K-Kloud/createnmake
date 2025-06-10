@@ -1,0 +1,35 @@
+
+{
+  "title": "Painel",
+  "welcome": "Bem-vindo de volta",
+  "overview": "Visão geral",
+  "stats": {
+    "totalDesigns": "Total de Designs",
+    "totalViews": "Total de Visualizações",
+    "totalLikes": "Total de Curtidas",
+    "totalSales": "Total de Vendas",
+    "earnings": "Ganhos",
+    "orders": "Pedidos"
+  },
+  "quickActions": {
+    "title": "Ações Rápidas",
+    "createDesign": "Criar Design",
+    "viewMarketplace": "Ver Mercado",
+    "manageOrders": "Gerenciar Pedidos",
+    "viewProfile": "Ver Perfil"
+  },
+  "recentActivity": {
+    "title": "Atividade Recente",
+    "noActivity": "Nenhuma atividade recente"
+  },
+  "designs": {
+    "title": "Meus Designs",
+    "noDesigns": "Você ainda não criou nenhum design",
+    "createFirst": "Crie seu primeiro design"
+  },
+  "orders": {
+    "title": "Pedidos",
+    "noOrders": "Você ainda não tem pedidos",
+    "exploreMarketplace": "Explorar Mercado"
+  }
+}

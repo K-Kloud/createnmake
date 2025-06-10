@@ -1,0 +1,109 @@
+
+{
+  "main": {
+    "home": "Início",
+    "features": "Recursos",
+    "marketplace": "Mercado",
+    "create": "Criar",
+    "pricing": "Preços",
+    "about": "Sobre",
+    "contact": "Contato",
+    "faq": "FAQ",
+    "testimonials": "Depoimentos",
+    "navigation": "Navegação"
+  },
+  "explore": {
+    "title": "Explorar",
+    "features": "Recursos",
+    "marketplace": "Mercado",
+    "create": "Criar",
+    "subscription": "Preços"
+  },
+  "createManage": {
+    "title": "Criar e Gerenciar",
+    "dashboard": "Painel",
+    "designs": "Meus Designs",
+    "orders": "Pedidos",
+    "notifications": "Notificações"
+  },
+  "professionalTools": {
+    "title": "Ferramentas Profissionais",
+    "crm": "CRM",
+    "creatorTools": "Ferramentas do Criador",
+    "artisanHub": "Hub do Artesão",
+    "manufacturing": "Fabricação"
+  },
+  "creators": {
+    "title": "Criadores",
+    "dashboard": "Painel do Criador",
+    "onboarding": "Tornar-se Criador",
+    "education": "Educação do Criador",
+    "analytics": "Análises do Criador"
+  },
+  "artisans": {
+    "title": "Artesãos",
+    "dashboard": "Painel do Artesão",
+    "onboarding": "Tornar-se Artesão",
+    "portfolio": "Meu Portfólio",
+    "quotes": "Solicitações de Orçamento"
+  },
+  "manufacturers": {
+    "title": "Fabricantes",
+    "dashboard": "Painel do Fabricante",
+    "onboarding": "Tornar-se Fabricante",
+    "orders": "Pedidos de Fabricação",
+    "categories": "Categorias"
+  },
+  "crm": {
+    "title": "CRM",
+    "dashboard": "Painel CRM",
+    "contacts": "Contatos",
+    "tasks": "Tarefas",
+    "calendar": "Calendário",
+    "analytics": "Análises",
+    "communications": "Comunicações"
+  },
+  "creator": {
+    "title": "Criador",
+    "dashboard": "Painel do Criador",
+    "onboarding": "Integração do Criador"
+  },
+  "artisan": {
+    "title": "Artesão",
+    "dashboard": "Painel do Artesão",
+    "onboarding": "Integração do Artesão"
+  },
+  "manufacturer": {
+    "title": "Fabricante",
+    "dashboard": "Painel do Fabricante",
+    "onboarding": "Integração do Fabricante"
+  },
+  "admin": {
+    "title": "Administração",
+    "dashboard": "Painel Admin",
+    "users": "Gestão de Usuários",
+    "content": "Gestão de Conteúdo",
+    "analytics": "Análises"
+  },
+  "account": {
+    "myDesigns": "Meus Designs",
+    "orders": "Pedidos",
+    "notifications": "Notificações",
+    "settings": "Configurações",
+    "signIn": "Entrar",
+    "signUp": "Registrar",
+    "myAccount": "Minha Conta"
+  },
+  "community": {
+    "testimonials": "Depoimentos",
+    "faq": "FAQ",
+    "contact": "Contato",
+    "dashboard": "Painel"
+  },
+  "platform": {
+    "features": "Recursos",
+    "marketplace": "Mercado",
+    "create": "Criar",
+    "pricing": "Preços"
+  }
+}

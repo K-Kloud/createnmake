@@ -1,0 +1,45 @@
+
+{
+  "title": "Mercato",
+  "search": "Cerca design...",
+  "filters": {
+    "all": "Tutti",
+    "categories": "Categorie",
+    "priceRange": "Fascia di Prezzo",
+    "sortBy": "Ordina per",
+    "newest": "Più Recenti",
+    "popular": "Popolari",
+    "priceAsc": "Prezzo: Basso a Alto",
+    "priceDesc": "Prezzo: Alto a Basso"
+  },
+  "categories": {
+    "all": "Tutte le Categorie",
+    "fashion": "Moda",
+    "accessories": "Accessori",
+    "home": "Casa",
+    "art": "Arte",
+    "tech": "Tecnologia"
+  },
+  "actions": {
+    "like": "Mi Piace",
+    "unlike": "Non Mi Piace",
+    "share": "Condividi",
+    "purchase": "Acquista",
+    "addToCart": "Aggiungi al Carrello",
+    "viewDetails": "Visualizza Dettagli"
+  },
+  "product": {
+    "description": "Descrizione",
+    "price": "Prezzo",
+    "creator": "Creatore",
+    "tags": "Tag",
+    "reviews": "Recensioni",
+    "specifications": "Specifiche"
+  },
+  "messages": {
+    "noResults": "Nessun design trovato",
+    "tryDifferentSearch": "Prova una ricerca diversa",
+    "loadingMore": "Caricamento altro...",
+    "endOfResults": "Fine dei risultati"
+  }
+}

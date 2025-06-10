@@ -1,0 +1,45 @@
+
+{
+  "title": "マーケットプレイス",
+  "search": "デザインを検索...",
+  "filters": {
+    "all": "すべて",
+    "categories": "カテゴリ",
+    "priceRange": "価格帯",
+    "sortBy": "並び替え",
+    "newest": "最新",
+    "popular": "人気",
+    "priceAsc": "価格：安い順",
+    "priceDesc": "価格：高い順"
+  },
+  "categories": {
+    "all": "すべてのカテゴリ",
+    "fashion": "ファッション",
+    "accessories": "アクセサリー",
+    "home": "ホーム",
+    "art": "アート",
+    "tech": "テクノロジー"
+  },
+  "actions": {
+    "like": "いいね",
+    "unlike": "いいね取消",
+    "share": "共有",
+    "purchase": "購入",
+    "addToCart": "カートに追加",
+    "viewDetails": "詳細表示"
+  },
+  "product": {
+    "description": "説明",
+    "price": "価格",
+    "creator": "クリエイター",
+    "tags": "タグ",
+    "reviews": "レビュー",
+    "specifications": "仕様"
+  },
+  "messages": {
+    "noResults": "デザインが見つかりません",
+    "tryDifferentSearch": "別の検索を試してください",
+    "loadingMore": "さらに読み込み中...",
+    "endOfResults": "結果の終わり"
+  }
+}

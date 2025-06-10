@@ -1,0 +1,45 @@
+
+{
+  "title": "Mercado",
+  "search": "Pesquisar designs...",
+  "filters": {
+    "all": "Todos",
+    "categories": "Categorias",
+    "priceRange": "Faixa de Preço",
+    "sortBy": "Ordenar por",
+    "newest": "Mais Novos",
+    "popular": "Popular",
+    "priceAsc": "Preço: Menor para Maior",
+    "priceDesc": "Preço: Maior para Menor"
+  },
+  "categories": {
+    "all": "Todas as Categorias",
+    "fashion": "Moda",
+    "accessories": "Acessórios",
+    "home": "Casa",
+    "art": "Arte",
+    "tech": "Tecnologia"
+  },
+  "actions": {
+    "like": "Curtir",
+    "unlike": "Descurtir",
+    "share": "Compartilhar",
+    "purchase": "Comprar",
+    "addToCart": "Adicionar ao Carrinho",
+    "viewDetails": "Ver Detalhes"
+  },
+  "product": {
+    "description": "Descrição",
+    "price": "Preço",
+    "creator": "Criador",
+    "tags": "Tags",
+    "reviews": "Avaliações",
+    "specifications": "Especificações"
+  },
+  "messages": {
+    "noResults": "Nenhum design encontrado",
+    "tryDifferentSearch": "Tente uma pesquisa diferente",
+    "loadingMore": "Carregando mais...",
+    "endOfResults": "Fim dos resultados"
+  }
+}

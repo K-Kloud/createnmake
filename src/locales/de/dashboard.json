@@ -1,0 +1,35 @@
+
+{
+  "title": "Dashboard",
+  "welcome": "Willkommen zurück",
+  "overview": "Übersicht",
+  "stats": {
+    "totalDesigns": "Gesamt Designs",
+    "totalViews": "Gesamt Ansichten",
+    "totalLikes": "Gesamt Likes",
+    "totalSales": "Gesamt Verkäufe",
+    "earnings": "Einnahmen",
+    "orders": "Bestellungen"
+  },
+  "quickActions": {
+    "title": "Schnellaktionen",
+    "createDesign": "Design erstellen",
+    "viewMarketplace": "Marktplatz anzeigen",
+    "manageOrders": "Bestellungen verwalten",
+    "viewProfile": "Profil anzeigen"
+  },
+  "recentActivity": {
+    "title": "Kürzliche Aktivität",
+    "noActivity": "Keine kürzliche Aktivität"
+  },
+  "designs": {
+    "title": "Meine Designs",
+    "noDesigns": "Sie haben noch keine Designs erstellt",
+    "createFirst": "Erstellen Sie Ihr erstes Design"
+  },
+  "orders": {
+    "title": "Bestellungen",
+    "noOrders": "Sie haben noch keine Bestellungen",
+    "exploreMarketplace": "Marktplatz erkunden"
+  }
+}
