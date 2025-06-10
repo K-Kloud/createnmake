@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/accordion";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 import {
   publicNavigation,
   authenticatedNavigation,
@@ -38,6 +39,7 @@ interface MobileNavigationMenuProps {
 export const MobileNavigationMenu = ({ user, profile, onShowAuthDialog }: MobileNavigationMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { t } = useTranslation('navigation');
 
   const isActive = (path: string) => {
     if (path === "/") {
@@ -71,7 +73,7 @@ export const MobileNavigationMenu = ({ user, profile, onShowAuthDialog }: Mobile
     return (
       <AccordionItem key={section.title} value={section.title.toLowerCase()}>
         <AccordionTrigger className="px-4 text-sm font-medium">
-          {section.title}
+          {t(`${section.title.toLowerCase()}.title`)}
         </AccordionTrigger>
         <AccordionContent className="space-y-1 pb-2">
           {accessibleItems.map(renderNavigationLink)}
@@ -90,20 +92,20 @@ export const MobileNavigationMenu = ({ user, profile, onShowAuthDialog }: Mobile
       </SheetTrigger>
       <SheetContent side="right" className="w-[300px] sm:w-[350px]">
         <SheetHeader>
-          <SheetTitle>Navigation</SheetTitle>
+          <SheetTitle>{t('main.navigation')}</SheetTitle>
         </SheetHeader>
         
         <div className="mt-6 space-y-4">
           {/* Public Navigation */}
           <div className="space-y-1">
-            <h4 className="px-4 text-sm font-medium text-muted-foreground mb-2">Explore</h4>
+            <h4 className="px-4 text-sm font-medium text-muted-foreground mb-2">{t('explore.title')}</h4>
             {publicNavigation.map(renderNavigationLink)}
           </div>
 
           {/* Authenticated Navigation */}
           {user && (
             <div className="space-y-1 border-t pt-4">
-              <h4 className="px-4 text-sm font-medium text-muted-foreground mb-2">My Account</h4>
+              <h4 className="px-4 text-sm font-medium text-muted-foreground mb-2">{t('account.myAccount')}</h4>
               {getFilteredNavigation(authenticatedNavigation, user, profile).map(renderNavigationLink)}
             </div>
           )}
@@ -118,7 +120,7 @@ export const MobileNavigationMenu = ({ user, profile, onShowAuthDialog }: Mobile
                 {profile?.is_admin && (
                   <AccordionItem value="admin">
                     <AccordionTrigger className="px-4 text-sm font-medium">
-                      Administration
+                      {t('admin.title')}
                     </AccordionTrigger>
                     <AccordionContent className="space-y-1 pb-2">
                       {adminNavigation.map(renderNavigationLink)}
@@ -139,7 +141,7 @@ export const MobileNavigationMenu = ({ user, profile, onShowAuthDialog }: Mobile
                 }}
                 className="w-full"
               >
-                Sign In
+                {t('account.signIn')}
               </Button>
             </div>
           )}

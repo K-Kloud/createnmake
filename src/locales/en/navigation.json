@@ -9,7 +9,8 @@
     "about": "About",
     "contact": "Contact",
     "faq": "FAQ",
-    "testimonials": "Testimonials"
+    "testimonials": "Testimonials",
+    "navigation": "Navigation"
   },
   "explore": {
     "title": "Explore",
@@ -53,6 +54,30 @@
     "orders": "Manufacturing Orders",
     "categories": "Categories"
   },
+  "crm": {
+    "title": "CRM",
+    "dashboard": "CRM Dashboard",
+    "contacts": "Contacts",
+    "tasks": "Tasks",
+    "calendar": "Calendar",
+    "analytics": "Analytics",
+    "communications": "Communications"
+  },
+  "creator": {
+    "title": "Creator",
+    "dashboard": "Creator Dashboard",
+    "onboarding": "Creator Onboarding"
+  },
+  "artisan": {
+    "title": "Artisan",
+    "dashboard": "Artisan Dashboard",
+    "onboarding": "Artisan Onboarding"
+  },
+  "manufacturer": {
+    "title": "Manufacturer",
+    "dashboard": "Manufacturer Dashboard",
+    "onboarding": "Manufacturer Onboarding"
+  },
   "admin": {
     "title": "Administration",
     "dashboard": "Admin Dashboard",
@@ -66,7 +91,8 @@
     "notifications": "Notifications",
     "settings": "Settings",
     "signIn": "Sign In",
-    "signUp": "Sign Up"
+    "signUp": "Sign Up",
+    "myAccount": "My Account"
   },
   "community": {
     "testimonials": "Testimonials",

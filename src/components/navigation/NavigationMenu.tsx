@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 import {
   publicNavigation,
   authenticatedNavigation,
@@ -32,6 +33,7 @@ interface NavigationMenuProps {
 
 export const MainNavigationMenu = ({ user, profile, onShowAuthDialog }: NavigationMenuProps) => {
   const location = useLocation();
+  const { t } = useTranslation('navigation');
   
   const isActive = (path: string) => {
     if (path === "/") {
@@ -65,7 +67,7 @@ export const MainNavigationMenu = ({ user, profile, onShowAuthDialog }: Navigati
 
     return (
       <div key={section.title} className="space-y-2">
-        <h4 className="text-sm font-medium text-muted-foreground px-3">{section.title}</h4>
+        <h4 className="text-sm font-medium text-muted-foreground px-3">{t(`${section.title.toLowerCase()}.title`)}</h4>
         <div className="space-y-1">
           {accessibleItems.map(renderNavigationLink)}
         </div>
@@ -78,7 +80,7 @@ export const MainNavigationMenu = ({ user, profile, onShowAuthDialog }: Navigati
       <NavigationMenuList>
         {/* Explore Menu */}
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Explore</NavigationMenuTrigger>
+          <NavigationMenuTrigger>{t('explore.title')}</NavigationMenuTrigger>
           <NavigationMenuContent>
             <div className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-2">
               {publicNavigation.map(renderNavigationLink)}
@@ -89,7 +91,7 @@ export const MainNavigationMenu = ({ user, profile, onShowAuthDialog }: Navigati
         {/* Create Menu - for authenticated users */}
         {user && (
           <NavigationMenuItem>
-            <NavigationMenuTrigger>Create & Manage</NavigationMenuTrigger>
+            <NavigationMenuTrigger>{t('createManage.title')}</NavigationMenuTrigger>
             <NavigationMenuContent>
               <div className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-2">
                 {getFilteredNavigation(authenticatedNavigation, user, profile).map(renderNavigationLink)}
@@ -101,7 +103,7 @@ export const MainNavigationMenu = ({ user, profile, onShowAuthDialog }: Navigati
         {/* Role-specific menus */}
         {user && (
           <NavigationMenuItem>
-            <NavigationMenuTrigger>Professional Tools</NavigationMenuTrigger>
+            <NavigationMenuTrigger>{t('professionalTools.title')}</NavigationMenuTrigger>
             <NavigationMenuContent>
               <div className="p-4 md:w-[500px] lg:w-[600px] space-y-4">
                 {roleNavigation.map(renderRoleSection)}
@@ -109,7 +111,7 @@ export const MainNavigationMenu = ({ user, profile, onShowAuthDialog }: Navigati
                 {/* Admin section */}
                 {profile?.is_admin && (
                   <div className="space-y-2 border-t pt-4">
-                    <h4 className="text-sm font-medium text-muted-foreground px-3">Administration</h4>
+                    <h4 className="text-sm font-medium text-muted-foreground px-3">{t('admin.title')}</h4>
                     <div className="space-y-1">
                       {adminNavigation.map(renderNavigationLink)}
                     </div>
@@ -129,7 +131,7 @@ export const MainNavigationMenu = ({ user, profile, onShowAuthDialog }: Navigati
               isActive("/marketplace") && "bg-primary text-primary-foreground"
             )}
           >
-            <Link to="/marketplace">Marketplace</Link>
+            <Link to="/marketplace">{t('main.marketplace')}</Link>
           </Button>
         </NavigationMenuItem>
 
@@ -142,13 +144,13 @@ export const MainNavigationMenu = ({ user, profile, onShowAuthDialog }: Navigati
                 isActive("/subscription") && "bg-primary text-primary-foreground"
               )}
             >
-              <Link to="/subscription">Pricing</Link>
+              <Link to="/subscription">{t('main.pricing')}</Link>
             </Button>
           </NavigationMenuItem>
         ) : (
           <NavigationMenuItem>
             <Button onClick={onShowAuthDialog}>
-              Sign In
+              {t('account.signIn')}
             </Button>
           </NavigationMenuItem>
         )}

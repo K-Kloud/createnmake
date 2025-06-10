@@ -9,7 +9,8 @@
     "about": "À propos",
     "contact": "Contact",
     "faq": "FAQ",
-    "testimonials": "Témoignages"
+    "testimonials": "Témoignages",
+    "navigation": "Navigation"
   },
   "explore": {
     "title": "Explorer",
@@ -53,6 +54,30 @@
     "orders": "Commandes de Fabrication",
     "categories": "Catégories"
   },
+  "crm": {
+    "title": "CRM",
+    "dashboard": "Tableau de bord CRM",
+    "contacts": "Contacts",
+    "tasks": "Tâches",
+    "calendar": "Calendrier",
+    "analytics": "Analyses",
+    "communications": "Communications"
+  },
+  "creator": {
+    "title": "Créateur",
+    "dashboard": "Tableau de bord Créateur",
+    "onboarding": "Intégration Créateur"
+  },
+  "artisan": {
+    "title": "Artisan",
+    "dashboard": "Tableau de bord Artisan",
+    "onboarding": "Intégration Artisan"
+  },
+  "manufacturer": {
+    "title": "Fabricant",
+    "dashboard": "Tableau de bord Fabricant",
+    "onboarding": "Intégration Fabricant"
+  },
   "admin": {
     "title": "Administration",
     "dashboard": "Tableau de bord Admin",
@@ -66,7 +91,8 @@
     "notifications": "Notifications",
     "settings": "Paramètres",
     "signIn": "Se connecter",
-    "signUp": "S'inscrire"
+    "signUp": "S'inscrire",
+    "myAccount": "Mon Compte"
   },
   "community": {
     "testimonials": "Témoignages",
