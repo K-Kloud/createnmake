@@ -16,11 +16,11 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import {
   publicNavigation,
+  partnershipNavigation,
   authenticatedNavigation,
   roleNavigation,
   adminNavigation,
   getFilteredNavigation,
-  hasAccessToNavItem,
   NavigationItem,
   NavigationSection
 } from "@/config/navigation";
@@ -84,6 +84,16 @@ export const MainNavigationMenu = ({ user, profile, onShowAuthDialog }: Navigati
           <NavigationMenuContent>
             <div className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-2">
               {publicNavigation.map(renderNavigationLink)}
+            </div>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+
+        {/* Partnership Menu */}
+        <NavigationMenuItem>
+          <NavigationMenuTrigger>Join Us</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-1">
+              {partnershipNavigation.map(renderNavigationLink)}
             </div>
           </NavigationMenuContent>
         </NavigationMenuItem>

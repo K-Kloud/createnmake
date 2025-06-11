@@ -50,6 +50,20 @@ export const publicNavigation: NavigationItem[] = [
   }
 ];
 
+// Partnership navigation for joining the platform
+export const partnershipNavigation: NavigationItem[] = [
+  {
+    title: "Join as Manufacturer",
+    href: "/join/manufacturer",
+    description: "Partner with creators to provide manufacturing services"
+  },
+  {
+    title: "Join as Artisan",
+    href: "/join/artisan",
+    description: "Share your craft and connect with customers"
+  }
+];
+
 // Authenticated user navigation
 export const authenticatedNavigation: NavigationItem[] = [
   {

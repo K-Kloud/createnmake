@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import {
   publicNavigation,
+  partnershipNavigation,
   authenticatedNavigation,
   roleNavigation,
   adminNavigation,
@@ -100,6 +101,12 @@ export const MobileNavigationMenu = ({ user, profile, onShowAuthDialog }: Mobile
           <div className="space-y-1">
             <h4 className="px-4 text-sm font-medium text-muted-foreground mb-2">{t('explore.title')}</h4>
             {publicNavigation.map(renderNavigationLink)}
+          </div>
+
+          {/* Partnership Navigation */}
+          <div className="space-y-1 border-t pt-4">
+            <h4 className="px-4 text-sm font-medium text-muted-foreground mb-2">Join Us</h4>
+            {partnershipNavigation.map(renderNavigationLink)}
           </div>
 
           {/* Authenticated Navigation */}

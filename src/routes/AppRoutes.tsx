@@ -13,6 +13,8 @@ import ResetPassword from "@/pages/ResetPassword";
 import AuthCallback from "@/pages/AuthCallback";
 import Marketplace from "@/pages/Marketplace";
 import NotFound from "@/pages/NotFound";
+import JoinManufacturer from "@/pages/JoinManufacturer";
+import JoinArtisan from "@/pages/JoinArtisan";
 
 // Protected Pages
 import Create from "@/pages/Create";
@@ -47,6 +49,8 @@ export const AppRoutes = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/marketplace" element={<Marketplace />} />
+      <Route path="/join/manufacturer" element={<JoinManufacturer />} />
+      <Route path="/join/artisan" element={<JoinArtisan />} />
 
       {/* Protected Routes */}
       <Route path="/create" element={
