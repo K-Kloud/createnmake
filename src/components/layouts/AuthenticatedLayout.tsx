@@ -32,7 +32,9 @@ export const AuthenticatedLayout = ({
   if (loading) {
     return (
       <PageLayout title={title} description={description}>
-        <LoadingState isLoading={true} />
+        <LoadingState isLoading={true}>
+          <div />
+        </LoadingState>
       </PageLayout>
     );
   }

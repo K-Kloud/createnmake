@@ -25,21 +25,21 @@ const Orders = () => {
           <CardTitle className="text-xl font-bold">All Orders</CardTitle>
         </CardHeader>
         <CardContent>
-          <LoadingState isLoading={isLoading}>
-            {orders && orders.length > 0 ? (
-              <div className="space-y-2">
-                {orders.map((order) => (
-                  <OrderItem 
-                    key={`${order.type}-${order.id}`}
-                    order={order}
-                    getStatusColor={getOrderStatusColor}
-                  />
-                ))}
-              </div>
-            ) : (
-              <EmptyOrdersState />
-            )}
-          </LoadingState>
+          {isLoading ? (
+            <LoadingState />
+          ) : orders && orders.length > 0 ? (
+            <div className="space-y-2">
+              {orders.map((order) => (
+                <OrderItem 
+                  key={`${order.type}-${order.id}`}
+                  order={order}
+                  getStatusColor={getOrderStatusColor}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyOrdersState />
+          )}
         </CardContent>
       </Card>
     </AuthenticatedLayout>
