@@ -1,3 +1,4 @@
+
 {
   "buttons": {
     "create": "创建",
@@ -28,24 +29,7 @@
     "removeFromWishlist": "从心愿单移除",
     "addToWishlist": "添加到心愿单",
     "retry": "重试",
-    "view": "查看",
-    "makeThis": "制作此物品",
-    "post": "发布"
-  },
-  "imageCard": {
-    "showPrompt": "显示提示",
-    "hidePrompt": "隐藏提示",
-    "signInToLike": "登录后才能点赞图片",
-    "signInRequired": "需要登录",
-    "clickToEditPrice": "点击编辑价格",
-    "comments": "评论",
-    "addComment": "添加评论...",
-    "shareTitle": "由 {creator} 生成",
-    "shareText": "查看这个令人惊叹的AI生成图片！",
-    "shareSuccess": "图片分享成功！",
-    "shareLinkCopied": "图片链接已复制到剪贴板！",
-    "shareError": "无法分享图片。请重试。",
-    "shareNoImage": "没有可分享的图片"
+    "view": "查看"
   },
   "hero": {
     "title": "用AI创建-2-制作",

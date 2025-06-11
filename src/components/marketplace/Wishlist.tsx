@@ -1,174 +1,269 @@
 
-import { useEffect, useState } from "react";
-import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Heart, ShoppingBag, Trash2 } from "lucide-react";
+import { 
+  Sheet, 
+  SheetContent, 
+  SheetDescription, 
+  SheetHeader, 
+  SheetTitle, 
+  SheetTrigger, 
+  SheetFooter, 
+  SheetClose 
+} from "@/components/ui/sheet";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import { GalleryImage } from "@/types/gallery";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { MarketplaceGrid } from "./MarketplaceGrid";
-import { GalleryImage } from "@/types/gallery";
 import { useTranslation } from "react-i18next";
 
-export const Wishlist = () => {
-  const [wishlistItems, setWishlistItems] = useState<GalleryImage[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { session } = useAuth();
+export interface WishlistItem extends GalleryImage {}
+
+interface WishlistProps {
+  onProductClick: (product: WishlistItem) => void;
+}
+
+export const Wishlist = ({ onProductClick }: WishlistProps) => {
   const { toast } = useToast();
-  const { t } = useTranslation('marketplace');
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { t } = useTranslation('common');
+  const [isOpen, setIsOpen] = useState(false);
+  const [items, setItems] = useState<WishlistItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Load wishlist items when the component mounts or user changes
   useEffect(() => {
-    const fetchWishlistItems = async () => {
-      if (!session?.user) {
-        setLoading(false);
-        return;
-      }
+    if (user?.id && isOpen) {
+      loadWishlistItems();
+    }
+  }, [user?.id, isOpen]);
 
-      try {
-        // Get liked images for the user
-        const { data, error } = await supabase
-          .from('image_likes')
-          .select(`
-            image_id,
-            generated_images!image_id (
-              id,
-              image_url,
-              prompt,
-              likes,
-              views,
-              created_at,
-              user_id,
-              price,
-              profiles!user_id (
-                username,
-                avatar_url
-              )
+  const loadWishlistItems = async () => {
+    if (!user?.id) return;
+    
+    setIsLoading(true);
+    
+    try {
+      // Fetch liked images for the current user
+      const { data: likedImages, error } = await supabase
+        .from('image_likes')
+        .select(`
+          image_id,
+          generated_images!inner (
+            id,
+            image_url,
+            prompt,
+            price,
+            likes,
+            views,
+            created_at,
+            user_id,
+            profiles!generated_images_user_id_fkey (
+              username,
+              avatar_url
             )
-          `)
-          .eq('user_id', session.user.id)
-          .order('created_at', { ascending: false });
+          )
+        `)
+        .eq('user_id', user.id)
+        .limit(10);
+      
+      if (error) throw error;
+      
+      // Transform data for display
+      const wishlistItems: WishlistItem[] = (likedImages || []).map((item) => {
+        const image = item.generated_images;
+        return {
+          id: image.id,
+          url: image.image_url,
+          prompt: image.prompt,
+          price: image.price || "0",
+          likes: image.likes || 0,
+          views: image.views || 0,
+          produced: 0,
+          comments: [],
+          creator: {
+            name: image.profiles?.username || 'Anonymous',
+            avatar: image.profiles?.avatar_url || 'https://github.com/shadcn.png'
+          },
+          createdAt: new Date(image.created_at),
+          timeAgo: '',
+          hasLiked: true,
+          image_likes: [],
+          metrics: { like: 0, comment: 0, view: 0 },
+          user_id: image.user_id
+        };
+      });
+      
+      setItems(wishlistItems);
+    } catch (error) {
+      console.error('Error loading wishlist:', error);
+      toast({
+        title: t('gallery.errorLoadingWishlist'),
+        description: t('gallery.errorLoadingWishlistDescription'),
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-        if (error) throw error;
-
-        const items: GalleryImage[] = data?.map(item => {
-          const img = Array.isArray(item.generated_images) ? item.generated_images[0] : item.generated_images;
-          if (!img) return null;
-          
-          // Handle profiles - it comes as an array, take the first element
-          const profile = Array.isArray(img.profiles) ? img.profiles[0] : img.profiles;
-          
-          return {
-            id: img.id,
-            url: img.image_url || '',
-            prompt: img.prompt || '',
-            likes: img.likes || 0,
-            comments: [],
-            views: img.views || 0,
-            produced: 0,
-            creator: {
-              name: profile?.username || 'Anonymous',
-              avatar: profile?.avatar_url || '/placeholder.svg'
-            },
-            createdAt: new Date(img.created_at),
-            timeAgo: 'Just now',
-            hasLiked: true,
-            image_likes: [],
-            metrics: {
-              like: img.likes || 0,
-              comment: 0,
-              view: img.views || 0,
-            },
-            user_id: img.user_id,
-            price: img.price
-          };
-        }).filter(Boolean) || [];
-        
-        setWishlistItems(items);
-      } catch (error) {
-        console.error('Error fetching wishlist items:', error);
-        toast({
-          title: t('wishlist.empty'),
-          description: t('wishlist.emptyDescription'),
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWishlistItems();
-  }, [session, toast, t]);
-
-  const handleRemoveFromWishlist = async (imageId: number) => {
-    if (!session?.user) return;
-
+  const removeFromWishlist = async (item: WishlistItem) => {
+    if (!user?.id) return;
+    
     try {
       const { error } = await supabase
         .from('image_likes')
         .delete()
-        .eq('user_id', session.user.id)
-        .eq('image_id', imageId);
-
+        .eq('user_id', user.id)
+        .eq('image_id', item.id);
+      
       if (error) throw error;
-
-      setWishlistItems(prev => prev.filter(item => item.id !== imageId));
+      
+      // Update local state
+      setItems(items.filter(i => i.id !== item.id));
       
       toast({
-        title: t('wishlist.removedFromWishlist'),
-        description: t('wishlist.removedDescription'),
+        title: t('marketplace.wishlist.removedFromWishlist'),
+        description: t('marketplace.wishlist.removedDescription')
       });
     } catch (error) {
-      console.error('Error removing from wishlist:', error);
+      console.error('Error removing item:', error);
       toast({
-        title: "Error",
-        description: "Failed to remove item from wishlist",
-        variant: "destructive",
+        title: t('gallery.errorRemovingItem'),
+        description: t('gallery.errorRemovingItemDescription'),
+        variant: "destructive"
       });
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (wishlistItems.length === 0) {
-    return (
-      <Card className="max-w-md mx-auto mt-8">
-        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-          <Heart className="h-12 w-12 text-gray-400 mb-4" />
-          <h3 className="text-xl font-semibold mb-2">{t('wishlist.empty')}</h3>
-          <p className="text-gray-600 mb-6">{t('wishlist.emptyDescription')}</p>
-          <Button onClick={() => window.location.href = '/marketplace'}>
-            {t('wishlist.browseMarketplace')}
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
+  const handleCheckout = () => {
+    setIsOpen(false);
+    navigate('/checkout');
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{t('wishlist.title')}</h2>
-        <span className="text-gray-600">
-          {t('wishlist.itemCount', { count: wishlistItems.length })}
-        </span>
-      </div>
-      
-      <MarketplaceGrid
-        images={wishlistItems}
-        onLike={(imageId) => handleRemoveFromWishlist(imageId)}
-        onView={() => {}}
-        onAddComment={() => {}}
-        onAddReply={() => {}}
-        onLoadMore={() => {}}
-        hasMore={false}
-        onImageClick={() => {}}
-      />
-    </div>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
+        <Button variant="outline" size="icon" className="relative">
+          <Heart className="h-5 w-5" />
+          {items.length > 0 && (
+            <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center">
+              {items.length}
+            </Badge>
+          )}
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="w-full sm:max-w-md">
+        <SheetHeader>
+          <SheetTitle>{t('marketplace.wishlist.title')}</SheetTitle>
+          <SheetDescription>
+            {items.length > 0 
+              ? t('marketplace.wishlist.itemCount', { count: items.length })
+              : t('marketplace.wishlist.empty')
+            }
+          </SheetDescription>
+        </SheetHeader>
+        
+        <div className="py-6">
+          {isLoading ? (
+            <div className="space-y-2">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center gap-4 animate-pulse">
+                  <div className="w-16 h-16 bg-muted rounded" />
+                  <div className="space-y-2 flex-1">
+                    <div className="h-4 bg-muted rounded w-3/4" />
+                    <div className="h-4 bg-muted rounded w-1/4" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : items.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-40 text-center">
+              <Heart className="h-12 w-12 text-muted-foreground mb-2" />
+              <p className="text-muted-foreground">{t('marketplace.wishlist.empty')}</p>
+              <p className="text-sm text-muted-foreground mb-4">
+                {t('marketplace.wishlist.emptyDescription')}
+              </p>
+              <SheetClose asChild>
+                <Button onClick={() => navigate("/marketplace")}>
+                  {t('marketplace.wishlist.browseMarketplace')}
+                </Button>
+              </SheetClose>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {items.map((item) => (
+                <div key={item.id} className="flex gap-3 items-center">
+                  <div 
+                    className="w-16 h-16 bg-muted rounded overflow-hidden cursor-pointer flex-shrink-0"
+                    onClick={() => {
+                      onProductClick(item);
+                      setIsOpen(false);
+                    }}
+                  >
+                    <img 
+                      src={item.url} 
+                      alt={item.prompt} 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate" title={item.prompt}>
+                      {item.prompt}
+                    </p>
+                    <p className="text-sm text-muted-foreground">By {item.creator.name}</p>
+                    {item.price && <p className="font-medium">${item.price}</p>}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => removeFromWishlist(item)}
+                    >
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        onProductClick(item);
+                        setIsOpen(false);
+                      }}
+                    >
+                      {t('buttons.view')}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        
+        {items.length > 0 && (
+          <SheetFooter className="sm:justify-between flex-col sm:flex-row gap-2">
+            <div className="flex items-center justify-between w-full sm:w-auto">
+              <span className="text-sm font-medium">
+                {t('marketplace.wishlist.itemCount', { count: items.length })}
+              </span>
+              <Button 
+                variant="link" 
+                className="text-sm p-0"
+                onClick={() => navigate('/marketplace')}
+              >
+                {t('buttons.continueShopping')}
+              </Button>
+            </div>
+            <Button onClick={handleCheckout} className="w-full sm:w-auto">
+              <ShoppingBag className="mr-2 h-4 w-4" />
+              {t('buttons.checkout')}
+            </Button>
+          </SheetFooter>
+        )}
+      </SheetContent>
+    </Sheet>
   );
 };

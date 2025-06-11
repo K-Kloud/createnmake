@@ -1,3 +1,4 @@
+
 {
   "buttons": {
     "create": "Criar",
@@ -20,24 +21,7 @@
     "upload": "Carregar",
     "startCreating": "Começar a Criar",
     "viewOpenMarket": "Ver OpenMarket",
-    "exploreFeatures": "Explorar Recursos",
-    "makeThis": "Fazer Isto",
-    "post": "Postar"
-  },
-  "imageCard": {
-    "showPrompt": "Mostrar prompt",
-    "hidePrompt": "Ocultar prompt",
-    "signInToLike": "Faça login para curtir imagens",
-    "signInRequired": "Login necessário",
-    "clickToEditPrice": "Clique para editar o preço",
-    "comments": "Comentários",
-    "addComment": "Adicionar um comentário...",
-    "shareTitle": "Gerado por {creator}",
-    "shareText": "Confira esta incrível imagem gerada por IA!",
-    "shareSuccess": "Imagem compartilhada com sucesso!",
-    "shareLinkCopied": "Link da imagem copiado para a área de transferência!",
-    "shareError": "Não foi possível compartilhar a imagem. Tente novamente.",
-    "shareNoImage": "Nenhuma imagem disponível para compartilhar"
+    "exploreFeatures": "Explorar Recursos"
   },
   "hero": {
     "title": "Criar-2-Fazer com IA",

@@ -141,7 +141,7 @@ export const MarketplaceContent = ({
             {t('marketplace.viewMode.infiniteScroll')}
           </button>
         </div>
-        <Wishlist />
+        <Wishlist onProductClick={handleImageClick} />
       </div>
       
       {viewMode === "paginated" ? (

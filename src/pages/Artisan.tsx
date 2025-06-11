@@ -1,19 +1,17 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { PageLayout } from "@/components/layouts/PageLayout";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { ArtisanDashboard } from "@/components/artisan/ArtisanDashboard";
-import { PageHeader } from "@/components/common/PageHeader";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { LoadingState } from "@/components/ui/loading-state";
 
 const Artisan = () => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   
-  const { data: session, isLoading } = useQuery({
+  const { data: session } = useQuery({
     queryKey: ['session'],
     queryFn: async () => {
       const { data } = await supabase.auth.getSession();
@@ -37,21 +35,19 @@ const Artisan = () => {
   }, [searchParams, toast]);
 
   return (
-    <PageLayout 
-      title="Artisan Dashboard | Create2Make"
-      description="Manage your artisan business and connect with customers"
-    >
-      <LoadingState isLoading={isLoading}>
-        {session?.user ? (
-          <ArtisanDashboard artisanId={session.user.id} />
-        ) : (
-          <PageHeader 
-            title="Please sign in to access the Artisan Dashboard"
-            subtitle="Sign in to manage your artisan business and connect with customers"
-          />
-        )}
-      </LoadingState>
-    </PageLayout>
+    <div className="min-h-screen bg-background">
+      <Header />
+      {session?.user ? (
+        <ArtisanDashboard artisanId={session.user.id} />
+      ) : (
+        <main className="container px-4 py-24">
+          <h1 className="text-4xl font-bold mb-8 gradient-text">
+            Please sign in to access the Artisan Dashboard
+          </h1>
+        </main>
+      )}
+      <Footer />
+    </div>
   );
 };
 

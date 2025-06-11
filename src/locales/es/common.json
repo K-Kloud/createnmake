@@ -13,7 +13,23 @@
     "next": "Siguiente",
     "loading": "Cargando...",
     "tryAgain": "Intentar de nuevo",
-    "post": "Publicar"
+    "getStarted": "Comenzar",
+    "learnMore": "Saber más",
+    "viewAll": "Ver todo",
+    "share": "Compartir",
+    "download": "Descargar",
+    "upload": "Subir",
+    "startCreating": "Comenzar a Crear",
+    "viewOpenMarket": "Ver OpenMarket",
+    "exploreFeatures": "Explorar Características",
+    "refresh": "Actualizar",
+    "viewProduct": "Ver Producto",
+    "checkout": "Finalizar Compra",
+    "continueShopping": "Continuar Comprando",
+    "removeFromWishlist": "Eliminar de Lista de Deseos",
+    "addToWishlist": "Agregar a Lista de Deseos",
+    "retry": "Reintentar",
+    "view": "Ver"
   },
   "status": {
     "success": "Éxito",
@@ -33,7 +49,197 @@
     "search": "Buscar",
     "filter": "Filtrar",
     "sort": "Ordenar",
+    "date": "Fecha",
+    "time": "Hora",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "address": "Dirección",
+    "description": "Descripción",
+    "price": "Precio",
+    "quantity": "Cantidad",
+    "category": "Categoría",
+    "tags": "Etiquetas",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "account": "Cuenta",
+    "preferences": "Preferencias",
+    "privacy": "Privacidad",
+    "terms": "Términos de servicio",
     "loading": "Cargando...",
-    "noResults": "No se encontraron resultados"
+    "noResults": "No se encontraron resultados",
+    "comingSoon": "Próximamente"
+  },
+  "hero": {
+    "title": "Crear-2-Hacer con IA",
+    "subtitle": "Transforma tus creaciones visuales imaginarias en realidad usando nuestra plataforma avanzada de IA Crear-2-Hacer. Comienza a crear tus artículos únicos y recíbelos en tu puerta."
+  },
+  "features": {
+    "title": "Nuestras Características",
+    "subtitle": "Descubre nuestro conjunto completo de características diseñadas para ayudarte a crear, personalizar y dar vida a tus ideas.",
+    "main": {
+      "advancedAI": {
+        "title": "Generación de IA Avanzada",
+        "description": "Crea imágenes impresionantes y personalizadas con nuestra tecnología de IA de vanguardia.",
+        "steps": [
+          "Navega a la página Crear",
+          "Elige entre varias categorías de artículos",
+          "Ingresa descripciones detalladas",
+          "Selecciona tu relación de aspecto preferida",
+          "Sube imágenes de referencia (opcional)",
+          "Haz clic en Generar para crear tu diseño"
+        ]
+      },
+      "lightningFast": {
+        "title": "Procesamiento Ultrarrápido",
+        "description": "Experimenta la generación rápida de imágenes con nuestra infraestructura optimizada.",
+        "steps": [
+          "Tiempo promedio de generación: 10-30 segundos",
+          "Vista previa en tiempo real del progreso",
+          "Capacidades de procesamiento por lotes",
+          "Optimización instantánea de imágenes",
+          "Descarga y compartir rápidos"
+        ]
+      },
+      "secure": {
+        "title": "Seguro y Privado",
+        "description": "Tus datos y creaciones están protegidos con seguridad de nivel empresarial.",
+        "steps": [
+          "Autenticación segura de usuarios",
+          "Cifrado de extremo a extremo",
+          "Almacenamiento privado de imágenes",
+          "Configuraciones de privacidad personalizables",
+          "Auditorías de seguridad regulares",
+          "Cumplimiento GDPR"
+        ]
+      },
+      "styleVariety": {
+        "title": "Variedad de Estilos",
+        "description": "Elige entre múltiples estilos artísticos para que coincidan con tu visión.",
+        "steps": [
+          "Múltiples estéticas de diseño",
+          "Parámetros de estilo personalizables",
+          "Capacidades de mezcla de estilos",
+          "Estilización basada en referencias",
+          "Sugerencias de estilos en tendencia"
+        ]
+      }
+    },
+    "additional": {
+      "referenceUpload": {
+        "title": "Subida de Referencia",
+        "description": "Sube imágenes de inspiración"
+      },
+      "easySharing": {
+        "title": "Compartir Fácil",
+        "description": "Comparte en redes sociales"
+      },
+      "quickDownloads": {
+        "title": "Descargas Rápidas",
+        "description": "Múltiples opciones de formato"
+      },
+      "colorControl": {
+        "title": "Control de Color",
+        "description": "Selección precisa de colores"
+      },
+      "advancedSettings": {
+        "title": "Configuraciones Avanzadas",
+        "description": "Ajusta finamente tus resultados"
+      },
+      "artisanNetwork": {
+        "title": "Red de Artesanos",
+        "description": "Conecta con creadores"
+      },
+      "marketplace": {
+        "title": "Mercado",
+        "description": "Compra y vende diseños"
+      },
+      "community": {
+        "title": "Comunidad",
+        "description": "Obtén comentarios y consejos"
+      }
+    },
+    "howToUse": "Cómo usar:",
+    "additionalFeaturesTitle": "Características Adicionales"
+  },
+  "marketplace": {
+    "openMarket": "OpenMarket",
+    "searchPlaceholder": "Buscar diseños, productos, creadores...",
+    "advancedFilters": "Filtros Avanzados",
+    "filterOptions": "Opciones de Filtro",
+    "refineSearch": "Refina tu búsqueda con estos filtros adicionales",
+    "designStyle": "Estilo de Diseño",
+    "allStyles": "Todos los Estilos",
+    "minimalist": "Minimalista",
+    "vintage": "Vintage",
+    "modern": "Moderno",
+    "elegant": "Elegante",
+    "priceRange": "Rango de Precio",
+    "creatorReputation": "Reputación del Creador",
+    "allRatings": "Todas las Calificaciones",
+    "clearAll": "Limpiar Todo",
+    "applyFilters": "Aplicar Filtros",
+    "viewMode": {
+      "paginated": "Paginado",
+      "infiniteScroll": "Desplazamiento Infinito"
+    },
+    "wishlist": {
+      "title": "Tu Lista de Deseos",
+      "empty": "Tu lista de deseos está vacía",
+      "emptyDescription": "Guarda artículos que te gusten haciendo clic en el ícono del corazón",
+      "browseMarketplace": "Explorar Mercado",
+      "itemCount": "{{count}} Artículo",
+      "itemCount_plural": "{{count}} Artículos",
+      "removedFromWishlist": "Eliminado de Lista de Deseos",
+      "removedDescription": "El artículo ha sido eliminado de tus elementos guardados"
+    }
+  },
+  "gallery": {
+    "noImagesFound": "No se encontraron imágenes",
+    "noImagesDescription": "No hay imágenes para mostrar en este momento. Intenta actualizar la página o regresa más tarde.",
+    "connectionProblem": "Problema de Conexión",
+    "connectionDescription": "Por favor verifica tu conexión a internet e intenta de nuevo.",
+    "failedToLoad": "Error al cargar imágenes",
+    "failedToLoadDescription": "Hubo un problema cargando la galería. Esto podría ser un problema temporal.",
+    "linkCopied": "Enlace Copiado",
+    "linkCopiedDescription": "El enlace del producto ha sido copiado al portapapeles",
+    "errorLoadingWishlist": "Error al cargar lista de deseos",
+    "errorLoadingWishlistDescription": "Hubo un problema cargando tus elementos guardados",
+    "errorRemovingItem": "Error",
+    "errorRemovingItemDescription": "Error al eliminar elemento de la lista de deseos"
+  },
+  "generator": {
+    "prompt": {
+      "label": "Describe lo que quieres crear",
+      "placeholder": "ej., Un bolso de cuero estilo vintage con hebillas de latón"
+    },
+    "category": {
+      "label": "Categoría del Artículo",
+      "placeholder": "Selecciona una categoría"
+    },
+    "aspectRatio": {
+      "label": "Relación de Aspecto"
+    },
+    "reference": {
+      "label": "Imagen de Referencia (Opcional)",
+      "uploadText": "Subir imagen de referencia",
+      "dragText": "o arrastra y suelta"
+    },
+    "generate": "Generar",
+    "generating": "Generando...",
+    "signInRequired": "Inicia sesión para generar imágenes",
+    "imagesRemaining": "{{count}} imagen restante",
+    "imagesRemaining_plural": "{{count}} imágenes restantes"
+  },
+  "messages": {
+    "welcomeBack": "¡Bienvenido de vuelta!",
+    "thanksForJoining": "¡Gracias por unirte!",
+    "operationSuccessful": "Operación completada exitosamente",
+    "somethingWentWrong": "Algo salió mal",
+    "pleaseCheckConnection": "Por favor, verifica tu conexión a internet",
+    "dataUpdated": "Datos actualizados exitosamente",
+    "changesSaved": "Cambios guardados",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar este elemento?",
+    "cannotUndoAction": "Esta acción no se puede deshacer"
   }
 }

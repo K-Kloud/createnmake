@@ -1,29 +1,67 @@
 
 {
-  "openMarket": "OpenMarket",
-  "searchPlaceholder": "Buscar diseños, productos, creadores...",
-  "advancedFilters": "Filtros Avanzados",
-  "filterOptions": "Opciones de Filtro",
-  "refineSearch": "Refina tu búsqueda con estos filtros adicionales",
-  "designStyle": "Estilo de Diseño",
-  "allStyles": "Todos los Estilos",
-  "minimalist": "Minimalista",
-  "vintage": "Vintage",
-  "modern": "Moderno",
-  "elegant": "Elegante",
-  "priceRange": "Rango de Precio",
-  "creatorReputation": "Reputación del Creador",
-  "allRatings": "Todas las Calificaciones",
-  "clearAll": "Limpiar Todo",
-  "applyFilters": "Aplicar Filtros",
-  "wishlist": {
-    "title": "Tu Lista de Deseos",
-    "empty": "Tu lista de deseos está vacía",
-    "emptyDescription": "Guarda artículos que te gusten haciendo clic en el ícono del corazón",
-    "browseMarketplace": "Explorar Mercado",
-    "itemCount": "{{count}} Artículo",
-    "itemCount_plural": "{{count}} Artículos",
-    "removedFromWishlist": "Eliminado de Lista de Deseos",
-    "removedDescription": "El artículo ha sido eliminado de tus elementos guardados"
+  "titles": {
+    "marketplace": "Mercado",
+    "featuredCollections": "Colecciones destacadas",
+    "categories": "Categorías",
+    "searchResults": "Resultados de búsqueda",
+    "productDetails": "Detalles del producto"
+  },
+  "filters": {
+    "filterBy": "Filtrar por",
+    "sortBy": "Ordenar por",
+    "category": "Categoría",
+    "priceRange": "Rango de precio",
+    "dateAdded": "Fecha agregada",
+    "popularity": "Popularidad",
+    "rating": "Calificación",
+    "newest": "Más nuevos",
+    "oldest": "Más antiguos",
+    "priceHighToLow": "Precio: Mayor a menor",
+    "priceLowToHigh": "Precio: Menor a mayor",
+    "mostPopular": "Más popular",
+    "topRated": "Mejor calificados"
+  },
+  "product": {
+    "addToCart": "Agregar al carrito",
+    "buyNow": "Comprar ahora",
+    "addToWishlist": "Agregar a lista de deseos",
+    "shareProduct": "Compartir producto",
+    "productDescription": "Descripción del producto",
+    "specifications": "Especificaciones",
+    "reviews": "Reseñas",
+    "relatedProducts": "Productos relacionados",
+    "createdBy": "Creado por",
+    "price": "Precio",
+    "availability": "Disponibilidad",
+    "inStock": "En stock",
+    "outOfStock": "Agotado",
+    "limitedStock": "Stock limitado"
+  },
+  "search": {
+    "searchPlaceholder": "Buscar diseños, productos, creadores...",
+    "noResults": "No se encontraron resultados",
+    "tryDifferentKeywords": "Prueba con palabras clave diferentes",
+    "searchSuggestions": "Sugerencias de búsqueda",
+    "popularSearches": "Búsquedas populares"
+  },
+  "categories": {
+    "clothing": "Ropa",
+    "accessories": "Accesorios",
+    "furniture": "Muebles",
+    "decor": "Decoración del hogar",
+    "electronics": "Electrónicos",
+    "jewelry": "Joyería",
+    "art": "Arte",
+    "crafts": "Manualidades",
+    "all": "Todas las categorías"
+  },
+  "actions": {
+    "viewDetails": "Ver detalles",
+    "quickView": "Vista rápida",
+    "compare": "Comparar",
+    "contact": "Contactar creador",
+    "customize": "Personalizar",
+    "requestQuote": "Solicitar cotización"
   }
 }
