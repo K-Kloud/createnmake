@@ -53,6 +53,11 @@ export const publicNavigation: NavigationItem[] = [
 // Partnership navigation for joining the platform
 export const partnershipNavigation: NavigationItem[] = [
   {
+    title: "Join Us",
+    href: "/join",
+    description: "Explore opportunities to join our creative community"
+  },
+  {
     title: "Join as Manufacturer",
     href: "/join/manufacturer",
     description: "Partner with creators to provide manufacturing services"
