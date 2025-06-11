@@ -1,5 +1,6 @@
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+
+import { PageLayout } from "@/components/layouts/PageLayout";
+import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
 
@@ -36,41 +37,40 @@ const Testimonials = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      <div className="container px-4 py-24 flex-grow">
-        <h1 className="text-4xl font-bold mb-8 gradient-text">Testimonials</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {testimonials.map((testimonial, index) => (
-            <Card key={index} className="glass-card">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-4 mb-4">
-                  <img
-                    src={testimonial.avatar}
-                    alt={testimonial.name}
-                    className="w-12 h-12 rounded-full"
+    <PageLayout 
+      title="Testimonials | Create2Make"
+      description="See what our users are saying about Create2Make"
+    >
+      <PageHeader title="Testimonials" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {testimonials.map((testimonial, index) => (
+          <Card key={index} className="glass-card">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4 mb-4">
+                <img
+                  src={testimonial.avatar}
+                  alt={testimonial.name}
+                  className="w-12 h-12 rounded-full"
+                />
+                <div>
+                  <h3 className="font-semibold">{testimonial.name}</h3>
+                  <p className="text-sm text-gray-400">{testimonial.role}</p>
+                </div>
+              </div>
+              <p className="text-gray-300 mb-4">{testimonial.content}</p>
+              <div className="flex space-x-1">
+                {Array.from({ length: testimonial.rating }).map((_, i) => (
+                  <Star
+                    key={i}
+                    className="h-5 w-5 fill-primary text-primary"
                   />
-                  <div>
-                    <h3 className="font-semibold">{testimonial.name}</h3>
-                    <p className="text-sm text-gray-400">{testimonial.role}</p>
-                  </div>
-                </div>
-                <p className="text-gray-300 mb-4">{testimonial.content}</p>
-                <div className="flex space-x-1">
-                  {Array.from({ length: testimonial.rating }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className="h-5 w-5 fill-primary text-primary"
-                    />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
-      <Footer />
-    </div>
+    </PageLayout>
   );
 };
 

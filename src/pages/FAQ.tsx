@@ -1,5 +1,6 @@
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+
+import { PageLayout } from "@/components/layouts/PageLayout";
+import { PageHeader } from "@/components/common/PageHeader";
 import {
   Accordion,
   AccordionContent,
@@ -28,23 +29,20 @@ const FAQ = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      <div className="container px-4 py-24 flex-grow">
-        <h1 className="text-4xl font-bold mb-8 gradient-text">
-          Frequently Asked Questions
-        </h1>
-        <Accordion type="single" collapsible className="w-full max-w-3xl mx-auto">
-          {faqs.map((faq, index) => (
-            <AccordionItem key={index} value={`item-${index}`}>
-              <AccordionTrigger>{faq.question}</AccordionTrigger>
-              <AccordionContent>{faq.answer}</AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </div>
-      <Footer />
-    </div>
+    <PageLayout 
+      title="FAQ | Create2Make"
+      description="Find answers to frequently asked questions about Create2Make"
+    >
+      <PageHeader title="Frequently Asked Questions" />
+      <Accordion type="single" collapsible className="w-full max-w-3xl mx-auto">
+        {faqs.map((faq, index) => (
+          <AccordionItem key={index} value={`item-${index}`}>
+            <AccordionTrigger>{faq.question}</AccordionTrigger>
+            <AccordionContent>{faq.answer}</AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </PageLayout>
   );
 };
 
