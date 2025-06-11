@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ImageIcon } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-
 interface PromptInputProps {
   prompt: string;
   onPromptChange: (value: string) => void;
@@ -16,7 +14,6 @@ interface PromptInputProps {
   isGenerating: boolean;
   disabled?: boolean;
 }
-
 export const PromptInput = ({
   prompt,
   onPromptChange,
@@ -30,7 +27,6 @@ export const PromptInput = ({
   // Handle file change for reference image
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0] || null;
-    
     if (selectedFile) {
       // Check file size (max 10MB)
       const maxSizeInBytes = 10 * 1024 * 1024; // 10MB
@@ -38,7 +34,7 @@ export const PromptInput = ({
         toast({
           title: "File too large",
           description: "Please select an image smaller than 10MB.",
-          variant: "destructive",
+          variant: "destructive"
         });
         return;
       }
@@ -48,17 +44,15 @@ export const PromptInput = ({
         toast({
           title: "Invalid file type",
           description: "Please select a valid image file.",
-          variant: "destructive",
+          variant: "destructive"
         });
         return;
       }
-
       onReferenceImageUpload(selectedFile);
       setPopoverOpen(false);
-      
       toast({
         title: "Reference image added",
-        description: "Your reference image has been uploaded successfully.",
+        description: "Your reference image has been uploaded successfully."
       });
     }
   };
@@ -70,19 +64,10 @@ export const PromptInput = ({
       onGenerate();
     }
   };
-  
-  return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium">Prompt</label>
+  return <div className="space-y-2">
+      <label className="text-sm font-medium">Create-2-Make with AI</label>
       <div className="relative flex items-center bg-black/30 border border-white/10 rounded-lg overflow-hidden">
-        <Input 
-          value={prompt} 
-          onChange={e => onPromptChange(e.target.value)} 
-          onKeyDown={handleKeyDown}
-          placeholder="Ask anything, create anything..." 
-          disabled={isGenerating || disabled} 
-          className="border-0 bg-transparent pr-24 focus-visible:ring-0 focus-visible:ring-offset-0 my-[24px] mx-0 px-0 py-0" 
-        />
+        <Input value={prompt} onChange={e => onPromptChange(e.target.value)} onKeyDown={handleKeyDown} placeholder="Ask anything, create anything..." disabled={isGenerating || disabled} className="border-0 bg-transparent pr-24 focus-visible:ring-0 focus-visible:ring-offset-0 my-[24px] mx-0 px-0 py-0" />
         <div className="absolute right-2 flex items-center space-x-1">
           <TooltipProvider>
             <Tooltip>
@@ -103,15 +88,7 @@ export const PromptInput = ({
                       </div>
                       <span className="text-sm font-medium">Add reference image</span>
                       <p className="text-xs text-muted-foreground mt-1">PNG, JPG, GIF up to 10MB</p>
-                      <input 
-                        id="prompt-file-upload" 
-                        name="prompt-file-upload" 
-                        type="file" 
-                        accept="image/*" 
-                        className="sr-only" 
-                        onChange={handleFileChange} 
-                        disabled={isGenerating || disabled} 
-                      />
+                      <input id="prompt-file-upload" name="prompt-file-upload" type="file" accept="image/*" className="sr-only" onChange={handleFileChange} disabled={isGenerating || disabled} />
                     </label>
                   </PopoverContent>
                 </Popover>
@@ -135,17 +112,10 @@ export const PromptInput = ({
             </Tooltip>
           </TooltipProvider>
 
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground" 
-            onClick={onGenerate} 
-            disabled={isGenerating || disabled || !prompt.trim()}
-          >
+          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground" onClick={onGenerate} disabled={isGenerating || disabled || !prompt.trim()}>
             {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
