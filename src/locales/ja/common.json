@@ -1,4 +1,3 @@
-
 {
   "buttons": {
     "create": "作成",
@@ -21,7 +20,24 @@
     "upload": "アップロード",
     "startCreating": "作成を始める",
     "viewOpenMarket": "OpenMarketを見る",
-    "exploreFeatures": "機能を探る"
+    "exploreFeatures": "機能を探る",
+    "makeThis": "これを作る",
+    "post": "投稿"
+  },
+  "imageCard": {
+    "showPrompt": "プロンプトを表示",
+    "hidePrompt": "プロンプトを非表示",
+    "signInToLike": "画像にいいねするにはサインインしてください",
+    "signInRequired": "サインインが必要",
+    "clickToEditPrice": "価格を編集するにはクリック",
+    "comments": "コメント",
+    "addComment": "コメントを追加...",
+    "shareTitle": "{creator}によって生成",
+    "shareText": "この素晴らしいAI生成画像をチェックしてください！",
+    "shareSuccess": "画像を正常に共有しました！",
+    "shareLinkCopied": "画像リンクがクリップボードにコピーされました！",
+    "shareError": "画像を共有できませんでした。もう一度お試しください。",
+    "shareNoImage": "共有する画像がありません"
   },
   "hero": {
     "title": "AIで作成-2-製作",

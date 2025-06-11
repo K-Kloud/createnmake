@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ImagePromptProps {
   prompt: string;
@@ -17,6 +18,7 @@ export const ImagePrompt = ({
   className = ""
 }: ImagePromptProps) => {
   const [showPrompt, setShowPrompt] = useState(initialShowPrompt);
+  const { t } = useTranslation('common');
   
   // Truncate prompt if it's too long
   const displayPrompt = prompt.length > maxLength ? 
@@ -32,10 +34,10 @@ export const ImagePrompt = ({
         size="icon" 
         onClick={() => setShowPrompt(!showPrompt)}
         className="ml-2 flex-shrink-0"
-        title={showPrompt ? 'Hide prompt' : 'Show prompt'}
+        title={showPrompt ? t('imageCard.hidePrompt') : t('imageCard.showPrompt')}
       >
         {showPrompt ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-        <span className="sr-only">{showPrompt ? 'Hide' : 'Show'} Prompt</span>
+        <span className="sr-only">{showPrompt ? t('imageCard.hidePrompt') : t('imageCard.showPrompt')}</span>
       </Button>
     </div>
   );

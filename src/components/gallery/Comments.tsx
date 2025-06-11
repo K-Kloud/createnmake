@@ -1,8 +1,10 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MessageSquare } from "lucide-react";
 import { CommentList } from "./CommentList";
+import { useTranslation } from "react-i18next";
 
 interface Reply {
   id: number;
@@ -36,6 +38,7 @@ interface CommentsProps {
 
 export const Comments = ({ imageId, comments, onAddComment, onAddReply }: CommentsProps) => {
   const [newComment, setNewComment] = useState("");
+  const { t } = useTranslation('common');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,18 +56,18 @@ export const Comments = ({ imageId, comments, onAddComment, onAddReply }: Commen
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
         <MessageSquare className="h-4 w-4" />
-        <span>{comments.length} Comments</span>
+        <span>{comments.length} {t('imageCard.comments')}</span>
       </div>
       
       <form onSubmit={handleSubmit} className="flex space-x-2">
         <Input
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Add a comment..."
+          placeholder={t('imageCard.addComment')}
           className="flex-1"
         />
         <Button type="submit" size="sm">
-          Post
+          {t('buttons.post')}
         </Button>
       </form>
 

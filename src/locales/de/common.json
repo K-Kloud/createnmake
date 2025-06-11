@@ -1,4 +1,3 @@
-
 {
   "buttons": {
     "create": "Erstellen",
@@ -21,7 +20,24 @@
     "upload": "Hochladen",
     "startCreating": "Mit dem Erstellen beginnen",
     "viewOpenMarket": "OpenMarket anzeigen",
-    "exploreFeatures": "Funktionen erkunden"
+    "exploreFeatures": "Funktionen erkunden",
+    "makeThis": "Das Machen",
+    "post": "Posten"
+  },
+  "imageCard": {
+    "showPrompt": "Eingabeaufforderung anzeigen",
+    "hidePrompt": "Eingabeaufforderung ausblenden",
+    "signInToLike": "Melden Sie sich an, um Bilder zu liken",
+    "signInRequired": "Anmeldung erforderlich",
+    "clickToEditPrice": "Klicken Sie, um den Preis zu bearbeiten",
+    "comments": "Kommentare",
+    "addComment": "Einen Kommentar hinzufügen...",
+    "shareTitle": "Generiert von {creator}",
+    "shareText": "Schauen Sie sich dieses erstaunliche KI-generierte Bild an!",
+    "shareSuccess": "Bild erfolgreich geteilt!",
+    "shareLinkCopied": "Bildlink in die Zwischenablage kopiert!",
+    "shareError": "Bild konnte nicht geteilt werden. Bitte versuchen Sie es erneut.",
+    "shareNoImage": "Kein Bild zum Teilen verfügbar"
   },
   "hero": {
     "title": "Erstellen-2-Machen mit KI",

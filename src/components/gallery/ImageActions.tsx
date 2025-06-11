@@ -4,6 +4,7 @@ import { Heart, Eye, MessageSquare, Package } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 interface ImageActionsProps {
   metrics: {
@@ -28,6 +29,7 @@ export const ImageActions = ({
 }: ImageActionsProps) => {
   const { session } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation('common');
   const [isAnimating, setIsAnimating] = useState(false);
   const [showPlusOne, setShowPlusOne] = useState(false);
   const [displayCount, setDisplayCount] = useState(metrics.like || 0);
@@ -80,8 +82,8 @@ export const ImageActions = ({
   const handleLikeClick = () => {
     if (!session?.user) {
       toast({
-        title: "Sign in required",
-        description: "Please sign in to like images",
+        title: t('imageCard.signInRequired'),
+        description: t('imageCard.signInToLike'),
         variant: "destructive",
       });
       return;
@@ -144,7 +146,7 @@ export const ImageActions = ({
         className="gap-2 button-glow"
       >
         <Package className="h-4 w-4" />
-        Make This
+        {t('buttons.makeThis')}
       </Button>
     </div>
   );

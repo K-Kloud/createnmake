@@ -1,4 +1,3 @@
-
 {
   "buttons": {
     "create": "Créer",
@@ -21,7 +20,24 @@
     "upload": "Téléverser",
     "startCreating": "Commencer à Créer",
     "viewOpenMarket": "Voir OpenMarket",
-    "exploreFeatures": "Explorer les Fonctionnalités"
+    "exploreFeatures": "Explorer les Fonctionnalités",
+    "makeThis": "Faire Ceci",
+    "post": "Publier"
+  },
+  "imageCard": {
+    "showPrompt": "Afficher l'invite",
+    "hidePrompt": "Masquer l'invite",
+    "signInToLike": "Connectez-vous pour aimer les images",
+    "signInRequired": "Connexion requise",
+    "clickToEditPrice": "Cliquez pour modifier le prix",
+    "comments": "Commentaires",
+    "addComment": "Ajouter un commentaire...",
+    "shareTitle": "Généré par {creator}",
+    "shareText": "Découvrez cette incroyable image générée par IA !",
+    "shareSuccess": "Image partagée avec succès !",
+    "shareLinkCopied": "Lien de l'image copié dans le presse-papiers !",
+    "shareError": "Impossible de partager l'image. Veuillez réessayer.",
+    "shareNoImage": "Aucune image disponible à partager"
   },
   "status": {
     "success": "Succès",

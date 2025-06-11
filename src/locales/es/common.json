@@ -1,4 +1,3 @@
-
 {
   "buttons": {
     "create": "Crear",
@@ -29,7 +28,24 @@
     "removeFromWishlist": "Eliminar de Lista de Deseos",
     "addToWishlist": "Agregar a Lista de Deseos",
     "retry": "Reintentar",
-    "view": "Ver"
+    "view": "Ver",
+    "makeThis": "Hacer Esto",
+    "post": "Publicar"
+  },
+  "imageCard": {
+    "showPrompt": "Mostrar indicación",
+    "hidePrompt": "Ocultar indicación",
+    "signInToLike": "Inicia sesión para dar me gusta a las imágenes",
+    "signInRequired": "Se requiere iniciar sesión",
+    "clickToEditPrice": "Haz clic para editar el precio",
+    "comments": "Comentarios",
+    "addComment": "Agregar un comentario...",
+    "shareTitle": "Generado por {creator}",
+    "shareText": "¡Mira esta increíble imagen generada por IA!",
+    "shareSuccess": "¡Imagen compartida exitosamente!",
+    "shareLinkCopied": "¡Enlace de imagen copiado al portapapeles!",
+    "shareError": "No se pudo compartir la imagen. Por favor, inténtalo de nuevo.",
+    "shareNoImage": "No hay imagen disponible para compartir"
   },
   "status": {
     "success": "Éxito",
