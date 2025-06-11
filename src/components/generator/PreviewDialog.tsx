@@ -1,3 +1,4 @@
+
 import {
   Dialog,
   DialogContent,
@@ -75,14 +76,15 @@ export const PreviewDialog = ({
           <div className="relative border border-border/20 rounded-lg overflow-hidden bg-muted/30">
             <AspectRatio ratio={getRatio(selectedRatio)}>
               {isGenerating ? (
-                <GeneratingState />
+                <GeneratingState selectedRatio={selectedRatio} />
               ) : currentImageUrl ? (
                 <ImagePreview 
                   imageUrl={currentImageUrl} 
                   prompt={prompt} 
+                  onLike={onLike || (() => {})}
                 />
               ) : (
-                <EmptyPreview />
+                <EmptyPreview selectedRatio={selectedRatio} />
               )}
             </AspectRatio>
           </div>
