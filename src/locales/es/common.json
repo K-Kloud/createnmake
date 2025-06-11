@@ -21,7 +21,15 @@
     "upload": "Subir",
     "startCreating": "Comenzar a Crear",
     "viewOpenMarket": "Ver OpenMarket",
-    "exploreFeatures": "Explorar Características"
+    "exploreFeatures": "Explorar Características",
+    "refresh": "Actualizar",
+    "viewProduct": "Ver Producto",
+    "checkout": "Finalizar Compra",
+    "continueShopping": "Continuar Comprando",
+    "removeFromWishlist": "Eliminar de Lista de Deseos",
+    "addToWishlist": "Agregar a Lista de Deseos",
+    "retry": "Reintentar",
+    "view": "Ver"
   },
   "status": {
     "success": "Éxito",
@@ -170,7 +178,58 @@
     "creatorReputation": "Reputación del Creador",
     "allRatings": "Todas las Calificaciones",
     "clearAll": "Limpiar Todo",
-    "applyFilters": "Aplicar Filtros"
+    "applyFilters": "Aplicar Filtros",
+    "viewMode": {
+      "paginated": "Paginado",
+      "infiniteScroll": "Desplazamiento Infinito"
+    },
+    "wishlist": {
+      "title": "Tu Lista de Deseos",
+      "empty": "Tu lista de deseos está vacía",
+      "emptyDescription": "Guarda artículos que te gusten haciendo clic en el ícono del corazón",
+      "browseMarketplace": "Explorar Mercado",
+      "itemCount": "{{count}} Artículo",
+      "itemCount_plural": "{{count}} Artículos",
+      "removedFromWishlist": "Eliminado de Lista de Deseos",
+      "removedDescription": "El artículo ha sido eliminado de tus elementos guardados"
+    }
+  },
+  "gallery": {
+    "noImagesFound": "No se encontraron imágenes",
+    "noImagesDescription": "No hay imágenes para mostrar en este momento. Intenta actualizar la página o regresa más tarde.",
+    "connectionProblem": "Problema de Conexión",
+    "connectionDescription": "Por favor verifica tu conexión a internet e intenta de nuevo.",
+    "failedToLoad": "Error al cargar imágenes",
+    "failedToLoadDescription": "Hubo un problema cargando la galería. Esto podría ser un problema temporal.",
+    "linkCopied": "Enlace Copiado",
+    "linkCopiedDescription": "El enlace del producto ha sido copiado al portapapeles",
+    "errorLoadingWishlist": "Error al cargar lista de deseos",
+    "errorLoadingWishlistDescription": "Hubo un problema cargando tus elementos guardados",
+    "errorRemovingItem": "Error",
+    "errorRemovingItemDescription": "Error al eliminar elemento de la lista de deseos"
+  },
+  "generator": {
+    "prompt": {
+      "label": "Describe lo que quieres crear",
+      "placeholder": "ej., Un bolso de cuero estilo vintage con hebillas de latón"
+    },
+    "category": {
+      "label": "Categoría del Artículo",
+      "placeholder": "Selecciona una categoría"
+    },
+    "aspectRatio": {
+      "label": "Relación de Aspecto"
+    },
+    "reference": {
+      "label": "Imagen de Referencia (Opcional)",
+      "uploadText": "Subir imagen de referencia",
+      "dragText": "o arrastra y suelta"
+    },
+    "generate": "Generar",
+    "generating": "Generando...",
+    "signInRequired": "Inicia sesión para generar imágenes",
+    "imagesRemaining": "{{count}} imagen restante",
+    "imagesRemaining_plural": "{{count}} imágenes restantes"
   },
   "messages": {
     "welcomeBack": "¡Bienvenido de vuelta!",

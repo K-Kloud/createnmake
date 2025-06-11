@@ -18,6 +18,7 @@ import { GalleryImage } from "@/types/gallery";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 
 export interface WishlistItem extends GalleryImage {}
 
@@ -29,6 +30,7 @@ export const Wishlist = ({ onProductClick }: WishlistProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation('common');
   const [isOpen, setIsOpen] = useState(false);
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -100,8 +102,8 @@ export const Wishlist = ({ onProductClick }: WishlistProps) => {
     } catch (error) {
       console.error('Error loading wishlist:', error);
       toast({
-        title: "Failed to load wishlist",
-        description: "There was a problem loading your saved items",
+        title: t('gallery.errorLoadingWishlist'),
+        description: t('gallery.errorLoadingWishlistDescription'),
         variant: "destructive"
       });
     } finally {
@@ -125,14 +127,14 @@ export const Wishlist = ({ onProductClick }: WishlistProps) => {
       setItems(items.filter(i => i.id !== item.id));
       
       toast({
-        title: "Removed from Wishlist",
-        description: "Item has been removed from your saved items"
+        title: t('marketplace.wishlist.removedFromWishlist'),
+        description: t('marketplace.wishlist.removedDescription')
       });
     } catch (error) {
       console.error('Error removing item:', error);
       toast({
-        title: "Error",
-        description: "Failed to remove item from wishlist",
+        title: t('gallery.errorRemovingItem'),
+        description: t('gallery.errorRemovingItemDescription'),
         variant: "destructive"
       });
     }
@@ -157,11 +159,11 @@ export const Wishlist = ({ onProductClick }: WishlistProps) => {
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-md">
         <SheetHeader>
-          <SheetTitle>Your Wishlist</SheetTitle>
+          <SheetTitle>{t('marketplace.wishlist.title')}</SheetTitle>
           <SheetDescription>
             {items.length > 0 
-              ? `You have ${items.length} saved item${items.length > 1 ? 's' : ''}`
-              : 'Your wishlist is empty'
+              ? t('marketplace.wishlist.itemCount', { count: items.length })
+              : t('marketplace.wishlist.empty')
             }
           </SheetDescription>
         </SheetHeader>
@@ -182,13 +184,13 @@ export const Wishlist = ({ onProductClick }: WishlistProps) => {
           ) : items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-40 text-center">
               <Heart className="h-12 w-12 text-muted-foreground mb-2" />
-              <p className="text-muted-foreground">Your wishlist is empty</p>
+              <p className="text-muted-foreground">{t('marketplace.wishlist.empty')}</p>
               <p className="text-sm text-muted-foreground mb-4">
-                Save items you like by clicking the heart icon
+                {t('marketplace.wishlist.emptyDescription')}
               </p>
               <SheetClose asChild>
                 <Button onClick={() => navigate("/marketplace")}>
-                  Browse Marketplace
+                  {t('marketplace.wishlist.browseMarketplace')}
                 </Button>
               </SheetClose>
             </div>
@@ -232,7 +234,7 @@ export const Wishlist = ({ onProductClick }: WishlistProps) => {
                         setIsOpen(false);
                       }}
                     >
-                      View
+                      {t('buttons.view')}
                     </Button>
                   </div>
                 </div>
@@ -245,19 +247,19 @@ export const Wishlist = ({ onProductClick }: WishlistProps) => {
           <SheetFooter className="sm:justify-between flex-col sm:flex-row gap-2">
             <div className="flex items-center justify-between w-full sm:w-auto">
               <span className="text-sm font-medium">
-                {items.length} Item{items.length !== 1 ? "s" : ""}
+                {t('marketplace.wishlist.itemCount', { count: items.length })}
               </span>
               <Button 
                 variant="link" 
                 className="text-sm p-0"
                 onClick={() => navigate('/marketplace')}
               >
-                Continue Shopping
+                {t('buttons.continueShopping')}
               </Button>
             </div>
             <Button onClick={handleCheckout} className="w-full sm:w-auto">
               <ShoppingBag className="mr-2 h-4 w-4" />
-              Checkout
+              {t('buttons.checkout')}
             </Button>
           </SheetFooter>
         )}

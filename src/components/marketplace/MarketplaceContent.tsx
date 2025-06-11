@@ -10,6 +10,7 @@ import { Wishlist } from "@/components/marketplace/Wishlist";
 import { useToast } from "@/hooks/use-toast";
 import { ImprovedImageGallery } from "@/components/gallery/ImprovedImageGallery";
 import { useInView } from "react-intersection-observer";
+import { useTranslation } from "react-i18next";
 
 interface MarketplaceContentProps {
   isLoading: boolean;
@@ -37,6 +38,7 @@ export const MarketplaceContent = ({
   onRetry
 }: MarketplaceContentProps) => {
   const { toast } = useToast();
+  const { t } = useTranslation('common');
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [isProductDetailOpen, setIsProductDetailOpen] = useState(false);
   const [similarProducts, setSimilarProducts] = useState<GalleryImage[]>([]);
@@ -96,8 +98,8 @@ export const MarketplaceContent = ({
     navigator.clipboard.writeText(productUrl);
     
     toast({
-      title: "Link Copied",
-      description: "Product link has been copied to your clipboard"
+      title: t('gallery.linkCopied'),
+      description: t('gallery.linkCopiedDescription')
     });
   };
 
@@ -129,14 +131,14 @@ export const MarketplaceContent = ({
             className={`px-3 py-1 rounded-md ${viewMode === "paginated" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
             aria-label="Switch to paginated view"
           >
-            Paginated
+            {t('marketplace.viewMode.paginated')}
           </button>
           <button 
             onClick={() => setViewMode("infinite")}
             className={`px-3 py-1 rounded-md ${viewMode === "infinite" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
             aria-label="Switch to infinite scroll view"
           >
-            Infinite Scroll
+            {t('marketplace.viewMode.infiniteScroll')}
           </button>
         </div>
         <Wishlist onProductClick={handleImageClick} />

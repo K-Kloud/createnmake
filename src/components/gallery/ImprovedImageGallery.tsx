@@ -6,6 +6,7 @@ import { GalleryImage } from "@/types/gallery";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw, AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ImprovedImageGalleryProps {
   images: GalleryImage[];
@@ -36,6 +37,7 @@ export const ImprovedImageGallery = ({
 }: ImprovedImageGalleryProps) => {
   const { ref, inView } = useInView();
   const { handleError } = useErrorHandler();
+  const { t } = useTranslation('common');
   const [isEmpty, setIsEmpty] = useState<boolean>(false);
 
   useEffect(() => {
@@ -65,18 +67,18 @@ export const ImprovedImageGallery = ({
       <div className="flex flex-col items-center justify-center p-12 text-center">
         <AlertCircle className="h-12 w-12 text-destructive mb-4" />
         <h3 className="text-xl font-semibold mb-4">
-          {isNetworkError ? "Connection Problem" : "Failed to load images"}
+          {isNetworkError ? t('gallery.connectionProblem') : t('gallery.failedToLoad')}
         </h3>
         <p className="text-muted-foreground mb-6 max-w-md">
           {isNetworkError 
-            ? "Please check your internet connection and try again."
-            : error.message || "There was a problem loading the gallery. This might be a temporary issue."
+            ? t('gallery.connectionDescription')
+            : error.message || t('gallery.failedToLoadDescription')
           }
         </p>
         {onRetry && (
           <Button onClick={onRetry} className="flex items-center gap-2">
             <RefreshCcw className="h-4 w-4" />
-            Try Again
+            {t('buttons.tryAgain')}
           </Button>
         )}
       </div>
@@ -99,14 +101,14 @@ export const ImprovedImageGallery = ({
   if (isEmpty) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
-        <h3 className="text-xl font-semibold">No images found</h3>
+        <h3 className="text-xl font-semibold">{t('gallery.noImagesFound')}</h3>
         <p className="text-muted-foreground mt-2">
-          There are no images to display at the moment. Try refreshing the page or check back later.
+          {t('gallery.noImagesDescription')}
         </p>
         {onRetry && (
           <Button onClick={onRetry} variant="outline" className="mt-4">
             <RefreshCcw className="h-4 w-4 mr-2" />
-            Refresh
+            {t('buttons.refresh')}
           </Button>
         )}
       </div>

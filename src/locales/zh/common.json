@@ -21,7 +21,15 @@
     "upload": "上传",
     "startCreating": "开始创建",
     "viewOpenMarket": "查看OpenMarket",
-    "exploreFeatures": "探索功能"
+    "exploreFeatures": "探索功能",
+    "refresh": "刷新",
+    "viewProduct": "查看产品",
+    "checkout": "结账",
+    "continueShopping": "继续购物",
+    "removeFromWishlist": "从心愿单移除",
+    "addToWishlist": "添加到心愿单",
+    "retry": "重试",
+    "view": "查看"
   },
   "hero": {
     "title": "用AI创建-2-制作",
@@ -131,7 +139,57 @@
     "creatorReputation": "创作者声誉",
     "allRatings": "所有评分",
     "clearAll": "清除全部",
-    "applyFilters": "应用过滤器"
+    "applyFilters": "应用过滤器",
+    "viewMode": {
+      "paginated": "分页",
+      "infiniteScroll": "无限滚动"
+    },
+    "wishlist": {
+      "title": "您的心愿单",
+      "empty": "您的心愿单是空的",
+      "emptyDescription": "点击心形图标保存您喜欢的物品",
+      "browseMarketplace": "浏览市场",
+      "itemCount": "{{count}} 个物品",
+      "removedFromWishlist": "已从心愿单移除",
+      "removedDescription": "物品已从您的收藏中移除"
+    }
+  },
+  "gallery": {
+    "noImagesFound": "未找到图像",
+    "noImagesDescription": "目前没有图像可显示。请尝试刷新页面或稍后再查看。",
+    "connectionProblem": "连接问题",
+    "connectionDescription": "请检查您的网络连接并重试。",
+    "failedToLoad": "加载图像失败",
+    "failedToLoadDescription": "加载图库时出现问题。这可能是暂时性问题。",
+    "linkCopied": "链接已复制",
+    "linkCopiedDescription": "产品链接已复制到剪贴板",
+    "errorLoadingWishlist": "加载心愿单失败",
+    "errorLoadingWishlistDescription": "加载您的收藏时出现问题",
+    "errorRemovingItem": "错误",
+    "errorRemovingItemDescription": "从心愿单移除物品失败"
+  },
+  "generator": {
+    "prompt": {
+      "label": "描述您想要创建的内容",
+      "placeholder": "例如：带黄铜扣的复古风格皮手袋"
+    },
+    "category": {
+      "label": "物品类别",
+      "placeholder": "选择类别"
+    },
+    "aspectRatio": {
+      "label": "宽高比"
+    },
+    "reference": {
+      "label": "参考图像（可选）",
+      "uploadText": "上传参考图像",
+      "dragText": "或拖放"
+    },
+    "generate": "生成",
+    "generating": "生成中...",
+    "signInRequired": "需要登录才能生成图像",
+    "imagesRemaining": "剩余 {{count}} 张图像",
+    "imagesRemaining_plural": "剩余 {{count}} 张图像"
   },
   "common": {
     "home": "首页",

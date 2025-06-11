@@ -21,7 +21,15 @@
     "upload": "Upload",
     "startCreating": "Start Creating",
     "viewOpenMarket": "View OpenMarket",
-    "exploreFeatures": "Explore Features"
+    "exploreFeatures": "Explore Features",
+    "refresh": "Refresh",
+    "viewProduct": "View Product",
+    "checkout": "Checkout",
+    "continueShopping": "Continue Shopping",
+    "removeFromWishlist": "Remove from Wishlist",
+    "addToWishlist": "Add to Wishlist",
+    "retry": "Retry",
+    "view": "View"
   },
   "status": {
     "success": "Success",
@@ -170,7 +178,58 @@
     "creatorReputation": "Creator Reputation",
     "allRatings": "All Ratings",
     "clearAll": "Clear All",
-    "applyFilters": "Apply Filters"
+    "applyFilters": "Apply Filters",
+    "viewMode": {
+      "paginated": "Paginated",
+      "infiniteScroll": "Infinite Scroll"
+    },
+    "wishlist": {
+      "title": "Your Wishlist",
+      "empty": "Your wishlist is empty",
+      "emptyDescription": "Save items you like by clicking the heart icon",
+      "browseMarketplace": "Browse Marketplace",
+      "itemCount": "{{count}} Item",
+      "itemCount_plural": "{{count}} Items",
+      "removedFromWishlist": "Removed from Wishlist",
+      "removedDescription": "Item has been removed from your saved items"
+    }
+  },
+  "gallery": {
+    "noImagesFound": "No images found",
+    "noImagesDescription": "There are no images to display at the moment. Try refreshing the page or check back later.",
+    "connectionProblem": "Connection Problem",
+    "connectionDescription": "Please check your internet connection and try again.",
+    "failedToLoad": "Failed to load images",
+    "failedToLoadDescription": "There was a problem loading the gallery. This might be a temporary issue.",
+    "linkCopied": "Link Copied",
+    "linkCopiedDescription": "Product link has been copied to your clipboard",
+    "errorLoadingWishlist": "Failed to load wishlist",
+    "errorLoadingWishlistDescription": "There was a problem loading your saved items",
+    "errorRemovingItem": "Error",
+    "errorRemovingItemDescription": "Failed to remove item from wishlist"
+  },
+  "generator": {
+    "prompt": {
+      "label": "Describe what you want to create",
+      "placeholder": "e.g., A vintage-style leather handbag with brass buckles"
+    },
+    "category": {
+      "label": "Item Category",
+      "placeholder": "Select a category"
+    },
+    "aspectRatio": {
+      "label": "Aspect Ratio"
+    },
+    "reference": {
+      "label": "Reference Image (Optional)",
+      "uploadText": "Upload reference image",
+      "dragText": "or drag and drop"
+    },
+    "generate": "Generate",
+    "generating": "Generating...",
+    "signInRequired": "Sign in to generate images",
+    "imagesRemaining": "{{count}} image remaining",
+    "imagesRemaining_plural": "{{count}} images remaining"
   },
   "messages": {
     "welcomeBack": "Welcome back!",
