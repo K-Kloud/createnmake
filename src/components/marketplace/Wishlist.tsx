@@ -51,7 +51,12 @@ export const Wishlist = () => {
         if (error) throw error;
 
         const items: GalleryImage[] = data?.map(item => {
-          const img = item.generated_images;
+          const img = Array.isArray(item.generated_images) ? item.generated_images[0] : item.generated_images;
+          if (!img) return null;
+          
+          // Handle profiles - it comes as an array, take the first element
+          const profile = Array.isArray(img.profiles) ? img.profiles[0] : img.profiles;
+          
           return {
             id: img.id,
             url: img.image_url || '',
@@ -61,8 +66,8 @@ export const Wishlist = () => {
             views: img.views || 0,
             produced: 0,
             creator: {
-              name: img.profiles?.username || 'Anonymous',
-              avatar: img.profiles?.avatar_url || '/placeholder.svg'
+              name: profile?.username || 'Anonymous',
+              avatar: profile?.avatar_url || '/placeholder.svg'
             },
             createdAt: new Date(img.created_at),
             timeAgo: 'Just now',
@@ -76,7 +81,7 @@ export const Wishlist = () => {
             user_id: img.user_id,
             price: img.price
           };
-        }) || [];
+        }).filter(Boolean) || [];
         
         setWishlistItems(items);
       } catch (error) {
