@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,24 +25,65 @@ export const Wishlist = () => {
       }
 
       try {
+        // Get liked images for the user
         const { data, error } = await supabase
-          .from('wishlist_items')
-          .select('image_id, images(*)')
+          .from('image_likes')
+          .select(`
+            image_id,
+            generated_images!image_id (
+              id,
+              image_url,
+              prompt,
+              likes,
+              views,
+              created_at,
+              user_id,
+              price,
+              profiles!user_id (
+                username,
+                avatar_url
+              )
+            )
+          `)
           .eq('user_id', session.user.id)
           .order('created_at', { ascending: false });
 
         if (error) throw error;
 
-        const items = data.map(item => ({
-          ...(item.images as any),
-          hasLiked: true,
-        })) as GalleryImage[];
+        const items: GalleryImage[] = data?.map(item => {
+          const img = item.generated_images;
+          return {
+            id: img.id,
+            url: img.image_url || '',
+            prompt: img.prompt || '',
+            likes: img.likes || 0,
+            comments: [],
+            views: img.views || 0,
+            produced: 0,
+            creator: {
+              name: img.profiles?.username || 'Anonymous',
+              avatar: img.profiles?.avatar_url || '/placeholder.svg'
+            },
+            createdAt: new Date(img.created_at),
+            timeAgo: 'Just now',
+            hasLiked: true,
+            image_likes: [],
+            metrics: {
+              like: img.likes || 0,
+              comment: 0,
+              view: img.views || 0,
+            },
+            user_id: img.user_id,
+            price: img.price
+          };
+        }) || [];
+        
         setWishlistItems(items);
       } catch (error) {
         console.error('Error fetching wishlist items:', error);
         toast({
-          title: t('gallery:errorLoadingWishlist'),
-          description: t('gallery:errorLoadingWishlistDescription'),
+          title: t('wishlist.empty'),
+          description: t('wishlist.emptyDescription'),
           variant: "destructive",
         });
       } finally {
@@ -57,7 +99,7 @@ export const Wishlist = () => {
 
     try {
       const { error } = await supabase
-        .from('wishlist_items')
+        .from('image_likes')
         .delete()
         .eq('user_id', session.user.id)
         .eq('image_id', imageId);
@@ -73,8 +115,8 @@ export const Wishlist = () => {
     } catch (error) {
       console.error('Error removing from wishlist:', error);
       toast({
-        title: t('gallery:errorRemovingItem'),
-        description: t('gallery:errorRemovingItemDescription'),
+        title: "Error",
+        description: "Failed to remove item from wishlist",
         variant: "destructive",
       });
     }

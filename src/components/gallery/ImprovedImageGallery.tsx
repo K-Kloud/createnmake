@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Wifi, WifiOff } from "lucide-react";
@@ -13,11 +14,31 @@ import { useTranslation } from "react-i18next";
 interface ImprovedImageGalleryProps {
   onImageClick?: (image: GalleryImage) => void;
   showUserImagesOnly?: boolean;
+  images?: GalleryImage[];
+  onLike?: (imageId: number) => void;
+  onView?: (imageId: number) => void;
+  onAddComment?: (imageId: number, comment: string) => void;
+  onAddReply?: (imageId: number, commentId: number, reply: string) => void;
+  onLoadMore?: () => void;
+  hasMore?: boolean;
+  isLoading?: boolean;
+  error?: Error | null;
+  onRetry?: () => void;
 }
 
 export const ImprovedImageGallery = ({ 
   onImageClick, 
-  showUserImagesOnly = false 
+  showUserImagesOnly = false,
+  images: propImages,
+  onLike: propOnLike,
+  onView: propOnView,
+  onAddComment: propOnAddComment,
+  onAddReply: propOnAddReply,
+  onLoadMore,
+  hasMore,
+  isLoading: propIsLoading,
+  error: propError,
+  onRetry: propOnRetry
 }: ImprovedImageGalleryProps) => {
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,32 +47,59 @@ export const ImprovedImageGallery = ({
   const { toast } = useToast();
   const { t } = useTranslation('gallery');
   
-  const { likeImage, isLiking } = useLikeImage();
-  const { addComment, addReply } = useCommentImage();
+  const likeMutation = useLikeImage();
+  const { commentMutation, replyMutation } = useCommentImage();
+
+  // Use props if provided, otherwise fetch internally
+  const displayImages = propImages || images;
+  const displayLoading = propIsLoading !== undefined ? propIsLoading : loading;
+  const displayError = propError !== undefined ? propError?.message : error;
 
   const fetchImages = useCallback(async () => {
+    if (propImages) return; // Don't fetch if images are provided via props
+    
     setLoading(true);
     setError(null);
     
     try {
       let query = supabase
-        .from<GalleryImage>('images')
+        .from('generated_images')
         .select(`
           id, 
-          url, 
+          image_url, 
           prompt, 
           likes, 
-          comments, 
           views, 
-          produced,
-          creator:profiles (name, avatar),
-          createdAt,
-          timeAgo,
+          created_at,
           user_id,
           price,
-          image_likes(user_id)
+          profiles!user_id (
+            username,
+            avatar_url
+          ),
+          image_likes(user_id),
+          comments(
+            id,
+            text,
+            created_at,
+            user_id,
+            profiles!user_id (
+              username,
+              avatar_url
+            ),
+            comment_replies(
+              id,
+              text,
+              created_at,
+              user_id,
+              profiles!user_id (
+                username,
+                avatar_url
+              )
+            )
+          )
         `)
-        .order('createdAt', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(30);
 
       if (showUserImagesOnly && session?.user) {
@@ -65,14 +113,48 @@ export const ImprovedImageGallery = ({
       }
       
       if (data) {
-        const enrichedImages = data.map(img => ({
-          ...img,
-          hasLiked: img.image_likes.length > 0,
-          metrics: {
-            like: img.likes,
-            comment: img.comments?.length || 0,
-            view: img.views,
+        const enrichedImages: GalleryImage[] = data.map(img => ({
+          id: img.id,
+          url: img.image_url || '',
+          prompt: img.prompt || '',
+          likes: img.likes || 0,
+          comments: img.comments?.map(comment => ({
+            id: comment.id,
+            text: comment.text,
+            user: {
+              id: comment.user_id,
+              name: comment.profiles?.username || 'Anonymous',
+              avatar: comment.profiles?.avatar_url || '/placeholder.svg'
+            },
+            createdAt: new Date(comment.created_at),
+            replies: comment.comment_replies?.map(reply => ({
+              id: reply.id,
+              text: reply.text,
+              user: {
+                id: reply.user_id,
+                name: reply.profiles?.username || 'Anonymous',
+                avatar: reply.profiles?.avatar_url || '/placeholder.svg'
+              },
+              createdAt: new Date(reply.created_at)
+            })) || []
+          })) || [],
+          views: img.views || 0,
+          produced: 0,
+          creator: {
+            name: img.profiles?.username || 'Anonymous',
+            avatar: img.profiles?.avatar_url || '/placeholder.svg'
           },
+          createdAt: new Date(img.created_at),
+          timeAgo: 'Just now',
+          hasLiked: img.image_likes?.some(like => like.user_id === session?.user?.id) || false,
+          image_likes: img.image_likes || [],
+          metrics: {
+            like: img.likes || 0,
+            comment: img.comments?.length || 0,
+            view: img.views || 0,
+          },
+          user_id: img.user_id,
+          price: img.price
         }));
         setImages(enrichedImages);
       } else {
@@ -84,32 +166,49 @@ export const ImprovedImageGallery = ({
     } finally {
       setLoading(false);
     }
-  }, [session?.user, showUserImagesOnly]);
+  }, [session?.user, showUserImagesOnly, propImages]);
 
   const handleLike = async (imageId: number) => {
+    if (propOnLike) {
+      propOnLike(imageId);
+      return;
+    }
+
     if (!session?.user) {
       toast({
-        title: t('imageCard:signInRequired'),
-        description: t('imageCard:signInToLike'),
+        title: t('signInRequired'),
+        description: t('signInToLike'),
         variant: "destructive",
       });
       return;
     }
 
-    if (isLiking) return;
-
     try {
-      const newLikeState = await likeImage(imageId);
+      await likeMutation.mutateAsync({
+        imageId,
+        hasLiked: false, // This will be determined by the mutation
+        userId: session.user.id
+      });
       
+      // Update local state
       setImages(prevImages =>
         prevImages.map(img =>
-          img.id === imageId ? { ...img, hasLiked: newLikeState, metrics: { ...img.metrics, like: (img.metrics?.like || 0) + (newLikeState ? 1 : -1) } } : img
+          img.id === imageId 
+            ? { 
+                ...img, 
+                hasLiked: !img.hasLiked, 
+                metrics: { 
+                  ...img.metrics, 
+                  like: img.hasLiked ? img.metrics.like - 1 : img.metrics.like + 1 
+                } 
+              } 
+            : img
         )
       );
     } catch (err: any) {
       console.error("Like image failed:", err.message);
       toast({
-        title: t('status:error'),
+        title: "Error",
         description: "Failed to like image: " + err.message,
         variant: "destructive",
       });
@@ -117,6 +216,11 @@ export const ImprovedImageGallery = ({
   };
 
   const handleView = async (imageId: number) => {
+    if (propOnView) {
+      propOnView(imageId);
+      return;
+    }
+
     try {
       // Optimistically update the view count locally
       setImages(prevImages =>
@@ -136,7 +240,7 @@ export const ImprovedImageGallery = ({
     } catch (err: any) {
       console.error("View increment failed:", err.message);
       toast({
-        title: t('status:error'),
+        title: "Error",
         description: "Failed to update view count: " + err.message,
         variant: "destructive",
       });
@@ -144,31 +248,33 @@ export const ImprovedImageGallery = ({
   };
 
   const handleAddComment = async (imageId: number, commentText: string) => {
+    if (propOnAddComment) {
+      propOnAddComment(imageId, commentText);
+      return;
+    }
+
     if (!session?.user) {
       toast({
-        title: t('imageCard:signInRequired'),
-        description: t('imageCard:signInToLike'),
+        title: t('signInRequired'),
+        description: t('signInToLike'),
         variant: "destructive",
       });
       return;
     }
 
     try {
-      const newComment = await addComment(imageId, commentText);
+      await commentMutation.mutateAsync({
+        imageId,
+        text: commentText,
+        userId: session.user.id
+      });
       
-      setImages(prevImages =>
-        prevImages.map(img =>
-          img.id === imageId ? { 
-            ...img, 
-            comments: [...(img.comments || []), newComment],
-            metrics: { ...img.metrics, comment: (img.metrics?.comment || 0) + 1 }
-          } : img
-        )
-      );
+      // Refresh images to get the new comment
+      fetchImages();
     } catch (err: any) {
       console.error("Add comment failed:", err.message);
       toast({
-        title: t('status:error'),
+        title: "Error",
         description: "Failed to add comment: " + err.message,
         variant: "destructive",
       });
@@ -176,37 +282,33 @@ export const ImprovedImageGallery = ({
   };
 
   const handleAddReply = async (imageId: number, commentId: number, replyText: string) => {
+    if (propOnAddReply) {
+      propOnAddReply(imageId, commentId, replyText);
+      return;
+    }
+
     if (!session?.user) {
       toast({
-        title: t('imageCard:signInRequired'),
-        description: t('imageCard:signInToLike'),
+        title: t('signInRequired'),
+        description: t('signInToLike'),
         variant: "destructive",
       });
       return;
     }
 
     try {
-      const newReply = await addReply(commentId, replyText);
+      await replyMutation.mutateAsync({
+        commentId,
+        text: replyText,
+        userId: session.user.id
+      });
       
-      setImages(prevImages =>
-        prevImages.map(img => {
-          if (img.id === imageId) {
-            return {
-              ...img,
-              comments: img.comments.map(comment =>
-                comment.id === commentId
-                  ? { ...comment, replies: [...(comment.replies || []), newReply] }
-                  : comment
-              ),
-            };
-          }
-          return img;
-        })
-      );
+      // Refresh images to get the new reply
+      fetchImages();
     } catch (err: any) {
       console.error("Add reply failed:", err.message);
       toast({
-        title: t('status:error'),
+        title: "Error",
         description: "Failed to add reply: " + err.message,
         variant: "destructive",
       });
@@ -218,11 +320,15 @@ export const ImprovedImageGallery = ({
   }, [fetchImages]);
 
   const handleRetry = () => {
-    setError(null);
-    fetchImages();
+    if (propOnRetry) {
+      propOnRetry();
+    } else {
+      setError(null);
+      fetchImages();
+    }
   };
 
-  if (loading) {
+  if (displayLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -230,7 +336,7 @@ export const ImprovedImageGallery = ({
     );
   }
 
-  if (error) {
+  if (displayError) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
         <WifiOff className="h-16 w-16 text-gray-400" />
@@ -240,13 +346,13 @@ export const ImprovedImageGallery = ({
         </div>
         <Button onClick={handleRetry} className="flex items-center gap-2">
           <RefreshCw className="h-4 w-4" />
-          {t('buttons:tryAgain')}
+          {t('tryAgain')}
         </Button>
       </div>
     );
   }
 
-  if (images.length === 0) {
+  if (displayImages.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
         <Wifi className="h-16 w-16 text-gray-400" />
@@ -256,7 +362,7 @@ export const ImprovedImageGallery = ({
         </div>
         <Button onClick={handleRetry} className="flex items-center gap-2">
           <RefreshCw className="h-4 w-4" />
-          {t('buttons:tryAgain')}
+          {t('tryAgain')}
         </Button>
       </div>
     );
@@ -264,7 +370,7 @@ export const ImprovedImageGallery = ({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {images.map((image) => (
+      {displayImages.map((image) => (
         <ImageCard
           key={image.id}
           image={image}
