@@ -18,7 +18,10 @@
     "viewAll": "Voir tout",
     "share": "Partager",
     "download": "Télécharger",
-    "upload": "Téléverser"
+    "upload": "Téléverser",
+    "startCreating": "Commencer à Créer",
+    "viewOpenMarket": "Voir OpenMarket",
+    "exploreFeatures": "Explorer les Fonctionnalités"
   },
   "status": {
     "success": "Succès",
@@ -58,6 +61,116 @@
     "loading": "Chargement...",
     "noResults": "Aucun résultat trouvé",
     "comingSoon": "Bientôt disponible"
+  },
+  "hero": {
+    "title": "Créer-2-Faire avec IA",
+    "subtitle": "Transformez vos créations visuelles imaginaires en réalité en utilisant notre plateforme IA Créer-2-Faire avancée. Commencez à créer vos articles uniques et faites-les livrer à votre porte."
+  },
+  "features": {
+    "title": "Nos Fonctionnalités",
+    "subtitle": "Découvrez notre suite complète de fonctionnalités conçues pour vous aider à créer, personnaliser et donner vie à vos idées.",
+    "main": {
+      "advancedAI": {
+        "title": "Génération IA Avancée",
+        "description": "Créez des images époustouflantes et personnalisées avec notre technologie IA de pointe.",
+        "steps": [
+          "Naviguez vers la page Créer",
+          "Choisissez parmi diverses catégories d'articles",
+          "Entrez des descriptions détaillées",
+          "Sélectionnez votre ratio d'aspect préféré",
+          "Téléchargez des images de référence (optionnel)",
+          "Cliquez sur Générer pour créer votre design"
+        ]
+      },
+      "lightningFast": {
+        "title": "Traitement Ultra-Rapide",
+        "description": "Découvrez la génération d'images rapide avec notre infrastructure optimisée.",
+        "steps": [
+          "Temps de génération moyen : 10-30 secondes",
+          "Aperçu en temps réel du progrès",
+          "Capacités de traitement par lots",
+          "Optimisation instantanée des images",
+          "Téléchargement et partage rapides"
+        ]
+      },
+      "secure": {
+        "title": "Sécurisé et Privé",
+        "description": "Vos données et créations sont protégées par une sécurité de niveau entreprise.",
+        "steps": [
+          "Authentification sécurisée des utilisateurs",
+          "Chiffrement de bout en bout",
+          "Stockage privé des images",
+          "Paramètres de confidentialité personnalisables",
+          "Audits de sécurité réguliers",
+          "Conformité RGPD"
+        ]
+      },
+      "styleVariety": {
+        "title": "Variété de Styles",
+        "description": "Choisissez parmi de multiples styles artistiques pour correspondre à votre vision.",
+        "steps": [
+          "Multiples esthétiques de design",
+          "Paramètres de style personnalisables",
+          "Capacités de mélange de styles",
+          "Stylisation basée sur les références",
+          "Suggestions de styles tendance"
+        ]
+      }
+    },
+    "additional": {
+      "referenceUpload": {
+        "title": "Téléchargement de Référence",
+        "description": "Téléchargez des images d'inspiration"
+      },
+      "easySharing": {
+        "title": "Partage Facile",
+        "description": "Partagez sur les réseaux sociaux"
+      },
+      "quickDownloads": {
+        "title": "Téléchargements Rapides",
+        "description": "Options de format multiples"
+      },
+      "colorControl": {
+        "title": "Contrôle des Couleurs",
+        "description": "Sélection précise des couleurs"
+      },
+      "advancedSettings": {
+        "title": "Paramètres Avancés",
+        "description": "Affinez vos résultats"
+      },
+      "artisanNetwork": {
+        "title": "Réseau d'Artisans",
+        "description": "Connectez-vous avec les créateurs"
+      },
+      "marketplace": {
+        "title": "Place de Marché",
+        "description": "Achetez et vendez des designs"
+      },
+      "community": {
+        "title": "Communauté",
+        "description": "Obtenez des commentaires et conseils"
+      }
+    },
+    "howToUse": "Comment utiliser :",
+    "additionalFeaturesTitle": "Fonctionnalités Supplémentaires"
+  },
+  "marketplace": {
+    "openMarket": "OpenMarket",
+    "searchPlaceholder": "Rechercher des designs, produits, créateurs...",
+    "advancedFilters": "Filtres Avancés",
+    "filterOptions": "Options de Filtre",
+    "refineSearch": "Affinez votre recherche avec ces filtres supplémentaires",
+    "designStyle": "Style de Design",
+    "allStyles": "Tous les Styles",
+    "minimalist": "Minimaliste",
+    "vintage": "Vintage",
+    "modern": "Moderne",
+    "elegant": "Élégant",
+    "priceRange": "Gamme de Prix",
+    "creatorReputation": "Réputation du Créateur",
+    "allRatings": "Toutes les Évaluations",
+    "clearAll": "Tout Effacer",
+    "applyFilters": "Appliquer les Filtres"
   },
   "messages": {
     "welcomeBack": "Bon retour !",

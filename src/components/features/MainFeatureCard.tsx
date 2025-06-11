@@ -1,6 +1,8 @@
+
 import { LucideIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface MainFeatureCardProps {
   icon: LucideIcon;
@@ -10,6 +12,8 @@ interface MainFeatureCardProps {
 }
 
 export const MainFeatureCard = ({ icon: Icon, title, description, steps }: MainFeatureCardProps) => {
+  const { t } = useTranslation('common');
+
   return (
     <Card className="glass-card hover:shadow-lg transition-shadow group">
       <CardContent className="p-6">
@@ -21,7 +25,7 @@ export const MainFeatureCard = ({ icon: Icon, title, description, steps }: MainF
           <p className="text-muted-foreground">{description}</p>
         </div>
         <div className="space-y-4">
-          <h4 className="font-medium text-center mb-4">How to use:</h4>
+          <h4 className="font-medium text-center mb-4">{t('features.howToUse')}</h4>
           <div className="space-y-3">
             {steps.map((step, stepIndex) => (
               <div key={stepIndex} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">

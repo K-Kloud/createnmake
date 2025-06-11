@@ -18,17 +18,120 @@
     "viewAll": "Alle anzeigen",
     "share": "Teilen",
     "download": "Herunterladen",
-    "upload": "Hochladen"
+    "upload": "Hochladen",
+    "startCreating": "Mit dem Erstellen beginnen",
+    "viewOpenMarket": "OpenMarket anzeigen",
+    "exploreFeatures": "Funktionen erkunden"
   },
-  "status": {
-    "success": "Erfolgreich",
-    "error": "Fehler",
-    "warning": "Warnung",
-    "info": "Information",
-    "pending": "Ausstehend",
-    "completed": "Abgeschlossen",
-    "inProgress": "In Bearbeitung",
-    "cancelled": "Abgebrochen"
+  "hero": {
+    "title": "Erstellen-2-Machen mit KI",
+    "subtitle": "Verwandeln Sie Ihre imaginären visuellen Kreationen mit unserer fortschrittlichen Erstellen-2-Machen KI-Plattform in die Realität. Beginnen Sie mit der Erstellung Ihrer einzigartigen Artikel und lassen Sie sie vor Ihre Haustür liefern."
+  },
+  "features": {
+    "title": "Unsere Funktionen",
+    "subtitle": "Entdecken Sie unser umfassendes Funktionspaket, das Ihnen hilft, Ihre Ideen zu erstellen, anzupassen und zum Leben zu erwecken.",
+    "main": {
+      "advancedAI": {
+        "title": "Erweiterte KI-Generierung",
+        "description": "Erstellen Sie atemberaubende, maßgeschneiderte Bilder mit unserer modernsten KI-Technologie.",
+        "steps": [
+          "Navigieren Sie zur Erstellen-Seite",
+          "Wählen Sie aus verschiedenen Artikelkategorien",
+          "Geben Sie detaillierte Beschreibungen ein",
+          "Wählen Sie Ihr bevorzugtes Seitenverhältnis",
+          "Laden Sie Referenzbilder hoch (optional)",
+          "Klicken Sie auf Generieren, um Ihr Design zu erstellen"
+        ]
+      },
+      "lightningFast": {
+        "title": "Blitzschnelle Verarbeitung",
+        "description": "Erleben Sie schnelle Bildgenerierung mit unserer optimierten Infrastruktur.",
+        "steps": [
+          "Durchschnittliche Generierungszeit: 10-30 Sekunden",
+          "Echtzeit-Vorschau des Fortschritts",
+          "Stapelverarbeitungsfähigkeiten",
+          "Sofortige Bildoptimierung",
+          "Schneller Download und Sharing"
+        ]
+      },
+      "secure": {
+        "title": "Sicher & Privat",
+        "description": "Ihre Daten und Kreationen sind mit Sicherheit auf Unternehmensebene geschützt.",
+        "steps": [
+          "Sichere Benutzerauthentifizierung",
+          "Ende-zu-Ende-Verschlüsselung",
+          "Private Bildspeicherung",
+          "Anpassbare Datenschutzeinstellungen",
+          "Regelmäßige Sicherheitsaudits",
+          "DSGVO-Konformität"
+        ]
+      },
+      "styleVariety": {
+        "title": "Stilvielfalt",
+        "description": "Wählen Sie aus mehreren künstlerischen Stilen, die zu Ihrer Vision passen.",
+        "steps": [
+          "Mehrere Design-Ästhetiken",
+          "Anpassbare Stilparameter",
+          "Stil-Mixing-Fähigkeiten",
+          "Referenzbasierte Stilisierung",
+          "Trending-Stil-Vorschläge"
+        ]
+      }
+    },
+    "additional": {
+      "referenceUpload": {
+        "title": "Referenz-Upload",
+        "description": "Inspirationsbilder hochladen"
+      },
+      "easySharing": {
+        "title": "Einfaches Teilen",
+        "description": "In sozialen Medien teilen"
+      },
+      "quickDownloads": {
+        "title": "Schnelle Downloads",
+        "description": "Mehrere Formatoptionen"
+      },
+      "colorControl": {
+        "title": "Farbkontrolle",
+        "description": "Präzise Farbauswahl"
+      },
+      "advancedSettings": {
+        "title": "Erweiterte Einstellungen",
+        "description": "Ihre Ergebnisse feinabstimmen"
+      },
+      "artisanNetwork": {
+        "title": "Handwerker-Netzwerk",
+        "description": "Mit Schöpfern verbinden"
+      },
+      "marketplace": {
+        "title": "Marktplatz",
+        "description": "Designs kaufen & verkaufen"
+      },
+      "community": {
+        "title": "Gemeinschaft",
+        "description": "Feedback & Tipps erhalten"
+      }
+    },
+    "howToUse": "Wie zu verwenden:",
+    "additionalFeaturesTitle": "Zusätzliche Funktionen"
+  },
+  "marketplace": {
+    "openMarket": "OpenMarket",
+    "searchPlaceholder": "Designs, Produkte, Ersteller suchen...",
+    "advancedFilters": "Erweiterte Filter",
+    "filterOptions": "Filter-Optionen",
+    "refineSearch": "Verfeinern Sie Ihre Suche mit diesen zusätzlichen Filtern",
+    "designStyle": "Design-Stil",
+    "allStyles": "Alle Stile",
+    "minimalist": "Minimalistisch",
+    "vintage": "Vintage",
+    "modern": "Modern",
+    "elegant": "Elegant",
+    "priceRange": "Preisspanne",
+    "creatorReputation": "Ersteller-Reputation",
+    "allRatings": "Alle Bewertungen",
+    "clearAll": "Alle löschen",
+    "applyFilters": "Filter anwenden"
   },
   "common": {
     "home": "Startseite",
@@ -58,6 +161,16 @@
     "loading": "Wird geladen...",
     "noResults": "Keine Ergebnisse gefunden",
     "comingSoon": "Bald verfügbar"
+  },
+  "status": {
+    "success": "Erfolgreich",
+    "error": "Fehler",
+    "warning": "Warnung",
+    "info": "Information",
+    "pending": "Ausstehend",
+    "completed": "Abgeschlossen",
+    "inProgress": "In Bearbeitung",
+    "cancelled": "Abgebrochen"
   },
   "messages": {
     "welcomeBack": "Willkommen zurück!",

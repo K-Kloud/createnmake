@@ -18,17 +18,120 @@
     "viewAll": "查看全部",
     "share": "分享",
     "download": "下载",
-    "upload": "上传"
+    "upload": "上传",
+    "startCreating": "开始创建",
+    "viewOpenMarket": "查看OpenMarket",
+    "exploreFeatures": "探索功能"
   },
-  "status": {
-    "success": "成功",
-    "error": "错误",
-    "warning": "警告",
-    "info": "信息",
-    "pending": "待处理",
-    "completed": "已完成",
-    "inProgress": "进行中",
-    "cancelled": "已取消"
+  "hero": {
+    "title": "用AI创建-2-制作",
+    "subtitle": "使用我们先进的创建-2-制作AI平台，将您想象中的视觉创作转化为现实。开始创建您的独特物品，并将它们送到您的门前。"
+  },
+  "features": {
+    "title": "我们的功能",
+    "subtitle": "发现我们全面的功能套件，旨在帮助您创建、定制并实现您的想法。",
+    "main": {
+      "advancedAI": {
+        "title": "先进的AI生成",
+        "description": "使用我们最先进的AI技术创建令人惊叹的定制图像。",
+        "steps": [
+          "导航到创建页面",
+          "从各种物品类别中选择",
+          "输入详细描述",
+          "选择您首选的宽高比",
+          "上传参考图像（可选）",
+          "点击生成来创建您的设计"
+        ]
+      },
+      "lightningFast": {
+        "title": "闪电般快速处理",
+        "description": "通过我们优化的基础设施体验快速图像生成。",
+        "steps": [
+          "平均生成时间：10-30秒",
+          "实时进度预览",
+          "批处理能力",
+          "即时图像优化",
+          "快速下载和分享"
+        ]
+      },
+      "secure": {
+        "title": "安全和私密",
+        "description": "您的数据和创作受到企业级安全保护。",
+        "steps": [
+          "安全用户认证",
+          "端到端加密",
+          "私有图像存储",
+          "可定制的隐私设置",
+          "定期安全审计",
+          "GDPR合规"
+        ]
+      },
+      "styleVariety": {
+        "title": "风格多样性",
+        "description": "从多种艺术风格中选择以匹配您的愿景。",
+        "steps": [
+          "多种设计美学",
+          "可定制的风格参数",
+          "风格混合能力",
+          "基于参考的风格化",
+          "流行风格建议"
+        ]
+      }
+    },
+    "additional": {
+      "referenceUpload": {
+        "title": "参考上传",
+        "description": "上传灵感图像"
+      },
+      "easySharing": {
+        "title": "轻松分享",
+        "description": "分享到社交媒体"
+      },
+      "quickDownloads": {
+        "title": "快速下载",
+        "description": "多种格式选项"
+      },
+      "colorControl": {
+        "title": "颜色控制",
+        "description": "精确的颜色选择"
+      },
+      "advancedSettings": {
+        "title": "高级设置",
+        "description": "微调您的结果"
+      },
+      "artisanNetwork": {
+        "title": "工匠网络",
+        "description": "与创作者连接"
+      },
+      "marketplace": {
+        "title": "市场",
+        "description": "买卖设计"
+      },
+      "community": {
+        "title": "社区",
+        "description": "获得反馈和技巧"
+      }
+    },
+    "howToUse": "如何使用：",
+    "additionalFeaturesTitle": "附加功能"
+  },
+  "marketplace": {
+    "openMarket": "OpenMarket",
+    "searchPlaceholder": "搜索设计、产品、创作者...",
+    "advancedFilters": "高级过滤器",
+    "filterOptions": "过滤器选项",
+    "refineSearch": "使用这些附加过滤器优化您的搜索",
+    "designStyle": "设计风格",
+    "allStyles": "所有风格",
+    "minimalist": "极简主义",
+    "vintage": "复古",
+    "modern": "现代",
+    "elegant": "优雅",
+    "priceRange": "价格范围",
+    "creatorReputation": "创作者声誉",
+    "allRatings": "所有评分",
+    "clearAll": "清除全部",
+    "applyFilters": "应用过滤器"
   },
   "common": {
     "home": "首页",
@@ -58,6 +161,16 @@
     "loading": "加载中...",
     "noResults": "未找到结果",
     "comingSoon": "即将推出"
+  },
+  "status": {
+    "success": "成功",
+    "error": "错误",
+    "warning": "警告",
+    "info": "信息",
+    "pending": "待处理",
+    "completed": "已完成",
+    "inProgress": "进行中",
+    "cancelled": "已取消"
   },
   "messages": {
     "welcomeBack": "欢迎回来！",

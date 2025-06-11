@@ -18,7 +18,10 @@
     "viewAll": "View All",
     "share": "Share",
     "download": "Download",
-    "upload": "Upload"
+    "upload": "Upload",
+    "startCreating": "Start Creating",
+    "viewOpenMarket": "View OpenMarket",
+    "exploreFeatures": "Explore Features"
   },
   "status": {
     "success": "Success",
@@ -58,6 +61,116 @@
     "loading": "Loading...",
     "noResults": "No results found",
     "comingSoon": "Coming Soon"
+  },
+  "hero": {
+    "title": "Create-2-Make with AI",
+    "subtitle": "Transform your imaginary visual creations into reality using our Advanced Create-2-Make AI platform. Start creating your unique items and get them delivered to your doorstep."
+  },
+  "features": {
+    "title": "Our Features",
+    "subtitle": "Discover our comprehensive suite of features designed to help you create, customize, and bring your ideas to life.",
+    "main": {
+      "advancedAI": {
+        "title": "Advanced AI Generation",
+        "description": "Create stunning, custom-made images with our state-of-the-art AI technology.",
+        "steps": [
+          "Navigate to the Create page",
+          "Choose from various item categories",
+          "Enter detailed descriptions",
+          "Select your preferred aspect ratio",
+          "Upload reference images (optional)",
+          "Click Generate to create your design"
+        ]
+      },
+      "lightningFast": {
+        "title": "Lightning Fast Processing",
+        "description": "Experience rapid image generation with our optimized infrastructure.",
+        "steps": [
+          "Average generation time: 10-30 seconds",
+          "Real-time preview of progress",
+          "Batch processing capabilities",
+          "Instant image optimization",
+          "Quick download and sharing"
+        ]
+      },
+      "secure": {
+        "title": "Secure & Private",
+        "description": "Your data and creations are protected with enterprise-grade security.",
+        "steps": [
+          "Secure user authentication",
+          "End-to-end encryption",
+          "Private image storage",
+          "Customizable privacy settings",
+          "Regular security audits",
+          "GDPR compliance"
+        ]
+      },
+      "styleVariety": {
+        "title": "Style Variety",
+        "description": "Choose from multiple artistic styles to match your vision.",
+        "steps": [
+          "Multiple design aesthetics",
+          "Customizable style parameters",
+          "Style mixing capabilities",
+          "Reference-based styling",
+          "Trending style suggestions"
+        ]
+      }
+    },
+    "additional": {
+      "referenceUpload": {
+        "title": "Reference Upload",
+        "description": "Upload inspiration images"
+      },
+      "easySharing": {
+        "title": "Easy Sharing",
+        "description": "Share to social media"
+      },
+      "quickDownloads": {
+        "title": "Quick Downloads",
+        "description": "Multiple format options"
+      },
+      "colorControl": {
+        "title": "Color Control",
+        "description": "Precise color selection"
+      },
+      "advancedSettings": {
+        "title": "Advanced Settings",
+        "description": "Fine-tune your results"
+      },
+      "artisanNetwork": {
+        "title": "Artisan Network",
+        "description": "Connect with creators"
+      },
+      "marketplace": {
+        "title": "Marketplace",
+        "description": "Buy & sell designs"
+      },
+      "community": {
+        "title": "Community",
+        "description": "Get feedback & tips"
+      }
+    },
+    "howToUse": "How to use:",
+    "additionalFeaturesTitle": "Additional Features"
+  },
+  "marketplace": {
+    "openMarket": "OpenMarket",
+    "searchPlaceholder": "Search designs, products, creators...",
+    "advancedFilters": "Advanced Filters",
+    "filterOptions": "Filter Options",
+    "refineSearch": "Refine your search with these additional filters",
+    "designStyle": "Design Style",
+    "allStyles": "All Styles",
+    "minimalist": "Minimalist",
+    "vintage": "Vintage",
+    "modern": "Modern",
+    "elegant": "Elegant",
+    "priceRange": "Price Range",
+    "creatorReputation": "Creator Reputation",
+    "allRatings": "All Ratings",
+    "clearAll": "Clear All",
+    "applyFilters": "Apply Filters"
   },
   "messages": {
     "welcomeBack": "Welcome back!",

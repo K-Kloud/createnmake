@@ -16,7 +16,7 @@ const Features = () => {
           {t('navigation:main.features')}
         </h1>
         <p className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
-          Discover our comprehensive suite of features designed to help you create, customize, and bring your ideas to life.
+          {t('common:features.subtitle')}
         </p>
         <MainFeatures />
         <AdditionalFeatures />

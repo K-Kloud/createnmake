@@ -18,17 +18,120 @@
     "viewAll": "すべて表示",
     "share": "共有",
     "download": "ダウンロード",
-    "upload": "アップロード"
+    "upload": "アップロード",
+    "startCreating": "作成を始める",
+    "viewOpenMarket": "OpenMarketを見る",
+    "exploreFeatures": "機能を探る"
   },
-  "status": {
-    "success": "成功",
-    "error": "エラー",
-    "warning": "警告",
-    "info": "情報",
-    "pending": "保留中",
-    "completed": "完了",
-    "inProgress": "進行中",
-    "cancelled": "キャンセル済み"
+  "hero": {
+    "title": "AIで作成-2-製作",
+    "subtitle": "私たちの高度な作成-2-製作AIプラットフォームを使用して、あなたの想像上の視覚的創作を現実に変換してください。あなた独自のアイテムの作成を始めて、玄関先まで配達してもらいましょう。"
+  },
+  "features": {
+    "title": "私たちの機能",
+    "subtitle": "あなたのアイデアを作成、カスタマイズ、実現するために設計された包括的な機能スイートを発見してください。",
+    "main": {
+      "advancedAI": {
+        "title": "高度なAI生成",
+        "description": "最先端のAI技術で見事なカスタムメイド画像を作成します。",
+        "steps": [
+          "作成ページに移動",
+          "様々なアイテムカテゴリから選択",
+          "詳細な説明を入力",
+          "好みのアスペクト比を選択",
+          "参照画像をアップロード（オプション）",
+          "生成をクリックしてデザインを作成"
+        ]
+      },
+      "lightningFast": {
+        "title": "超高速処理",
+        "description": "最適化されたインフラストラクチャで高速画像生成を体験してください。",
+        "steps": [
+          "平均生成時間：10-30秒",
+          "リアルタイム進捗プレビュー",
+          "バッチ処理機能",
+          "即座の画像最適化",
+          "高速ダウンロードと共有"
+        ]
+      },
+      "secure": {
+        "title": "安全でプライベート",
+        "description": "あなたのデータと創作物はエンタープライズグレードのセキュリティで保護されています。",
+        "steps": [
+          "安全なユーザー認証",
+          "エンドツーエンド暗号化",
+          "プライベート画像ストレージ",
+          "カスタマイズ可能なプライバシー設定",
+          "定期的なセキュリティ監査",
+          "GDPR準拠"
+        ]
+      },
+      "styleVariety": {
+        "title": "スタイルの多様性",
+        "description": "あなたのビジョンに合う複数の芸術スタイルから選択してください。",
+        "steps": [
+          "複数のデザイン美学",
+          "カスタマイズ可能なスタイルパラメータ",
+          "スタイルミキシング機能",
+          "参照ベースのスタイル化",
+          "トレンドスタイル提案"
+        ]
+      }
+    },
+    "additional": {
+      "referenceUpload": {
+        "title": "参照アップロード",
+        "description": "インスピレーション画像をアップロード"
+      },
+      "easySharing": {
+        "title": "簡単共有",
+        "description": "ソーシャルメディアに共有"
+      },
+      "quickDownloads": {
+        "title": "高速ダウンロード",
+        "description": "複数フォーマットオプション"
+      },
+      "colorControl": {
+        "title": "色制御",
+        "description": "精密な色選択"
+      },
+      "advancedSettings": {
+        "title": "高度な設定",
+        "description": "結果を微調整"
+      },
+      "artisanNetwork": {
+        "title": "職人ネットワーク",
+        "description": "クリエイターと繋がる"
+      },
+      "marketplace": {
+        "title": "マーケットプレイス",
+        "description": "デザインを売買"
+      },
+      "community": {
+        "title": "コミュニティ",
+        "description": "フィードバックとヒントを得る"
+      }
+    },
+    "howToUse": "使用方法：",
+    "additionalFeaturesTitle": "追加機能"
+  },
+  "marketplace": {
+    "openMarket": "OpenMarket",
+    "searchPlaceholder": "デザイン、製品、クリエイターを検索...",
+    "advancedFilters": "高度なフィルター",
+    "filterOptions": "フィルターオプション",
+    "refineSearch": "これらの追加フィルターで検索を絞り込む",
+    "designStyle": "デザインスタイル",
+    "allStyles": "すべてのスタイル",
+    "minimalist": "ミニマリスト",
+    "vintage": "ヴィンテージ",
+    "modern": "モダン",
+    "elegant": "エレガント",
+    "priceRange": "価格範囲",
+    "creatorReputation": "クリエイター評判",
+    "allRatings": "すべての評価",
+    "clearAll": "すべてクリア",
+    "applyFilters": "フィルターを適用"
   },
   "common": {
     "home": "ホーム",
@@ -58,6 +161,16 @@
     "loading": "読み込み中...",
     "noResults": "結果が見つかりません",
     "comingSoon": "近日公開"
+  },
+  "status": {
+    "success": "成功",
+    "error": "エラー",
+    "warning": "警告",
+    "info": "情報",
+    "pending": "保留中",
+    "completed": "完了",
+    "inProgress": "進行中",
+    "cancelled": "キャンセル済み"
   },
   "messages": {
     "welcomeBack": "おかえりなさい！",

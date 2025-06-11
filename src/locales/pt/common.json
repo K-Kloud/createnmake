@@ -18,17 +18,120 @@
     "viewAll": "Ver todos",
     "share": "Compartilhar",
     "download": "Baixar",
-    "upload": "Carregar"
+    "upload": "Carregar",
+    "startCreating": "Começar a Criar",
+    "viewOpenMarket": "Ver OpenMarket",
+    "exploreFeatures": "Explorar Recursos"
   },
-  "status": {
-    "success": "Sucesso",
-    "error": "Erro",
-    "warning": "Aviso",
-    "info": "Informação",
-    "pending": "Pendente",
-    "completed": "Concluído",
-    "inProgress": "Em andamento",
-    "cancelled": "Cancelado"
+  "hero": {
+    "title": "Criar-2-Fazer com IA",
+    "subtitle": "Transforme suas criações visuais imaginárias em realidade usando nossa plataforma avançada de IA Criar-2-Fazer. Comece a criar seus itens únicos e receba-os na sua porta."
+  },
+  "features": {
+    "title": "Nossos Recursos",
+    "subtitle": "Descubra nosso conjunto abrangente de recursos projetados para ajudá-lo a criar, personalizar e dar vida às suas ideias.",
+    "main": {
+      "advancedAI": {
+        "title": "Geração de IA Avançada",
+        "description": "Crie imagens impressionantes e personalizadas com nossa tecnologia de IA de ponta.",
+        "steps": [
+          "Navegue até a página Criar",
+          "Escolha entre várias categorias de itens",
+          "Digite descrições detalhadas",
+          "Selecione sua proporção preferida",
+          "Carregue imagens de referência (opcional)",
+          "Clique em Gerar para criar seu design"
+        ]
+      },
+      "lightningFast": {
+        "title": "Processamento Ultra-Rápido",
+        "description": "Experimente geração rápida de imagens com nossa infraestrutura otimizada.",
+        "steps": [
+          "Tempo médio de geração: 10-30 segundos",
+          "Visualização em tempo real do progresso",
+          "Capacidades de processamento em lotes",
+          "Otimização instantânea de imagens",
+          "Download e compartilhamento rápidos"
+        ]
+      },
+      "secure": {
+        "title": "Seguro e Privado",
+        "description": "Seus dados e criações são protegidos com segurança de nível empresarial.",
+        "steps": [
+          "Autenticação segura de usuário",
+          "Criptografia de ponta a ponta",
+          "Armazenamento privado de imagens",
+          "Configurações de privacidade personalizáveis",
+          "Auditorias de segurança regulares",
+          "Conformidade com LGPD"
+        ]
+      },
+      "styleVariety": {
+        "title": "Variedade de Estilos",
+        "description": "Escolha entre múltiplos estilos artísticos para combinar com sua visão.",
+        "steps": [
+          "Múltiplas estéticas de design",
+          "Parâmetros de estilo personalizáveis",
+          "Capacidades de mistura de estilos",
+          "Estilização baseada em referência",
+          "Sugestões de estilos em tendência"
+        ]
+      }
+    },
+    "additional": {
+      "referenceUpload": {
+        "title": "Upload de Referência",
+        "description": "Carregar imagens de inspiração"
+      },
+      "easySharing": {
+        "title": "Compartilhamento Fácil",
+        "description": "Compartilhar nas redes sociais"
+      },
+      "quickDownloads": {
+        "title": "Downloads Rápidos",
+        "description": "Múltiplas opções de formato"
+      },
+      "colorControl": {
+        "title": "Controle de Cor",
+        "description": "Seleção precisa de cores"
+      },
+      "advancedSettings": {
+        "title": "Configurações Avançadas",
+        "description": "Ajuste fino dos seus resultados"
+      },
+      "artisanNetwork": {
+        "title": "Rede de Artesãos",
+        "description": "Conectar com criadores"
+      },
+      "marketplace": {
+        "title": "Mercado",
+        "description": "Comprar e vender designs"
+      },
+      "community": {
+        "title": "Comunidade",
+        "description": "Obter feedback e dicas"
+      }
+    },
+    "howToUse": "Como usar:",
+    "additionalFeaturesTitle": "Recursos Adicionais"
+  },
+  "marketplace": {
+    "openMarket": "OpenMarket",
+    "searchPlaceholder": "Pesquisar designs, produtos, criadores...",
+    "advancedFilters": "Filtros Avançados",
+    "filterOptions": "Opções de Filtro",
+    "refineSearch": "Refine sua pesquisa com estes filtros adicionais",
+    "designStyle": "Estilo de Design",
+    "allStyles": "Todos os Estilos",
+    "minimalist": "Minimalista",
+    "vintage": "Vintage",
+    "modern": "Moderno",
+    "elegant": "Elegante",
+    "priceRange": "Faixa de Preço",
+    "creatorReputation": "Reputação do Criador",
+    "allRatings": "Todas as Avaliações",
+    "clearAll": "Limpar Tudo",
+    "applyFilters": "Aplicar Filtros"
   },
   "common": {
     "home": "Início",
@@ -58,6 +161,16 @@
     "loading": "Carregando...",
     "noResults": "Nenhum resultado encontrado",
     "comingSoon": "Em breve"
+  },
+  "status": {
+    "success": "Sucesso",
+    "error": "Erro",
+    "warning": "Aviso",
+    "info": "Informação",
+    "pending": "Pendente",
+    "completed": "Concluído",
+    "inProgress": "Em andamento",
+    "cancelled": "Cancelado"
   },
   "messages": {
     "welcomeBack": "Bem-vindo de volta!",
