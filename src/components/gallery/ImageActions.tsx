@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Heart, Eye, MessageSquare, Package } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -29,7 +28,7 @@ export const ImageActions = ({
 }: ImageActionsProps) => {
   const { session } = useAuth();
   const { toast } = useToast();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('imageCard');
   const [isAnimating, setIsAnimating] = useState(false);
   const [showPlusOne, setShowPlusOne] = useState(false);
   const [displayCount, setDisplayCount] = useState(metrics.like || 0);
@@ -82,8 +81,8 @@ export const ImageActions = ({
   const handleLikeClick = () => {
     if (!session?.user) {
       toast({
-        title: t('imageCard.signInRequired'),
-        description: t('imageCard.signInToLike'),
+        title: t('signInRequired'),
+        description: t('signInToLike'),
         variant: "destructive",
       });
       return;
@@ -146,7 +145,7 @@ export const ImageActions = ({
         className="gap-2 button-glow"
       >
         <Package className="h-4 w-4" />
-        {t('buttons.makeThis')}
+        {t('makeThis')}
       </Button>
     </div>
   );

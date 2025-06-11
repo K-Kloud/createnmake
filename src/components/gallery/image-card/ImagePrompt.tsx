@@ -18,7 +18,7 @@ export const ImagePrompt = ({
   className = ""
 }: ImagePromptProps) => {
   const [showPrompt, setShowPrompt] = useState(initialShowPrompt);
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('imageCard');
   
   // Truncate prompt if it's too long
   const displayPrompt = prompt.length > maxLength ? 
@@ -34,10 +34,10 @@ export const ImagePrompt = ({
         size="icon" 
         onClick={() => setShowPrompt(!showPrompt)}
         className="ml-2 flex-shrink-0"
-        title={showPrompt ? t('imageCard.hidePrompt') : t('imageCard.showPrompt')}
+        title={showPrompt ? t('hidePrompt') : t('showPrompt')}
       >
         {showPrompt ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-        <span className="sr-only">{showPrompt ? t('imageCard.hidePrompt') : t('imageCard.showPrompt')}</span>
+        <span className="sr-only">{showPrompt ? t('hidePrompt') : t('showPrompt')}</span>
       </Button>
     </div>
   );

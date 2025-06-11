@@ -38,7 +38,7 @@ interface CommentsProps {
 
 export const Comments = ({ imageId, comments, onAddComment, onAddReply }: CommentsProps) => {
   const [newComment, setNewComment] = useState("");
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('imageCard');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,18 +56,18 @@ export const Comments = ({ imageId, comments, onAddComment, onAddReply }: Commen
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
         <MessageSquare className="h-4 w-4" />
-        <span>{comments.length} {t('imageCard.comments')}</span>
+        <span>{comments.length} {t('comments')}</span>
       </div>
       
       <form onSubmit={handleSubmit} className="flex space-x-2">
         <Input
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          placeholder={t('imageCard.addComment')}
+          placeholder={t('addComment')}
           className="flex-1"
         />
         <Button type="submit" size="sm">
-          {t('buttons.post')}
+          {t('buttons:post')}
         </Button>
       </form>
 

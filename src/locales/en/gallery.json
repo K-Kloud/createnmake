@@ -1,0 +1,11 @@
+
+{
+  "noImagesFound": "No images found",
+  "noImagesDescription": "There are no images to display at the moment. Try refreshing the page or check back later.",
+  "connectionProblem": "Connection Problem",
+  "connectionDescription": "Please check your internet connection and try again.",
+  "failedToLoad": "Failed to load images",
+  "failedToLoadDescription": "There was a problem loading the gallery. This might be a temporary issue.",
+  "linkCopied": "Link Copied",
+  "linkCopiedDescription": "Product link has been copied to your clipboard"
+}

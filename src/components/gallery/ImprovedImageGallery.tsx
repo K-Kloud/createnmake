@@ -1,144 +1,280 @@
-
-import { useEffect, useState } from "react";
-import { useInView } from "react-intersection-observer";
-import { ImageCard } from "@/components/gallery/ImageCard";
-import { GalleryImage } from "@/types/gallery";
-import { useErrorHandler } from "@/hooks/useErrorHandler";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { RefreshCcw, AlertCircle } from "lucide-react";
+import { RefreshCw, Wifi, WifiOff } from "lucide-react";
+import { ImageCard } from "./ImageCard";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { useLikeImage } from "@/components/marketplace/hooks/useLikeImage";
+import { useCommentImage } from "@/components/marketplace/hooks/useCommentImage";
+import { supabase } from "@/integrations/supabase/client";
+import { GalleryImage } from "@/types/gallery";
 import { useTranslation } from "react-i18next";
 
 interface ImprovedImageGalleryProps {
-  images: GalleryImage[];
-  onLike: (imageId: number) => void;
-  onView: (imageId: number) => void;
-  onAddComment: (imageId: number, comment: string) => void;
-  onAddReply: (imageId: number, commentId: number, reply: string) => void;
-  onLoadMore: () => void;
-  hasMore: boolean;
-  onImageClick: (image: GalleryImage) => void;
-  isLoading?: boolean;
-  error?: any;
-  onRetry?: () => void;
+  onImageClick?: (image: GalleryImage) => void;
+  showUserImagesOnly?: boolean;
 }
 
-export const ImprovedImageGallery = ({
-  images,
-  onLike,
-  onView,
-  onAddComment,
-  onAddReply,
-  onLoadMore,
-  hasMore,
-  onImageClick,
-  isLoading = false,
-  error = null,
-  onRetry,
+export const ImprovedImageGallery = ({ 
+  onImageClick, 
+  showUserImagesOnly = false 
 }: ImprovedImageGalleryProps) => {
-  const { ref, inView } = useInView();
-  const { handleError } = useErrorHandler();
-  const { t } = useTranslation('common');
-  const [isEmpty, setIsEmpty] = useState<boolean>(false);
+  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { session } = useAuth();
+  const { toast } = useToast();
+  const { t } = useTranslation('gallery');
+  
+  const { likeImage, isLiking } = useLikeImage();
+  const { addComment, addReply } = useCommentImage();
+
+  const fetchImages = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      let query = supabase
+        .from<GalleryImage>('images')
+        .select(`
+          id, 
+          url, 
+          prompt, 
+          likes, 
+          comments, 
+          views, 
+          produced,
+          creator:profiles (name, avatar),
+          createdAt,
+          timeAgo,
+          user_id,
+          price,
+          image_likes(user_id)
+        `)
+        .order('createdAt', { ascending: false })
+        .limit(30);
+
+      if (showUserImagesOnly && session?.user) {
+        query = query.eq('user_id', session.user.id);
+      }
+      
+      const { data, error } = await query;
+
+      if (error) {
+        throw new Error(error.message);
+      }
+      
+      if (data) {
+        const enrichedImages = data.map(img => ({
+          ...img,
+          hasLiked: img.image_likes.length > 0,
+          metrics: {
+            like: img.likes,
+            comment: img.comments?.length || 0,
+            view: img.views,
+          },
+        }));
+        setImages(enrichedImages);
+      } else {
+        setImages([]);
+      }
+    } catch (err: any) {
+      setError(err.message);
+      console.error("Failed to fetch images:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [session?.user, showUserImagesOnly]);
+
+  const handleLike = async (imageId: number) => {
+    if (!session?.user) {
+      toast({
+        title: t('imageCard:signInRequired'),
+        description: t('imageCard:signInToLike'),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (isLiking) return;
+
+    try {
+      const newLikeState = await likeImage(imageId);
+      
+      setImages(prevImages =>
+        prevImages.map(img =>
+          img.id === imageId ? { ...img, hasLiked: newLikeState, metrics: { ...img.metrics, like: (img.metrics?.like || 0) + (newLikeState ? 1 : -1) } } : img
+        )
+      );
+    } catch (err: any) {
+      console.error("Like image failed:", err.message);
+      toast({
+        title: t('status:error'),
+        description: "Failed to like image: " + err.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleView = async (imageId: number) => {
+    try {
+      // Optimistically update the view count locally
+      setImages(prevImages =>
+        prevImages.map(img =>
+          img.id === imageId ? { ...img, metrics: { ...img.metrics, view: (img.metrics?.view || 0) + 1 } } : img
+        )
+      );
+      
+      // Call the Supabase function to increment the view count
+      const { error } = await supabase.functions.invoke('increment-image-view', {
+        body: { image_id: imageId },
+      });
+  
+      if (error) {
+        throw new Error(error.message);
+      }
+    } catch (err: any) {
+      console.error("View increment failed:", err.message);
+      toast({
+        title: t('status:error'),
+        description: "Failed to update view count: " + err.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAddComment = async (imageId: number, commentText: string) => {
+    if (!session?.user) {
+      toast({
+        title: t('imageCard:signInRequired'),
+        description: t('imageCard:signInToLike'),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const newComment = await addComment(imageId, commentText);
+      
+      setImages(prevImages =>
+        prevImages.map(img =>
+          img.id === imageId ? { 
+            ...img, 
+            comments: [...(img.comments || []), newComment],
+            metrics: { ...img.metrics, comment: (img.metrics?.comment || 0) + 1 }
+          } : img
+        )
+      );
+    } catch (err: any) {
+      console.error("Add comment failed:", err.message);
+      toast({
+        title: t('status:error'),
+        description: "Failed to add comment: " + err.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAddReply = async (imageId: number, commentId: number, replyText: string) => {
+    if (!session?.user) {
+      toast({
+        title: t('imageCard:signInRequired'),
+        description: t('imageCard:signInToLike'),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const newReply = await addReply(commentId, replyText);
+      
+      setImages(prevImages =>
+        prevImages.map(img => {
+          if (img.id === imageId) {
+            return {
+              ...img,
+              comments: img.comments.map(comment =>
+                comment.id === commentId
+                  ? { ...comment, replies: [...(comment.replies || []), newReply] }
+                  : comment
+              ),
+            };
+          }
+          return img;
+        })
+      );
+    } catch (err: any) {
+      console.error("Add reply failed:", err.message);
+      toast({
+        title: t('status:error'),
+        description: "Failed to add reply: " + err.message,
+        variant: "destructive",
+      });
+    }
+  };
 
   useEffect(() => {
-    if (inView && hasMore && !isLoading && !error) {
-      console.log("🔄 Loading more images due to scroll");
-      onLoadMore();
-    }
-  }, [inView, hasMore, onLoadMore, isLoading, error]);
+    fetchImages();
+  }, [fetchImages]);
 
-  useEffect(() => {
-    if (!isLoading && images.length === 0 && !error) {
-      console.log("📭 Gallery is empty");
-      setIsEmpty(true);
-    } else {
-      setIsEmpty(false);
-    }
-  }, [images, isLoading, error]);
+  const handleRetry = () => {
+    setError(null);
+    fetchImages();
+  };
 
-  // Network error detection
-  const isNetworkError = error?.message?.includes('fetch') || 
-                        error?.message?.includes('network') ||
-                        error?.message?.includes('Failed to fetch');
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   if (error) {
-    console.error("❌ Gallery error:", error);
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center">
-        <AlertCircle className="h-12 w-12 text-destructive mb-4" />
-        <h3 className="text-xl font-semibold mb-4">
-          {isNetworkError ? t('gallery.connectionProblem') : t('gallery.failedToLoad')}
-        </h3>
-        <p className="text-muted-foreground mb-6 max-w-md">
-          {isNetworkError 
-            ? t('gallery.connectionDescription')
-            : error.message || t('gallery.failedToLoadDescription')
-          }
-        </p>
-        {onRetry && (
-          <Button onClick={onRetry} className="flex items-center gap-2">
-            <RefreshCcw className="h-4 w-4" />
-            {t('buttons.tryAgain')}
-          </Button>
-        )}
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <WifiOff className="h-16 w-16 text-gray-400" />
+        <div className="text-center space-y-2">
+          <h3 className="text-xl font-semibold">{t('connectionProblem')}</h3>
+          <p className="text-gray-600 max-w-md">{t('connectionDescription')}</p>
+        </div>
+        <Button onClick={handleRetry} className="flex items-center gap-2">
+          <RefreshCw className="h-4 w-4" />
+          {t('buttons:tryAgain')}
+        </Button>
       </div>
     );
   }
 
-  if (isLoading && images.length === 0) {
+  if (images.length === 0) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div
-            key={i}
-            className="aspect-square bg-muted/40 rounded-lg animate-pulse"
-          ></div>
-        ))}
-      </div>
-    );
-  }
-
-  if (isEmpty) {
-    return (
-      <div className="flex flex-col items-center justify-center p-12 text-center">
-        <h3 className="text-xl font-semibold">{t('gallery.noImagesFound')}</h3>
-        <p className="text-muted-foreground mt-2">
-          {t('gallery.noImagesDescription')}
-        </p>
-        {onRetry && (
-          <Button onClick={onRetry} variant="outline" className="mt-4">
-            <RefreshCcw className="h-4 w-4 mr-2" />
-            {t('buttons.refresh')}
-          </Button>
-        )}
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <Wifi className="h-16 w-16 text-gray-400" />
+        <div className="text-center space-y-2">
+          <h3 className="text-xl font-semibold">{t('noImagesFound')}</h3>
+          <p className="text-gray-600 max-w-md">{t('noImagesDescription')}</p>
+        </div>
+        <Button onClick={handleRetry} className="flex items-center gap-2">
+          <RefreshCw className="h-4 w-4" />
+          {t('buttons:tryAgain')}
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {images.map((image) => (
-          <div
-            key={image.id}
-            className="transform transition-all duration-300 hover:scale-[1.02]"
-          >
-            <ImageCard
-              image={image}
-              onLike={onLike}
-              onView={onView}
-              onAddComment={onAddComment}
-              onAddReply={onAddReply}
-              onFullImageClick={() => onImageClick(image)}
-            />
-          </div>
-        ))}
-      </div>
-      {hasMore && (
-        <div ref={ref} className="flex justify-center p-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      )}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {images.map((image) => (
+        <ImageCard
+          key={image.id}
+          image={image}
+          onLike={handleLike}
+          onView={handleView}
+          onAddComment={handleAddComment}
+          onAddReply={handleAddReply}
+          onFullImageClick={onImageClick ? () => onImageClick(image) : undefined}
+        />
+      ))}
     </div>
   );
 };

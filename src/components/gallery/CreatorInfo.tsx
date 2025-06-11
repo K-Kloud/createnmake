@@ -21,7 +21,7 @@ export const CreatorInfo = ({
   isCreator = false,
   onPriceChange 
 }: CreatorInfoProps) => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('imageCard');
   // Use a default avatar if none is provided
   const avatarSrc = creator?.avatar || '/placeholder.svg';
   const displayName = creator?.name || 'Anonymous';
@@ -58,7 +58,7 @@ export const CreatorInfo = ({
           <span 
             className={`text-sm font-medium bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full ${isCreator ? 'cursor-pointer hover:bg-emerald-200' : ''}`}
             onClick={handlePriceClick}
-            title={isCreator ? t('imageCard.clickToEditPrice') : ""}
+            title={isCreator ? t('clickToEditPrice') : ""}
           >
             {price}
           </span>

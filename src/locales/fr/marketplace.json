@@ -1,67 +1,29 @@
 
 {
-  "titles": {
-    "marketplace": "Marché",
-    "featuredCollections": "Collections en vedette",
-    "categories": "Catégories",
-    "searchResults": "Résultats de recherche",
-    "productDetails": "Détails du produit"
-  },
-  "filters": {
-    "filterBy": "Filtrer par",
-    "sortBy": "Trier par",
-    "category": "Catégorie",
-    "priceRange": "Gamme de prix",
-    "dateAdded": "Date d'ajout",
-    "popularity": "Popularité",
-    "rating": "Évaluation",
-    "newest": "Plus récents",
-    "oldest": "Plus anciens",
-    "priceHighToLow": "Prix: Élevé à bas",
-    "priceLowToHigh": "Prix: Bas à élevé",
-    "mostPopular": "Plus populaire",
-    "topRated": "Mieux notés"
-  },
-  "product": {
-    "addToCart": "Ajouter au panier",
-    "buyNow": "Acheter maintenant",
-    "addToWishlist": "Ajouter à la liste de souhaits",
-    "shareProduct": "Partager le produit",
-    "productDescription": "Description du produit",
-    "specifications": "Spécifications",
-    "reviews": "Avis",
-    "relatedProducts": "Produits connexes",
-    "createdBy": "Créé par",
-    "price": "Prix",
-    "availability": "Disponibilité",
-    "inStock": "En stock",
-    "outOfStock": "Rupture de stock",
-    "limitedStock": "Stock limité"
-  },
-  "search": {
-    "searchPlaceholder": "Rechercher des créations, produits, créateurs...",
-    "noResults": "Aucun résultat trouvé",
-    "tryDifferentKeywords": "Essayez des mots-clés différents",
-    "searchSuggestions": "Suggestions de recherche",
-    "popularSearches": "Recherches populaires"
-  },
-  "categories": {
-    "clothing": "Vêtements",
-    "accessories": "Accessoires",
-    "furniture": "Meubles",
-    "decor": "Décoration maison",
-    "electronics": "Électronique",
-    "jewelry": "Bijoux",
-    "art": "Art",
-    "crafts": "Artisanat",
-    "all": "Toutes les catégories"
-  },
-  "actions": {
-    "viewDetails": "Voir les détails",
-    "quickView": "Vue rapide",
-    "compare": "Comparer",
-    "contact": "Contacter le créateur",
-    "customize": "Personnaliser",
-    "requestQuote": "Demander un devis"
+  "openMarket": "OpenMarket",
+  "searchPlaceholder": "Rechercher des designs, produits, créateurs...",
+  "advancedFilters": "Filtres Avancés",
+  "filterOptions": "Options de Filtre",
+  "refineSearch": "Affinez votre recherche avec ces filtres supplémentaires",
+  "designStyle": "Style de Design",
+  "allStyles": "Tous les Styles",
+  "minimalist": "Minimaliste",
+  "vintage": "Vintage",
+  "modern": "Moderne",
+  "elegant": "Élégant",
+  "priceRange": "Gamme de Prix",
+  "creatorReputation": "Réputation du Créateur",
+  "allRatings": "Toutes les Évaluations",
+  "clearAll": "Tout Effacer",
+  "applyFilters": "Appliquer les Filtres",
+  "wishlist": {
+    "title": "Votre Liste de Souhaits",
+    "empty": "Votre liste de souhaits est vide",
+    "emptyDescription": "Sauvegardez les articles que vous aimez en cliquant sur l'icône cœur",
+    "browseMarketplace": "Parcourir le Marché",
+    "itemCount": "{{count}} Article",
+    "itemCount_plural": "{{count}} Articles",
+    "removedFromWishlist": "Retiré de la Liste de Souhaits",
+    "removedDescription": "L'article a été retiré de vos éléments sauvegardés"
   }
 }

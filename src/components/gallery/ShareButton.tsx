@@ -14,13 +14,13 @@ export interface ShareButtonProps {
 
 export const ShareButton = ({ creator, imageUrl, imageId }: ShareButtonProps) => {
   const { toast } = useToast();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('imageCard');
 
   const handleShare = async () => {
     if (!imageUrl || !imageId) {
       toast({
-        title: t('status.error'),
-        description: t('imageCard.shareNoImage'),
+        title: t('status:error'),
+        description: t('shareNoImage'),
         variant: "destructive",
       });
       return;
@@ -49,8 +49,8 @@ export const ShareButton = ({ creator, imageUrl, imageId }: ShareButtonProps) =>
         const file = new File([blob], 'generated-image.png', { type: 'image/png' });
         
         shareData = {
-          title: t('imageCard.shareTitle', { creator: creator.name }),
-          text: t('imageCard.shareText'),
+          title: t('shareTitle', { creator: creator.name }),
+          text: t('shareText'),
           url: shareableUrl,
           files: [file]
         };
@@ -58,8 +58,8 @@ export const ShareButton = ({ creator, imageUrl, imageId }: ShareButtonProps) =>
         console.error('Error fetching image:', fetchError);
         // Fallback to sharing without the image file
         shareData = {
-          title: t('imageCard.shareTitle', { creator: creator.name }),
-          text: t('imageCard.shareText'),
+          title: t('shareTitle', { creator: creator.name }),
+          text: t('shareText'),
           url: shareableUrl
         };
       }
@@ -67,15 +67,15 @@ export const ShareButton = ({ creator, imageUrl, imageId }: ShareButtonProps) =>
       if (navigator.canShare && navigator.canShare(shareData)) {
         await navigator.share(shareData);
         toast({
-          title: t('status.success'),
-          description: t('imageCard.shareSuccess'),
+          title: t('status:success'),
+          description: t('shareSuccess'),
         });
       } else {
         // Fallback to copying the URL
         await navigator.clipboard.writeText(shareableUrl);
         toast({
-          title: t('status.success'),
-          description: t('imageCard.shareLinkCopied'),
+          title: t('status:success'),
+          description: t('shareLinkCopied'),
         });
       }
     } catch (error) {
@@ -87,8 +87,8 @@ export const ShareButton = ({ creator, imageUrl, imageId }: ShareButtonProps) =>
       }
       
       toast({
-        title: t('status.error'),
-        description: t('imageCard.shareError'),
+        title: t('status:error'),
+        description: t('shareError'),
         variant: "destructive",
       });
     }
