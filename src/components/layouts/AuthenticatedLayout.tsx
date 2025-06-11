@@ -33,7 +33,7 @@ export const AuthenticatedLayout = ({
     return (
       <PageLayout title={title} description={description}>
         <LoadingState isLoading={true}>
-          <div />
+          <div className="h-64" />
         </LoadingState>
       </PageLayout>
     );
