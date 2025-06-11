@@ -1,17 +1,24 @@
-
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { EmptyPreview } from "./preview/EmptyPreview";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { GeneratingState } from "./preview/GeneratingState";
+import { EmptyPreview } from "./preview/EmptyPreview";
 import { ImagePreview } from "./preview/ImagePreview";
+import { useEffect, useState } from "react";
+import { PreviewActions } from "./preview/PreviewActions";
 
 interface PreviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isGenerating: boolean;
   selectedRatio: string;
-  generatedImageUrl?: string;
+  generatedImageUrl: string | undefined;
   prompt: string;
-  onLike: (imageId: number) => void;
+  onLike?: (imageId: number) => void;
 }
 
 export const PreviewDialog = ({
@@ -23,43 +30,73 @@ export const PreviewDialog = ({
   prompt,
   onLike
 }: PreviewDialogProps) => {
-  console.log("🎬 PreviewDialog props:", {
-    open,
-    isGenerating,
-    selectedRatio,
-    hasGeneratedImageUrl: !!generatedImageUrl,
-    generatedImageUrl,
-    prompt
-  });
+  const [currentImageUrl, setCurrentImageUrl] = useState<string | undefined>(generatedImageUrl);
+  const [currentImageId, setCurrentImageId] = useState<number | undefined>();
 
-  const renderContent = () => {
-    // Show generating state while image is being created
-    if (isGenerating) {
-      console.log("⏳ Rendering generating state");
-      return <GeneratingState selectedRatio={selectedRatio} />;
-    }
-    
-    // Show image if we have a URL
+  // Update current image when generated image changes
+  useEffect(() => {
+    setCurrentImageUrl(generatedImageUrl);
+    // You might want to extract image ID from the URL or pass it as a prop
+    // For now, we'll use a placeholder
     if (generatedImageUrl) {
-      console.log("🖼️ Rendering image preview with URL:", generatedImageUrl);
-      return (
-        <ImagePreview
-          imageUrl={generatedImageUrl}
-          prompt={prompt}
-          onLike={onLike}
-        />
-      );
+      // Extract image ID from URL or get it from context
+      // This is a simplified approach - you might need to pass the ID directly
+      setCurrentImageId(Date.now()); // Placeholder
     }
-    
-    // Show empty state by default
-    console.log("📭 Rendering empty preview");
-    return <EmptyPreview selectedRatio={selectedRatio} />;
+  }, [generatedImageUrl]);
+
+  const handleImageEdited = (newImageUrl: string, newImageId: number) => {
+    setCurrentImageUrl(newImageUrl);
+    setCurrentImageId(newImageId);
   };
+
+  const getRatio = (ratio: string) => {
+    switch (ratio) {
+      case "portrait":
+        return 2 / 3;
+      case "landscape":
+        return 3 / 2;
+      case "square":
+      default:
+        return 1;
+    }
+  };
+
+  if (!open) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-auto">
-        {renderContent()}
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Generated Image</DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          <div className="relative border border-border/20 rounded-lg overflow-hidden bg-muted/30">
+            <AspectRatio ratio={getRatio(selectedRatio)}>
+              {isGenerating ? (
+                <GeneratingState />
+              ) : currentImageUrl ? (
+                <ImagePreview 
+                  imageUrl={currentImageUrl} 
+                  prompt={prompt} 
+                />
+              ) : (
+                <EmptyPreview />
+              )}
+            </AspectRatio>
+          </div>
+
+          {currentImageUrl && (
+            <PreviewActions
+              imageUrl={currentImageUrl}
+              imageId={currentImageId}
+              prompt={prompt}
+              onLike={onLike}
+              onImageEdited={handleImageEdited}
+            />
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -566,11 +566,16 @@ export type Database = {
           assigned_artisan_id: string | null
           assigned_manufacturer_id: string | null
           created_at: string | null
+          edit_prompt: string | null
+          edit_version: number | null
           id: number
           image_url: string | null
+          is_edited: boolean | null
           is_public: boolean | null
           item_type: string
           likes: number | null
+          mask_data: string | null
+          original_image_id: number | null
           price: string | null
           prompt: string
           reference_image_url: string | null
@@ -586,11 +591,16 @@ export type Database = {
           assigned_artisan_id?: string | null
           assigned_manufacturer_id?: string | null
           created_at?: string | null
+          edit_prompt?: string | null
+          edit_version?: number | null
           id?: never
           image_url?: string | null
+          is_edited?: boolean | null
           is_public?: boolean | null
           item_type: string
           likes?: number | null
+          mask_data?: string | null
+          original_image_id?: number | null
           price?: string | null
           prompt: string
           reference_image_url?: string | null
@@ -606,11 +616,16 @@ export type Database = {
           assigned_artisan_id?: string | null
           assigned_manufacturer_id?: string | null
           created_at?: string | null
+          edit_prompt?: string | null
+          edit_version?: number | null
           id?: never
           image_url?: string | null
+          is_edited?: boolean | null
           is_public?: boolean | null
           item_type?: string
           likes?: number | null
+          mask_data?: string | null
+          original_image_id?: number | null
           price?: string | null
           prompt?: string
           reference_image_url?: string | null
@@ -634,6 +649,13 @@ export type Database = {
             columns: ["assigned_manufacturer_id"]
             isOneToOne: false
             referencedRelation: "manufacturers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "generated_images_original_image_id_fkey"
+            columns: ["original_image_id"]
+            isOneToOne: false
+            referencedRelation: "generated_images"
             referencedColumns: ["id"]
           },
           {
@@ -1218,6 +1240,16 @@ export type Database = {
         Returns: {
           metric_type: string
           total_value: number
+        }[]
+      }
+      get_image_versions: {
+        Args: { image_id: number }
+        Returns: {
+          id: number
+          image_url: string
+          edit_prompt: string
+          edit_version: number
+          created_at: string
         }[]
       }
       increment_views: {
