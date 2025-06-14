@@ -52,8 +52,16 @@ export const OrderManagement: React.FC = () => {
       if (manufacturerResult.error) throw manufacturerResult.error;
 
       const allOrders: Order[] = [
-        ...(artisanResult.data || []).map(o => ({ ...o, type: 'artisan' as const })),
-        ...(manufacturerResult.data || []).map(o => ({ ...o, type: 'manufacturer' as const }))
+        ...(artisanResult.data || []).map(o => ({ 
+          ...o, 
+          id: o.id.toString(),
+          type: 'artisan' as const 
+        })),
+        ...(manufacturerResult.data || []).map(o => ({ 
+          ...o, 
+          id: o.id.toString(),
+          type: 'manufacturer' as const 
+        }))
       ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
       return allOrders;
@@ -71,7 +79,7 @@ export const OrderManagement: React.FC = () => {
       const { error } = await supabase
         .from(table)
         .update({ status: newStatus, updated_at: new Date().toISOString() })
-        .eq('id', orderId);
+        .eq('id', parseInt(orderId));
 
       if (error) throw error;
     },

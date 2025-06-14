@@ -70,12 +70,21 @@ export const SystemMonitor: React.FC = () => {
     queryFn: async (): Promise<ErrorLog[]> => {
       const { data, error } = await supabase
         .from('error_logs')
-        .select('*')
+        .select('error_id, error_type, error_message, occurred_at, resolved, user_id')
         .order('occurred_at', { ascending: false })
         .limit(10);
 
       if (error) throw error;
-      return data || [];
+      
+      // Transform the data to match ErrorLog interface
+      return (data || []).map(item => ({
+        id: item.error_id.toString(),
+        error_type: item.error_type,
+        error_message: item.error_message,
+        occurred_at: item.occurred_at,
+        resolved: item.resolved,
+        user_id: item.user_id
+      }));
     },
     refetchInterval: 60000, // Refresh every minute
   });

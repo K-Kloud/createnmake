@@ -1,7 +1,7 @@
 
 import { CRMLayout } from "@/components/crm/CRMLayout";
 import { Helmet } from "react-helmet";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AnalyticsDashboard } from "@/components/analytics/AnalyticsDashboard";
 
 const CRMAnalytics = () => {
   return (
@@ -12,19 +12,10 @@ const CRMAnalytics = () => {
       <CRMLayout currentTab="analytics">
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold">Analytics</h1>
+            <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
           </div>
           
-          <Card>
-            <CardHeader>
-              <CardTitle>Analytics Dashboard</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-center py-10 text-muted-foreground">
-                Analytics module coming soon. This page will display comprehensive business analytics and insights.
-              </p>
-            </CardContent>
-          </Card>
+          <AnalyticsDashboard />
         </div>
       </CRMLayout>
     </>
