@@ -9,6 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ab_test_events: {
+        Row: {
+          event_type: string
+          id: string
+          metadata: Json | null
+          session_id: string
+          test_name: string
+          timestamp: string
+          user_id: string | null
+          variant: string
+        }
+        Insert: {
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          session_id: string
+          test_name: string
+          timestamp?: string
+          user_id?: string | null
+          variant: string
+        }
+        Update: {
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string
+          test_name?: string
+          timestamp?: string
+          user_id?: string | null
+          variant?: string
+        }
+        Relationships: []
+      }
       activity_metrics: {
         Row: {
           metric_id: number
@@ -367,6 +400,42 @@ export type Database = {
           },
         ]
       }
+      conversion_events: {
+        Row: {
+          completed: boolean | null
+          funnel_name: string
+          funnel_step: string
+          id: string
+          metadata: Json | null
+          session_id: string
+          step_order: number
+          timestamp: string
+          user_id: string | null
+        }
+        Insert: {
+          completed?: boolean | null
+          funnel_name: string
+          funnel_step: string
+          id?: string
+          metadata?: Json | null
+          session_id: string
+          step_order: number
+          timestamp?: string
+          user_id?: string | null
+        }
+        Update: {
+          completed?: boolean | null
+          funnel_name?: string
+          funnel_step?: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string
+          step_order?: number
+          timestamp?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       creator_subscriptions: {
         Row: {
           cancel_at_period_end: boolean | null
@@ -486,6 +555,51 @@ export type Database = {
         }
         Relationships: []
       }
+      ecommerce_events: {
+        Row: {
+          currency: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          price: number | null
+          product_category: string | null
+          product_id: string | null
+          product_name: string | null
+          quantity: number | null
+          session_id: string
+          timestamp: string
+          user_id: string | null
+        }
+        Insert: {
+          currency?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          price?: number | null
+          product_category?: string | null
+          product_id?: string | null
+          product_name?: string | null
+          quantity?: number | null
+          session_id: string
+          timestamp?: string
+          user_id?: string | null
+        }
+        Update: {
+          currency?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          price?: number | null
+          product_category?: string | null
+          product_id?: string | null
+          product_name?: string | null
+          quantity?: number | null
+          session_id?: string
+          timestamp?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       error_logs: {
         Row: {
           agent_id: number | null
@@ -535,6 +649,36 @@ export type Database = {
             referencedColumns: ["agent_id"]
           },
         ]
+      }
+      feature_usage: {
+        Row: {
+          feature_category: string
+          feature_name: string
+          id: string
+          session_id: string
+          timestamp: string
+          usage_data: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          feature_category: string
+          feature_name: string
+          id?: string
+          session_id: string
+          timestamp?: string
+          usage_data?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          feature_category?: string
+          feature_name?: string
+          id?: string
+          session_id?: string
+          timestamp?: string
+          usage_data?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       generated_contents: {
         Row: {
@@ -914,6 +1058,48 @@ export type Database = {
           },
         ]
       }
+      page_analytics: {
+        Row: {
+          exit_page: boolean | null
+          id: string
+          page_path: string
+          page_title: string | null
+          referrer: string | null
+          scroll_depth_percentage: number | null
+          session_id: string
+          time_spent_seconds: number | null
+          timestamp: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          exit_page?: boolean | null
+          id?: string
+          page_path: string
+          page_title?: string | null
+          referrer?: string | null
+          scroll_depth_percentage?: number | null
+          session_id: string
+          time_spent_seconds?: number | null
+          timestamp?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          exit_page?: boolean | null
+          id?: string
+          page_path?: string
+          page_title?: string | null
+          referrer?: string | null
+          scroll_depth_percentage?: number | null
+          session_id?: string
+          time_spent_seconds?: number | null
+          timestamp?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -938,6 +1124,45 @@ export type Database = {
           payment_id?: number
           payment_status?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      performance_metrics: {
+        Row: {
+          duration_ms: number
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          metric_name: string
+          metric_type: string
+          session_id: string
+          success: boolean | null
+          timestamp: string
+          user_id: string | null
+        }
+        Insert: {
+          duration_ms: number
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_name: string
+          metric_type: string
+          session_id: string
+          success?: boolean | null
+          timestamp?: string
+          user_id?: string | null
+        }
+        Update: {
+          duration_ms?: number
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_name?: string
+          metric_type?: string
+          session_id?: string
+          success?: boolean | null
+          timestamp?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1045,6 +1270,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      search_analytics: {
+        Row: {
+          clicked_result_position: number | null
+          id: string
+          results_count: number | null
+          search_query: string
+          search_type: string
+          session_id: string
+          timestamp: string
+          user_id: string | null
+        }
+        Insert: {
+          clicked_result_position?: number | null
+          id?: string
+          results_count?: number | null
+          search_query: string
+          search_type: string
+          session_id: string
+          timestamp?: string
+          user_id?: string | null
+        }
+        Update: {
+          clicked_result_position?: number | null
+          id?: string
+          results_count?: number | null
+          search_query?: string
+          search_type?: string
+          session_id?: string
+          timestamp?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
       subscription_plans: {
         Row: {
@@ -1154,6 +1412,42 @@ export type Database = {
         }
         Relationships: []
       }
+      ui_interactions: {
+        Row: {
+          element_id: string | null
+          element_text: string | null
+          element_type: string
+          id: string
+          metadata: Json | null
+          page_path: string
+          session_id: string
+          timestamp: string
+          user_id: string | null
+        }
+        Insert: {
+          element_id?: string | null
+          element_text?: string | null
+          element_type: string
+          id?: string
+          metadata?: Json | null
+          page_path: string
+          session_id: string
+          timestamp?: string
+          user_id?: string | null
+        }
+        Update: {
+          element_id?: string | null
+          element_text?: string | null
+          element_type?: string
+          id?: string
+          metadata?: Json | null
+          page_path?: string
+          session_id?: string
+          timestamp?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_notifications: {
         Row: {
           created_at: string | null
@@ -1187,6 +1481,54 @@ export type Database = {
           notification_type?: string
           title?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_sessions: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          device_type: string | null
+          duration_seconds: number | null
+          end_time: string | null
+          id: string
+          interactions_count: number | null
+          ip_address: unknown | null
+          pages_visited: number | null
+          session_id: string
+          start_time: string
+          user_id: string | null
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          device_type?: string | null
+          duration_seconds?: number | null
+          end_time?: string | null
+          id?: string
+          interactions_count?: number | null
+          ip_address?: unknown | null
+          pages_visited?: number | null
+          session_id: string
+          start_time?: string
+          user_id?: string | null
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          device_type?: string | null
+          duration_seconds?: number | null
+          end_time?: string | null
+          id?: string
+          interactions_count?: number | null
+          ip_address?: unknown | null
+          pages_visited?: number | null
+          session_id?: string
+          start_time?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1238,6 +1580,19 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      get_conversion_funnel_stats: {
+        Args: {
+          funnel_name_param: string
+          start_date?: string
+          end_date?: string
+        }
+        Returns: {
+          step: string
+          step_order: number
+          total_users: number
+          conversion_rate: number
+        }[]
+      }
       get_image_metrics: {
         Args: { p_image_id: number }
         Returns: {
@@ -1253,6 +1608,16 @@ export type Database = {
           edit_prompt: string
           edit_version: number
           created_at: string
+        }[]
+      }
+      get_page_performance_stats: {
+        Args: { start_date?: string; end_date?: string }
+        Returns: {
+          page_path: string
+          avg_load_time_ms: number
+          total_views: number
+          avg_time_spent_seconds: number
+          bounce_rate: number
         }[]
       }
       increment_views: {

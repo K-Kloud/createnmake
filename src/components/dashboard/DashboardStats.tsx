@@ -7,12 +7,14 @@ import { ImageIcon, ShoppingCartIcon, HeartIcon, PackageIcon, Crown } from "luci
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useAnalyticsContext } from "@/components/analytics/AnalyticsProvider";
 
 export function DashboardStats() {
   const { session, user } = useAuth();
   const { subscriptionStatus } = useSubscription();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { trackInteraction } = useAnalyticsContext();
   
   const {
     generatedImagesCount,
@@ -22,10 +24,17 @@ export function DashboardStats() {
   } = useDashboardData(session, user);
 
   const handleRefresh = () => {
+    trackInteraction('refresh_button', 'dashboard-refresh', 'Dashboard Refresh');
     queryClient.invalidateQueries({ queryKey: ["generatedImagesCount"] });
     queryClient.invalidateQueries({ queryKey: ["likesCount"] });
     queryClient.invalidateQueries({ queryKey: ["ordersCount"] });
     queryClient.invalidateQueries({ queryKey: ["productsCount"] });
+  };
+
+  const handleSubscriptionClick = () => {
+    const action = subscriptionStatus?.tier === "free" ? 'upgrade' : 'manage';
+    trackInteraction('subscription_button', 'dashboard-subscription', `Subscription ${action}`);
+    navigate("/subscription");
   };
 
   return (
@@ -51,7 +60,7 @@ export function DashboardStats() {
           </div>
           <Button 
             variant={subscriptionStatus.tier === "free" ? "default" : "outline"}
-            onClick={() => navigate("/subscription")}
+            onClick={handleSubscriptionClick}
           >
             {subscriptionStatus.tier === "free" ? "Upgrade" : "Manage Subscription"}
           </Button>

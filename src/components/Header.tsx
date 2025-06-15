@@ -11,6 +11,7 @@ import { MobileNavigationMenu } from "./navigation/MobileNavigationMenu";
 import { useResponsive } from "@/hooks/useResponsive";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
+import { useAnalyticsContext } from "@/components/analytics/AnalyticsProvider";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ export const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const { isAtLeast } = useResponsive();
   const { t } = useTranslation('common');
+  const { trackInteraction, trackFeatureUsage } = useAnalyticsContext();
 
   // Set up auth state listener
   useEffect(() => {
@@ -90,6 +92,16 @@ export const Header = () => {
     }
   }, [isDarkMode]);
 
+  const handleLogoClick = () => {
+    trackInteraction('logo', 'header-logo', 'openteknologies');
+    navigate("/");
+  };
+
+  const handleThemeToggle = (newMode: boolean) => {
+    trackFeatureUsage('theme_toggle', 'appearance', { from: isDarkMode ? 'dark' : 'light', to: newMode ? 'dark' : 'light' });
+    setIsDarkMode(newMode);
+  };
+
   return (
     <>
       <header className="fixed top-0 w-full z-50 glass-card">
@@ -98,7 +110,7 @@ export const Header = () => {
           <div className="flex items-center">
             <button 
               className="bg-transparent text-primary border border-primary px-4 py-2 text-xl font-bold rounded-md hover:bg-primary/10 transition-all duration-200 hover:shadow-sm hover:shadow-primary/20 active:scale-95" 
-              onClick={() => navigate("/")}
+              onClick={handleLogoClick}
             >
               openteknologies
             </button>
@@ -109,14 +121,14 @@ export const Header = () => {
             <MainNavigationMenu 
               user={session?.user || null}
               profile={profile}
-              onShowAuthDialog={() => setShowAuthDialog(true)}
+              on showAuthDialog={() => setShowAuthDialog(true)}
             />
           </div>
           
           {/* Right side controls */}
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
-            <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+            <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={handleThemeToggle} />
             
             {session?.user && (
               <EnhancedNotificationCenter />

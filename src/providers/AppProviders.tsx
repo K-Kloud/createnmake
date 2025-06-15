@@ -1,43 +1,46 @@
 
+import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
-import { NotificationProvider } from "@/context/NotificationContext";
+import { Toaster as Sonner } from "@/components/ui/sonner";
 import { CartProvider } from "@/contexts/CartContext";
-import { I18nextProvider } from 'react-i18next';
-import i18n from '@/lib/i18n';
+import { NotificationProvider } from "@/context/NotificationContext";
+import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
+import { PerformanceTracker } from "@/components/analytics/PerformanceTracker";
 
+// Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: (failureCount, error: any) => {
-        // Don't retry on 404s or auth errors
-        if (error?.status === 404 || error?.status === 401) {
-          return false;
-        }
-        return failureCount < 3;
-      },
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 1,
     },
   },
 });
 
-export const AppProviders = ({ children }: { children: React.ReactNode }) => {
+interface AppProvidersProps {
+  children: React.ReactNode;
+}
+
+export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
   return (
-    <I18nextProvider i18n={i18n}>
-      <BrowserRouter>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+          <CartProvider>
             <NotificationProvider>
-              <CartProvider>
+              <AnalyticsProvider>
+                <PerformanceTracker />
                 {children}
                 <Toaster />
-              </CartProvider>
+                <Sonner />
+              </AnalyticsProvider>
             </NotificationProvider>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </BrowserRouter>
-    </I18nextProvider>
+          </CartProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
   );
 };

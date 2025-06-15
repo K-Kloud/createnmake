@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { MarketplaceLoader } from "@/components/marketplace/MarketplaceLoader";
 import { PaginatedMarketplace } from "@/components/marketplace/PaginatedMarketplace";
@@ -11,6 +10,9 @@ import { useToast } from "@/hooks/use-toast";
 import { ImprovedImageGallery } from "@/components/gallery/ImprovedImageGallery";
 import { useInView } from "react-intersection-observer";
 import { useTranslation } from "react-i18next";
+import { useEcommerceTracking } from "@/hooks/useEcommerceTracking";
+import { useConversionTracking } from "@/hooks/useConversionTracking";
+import { useAnalyticsContext } from "@/components/analytics/AnalyticsProvider";
 
 interface MarketplaceContentProps {
   isLoading: boolean;
@@ -43,6 +45,10 @@ export const MarketplaceContent = ({
   const [isProductDetailOpen, setIsProductDetailOpen] = useState(false);
   const [similarProducts, setSimilarProducts] = useState<GalleryImage[]>([]);
   const [viewMode, setViewMode] = useState<"paginated" | "infinite">("infinite");
+  
+  const { trackProductView } = useEcommerceTracking();
+  const { trackMarketplacePurchaseFunnel } = useConversionTracking();
+  const { trackInteraction } = useAnalyticsContext();
   
   // Check for new user session and send welcome notification
   useEffect(() => {
@@ -83,6 +89,12 @@ export const MarketplaceContent = ({
     console.log("🖼️ Image clicked:", image.id, image.url);
     setSelectedImage(image);
     
+    // Track product view for e-commerce
+    if (image.price) {
+      trackProductView(image.id.toString(), image.title || image.prompt || 'Untitled', image.item_type);
+      trackMarketplacePurchaseFunnel('product_viewed', image.id.toString());
+    }
+    
     if (image.price) {
       fetchSimilarProducts(image);
       setIsProductDetailOpen(true);
@@ -97,10 +109,17 @@ export const MarketplaceContent = ({
     const productUrl = `${window.location.origin}/marketplace?product=${productId}`;
     navigator.clipboard.writeText(productUrl);
     
+    trackInteraction('share', productId.toString(), 'product_share', { method: 'clipboard' });
+    
     toast({
       title: t('gallery.linkCopied'),
       description: t('gallery.linkCopiedDescription')
     });
+  };
+
+  const handleViewModeChange = (mode: "paginated" | "infinite") => {
+    trackInteraction('view_mode_toggle', mode, `Switch to ${mode}`, { previous_mode: viewMode });
+    setViewMode(mode);
   };
 
   const { ref, inView } = useInView();
@@ -127,14 +146,14 @@ export const MarketplaceContent = ({
       <div className="flex justify-between items-center mb-4">
         <div className="flex space-x-2">
           <button 
-            onClick={() => setViewMode("paginated")}
+            onClick={() => handleViewModeChange("paginated")}
             className={`px-3 py-1 rounded-md ${viewMode === "paginated" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
             aria-label="Switch to paginated view"
           >
             {t('marketplace.viewMode.paginated')}
           </button>
           <button 
-            onClick={() => setViewMode("infinite")}
+            onClick={() => handleViewModeChange("infinite")}
             className={`px-3 py-1 rounded-md ${viewMode === "infinite" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
             aria-label="Switch to infinite scroll view"
           >
