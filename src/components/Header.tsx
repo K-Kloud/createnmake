@@ -125,8 +125,6 @@ export const Header = () => {
             {/* Desktop User Menu */}
             <div className={isAtLeast('sm') ? 'block' : 'hidden'}>
               <UserMenu 
-                session={session} 
-                profile={profile} 
                 onShowAuthDialog={() => setShowAuthDialog(true)} 
               />
             </div>
