@@ -2,6 +2,11 @@
 import { useEffect } from 'react';
 import { useAnalyticsContext } from './AnalyticsProvider';
 
+interface LayoutShiftEntry extends PerformanceEntry {
+  hadRecentInput: boolean;
+  value: number;
+}
+
 export const PerformanceTracker: React.FC = () => {
   const { trackPerformance } = useAnalyticsContext();
 
@@ -26,8 +31,9 @@ export const PerformanceTracker: React.FC = () => {
       let cumulativeLayoutShift = 0;
       const clsObserver = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
-          if (entry.hadRecentInput) continue;
-          cumulativeLayoutShift += (entry as any).value;
+          const layoutShiftEntry = entry as LayoutShiftEntry;
+          if (layoutShiftEntry.hadRecentInput) continue;
+          cumulativeLayoutShift += layoutShiftEntry.value;
         }
       });
 
@@ -54,7 +60,7 @@ export const PerformanceTracker: React.FC = () => {
       try {
         const response = await originalFetch(...args);
         const duration = performance.now() - startTime;
-        const url = typeof args[0] === 'string' ? args[0] : args[0].url;
+        const url = typeof args[0] === 'string' ? args[0] : (args[0] as Request).url;
         
         trackPerformance('api_response', url, Math.round(duration), response.ok, 
           response.ok ? undefined : `HTTP ${response.status}: ${response.statusText}`);
@@ -62,7 +68,7 @@ export const PerformanceTracker: React.FC = () => {
         return response;
       } catch (error) {
         const duration = performance.now() - startTime;
-        const url = typeof args[0] === 'string' ? args[0] : args[0].url;
+        const url = typeof args[0] === 'string' ? args[0] : (args[0] as Request).url;
         
         trackPerformance('api_response', url, Math.round(duration), false, 
           error instanceof Error ? error.message : 'Network error');

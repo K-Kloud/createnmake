@@ -91,7 +91,11 @@ export const MarketplaceContent = ({
     
     // Track product view for e-commerce
     if (image.price) {
-      trackProductView(image.id.toString(), image.title || image.prompt || 'Untitled', image.item_type);
+      trackProductView(
+        image.id.toString(), 
+        image.title || image.prompt || 'Untitled', 
+        image.item_type || 'general'
+      );
       trackMarketplacePurchaseFunnel('product_viewed', image.id.toString());
     }
     

@@ -121,7 +121,7 @@ export const Header = () => {
             <MainNavigationMenu 
               user={session?.user || null}
               profile={profile}
-              on showAuthDialog={() => setShowAuthDialog(true)}
+              onShowAuthDialog={() => setShowAuthDialog(true)}
             />
           </div>
           

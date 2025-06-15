@@ -21,6 +21,8 @@ export interface GalleryImage {
   };
   user_id: string;
   price?: string;
+  title?: string;
+  item_type?: string;
 }
 
 export interface ImageLike {
