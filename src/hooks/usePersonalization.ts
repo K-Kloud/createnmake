@@ -46,6 +46,10 @@ export const usePersonalization = () => {
 
       if (existingPrefs) {
         // Transform dashboard settings to preferences format
+        const theme = existingPrefs.theme;
+        const validTheme: 'light' | 'dark' | 'auto' = 
+          theme === 'light' || theme === 'dark' || theme === 'auto' ? theme : 'light';
+
         return {
           user_id: user.id,
           preferred_styles: [],
@@ -62,7 +66,7 @@ export const usePersonalization = () => {
             allow_recommendations: true
           },
           ui_preferences: {
-            theme: existingPrefs.theme || 'light',
+            theme: validTheme,
             language: 'en',
             grid_size: 'medium'
           }

@@ -17,8 +17,8 @@ interface PersonalizationProfile {
   user_id: string;
   preferred_styles: string[];
   color_preferences: string[];
-  activity_patterns: any;
-  engagement_history: any;
+  activity_patterns: Record<string, any>;
+  engagement_history: Record<string, any>;
 }
 
 export const useAdvancedAI = () => {
@@ -85,17 +85,25 @@ export const useAdvancedAI = () => {
       const enhancedPrompt = `${basePrompt}, in ${userPreferences.preferred_styles.join(' and ')} style, 
         with color palette focusing on ${userPreferences.color_preferences.join(', ')}`;
 
-      // Log the AI enhancement
+      // Log the AI enhancement with proper JSON serialization
+      const queryResult = {
+        original: basePrompt,
+        enhanced: enhancedPrompt,
+        preferences_applied: {
+          user_id: userPreferences.user_id,
+          preferred_styles: userPreferences.preferred_styles,
+          color_preferences: userPreferences.color_preferences,
+          activity_patterns: userPreferences.activity_patterns,
+          engagement_history: userPreferences.engagement_history
+        }
+      };
+
       await supabase
         .from('ai_agent_queries')
         .insert({
           agent_id: 1,
           query_text: `Enhanced prompt for user preferences: ${basePrompt}`,
-          query_result: { 
-            original: basePrompt, 
-            enhanced: enhancedPrompt,
-            preferences_applied: userPreferences
-          }
+          query_result: queryResult as any
         });
 
       return enhancedPrompt;
@@ -140,7 +148,7 @@ export const useAdvancedAI = () => {
         .insert({
           agent_id: 1,
           query_text: 'Weekly trend analysis',
-          query_result: trendAnalysis
+          query_result: trendAnalysis as any
         });
 
       return trendAnalysis;

@@ -53,6 +53,7 @@ export const AIRecommendations: React.FC = () => {
             onClick={() => generatePersonalizedPrompt({ 
               basePrompt: 'a modern design',
               userPreferences: {
+                user_id: 'current_user',
                 preferred_styles: ['minimalist', 'modern'],
                 color_preferences: ['blue', 'white'],
                 activity_patterns: {},

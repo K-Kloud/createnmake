@@ -9,7 +9,7 @@ import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { LoadingState } from '@/components/ui/loading-state';
 import { 
   Instagram, 
-  Dropbox, 
+  HardDrive, 
   Mail, 
   Bell, 
   Cloud, 
@@ -20,7 +20,7 @@ import {
 const integrationIcons = {
   instagram: Instagram,
   pinterest: Share2,
-  dropbox: Dropbox,
+  dropbox: HardDrive,
   google_drive: Cloud,
   mailchimp: Mail
 };
