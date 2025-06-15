@@ -26,26 +26,13 @@ export const ImageOverlay = ({
       className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-100 transition-all duration-300 flex items-center justify-center w-full h-full"
       onClick={onExpandClick} // Add click handler to expand the image
     >
-      {isZoomed ? (
+      {isZoomed && (
         <ZoomControls 
           isZoomed={isZoomed}
           zoomFactor={zoomFactor}
           onZoomIn={onZoomIn}
           onZoomOut={onZoomOut}
         />
-      ) : (
-        <Button 
-          variant="secondary" 
-          size="sm"
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent triggering the parent click handler
-            onToggleZoom(e);
-          }}
-          className="text-white bg-black/50 backdrop-blur-sm hover:bg-black/70 px-3 py-1.5 rounded-full flex items-center gap-2 shadow-lg"
-        >
-          <Maximize size={18} />
-          Zoom Image
-        </Button>
       )}
     </div>
   );
