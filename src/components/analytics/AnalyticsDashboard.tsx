@@ -13,7 +13,7 @@ interface AnalyticsData {
   imageGeneration: Array<{ date: string; count: number; }>;
   revenue: Array<{ month: string; amount: number; }>;
   userDistribution: Array<{ type: string; count: number; color: string; }>;
-  topPerformingImages: Array<{ id: number; title: string; views: number; likes: number; }>;
+  topPerformingImages: Array<{ id: string; title: string; views: number; likes: number; }>;
 }
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
@@ -34,7 +34,7 @@ export const AnalyticsDashboard: React.FC = () => {
         // Get image generation data
         const { data: images } = await supabase
           .from('generated_images')
-          .select('created_at, views, likes, title')
+          .select('id, created_at, views, likes, title')
           .order('created_at', { ascending: false })
           .limit(1000);
 
@@ -97,7 +97,7 @@ export const AnalyticsDashboard: React.FC = () => {
           ?.sort((a, b) => (b.views || 0) + (b.likes || 0) - (a.views || 0) - (a.likes || 0))
           .slice(0, 5)
           .map(img => ({
-            id: img.id || 0,
+            id: img.id?.toString() || '0',
             title: img.title || 'Untitled',
             views: img.views || 0,
             likes: img.likes || 0

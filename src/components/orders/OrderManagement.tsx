@@ -14,15 +14,15 @@ import { formatDistanceToNow } from 'date-fns';
 
 interface Order {
   id: string;
-  user_id: string;
+  user_id: string | null;
   product_details: string;
-  amount?: number;
+  amount?: number | null;
   status: OrderStatus;
   created_at: string;
   updated_at: string;
   type: 'artisan' | 'manufacturer';
-  artisan_id?: string;
-  manufacturer_id?: string;
+  artisan_id?: string | null;
+  manufacturer_id?: string | null;
 }
 
 export const OrderManagement: React.FC = () => {
@@ -55,12 +55,14 @@ export const OrderManagement: React.FC = () => {
         ...(artisanResult.data || []).map(o => ({ 
           ...o, 
           id: o.id.toString(),
-          type: 'artisan' as const 
+          type: 'artisan' as const,
+          status: (o.status || 'pending') as OrderStatus
         })),
         ...(manufacturerResult.data || []).map(o => ({ 
           ...o, 
           id: o.id.toString(),
-          type: 'manufacturer' as const 
+          type: 'manufacturer' as const,
+          status: (o.status || 'pending') as OrderStatus
         }))
       ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
@@ -157,7 +159,7 @@ export const OrderManagement: React.FC = () => {
 
                       <OrderWorkflow
                         orderId={order.id}
-                        currentStatus={order.status as OrderStatus}
+                        currentStatus={order.status}
                         orderType={order.type}
                         onStatusUpdate={(newStatus) => {
                           updateOrderStatus.mutate({
