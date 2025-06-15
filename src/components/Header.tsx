@@ -1,93 +1,152 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { UserMenu } from "@/components/header/UserMenu";
-import { Navigation } from "@/components/header/Navigation";
-import { ThemeToggle } from "@/components/header/ThemeToggle";
-import { AuthDialog } from "@/components/auth/AuthDialog";
-import { useAuth } from "@/hooks/useAuth";
-import { useTheme } from "next-themes";
-import { Menu, X } from "lucide-react";
-import { ResponsiveNavigation } from "./ResponsiveNavigation";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthDialog } from "./auth/AuthDialog";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { ThemeToggle } from "./header/ThemeToggle";
+import { UserMenu } from "./header/UserMenu";
+import { EnhancedNotificationCenter } from "@/components/notifications/EnhancedNotificationCenter";
+import { MainNavigationMenu } from "./navigation/NavigationMenu";
+import { MobileNavigationMenu } from "./navigation/MobileNavigationMenu";
+import { useResponsive } from "@/hooks/useResponsive";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useTranslation } from "react-i18next";
+
 export const Header = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const {
-    user,
-    session
-  } = useAuth();
-  const {
-    theme,
-    setTheme
-  } = useTheme();
-  const isDarkMode = theme === "dark";
-  const setIsDarkMode = (value: boolean) => setTheme(value ? "dark" : "light");
-  const navigationItems = [{
-    title: "Home",
-    href: "/"
-  }, {
-    title: "Create",
-    href: "/create"
-  }, {
-    title: "Designs",
-    href: "/designs"
-  }, {
-    title: "Marketplace",
-    href: "/marketplace"
-  }, {
-    title: "Features",
-    href: "/features"
-  }, {
-    title: "Contact",
-    href: "/contact"
-  }];
-  const profile = session?.user ? {
-    is_manufacturer: user?.user_metadata?.is_manufacturer || false,
-    is_admin: user?.user_metadata?.is_admin || false,
-    address: user?.user_metadata?.address || '',
-    avatar_url: user?.user_metadata?.avatar_url || '',
-    bio: user?.user_metadata?.bio || '',
-    business_name: user?.user_metadata?.business_name || '',
-    business_type: user?.user_metadata?.business_type || '',
-    created_at: user?.created_at || '',
-    creator_tier: user?.user_metadata?.creator_tier || 'free',
-    id: user?.id || '',
-    images_generated_count: user?.user_metadata?.images_generated_count || 0,
-    is_artisan: user?.user_metadata?.is_artisan || false,
-    is_creator: user?.user_metadata?.is_creator || false,
-    monthly_image_limit: user?.user_metadata?.monthly_image_limit || 5,
-    phone: user?.user_metadata?.phone || '',
-    specialties: user?.user_metadata?.specialties || [],
-    subscription_updated_at: user?.user_metadata?.subscription_updated_at || '',
-    updated_at: user?.updated_at || '',
-    username: user?.user_metadata?.username || ''
-  } : null;
-  return <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
-        <div className="mr-4 hidden md:flex">
-          <a className="mr-6 flex items-center space-x-2" href="/">
-            <span className="hidden font-bold sm:inline-block">Openteknologies</span>
-          </a>
-          <Navigation />
-        </div>
-        <Button variant="ghost" className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-          {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          <span className="sr-only">Toggle Menu</span>
-        </Button>
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <div className="w-full flex-1 md:w-auto md:flex-none">
-            <a className="mr-6 flex items-center space-x-2 md:hidden" href="/">
-              <span className="font-bold">StyleCraft AI</span>
-            </a>
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { isAtLeast } = useResponsive();
+  const { t } = useTranslation('common');
+
+  // Set up auth state listener
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      queryClient.setQueryData(['session'], session);
+      if (session?.user) {
+        queryClient.invalidateQueries({ queryKey: ['profile', session.user.id] });
+        queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [queryClient]);
+
+  const { data: session } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getSession();
+      return data.session;
+    },
+  });
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return null;
+      
+      // Get basic profile data
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (!profileData) return null;
+
+      // Check if user is a manufacturer
+      const { data: manufacturerData } = await supabase
+        .from('manufacturers')
+        .select('id')
+        .eq('id', session.user.id)
+        .single();
+
+      // Check if user is an admin
+      const { data: adminData } = await supabase
+        .from('admin_roles')
+        .select('role')
+        .eq('user_id', session.user.id)
+        .single();
+
+      return {
+        ...profileData,
+        is_manufacturer: !!manufacturerData,
+        is_admin: !!adminData
+      };
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDarkMode]);
+
+  return (
+    <>
+      <header className="fixed top-0 w-full z-50 glass-card">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between max-w-7xl">
+          {/* Logo */}
+          <div className="flex items-center">
+            <button 
+              className="bg-transparent text-primary border border-primary px-4 py-2 text-xl font-bold rounded-md hover:bg-primary/10 transition-all duration-200 hover:shadow-sm hover:shadow-primary/20 active:scale-95" 
+              onClick={() => navigate("/")}
+            >
+              openteknologies
+            </button>
           </div>
-          <nav className="flex items-center space-x-2">
+          
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center justify-center flex-1">
+            <MainNavigationMenu 
+              user={session?.user || null}
+              profile={profile}
+              onShowAuthDialog={() => setShowAuthDialog(true)}
+            />
+          </div>
+          
+          {/* Right side controls */}
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
             <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
-            <UserMenu onShowAuthDialog={() => setShowAuthDialog(true)} />
-          </nav>
+            
+            {session?.user && (
+              <EnhancedNotificationCenter />
+            )}
+            
+            {/* Desktop User Menu */}
+            <div className={isAtLeast('sm') ? 'block' : 'hidden'}>
+              <UserMenu 
+                session={session} 
+                profile={profile} 
+                onShowAuthDialog={() => setShowAuthDialog(true)} 
+              />
+            </div>
+            
+            {/* Mobile navigation */}
+            <div className="md:hidden">
+              <MobileNavigationMenu 
+                user={session?.user || null}
+                profile={profile}
+                onShowAuthDialog={() => setShowAuthDialog(true)}
+              />
+            </div>
+          </div>
         </div>
-      </div>
-      {isMobileMenuOpen && <div className="border-t md:hidden">
-          <ResponsiveNavigation items={navigationItems} />
-        </div>}
-      <AuthDialog isOpen={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
-    </header>;
+      </header>
+      
+      <AuthDialog 
+        isOpen={showAuthDialog} 
+        onClose={() => setShowAuthDialog(false)} 
+      />
+    </>
+  );
 };
