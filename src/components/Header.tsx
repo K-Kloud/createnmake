@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "@/components/header/UserMenu";
@@ -5,6 +6,7 @@ import { Navigation } from "@/components/header/Navigation";
 import { ThemeToggle } from "@/components/header/ThemeToggle";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "next-themes";
 import { Menu, X } from "lucide-react";
 import { ResponsiveNavigation } from "./ResponsiveNavigation";
 
@@ -12,6 +14,19 @@ export const Header = () => {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, session } = useAuth();
+  const { theme, setTheme } = useTheme();
+
+  const isDarkMode = theme === "dark";
+  const setIsDarkMode = (value: boolean) => setTheme(value ? "dark" : "light");
+
+  const navigationItems = [
+    { title: "Home", href: "/" },
+    { title: "Create", href: "/create" },
+    { title: "Designs", href: "/designs" },
+    { title: "Marketplace", href: "/marketplace" },
+    { title: "Features", href: "/features" },
+    { title: "Contact", href: "/contact" }
+  ];
 
   const profile = session?.user ? {
     is_manufacturer: user?.user_metadata?.is_manufacturer || false,
@@ -34,8 +49,6 @@ export const Header = () => {
     updated_at: user?.updated_at || '',
     username: user?.user_metadata?.username || ''
   } : null;
-
-  
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -67,14 +80,14 @@ export const Header = () => {
             </a>
           </div>
           <nav className="flex items-center space-x-2">
-            <ThemeToggle />
+            <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
             <UserMenu onShowAuthDialog={() => setShowAuthDialog(true)} />
           </nav>
         </div>
       </div>
       {isMobileMenuOpen && (
         <div className="border-t md:hidden">
-          <ResponsiveNavigation />
+          <ResponsiveNavigation items={navigationItems} />
         </div>
       )}
       <AuthDialog
