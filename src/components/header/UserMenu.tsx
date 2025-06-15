@@ -35,7 +35,7 @@ export const UserMenu = ({ onShowAuthDialog }: UserMenuProps) => {
     return (
       <Button onClick={() => onShowAuthDialog?.()} variant="outline" size="sm">
         <LogIn className="mr-2 h-4 w-4" />
-        Sign In
+        Get Started
       </Button>
     );
   }
