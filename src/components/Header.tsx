@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "@/components/header/UserMenu";
@@ -9,25 +8,38 @@ import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "next-themes";
 import { Menu, X } from "lucide-react";
 import { ResponsiveNavigation } from "./ResponsiveNavigation";
-
 export const Header = () => {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, session } = useAuth();
-  const { theme, setTheme } = useTheme();
-
+  const {
+    user,
+    session
+  } = useAuth();
+  const {
+    theme,
+    setTheme
+  } = useTheme();
   const isDarkMode = theme === "dark";
   const setIsDarkMode = (value: boolean) => setTheme(value ? "dark" : "light");
-
-  const navigationItems = [
-    { title: "Home", href: "/" },
-    { title: "Create", href: "/create" },
-    { title: "Designs", href: "/designs" },
-    { title: "Marketplace", href: "/marketplace" },
-    { title: "Features", href: "/features" },
-    { title: "Contact", href: "/contact" }
-  ];
-
+  const navigationItems = [{
+    title: "Home",
+    href: "/"
+  }, {
+    title: "Create",
+    href: "/create"
+  }, {
+    title: "Designs",
+    href: "/designs"
+  }, {
+    title: "Marketplace",
+    href: "/marketplace"
+  }, {
+    title: "Features",
+    href: "/features"
+  }, {
+    title: "Contact",
+    href: "/contact"
+  }];
   const profile = session?.user ? {
     is_manufacturer: user?.user_metadata?.is_manufacturer || false,
     is_admin: user?.user_metadata?.is_admin || false,
@@ -49,28 +61,16 @@ export const Header = () => {
     updated_at: user?.updated_at || '',
     username: user?.user_metadata?.username || ''
   } : null;
-
-  return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+  return <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
         <div className="mr-4 hidden md:flex">
           <a className="mr-6 flex items-center space-x-2" href="/">
-            <span className="hidden font-bold sm:inline-block">
-              StyleCraft AI
-            </span>
+            <span className="hidden font-bold sm:inline-block">Openteknologies</span>
           </a>
           <Navigation />
         </div>
-        <Button
-          variant="ghost"
-          className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
-          )}
+        <Button variant="ghost" className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           <span className="sr-only">Toggle Menu</span>
         </Button>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
@@ -85,15 +85,9 @@ export const Header = () => {
           </nav>
         </div>
       </div>
-      {isMobileMenuOpen && (
-        <div className="border-t md:hidden">
+      {isMobileMenuOpen && <div className="border-t md:hidden">
           <ResponsiveNavigation items={navigationItems} />
-        </div>
-      )}
-      <AuthDialog
-        isOpen={showAuthDialog}
-        onClose={() => setShowAuthDialog(false)}
-      />
-    </header>
-  );
+        </div>}
+      <AuthDialog isOpen={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
+    </header>;
 };
