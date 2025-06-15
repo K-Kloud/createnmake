@@ -39,7 +39,8 @@
   }
 
   html {
-    @apply dark;
+    /* Remove forced dark mode to allow theme switching */
+    /* @apply dark; */  
   }
 
   .dark body {
