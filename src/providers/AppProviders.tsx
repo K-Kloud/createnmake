@@ -1,52 +1,43 @@
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ErrorBoundary } from "react-error-boundary";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
-import { Helmet } from "react-helmet";
-
 import { ThemeProvider } from "@/components/theme-provider";
-import { ErrorFallback } from "@/components/ErrorFallback";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "@/hooks/useAuth";
 import { NotificationProvider } from "@/context/NotificationContext";
+import { CartProvider } from "@/contexts/CartContext";
+import { I18nextProvider } from 'react-i18next';
+import i18n from '@/lib/i18n';
 
-// Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1,
-      refetchOnWindowFocus: false,
+      retry: (failureCount, error: any) => {
+        // Don't retry on 404s or auth errors
+        if (error?.status === 404 || error?.status === 401) {
+          return false;
+        }
+        return failureCount < 3;
+      },
     },
   },
 });
 
-interface AppProvidersProps {
-  children: React.ReactNode;
-}
-
-export const AppProviders = ({ children }: AppProvidersProps) => {
+export const AppProviders = ({ children }: { children: React.ReactNode }) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <Helmet>
-          <title>Fashionify - AI Fashion & Furniture Design Generator</title>
-          <meta
-            name="description"
-            content="Create stunning fashion designs, furniture concepts, and more with AI. Turn your ideas into beautiful renderings instantly."
-          />
-        </Helmet>
-        <BrowserRouter>
-          <AuthProvider>
+    <I18nextProvider i18n={i18n}>
+      <BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
             <NotificationProvider>
-              <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <CartProvider>
                 {children}
                 <Toaster />
-              </ErrorBoundary>
+              </CartProvider>
             </NotificationProvider>
-          </AuthProvider>
-        </BrowserRouter>
-      </ThemeProvider>
-    </QueryClientProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </BrowserRouter>
+    </I18nextProvider>
   );
 };

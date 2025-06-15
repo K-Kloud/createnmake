@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Heart, Share2, ShoppingBag, Info, Star, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
@@ -10,8 +11,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 interface ProductDetailProps {
   isOpen: boolean;
   onClose: () => void;
@@ -20,6 +23,7 @@ interface ProductDetailProps {
   onShare: (imageId: number) => void;
   similarProducts?: GalleryImage[];
 }
+
 export const ProductDetail = ({
   isOpen,
   onClose,
@@ -28,12 +32,9 @@ export const ProductDetail = ({
   onShare,
   similarProducts = []
 }: ProductDetailProps) => {
-  const {
-    toast
-  } = useToast();
-  const {
-    user
-  } = useAuth();
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const { dispatch } = useCart();
   const navigate = useNavigate();
   const [currentImage, setCurrentImage] = useState(0);
   const [isInWishlist, setIsInWishlist] = useState(product.hasLiked);
@@ -41,12 +42,15 @@ export const ProductDetail = ({
 
   // Example product images (in a real app, these would come from the API)
   const productImages = [product.url, ...similarProducts.slice(0, 3).map(p => p.url)];
+
   const handlePrevious = () => {
     setCurrentImage(prev => prev === 0 ? productImages.length - 1 : prev - 1);
   };
+
   const handleNext = () => {
     setCurrentImage(prev => prev === productImages.length - 1 ? 0 : prev + 1);
   };
+
   const handleToggleWishlist = () => {
     if (!user) {
       toast({
@@ -63,16 +67,16 @@ export const ProductDetail = ({
       description: isInWishlist ? "This item has been removed from your wishlist" : "This item has been added to your wishlist"
     });
   };
+
   const handleShare = () => {
     onShare(product.id);
-
-    // Copy product URL to clipboard
     navigator.clipboard.writeText(window.location.href);
     toast({
       title: "Link Copied",
       description: "Product link copied to clipboard"
     });
   };
+
   const handleAddToCart = async () => {
     if (!user) {
       toast({
@@ -82,19 +86,36 @@ export const ProductDetail = ({
       });
       return;
     }
+
     setIsAddingToCart(true);
 
-    // Simulate API call to add item to cart
-    setTimeout(() => {
-      setIsAddingToCart(false);
-      onClose();
+    try {
+      // Add item to cart
+      dispatch({
+        type: 'ADD_ITEM',
+        payload: { product, quantity: 1 }
+      });
+
       toast({
         title: "Added to Cart",
         description: "This product has been added to your cart"
       });
-      navigate("/checkout");
-    }, 1000);
+
+      // Optional: Close dialog after adding to cart
+      setTimeout(() => {
+        setIsAddingToCart(false);
+      }, 500);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart. Please try again.",
+        variant: "destructive"
+      });
+      setIsAddingToCart(false);
+    }
   };
+
   const handleBuyNow = async () => {
     if (!user) {
       toast({
@@ -104,6 +125,12 @@ export const ProductDetail = ({
       });
       return;
     }
+
+    // Add to cart first
+    dispatch({
+      type: 'ADD_ITEM',
+      payload: { product, quantity: 1 }
+    });
 
     // Navigate to checkout with this product pre-selected
     navigate(`/checkout?product=${product.id}`);
@@ -116,7 +143,9 @@ export const ProductDetail = ({
   const platformFee = basePrice * 0.30; // 30% platform fee
   const estimatedShipping = 5.99;
   const totalPrice = basePrice + estimatedShipping;
-  return <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
+
+  return (
+    <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
       <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Product Details</DialogTitle>
@@ -129,30 +158,62 @@ export const ProductDetail = ({
           {/* Product Images */}
           <div className="relative">
             <div className="aspect-square rounded-lg overflow-hidden bg-muted">
-              <img src={productImages[currentImage]} alt={product.prompt} className="object-cover w-full h-full" />
+              <img 
+                src={productImages[currentImage]} 
+                alt={product.prompt} 
+                className="object-cover w-full h-full" 
+              />
             </div>
             
-            {productImages.length > 1 && <>
-                <Button variant="ghost" size="icon" className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-background/80 rounded-full" onClick={handlePrevious}>
+            {productImages.length > 1 && (
+              <>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-background/80 rounded-full" 
+                  onClick={handlePrevious}
+                >
                   <ChevronLeft className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-background/80 rounded-full" onClick={handleNext}>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-background/80 rounded-full" 
+                  onClick={handleNext}
+                >
                   <ChevronRight className="h-5 w-5" />
                 </Button>
                 
                 <div className="flex justify-center mt-2 space-x-2">
-                  {productImages.map((_, index) => <Button key={index} variant={index === currentImage ? "default" : "outline"} size="icon" className="w-2 h-2 rounded-full p-0 min-w-0" onClick={() => setCurrentImage(index)} />)}
+                  {productImages.map((_, index) => (
+                    <Button 
+                      key={index}
+                      variant={index === currentImage ? "default" : "outline"}
+                      size="icon"
+                      className="w-2 h-2 rounded-full p-0 min-w-0"
+                      onClick={() => setCurrentImage(index)}
+                    />
+                  ))}
                 </div>
-              </>}
+              </>
+            )}
             
-            {similarProducts.length > 0 && <div className="mt-4">
+            {similarProducts.length > 0 && (
+              <div className="mt-4">
                 <h4 className="font-medium mb-2">Similar Products</h4>
                 <div className="grid grid-cols-4 gap-2">
-                  {similarProducts.slice(0, 4).map(item => <div key={item.id} className="aspect-square rounded border cursor-pointer overflow-hidden">
-                      <img src={item.url} alt={item.prompt} className="object-cover w-full h-full hover:scale-105 transition-transform" />
-                    </div>)}
+                  {similarProducts.slice(0, 4).map(item => (
+                    <div key={item.id} className="aspect-square rounded border cursor-pointer overflow-hidden">
+                      <img 
+                        src={item.url} 
+                        alt={item.prompt} 
+                        className="object-cover w-full h-full hover:scale-105 transition-transform" 
+                      />
+                    </div>
+                  ))}
                 </div>
-              </div>}
+              </div>
+            )}
           </div>
           
           {/* Product Info */}
@@ -163,7 +224,12 @@ export const ProductDetail = ({
                   <h2 className="font-bold text-base text-slate-50">{product.prompt}</h2>
                   <div className="flex items-center mt-1">
                     <div className="flex">
-                      {[1, 2, 3, 4, 5].map(star => <Star key={star} className={`h-4 w-4 ${star <= 4 ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"}`} />)}
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <Star 
+                          key={star} 
+                          className={`h-4 w-4 ${star <= 4 ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"}`} 
+                        />
+                      ))}
                     </div>
                     <span className="text-sm text-muted-foreground ml-2">4.0 (12 reviews)</span>
                   </div>
@@ -329,7 +395,9 @@ export const ProductDetail = ({
               
               <Alert>
                 <Info className="h-4 w-4" />
-                <AlertDescription className="text-xs">By purchasing, you're directly supporting independent creators.</AlertDescription>
+                <AlertDescription className="text-xs">
+                  By purchasing, you're directly supporting independent creators.
+                </AlertDescription>
               </Alert>
               
               <div className="flex items-center gap-2">
@@ -343,7 +411,12 @@ export const ProductDetail = ({
               </div>
               
               <div className="grid grid-cols-2 gap-2">
-                <Button variant="outline" className="w-full" onClick={handleAddToCart} disabled={isAddingToCart}>
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={handleAddToCart} 
+                  disabled={isAddingToCart}
+                >
                   <ShoppingBag className="mr-2 h-5 w-5" />
                   {isAddingToCart ? "Adding..." : "Add to Cart"}
                 </Button>
@@ -355,8 +428,6 @@ export const ProductDetail = ({
           </div>
         </div>
       </DialogContent>
-    </Dialog>;
+    </Dialog>
+  );
 };
-
-// Import Avatar component that's used in the component
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

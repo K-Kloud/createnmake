@@ -1,103 +1,99 @@
-import { Button } from "@/components/ui/button";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { ShieldCheck } from "lucide-react";
-import { useAdminAccess } from "@/hooks/useAdminAccess";
-import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { Bell } from "lucide-react";
-import { useNotifications } from "@/context/NotificationContext";
-import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/contexts/CartContext";
+import { LogIn, LogOut, Settings, User, ShoppingBag } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-interface UserMenuProps {
-  session: any;
-  profile: any;
-  onShowAuthDialog: () => void;
-}
-
-export const UserMenu = ({ session, profile, onShowAuthDialog }: UserMenuProps) => {
+export const UserMenu = () => {
+  const { user, signOut } = useAuth();
+  const { state } = useCart();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { isAdmin } = useAdminAccess();
-  
-  // Special case for kalux2@gmail.com
-  const isSpecialAdmin = session?.user?.email === "kalux2@gmail.com";
+
+  const cartItemsCount = state.items.reduce((total, item) => total + item.quantity, 0);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Signed out successfully",
-      description: "You have been logged out of your account.",
-    });
-    navigate('/');
+    await signOut();
+    navigate("/");
   };
 
-  if (!session?.user) {
+  if (!user) {
     return (
-      <Button 
-        className="bg-primary hover:bg-primary-hover"
-        onClick={onShowAuthDialog}
-        aria-label="Sign in or register"
-      >
-        Get Started
+      <Button onClick={() => navigate("/auth")} variant="outline" size="sm">
+        <LogIn className="mr-2 h-4 w-4" />
+        Sign In
       </Button>
     );
   }
 
-  const { unreadCount } = useNotifications();
-
   return (
     <div className="flex items-center gap-2">
-      {/* Add the notification bell for logged-in users */}
-      {session && <NotificationBell />}
-      
+      {/* Cart Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="relative"
+        onClick={() => navigate("/cart")}
+      >
+        <ShoppingBag className="h-5 w-5" />
+        {cartItemsCount > 0 && (
+          <Badge
+            variant="destructive"
+            className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs"
+          >
+            {cartItemsCount > 99 ? '99+' : cartItemsCount}
+          </Badge>
+        )}
+      </Button>
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Avatar className="h-8 w-8 cursor-pointer" aria-label="User menu">
-            <AvatarImage src={profile?.avatar_url} alt={profile?.username || session.user.email} />
-            <AvatarFallback>{(profile?.username?.[0] || session.user.email?.[0])?.toUpperCase()}</AvatarFallback>
-          </Avatar>
+          <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email} />
+              <AvatarFallback>
+                {user.email?.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">
+                {user.user_metadata?.full_name || "User"}
+              </p>
+              <p className="text-xs leading-none text-muted-foreground">
+                {user.email}
+              </p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+            <User className="mr-2 h-4 w-4" />
             Dashboard
           </DropdownMenuItem>
-          {(isAdmin || isSpecialAdmin) && (
-            <DropdownMenuItem onClick={() => navigate("/admin")}>
-              <ShieldCheck className="mr-2 h-4 w-4" />
-              Admin Panel
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem asChild>
-            <Link to="/notifications" className="flex items-center justify-between w-full">
-              <span className="flex items-center">
-                <Bell className="mr-2 h-4 w-4" />
-                Notifications
-              </span>
-              {unreadCount > 0 && (
-                <Badge variant="destructive" className="ml-2 px-1.5 py-0.5 text-xs">
-                  {unreadCount > 99 ? '99+' : unreadCount}
-                </Badge>
-              )}
-            </Link>
+          <DropdownMenuItem onClick={() => navigate("/cart")}>
+            <ShoppingBag className="mr-2 h-4 w-4" />
+            Cart ({cartItemsCount})
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate("/settings")}>
+            <Settings className="mr-2 h-4 w-4" />
             Settings
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem 
-            onClick={handleSignOut}
-            className="text-red-500 focus:text-red-500"
-          >
+          <DropdownMenuItem onClick={handleSignOut}>
+            <LogOut className="mr-2 h-4 w-4" />
             Sign Out
           </DropdownMenuItem>
         </DropdownMenuContent>
