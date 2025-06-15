@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Heart, Share2, ShoppingBag, Info, Star, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
@@ -126,15 +125,24 @@ export const ProductDetail = ({
       return;
     }
 
-    // Add to cart first
-    dispatch({
-      type: 'ADD_ITEM',
-      payload: { product, quantity: 1 }
-    });
+    try {
+      // Add to cart first
+      dispatch({
+        type: 'ADD_ITEM',
+        payload: { product, quantity: 1 }
+      });
 
-    // Navigate to checkout with this product pre-selected
-    navigate(`/checkout?product=${product.id}`);
-    onClose();
+      // Navigate to checkout
+      navigate('/checkout');
+      onClose();
+    } catch (error) {
+      console.error('Error with buy now:', error);
+      toast({
+        title: "Error",
+        description: "Failed to proceed to checkout. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   // Format price components
@@ -201,7 +209,7 @@ export const ProductDetail = ({
             {similarProducts.length > 0 && (
               <div className="mt-4">
                 <h4 className="font-medium mb-2">Similar Products</h4>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {similarProducts.slice(0, 4).map(item => (
                     <div key={item.id} className="aspect-square rounded border cursor-pointer overflow-hidden">
                       <img 

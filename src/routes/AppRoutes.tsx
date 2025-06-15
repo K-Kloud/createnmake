@@ -3,10 +3,10 @@ import { Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { CRMRoutes } from "./CRMRoutes";
-import { CreatorRoutes } from "./CreatorRoutes";
-import { ArtisanRoutes } from "./ArtisanRoutes";
-import { ManufacturerRoutes } from "./ManufacturerRoutes";
+import CRMRoutes from "./CRMRoutes";
+import CreatorRoutes from "./CreatorRoutes";
+import ArtisanRoutes from "./ArtisanRoutes";
+import ManufacturerRoutes from "./ManufacturerRoutes";
 
 // Lazy load components
 const Index = lazy(() => import("@/pages/Index"));
@@ -14,6 +14,7 @@ const Create = lazy(() => import("@/pages/Create"));
 const Designs = lazy(() => import("@/pages/Designs"));
 const Marketplace = lazy(() => import("@/pages/Marketplace"));
 const Cart = lazy(() => import("@/pages/Cart"));
+const Checkout = lazy(() => import("@/pages/Checkout"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const Settings = lazy(() => import("@/pages/Settings"));
 const Auth = lazy(() => import("@/pages/Auth"));
@@ -50,6 +51,7 @@ export const AppRoutes = () => {
         <Route path="/designs" element={<Designs />} />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <Dashboard />

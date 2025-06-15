@@ -15,7 +15,11 @@ import { useCart } from "@/contexts/CartContext";
 import { LogIn, LogOut, Settings, User, ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export const UserMenu = () => {
+interface UserMenuProps {
+  onShowAuthDialog?: () => void;
+}
+
+export const UserMenu = ({ onShowAuthDialog }: UserMenuProps) => {
   const { user, signOut } = useAuth();
   const { state } = useCart();
   const navigate = useNavigate();
@@ -29,7 +33,7 @@ export const UserMenu = () => {
 
   if (!user) {
     return (
-      <Button onClick={() => navigate("/auth")} variant="outline" size="sm">
+      <Button onClick={() => onShowAuthDialog?.()} variant="outline" size="sm">
         <LogIn className="mr-2 h-4 w-4" />
         Sign In
       </Button>
