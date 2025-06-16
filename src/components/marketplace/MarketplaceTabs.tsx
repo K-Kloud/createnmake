@@ -21,10 +21,10 @@ export const MarketplaceTabs = () => {
     <div className="mb-8">
       <Tabs defaultValue={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid grid-cols-4 mb-8">
-          <TabsTrigger value="explore">{t('filters.all')}</TabsTrigger>
-          <TabsTrigger value="trending">{t('filters.popular')}</TabsTrigger>
-          <TabsTrigger value="creators">{t('product.creator')}</TabsTrigger>
-          <TabsTrigger value="collections">{t('categories.all')}</TabsTrigger>
+          <TabsTrigger value="explore">{t('categories.all')}</TabsTrigger>
+          <TabsTrigger value="trending">{t('filters.mostPopular')}</TabsTrigger>
+          <TabsTrigger value="creators">{t('product.createdBy')}</TabsTrigger>
+          <TabsTrigger value="collections">{t('titles.featuredCollections')}</TabsTrigger>
         </TabsList>
       </Tabs>
     </div>
