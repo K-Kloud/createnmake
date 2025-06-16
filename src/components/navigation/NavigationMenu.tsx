@@ -145,25 +145,17 @@ export const MainNavigationMenu = ({ user, profile, onShowAuthDialog }: Navigati
           </Button>
         </NavigationMenuItem>
 
-        {user ? (
-          <NavigationMenuItem>
-            <Button 
-              variant={isActive("/subscription") ? "default" : "ghost"} 
-              asChild
-              className={cn(
-                isActive("/subscription") && "bg-primary text-primary-foreground"
-              )}
-            >
-              <Link to="/subscription">{t('main.pricing')}</Link>
-            </Button>
-          </NavigationMenuItem>
-        ) : (
-          <NavigationMenuItem>
-            <Button onClick={onShowAuthDialog}>
-              {t('account.signIn')}
-            </Button>
-          </NavigationMenuItem>
-        )}
+        <NavigationMenuItem>
+          <Button 
+            variant={isActive("/subscription") ? "default" : "ghost"} 
+            asChild
+            className={cn(
+              isActive("/subscription") && "bg-primary text-primary-foreground"
+            )}
+          >
+            <Link to="/subscription">{t('main.pricing')}</Link>
+          </Button>
+        </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
   );
