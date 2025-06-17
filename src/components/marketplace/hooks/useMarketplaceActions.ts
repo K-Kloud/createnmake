@@ -2,6 +2,7 @@
 import { useToast } from "@/hooks/use-toast";
 import { LikeMutationParams } from "@/types/gallery";
 import { Session } from "@supabase/supabase-js";
+import { useOptimisticLike } from "./useOptimisticLike";
 
 interface MarketplaceActionsProps {
   session: Session | null;
@@ -30,9 +31,12 @@ export const useMarketplaceActions = ({
   replyMutation,
   toast
 }: MarketplaceActionsProps) => {
-  const handleLike = (imageId: number) => {
+  const { optimisticLike } = useOptimisticLike({ likeMutation });
+
+  const handleLike = async (imageId: number) => {
     // Find the image we want
-    const image = images.find(img => img.id === imageId);
+    const allImages = images.flatMap(page => Array.isArray(page) ? page : []);
+    const image = allImages.find(img => img.id === imageId);
     if (!image) return;
 
     if (!session?.user) {
@@ -44,11 +48,10 @@ export const useMarketplaceActions = ({
       return;
     }
 
-    likeMutation.mutate({ 
-      imageId, 
-      hasLiked: Boolean(image.image_likes?.some(like => like.user_id === session.user.id)), 
-      userId: session.user.id 
-    });
+    const currentHasLiked = Boolean(image.image_likes?.some(like => like.user_id === session.user.id));
+    
+    // Use optimistic update
+    await optimisticLike(imageId, currentHasLiked, session.user.id);
   };
 
   const handleView = (imageId: number) => {

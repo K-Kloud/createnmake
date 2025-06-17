@@ -1,14 +1,68 @@
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Session } from "@supabase/supabase-js";
 import { transformImageWithMetrics, transformImageWithDefaultMetrics } from "./useMarketplaceTransformers";
+import { useEffect } from "react";
 
 const ITEMS_PER_PAGE = 9;
 
 export const useMarketplaceQuery = (session: Session | null) => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  // Set up real-time subscription for likes
+  useEffect(() => {
+    console.log("🔴 Setting up real-time subscription for generated_images");
+    
+    const channel = supabase
+      .channel('marketplace-images-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'generated_images',
+          filter: 'is_public=eq.true'
+        },
+        (payload) => {
+          console.log('🔴 Real-time update received:', payload);
+          // Invalidate queries to refresh the data
+          queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'image_likes'
+        },
+        (payload) => {
+          console.log('🔴 Like added:', payload);
+          queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'image_likes'
+        },
+        (payload) => {
+          console.log('🔴 Like removed:', payload);
+          queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      console.log("🔴 Cleaning up real-time subscription");
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
   
   return useInfiniteQuery({
     queryKey: ['marketplace-images'],
@@ -18,7 +72,7 @@ export const useMarketplaceQuery = (session: Session | null) => {
         const from = pageParam * ITEMS_PER_PAGE;
         const to = from + ITEMS_PER_PAGE - 1;
 
-        // Get images with profile relationships
+        // Get images with profile relationships and likes from the generated_images table
         const { data: images, error } = await supabase
           .from('generated_images')
           .select(`
@@ -56,7 +110,7 @@ export const useMarketplaceQuery = (session: Session | null) => {
               }
 
               // Log image URL for debugging
-              console.log(`🖼️ Processing image ${image.id}:`, image.image_url);
+              console.log(`🖼️ Processing image ${image.id}:`, image.image_url, `Likes: ${image.likes || 0}`);
 
               // Get comments with replies
               const { data: comments } = await supabase
@@ -96,14 +150,12 @@ export const useMarketplaceQuery = (session: Session | null) => {
                 })
               );
 
-              // Get metrics
-              const { data: metrics } = await supabase
-                .rpc('get_image_metrics', { p_image_id: image.id });
-
-              const metricsMap = (metrics || []).reduce((acc, metric) => {
-                acc[metric.metric_type] = metric.total_value;
-                return acc;
-              }, {});
+              // Create metrics object using the likes from generated_images table
+              const metricsMap = {
+                like: image.likes || 0,
+                comment: comments?.length || 0,
+                view: image.views || 0
+              };
 
               const imageWithComments = { ...image, comments: commentsWithReplies };
               
@@ -140,7 +192,7 @@ export const useMarketplaceQuery = (session: Session | null) => {
     },
     initialPageParam: 0,
     refetchOnWindowFocus: false,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    staleTime: 1000 * 30, // Reduced to 30 seconds for more responsive updates
     retry: (failureCount, error) => {
       console.error(`🔄 Query retry attempt ${failureCount}:`, error);
       return failureCount < 2; // Retry up to 2 times

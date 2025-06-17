@@ -31,19 +31,22 @@ export const ImageActions = ({
   const [isAnimating, setIsAnimating] = useState(false);
   const [showPlusOne, setShowPlusOne] = useState(false);
   const [displayCount, setDisplayCount] = useState(metrics.like || 0);
+  const [prevMetrics, setPrevMetrics] = useState(metrics);
   
   // Reset animation state when hasLiked changes externally
   useEffect(() => {
     setIsAnimating(false);
   }, [hasLiked]);
   
-  // Update displayed count when metrics change
+  // Update displayed count when metrics change with smooth animation
   useEffect(() => {
-    if (metrics.like !== undefined) {
+    if (metrics.like !== prevMetrics.like) {
+      console.log(`🔴 Like count changed from ${prevMetrics.like} to ${metrics.like}`);
+      
       // Animate the count change
-      let start = displayCount;
-      const end = metrics.like;
-      const duration = 500; // ms
+      const start = displayCount;
+      const end = metrics.like || 0;
+      const duration = 300; // ms
       const startTime = performance.now();
       
       // Only animate if there's a difference
@@ -52,14 +55,16 @@ export const ImageActions = ({
           const elapsed = timestamp - startTime;
           const progress = Math.min(elapsed / duration, 1);
           
-          // If we're counting up or down
+          // Use easing for smooth animation
+          const easeProgress = 1 - Math.pow(1 - progress, 3);
+          
           if (start < end) {
             // Counting up
-            const current = Math.floor(start + (end - start) * progress);
+            const current = Math.floor(start + (end - start) * easeProgress);
             setDisplayCount(current);
           } else {
             // Counting down
-            const current = Math.ceil(start - (start - end) * progress);
+            const current = Math.ceil(start - (start - end) * easeProgress);
             setDisplayCount(current);
           }
           
@@ -74,8 +79,10 @@ export const ImageActions = ({
       } else {
         setDisplayCount(end);
       }
+      
+      setPrevMetrics(metrics);
     }
-  }, [metrics.like]);
+  }, [metrics.like, prevMetrics.like, displayCount]);
 
   const handleLikeClick = () => {
     if (!session?.user) {
@@ -113,7 +120,7 @@ export const ImageActions = ({
             className={`h-4 w-4 transition-all duration-300 ${isAnimating ? 'scale-125' : ''} ${hasLiked ? "fill-current" : ""}`} 
             onAnimationEnd={() => setIsAnimating(false)}
           />
-          <span className="transition-all duration-200">{displayCount}</span>
+          <span className="transition-all duration-200 font-medium">{displayCount}</span>
           {showPlusOne && (
             <span className="absolute -top-4 right-0 text-green-500 text-xs font-bold animate-fade-up">
               +1
