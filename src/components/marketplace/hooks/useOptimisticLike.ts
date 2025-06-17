@@ -1,12 +1,12 @@
 
-import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { LikeMutationParams, GalleryImage } from '@/types/gallery';
 
 interface OptimisticLikeOptions {
   likeMutation: {
     mutate: (params: LikeMutationParams) => void;
+    isPending: boolean;
   };
 }
 
@@ -15,13 +15,19 @@ export function useOptimisticLike({ likeMutation }: OptimisticLikeOptions) {
   const { toast } = useToast();
   
   const optimisticLike = async (imageId: number, currentHasLiked: boolean, userId: string) => {
+    // Prevent multiple simultaneous requests
+    if (likeMutation.isPending) {
+      console.log('🔴 Like operation already in progress, skipping');
+      return;
+    }
+
     // Cancel any outgoing refetches
     await queryClient.cancelQueries({ queryKey: ['marketplace-images'] });
     
     // Snapshot the previous value
     const previousData = queryClient.getQueryData(['marketplace-images']);
     
-    // Optimistically update the cache
+    // Optimistically update the cache with more accurate logic
     queryClient.setQueriesData(
       { queryKey: ['marketplace-images'] },
       (oldData: any) => {
@@ -40,7 +46,10 @@ export function useOptimisticLike({ likeMutation }: OptimisticLikeOptions) {
                       like: currentHasLiked 
                         ? Math.max(0, (image.metrics?.like || 0) - 1)
                         : (image.metrics?.like || 0) + 1
-                    }
+                    },
+                    likes: currentHasLiked 
+                      ? Math.max(0, (image.likes || 0) - 1)
+                      : (image.likes || 0) + 1
                   }
                 : image
             )

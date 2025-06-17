@@ -12,7 +12,7 @@ export const useMarketplaceQuery = (session: Session | null) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  // Set up real-time subscription for likes
+  // Set up real-time subscription for likes with improved specificity
   useEffect(() => {
     console.log("🔴 Setting up real-time subscription for generated_images");
     
@@ -28,8 +28,10 @@ export const useMarketplaceQuery = (session: Session | null) => {
         },
         (payload) => {
           console.log('🔴 Real-time update received:', payload);
-          // Invalidate queries to refresh the data
-          queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
+          // Only invalidate if likes count changed (reduces unnecessary refreshes)
+          if (payload.new.likes !== payload.old?.likes) {
+            queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
+          }
         }
       )
       .on(
@@ -150,9 +152,9 @@ export const useMarketplaceQuery = (session: Session | null) => {
                 })
               );
 
-              // Create metrics object using the likes from generated_images table
+              // Use the synchronized likes count from generated_images table
               const metricsMap = {
-                like: image.likes || 0,
+                like: image.likes || 0, // Now this should be accurate thanks to our sync
                 comment: comments?.length || 0,
                 view: image.views || 0
               };
@@ -192,7 +194,7 @@ export const useMarketplaceQuery = (session: Session | null) => {
     },
     initialPageParam: 0,
     refetchOnWindowFocus: false,
-    staleTime: 1000 * 30, // Reduced to 30 seconds for more responsive updates
+    staleTime: 1000 * 60, // Increased to 1 minute since we have real-time updates
     retry: (failureCount, error) => {
       console.error(`🔄 Query retry attempt ${failureCount}:`, error);
       return failureCount < 2; // Retry up to 2 times

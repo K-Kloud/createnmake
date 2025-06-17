@@ -32,10 +32,12 @@ export const ImageActions = ({
   const [showPlusOne, setShowPlusOne] = useState(false);
   const [displayCount, setDisplayCount] = useState(metrics.like || 0);
   const [prevMetrics, setPrevMetrics] = useState(metrics);
+  const [isLiking, setIsLiking] = useState(false); // Prevent double-clicks
   
   // Reset animation state when hasLiked changes externally
   useEffect(() => {
     setIsAnimating(false);
+    setIsLiking(false);
   }, [hasLiked]);
   
   // Update displayed count when metrics change with smooth animation
@@ -94,6 +96,13 @@ export const ImageActions = ({
       return;
     }
     
+    // Prevent double-clicks during processing
+    if (isLiking) {
+      console.log('🔴 Like operation already in progress, preventing double-click');
+      return;
+    }
+    
+    setIsLiking(true);
     setIsAnimating(true);
     
     // Only show +1 animation when user is liking (not unliking)
@@ -114,7 +123,8 @@ export const ImageActions = ({
           variant="ghost"
           size="sm"
           onClick={handleLikeClick}
-          className={`transition-colors relative ${hasLiked ? "text-red-500 hover:text-red-400" : "hover:text-primary"}`}
+          disabled={isLiking}
+          className={`transition-colors relative ${hasLiked ? "text-red-500 hover:text-red-400" : "hover:text-primary"} ${isLiking ? "opacity-50" : ""}`}
         >
           <Heart 
             className={`h-4 w-4 transition-all duration-300 ${isAnimating ? 'scale-125' : ''} ${hasLiked ? "fill-current" : ""}`} 

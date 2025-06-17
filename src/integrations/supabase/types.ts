@@ -1572,6 +1572,10 @@ export type Database = {
           total_usage: number
         }[]
       }
+      atomic_like_image: {
+        Args: { p_image_id: number; p_user_id: string }
+        Returns: Json
+      }
       check_user_admin_role_secure: {
         Args: { target_user_id: string; required_role?: string }
         Returns: boolean
@@ -1627,6 +1631,10 @@ export type Database = {
       is_current_user_super_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      sync_image_likes_count: {
+        Args: { p_image_id?: number }
+        Returns: undefined
       }
       validate_password_strength: {
         Args: { password: string }
