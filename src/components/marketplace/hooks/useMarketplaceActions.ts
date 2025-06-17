@@ -9,6 +9,7 @@ interface MarketplaceActionsProps {
   images: any[];
   likeMutation: {
     mutate: (params: LikeMutationParams) => void;
+    isPending: boolean;
   };
   viewMutation: {
     mutate: (imageId: number) => void;
