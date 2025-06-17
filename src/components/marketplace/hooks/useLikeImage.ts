@@ -19,12 +19,20 @@ export const useLikeImage = () => {
             .eq('user_id', userId);
           if (error) throw error;
 
-          // Update the likes count in generated_images table
+          // Get current likes count and decrement by 1, ensuring it doesn't go below 0
+          const { data: currentImage, error: fetchError } = await supabase
+            .from('generated_images')
+            .select('likes')
+            .eq('id', imageId)
+            .single();
+          
+          if (fetchError) throw fetchError;
+          
+          const newLikes = Math.max(0, (currentImage?.likes || 0) - 1);
+          
           const { error: updateError } = await supabase
             .from('generated_images')
-            .update({ 
-              likes: supabase.raw('GREATEST(likes - 1, 0)') 
-            })
+            .update({ likes: newLikes })
             .eq('id', imageId);
           if (updateError) throw updateError;
 
@@ -47,12 +55,20 @@ export const useLikeImage = () => {
               .insert({ image_id: imageId, user_id: userId });
             if (insertError) throw insertError;
 
-            // Update the likes count in generated_images table
+            // Get current likes count and increment by 1
+            const { data: currentImage, error: fetchError } = await supabase
+              .from('generated_images')
+              .select('likes')
+              .eq('id', imageId)
+              .single();
+            
+            if (fetchError) throw fetchError;
+            
+            const newLikes = (currentImage?.likes || 0) + 1;
+            
             const { error: updateError } = await supabase
               .from('generated_images')
-              .update({ 
-                likes: supabase.raw('COALESCE(likes, 0) + 1') 
-              })
+              .update({ likes: newLikes })
               .eq('id', imageId);
             if (updateError) throw updateError;
 
