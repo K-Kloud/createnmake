@@ -114,15 +114,15 @@ export const useMarketplaceQuery = (session: Session | null) => {
               // Log image URL for debugging
               console.log(`🖼️ Processing image ${image.id}:`, image.image_url, `Likes: ${image.likes || 0}`);
 
-              // Get comments with replies
-              const { data: comments } = await supabase
+              // Get comments with replies - FIXED: Use correct foreign key syntax
+              const { data: comments, error: commentsError } = await supabase
                 .from('comments')
                 .select(`
                   id,
                   text,
                   created_at,
                   user_id,
-                  profiles:user_id (
+                  profiles (
                     id, 
                     username,
                     avatar_url
@@ -130,17 +130,21 @@ export const useMarketplaceQuery = (session: Session | null) => {
                 `)
                 .eq('image_id', image.id);
 
-              // Get replies for comments
+              if (commentsError) {
+                console.error(`❌ Error fetching comments for image ${image.id}:`, commentsError);
+              }
+
+              // Get replies for comments - FIXED: Use correct foreign key syntax
               const commentsWithReplies = await Promise.all(
                 (comments || []).map(async (comment) => {
-                  const { data: replies } = await supabase
+                  const { data: replies, error: repliesError } = await supabase
                     .from('comment_replies')
                     .select(`
                       id,
                       text,
                       created_at,
                       user_id,
-                      profiles:user_id (
+                      profiles (
                         id,
                         username,
                         avatar_url
@@ -148,6 +152,12 @@ export const useMarketplaceQuery = (session: Session | null) => {
                     `)
                     .eq('comment_id', comment.id);
 
+                  if (repliesError) {
+                    console.error(`❌ Error fetching replies for comment ${comment.id}:`, repliesError);
+                  }
+
+                  console.log(`👤 Comment user profile:`, comment.profiles, `Username: ${comment.profiles?.username}`);
+                  
                   return { ...comment, comment_replies: replies || [] };
                 })
               );
