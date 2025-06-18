@@ -114,6 +114,7 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
   };
 
   const getUserInitials = (name: string) => {
+    // Handle improved usernames - they should never be 'Anonymous User' now
     if (!name || name === 'Anonymous User') return '?';
     return getInitials(name);
   };

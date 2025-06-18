@@ -1,7 +1,7 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { Session } from "@supabase/supabase-js";
-import { isValid, parseISO } from "date-fns";
+import { getFallbackUsername } from "@/utils/usernameUtils";
 
 export const transformImageWithDefaultMetrics = (image: any, session: Session | null) => ({
   ...image,
@@ -35,7 +35,11 @@ export const transformComments = (comments: any[] = []) => {
       createdAt: createdDate,
       user: {
         id: comment.user_id,
-        name: comment.profiles?.username || 'Anonymous User',
+        name: getFallbackUsername(
+          comment.profiles?.username,
+          comment.profiles?.email || comment.user_metadata?.email,
+          comment.user_id
+        ),
         avatar: comment.profiles?.avatar_url || 'https://github.com/shadcn.png'
       },
       replies: (comment.comment_replies || []).map((reply: any) => {
@@ -47,7 +51,11 @@ export const transformComments = (comments: any[] = []) => {
           createdAt: replyDate,
           user: {
             id: reply.user_id,
-            name: reply.profiles?.username || 'Anonymous User',
+            name: getFallbackUsername(
+              reply.profiles?.username,
+              reply.profiles?.email || reply.user_metadata?.email,
+              reply.user_id
+            ),
             avatar: reply.profiles?.avatar_url || 'https://github.com/shadcn.png'
           }
         };

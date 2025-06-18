@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { usePriceEditing } from "./hooks/usePriceEditing";
+import { getFallbackUsername } from "@/utils/usernameUtils";
 
 interface CreatorInfoProps {
   creator: {
@@ -22,7 +23,9 @@ export const CreatorInfo = ({
 }: CreatorInfoProps) => {
   // Use a default avatar if none is provided
   const avatarSrc = creator?.avatar || '/placeholder.svg';
-  const displayName = creator?.name || 'Anonymous';
+  
+  // Use the improved username fallback logic
+  const displayName = creator?.name || 'User';
   
   const { 
     isEditing,
