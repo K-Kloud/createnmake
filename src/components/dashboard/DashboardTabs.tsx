@@ -1,3 +1,4 @@
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DesignsPanel } from "@/components/dashboard/DesignsPanel";
 import { ProductsPanel } from "@/components/dashboard/ProductsPanel";
@@ -9,6 +10,7 @@ import { ProfileCard } from "@/components/dashboard/ProfileCard";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { UserImages } from "@/components/dashboard/UserImages";
+import { DashboardTabsProps } from "@/types/dashboard";
 
 export const DashboardTabs = ({ userId, userEmail, profile }: DashboardTabsProps) => {
   // Add autonomous features hook
@@ -27,7 +29,7 @@ export const DashboardTabs = ({ userId, userEmail, profile }: DashboardTabsProps
       <TabsContent value="overview" className="space-y-6">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <ProfileCard profile={profile} userEmail={userEmail} userId={userId} />
-          <DashboardStats userId={userId} />
+          <DashboardStats />
           <QuickActions />
         </div>
         

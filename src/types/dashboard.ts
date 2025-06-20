@@ -1,3 +1,4 @@
+
 import { Json } from './auth'
 
 export interface DashboardSettings {
@@ -6,4 +7,10 @@ export interface DashboardSettings {
   layout: Json | null
   widgets: Json | null
   theme: string | null
+}
+
+export interface DashboardTabsProps {
+  userId?: string
+  userEmail?: string
+  profile: any
 }

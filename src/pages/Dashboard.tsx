@@ -55,7 +55,7 @@ const Dashboard = () => {
                   userId={session?.user.id}
                 />
 
-                {/* Stats Overview - removed props as DashboardStats gets data from hook */}
+                {/* Stats Overview */}
                 <DashboardStats />
 
                 {/* Quick Actions */}
@@ -65,7 +65,11 @@ const Dashboard = () => {
 
             {/* Main Content */}
             <div className="lg:col-span-9">
-              <DashboardTabs />
+              <DashboardTabs 
+                userId={session?.user.id}
+                userEmail={session?.user.email}
+                profile={profile}
+              />
             </div>
           </div>
         </div>
