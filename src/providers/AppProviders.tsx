@@ -1,46 +1,45 @@
+import { ThemeProvider } from "@/components/theme-provider"
+import { ErrorBoundary } from 'react-error-boundary'
+import { ErrorFallback } from "@/components/ErrorFallback"
+import { BrowserRouter } from "react-router-dom"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import { AnalyticsProvider } from "@/providers/AnalyticsProvider"
+import { NotificationProvider } from "@/providers/NotificationProvider"
+import { CartProvider } from "@/providers/CartProvider"
+import { RealtimeNotificationProvider } from "@/components/notifications/RealtimeNotificationProvider";
 
-import React from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter } from "react-router-dom";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { CartProvider } from "@/contexts/CartContext";
-import { NotificationProvider } from "@/context/NotificationContext";
-import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
-import { PerformanceTracker } from "@/components/analytics/PerformanceTracker";
+const queryClient = new QueryClient()
 
-// Create a client
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 1,
-    },
-  },
-});
-
-interface AppProvidersProps {
-  children: React.ReactNode;
-}
-
-export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
+export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <CartProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="light"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <CartProvider>
+          <RealtimeNotificationProvider>
             <NotificationProvider>
-              <AnalyticsProvider>
-                <PerformanceTracker />
-                {children}
-                <Toaster />
-                <Sonner />
-              </AnalyticsProvider>
+              <BrowserRouter>
+                <AnalyticsProvider>
+                  <ErrorBoundary
+                    FallbackComponent={ErrorFallback}
+                    onError={(error, errorInfo) => {
+                      console.error('Error caught by boundary:', error, errorInfo);
+                    }}
+                  >
+                    {children}
+                  </ErrorBoundary>
+                </AnalyticsProvider>
+              </BrowserRouter>
             </NotificationProvider>
-          </CartProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </BrowserRouter>
+          </RealtimeNotificationProvider>
+        </CartProvider>
+      </ThemeProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
-};
+}
