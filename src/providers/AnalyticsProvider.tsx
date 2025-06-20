@@ -17,7 +17,15 @@ const AnalyticsContext = createContext<AnalyticsContextType | undefined>(undefin
 export const useAnalyticsContext = () => {
   const context = useContext(AnalyticsContext);
   if (!context) {
-    throw new Error('useAnalyticsContext must be used within an AnalyticsProvider');
+    // Return a no-op implementation instead of throwing an error
+    return {
+      trackInteraction: () => {},
+      trackEcommerceEvent: () => {},
+      trackFeatureUsage: () => {},
+      trackSearch: () => {},
+      trackConversionEvent: () => {},
+      trackPerformance: () => {},
+    };
   }
   return context;
 };

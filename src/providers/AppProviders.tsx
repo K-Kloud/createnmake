@@ -1,3 +1,4 @@
+
 import { ThemeProvider } from "@/components/theme-provider"
 import { ErrorBoundary } from 'react-error-boundary'
 import { ErrorFallback } from "@/components/ErrorFallback"
@@ -7,9 +8,16 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { AnalyticsProvider } from "@/providers/AnalyticsProvider"
 import { NotificationProvider } from "@/providers/NotificationProvider"
 import { CartProvider } from "@/providers/CartProvider"
-import { RealtimeNotificationProvider } from "@/components/notifications/RealtimeNotificationProvider";
+import { RealtimeNotificationProvider } from "@/components/notifications/RealtimeNotificationProvider"
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+})
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
@@ -20,10 +28,10 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         enableSystem
         disableTransitionOnChange
       >
-        <CartProvider>
-          <RealtimeNotificationProvider>
-            <NotificationProvider>
-              <BrowserRouter>
+        <BrowserRouter>
+          <CartProvider>
+            <RealtimeNotificationProvider>
+              <NotificationProvider>
                 <AnalyticsProvider>
                   <ErrorBoundary
                     FallbackComponent={ErrorFallback}
@@ -34,10 +42,10 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                     {children}
                   </ErrorBoundary>
                 </AnalyticsProvider>
-              </BrowserRouter>
-            </NotificationProvider>
-          </RealtimeNotificationProvider>
-        </CartProvider>
+              </NotificationProvider>
+            </RealtimeNotificationProvider>
+          </CartProvider>
+        </BrowserRouter>
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

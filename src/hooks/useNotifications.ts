@@ -2,19 +2,17 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import type { Notification } from "@/components/notifications/NotificationList";
 
 export const useNotifications = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { session } = useAuth();
 
   const { data: notifications = [], isLoading } = useQuery({
-    queryKey: ["notifications"],
+    queryKey: ["notifications", session?.user?.id],
     queryFn: async () => {
-      // Get the current session
-      const { data } = await supabase.auth.getSession();
-      const session = data.session;
-      
       // If there's no session or no user, return an empty array
       if (!session?.user) {
         return [];
@@ -23,19 +21,17 @@ export const useNotifications = () => {
       const { data: notificationData, error } = await supabase
         .from("user_notifications")
         .select("*")
+        .eq("user_id", session.user.id)
         .order("created_at", { ascending: false });
 
       if (error) {
-        toast({
-          title: "Error fetching notifications",
-          description: error.message,
-          variant: "destructive",
-        });
+        console.error("Error fetching notifications:", error);
         return [];
       }
 
       return notificationData as Notification[];
     },
+    enabled: !!session?.user?.id,
     refetchOnWindowFocus: true,
   });
 
@@ -64,9 +60,12 @@ export const useNotifications = () => {
 
   const markAllAsRead = useMutation({
     mutationFn: async () => {
+      if (!session?.user?.id) return;
+      
       const { error } = await supabase
         .from("user_notifications")
         .update({ is_read: true })
+        .eq("user_id", session.user.id)
         .eq("is_read", false);
 
       if (error) throw error;
