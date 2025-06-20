@@ -83,11 +83,33 @@ export const useNotifications = () => {
     },
   });
 
+  const deleteNotification = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("user_notifications")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete notification",
+        variant: "destructive",
+      });
+    },
+  });
+
   return {
     notifications,
     unreadCount,
     isLoading,
     markAsRead: (id: string) => markAsRead.mutate(id),
     markAllAsRead: () => markAllAsRead.mutate(),
+    deleteNotification: (id: string) => deleteNotification.mutate(id),
   };
 };
