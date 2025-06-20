@@ -11,7 +11,7 @@ import { MobileNavigationMenu } from "./navigation/MobileNavigationMenu";
 import { useResponsive } from "@/hooks/useResponsive";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
-import { useAnalyticsContext } from "@/components/analytics/AnalyticsProvider";
+import { useAnalyticsContext } from "@/providers/AnalyticsProvider";
 
 export const Header = () => {
   const navigate = useNavigate();

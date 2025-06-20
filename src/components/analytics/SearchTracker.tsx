@@ -2,7 +2,7 @@
 import React, { useState, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useAnalyticsContext } from './AnalyticsProvider';
+import { useAnalyticsContext } from '@/providers/AnalyticsProvider';
 import { Search } from 'lucide-react';
 
 interface SearchTrackerProps {

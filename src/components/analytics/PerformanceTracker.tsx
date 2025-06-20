@@ -1,6 +1,5 @@
-
 import { useEffect } from 'react';
-import { useAnalyticsContext } from './AnalyticsProvider';
+import { useAnalyticsContext } from '@/providers/AnalyticsProvider';
 
 interface LayoutShiftEntry extends PerformanceEntry {
   hadRecentInput: boolean;

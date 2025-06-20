@@ -12,7 +12,7 @@ import { useInView } from "react-intersection-observer";
 import { useTranslation } from "react-i18next";
 import { useEcommerceTracking } from "@/hooks/useEcommerceTracking";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
-import { useAnalyticsContext } from "@/components/analytics/AnalyticsProvider";
+import { useAnalyticsContext } from "@/providers/AnalyticsProvider";
 
 interface MarketplaceContentProps {
   isLoading: boolean;

@@ -1,6 +1,5 @@
-
 import { useCallback } from 'react';
-import { useAnalyticsContext } from '@/components/analytics/AnalyticsProvider';
+import { useAnalyticsContext } from '@/providers/AnalyticsProvider';
 
 export const useEcommerceTracking = () => {
   const { trackEcommerceEvent } = useAnalyticsContext();
