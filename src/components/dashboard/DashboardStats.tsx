@@ -7,7 +7,7 @@ import { ImageIcon, ShoppingCartIcon, HeartIcon, PackageIcon, Crown } from "luci
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
-import { useAnalyticsContext } from "@/components/analytics/AnalyticsProvider";
+import { useAnalyticsContext } from "@/providers/AnalyticsProvider";
 
 export function DashboardStats() {
   const { session, user } = useAuth();
