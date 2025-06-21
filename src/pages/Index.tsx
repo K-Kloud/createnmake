@@ -39,15 +39,17 @@ const Index = () => {
         ogImage: "https://openteknologies.com/lovable-uploads/8373b451-38a1-4ecb-8594-cf0c25ba20c4.png"
       }}
     >
-      <Hero />
-      
       <div className="container px-4 py-16">
         <Suspense fallback={<div className="h-64 w-full flex items-center justify-center">{t('common.loading')}</div>}>
           <div className="image-generator">
             <ImageGenerator />
           </div>
         </Suspense>
-        
+      </div>
+
+      <Hero />
+      
+      <div className="container px-4 py-16">        
         <div className="mt-12 text-center">
           <HeroActions />
         </div>
