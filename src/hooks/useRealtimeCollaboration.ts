@@ -1,46 +1,17 @@
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
-import { useToast } from './use-toast';
-
-interface CollaborativeUser {
-  id: string;
-  name: string;
-  avatar?: string;
-  cursor?: { x: number; y: number };
-  isActive: boolean;
-  lastSeen: string;
-}
-
-interface SharedState {
-  [key: string]: any;
-}
-
-interface RealtimeMessage {
-  id: string;
-  user_id: string;
-  message: string;
-  timestamp: string;
-  message_type: 'text' | 'cursor' | 'state_update';
-  metadata?: any;
-}
-
-type ConflictResolutionStrategy = 'last_write_wins' | 'merge' | 'manual';
-
-// Type for presence data - using any to handle Supabase's dynamic presence structure
-interface PresenceData {
-  user_id?: string;
-  name?: string;
-  avatar?: string;
-  cursor?: { x: number; y: number };
-  online_at?: string;
-  [key: string]: any;
-}
+import { 
+  CollaborativeUser, 
+  SharedState, 
+  RealtimeMessage, 
+  ConflictResolutionStrategy 
+} from './collaboration/types';
+import { useRealtimeChannel } from './collaboration/useRealtimeChannel';
+import { useCollaborationActions } from './collaboration/useCollaborationActions';
 
 export const useRealtimeCollaboration = (roomId: string, initialState?: SharedState) => {
   const { user } = useAuth();
-  const { toast } = useToast();
   const [activeUsers, setActiveUsers] = useState<CollaborativeUser[]>([]);
   const [sharedState, setSharedState] = useState<SharedState>(initialState || {});
   const [messages, setMessages] = useState<RealtimeMessage[]>([]);
@@ -48,138 +19,31 @@ export const useRealtimeCollaboration = (roomId: string, initialState?: SharedSt
   const [conflictResolution, setConflictResolution] = useState<ConflictResolutionStrategy>('last_write_wins');
   const [stateVersion, setStateVersion] = useState(1);
   const [pendingConflicts, setPendingConflicts] = useState(0);
-  const channelRef = useRef<any>(null);
 
-  // Initialize realtime connection
-  useEffect(() => {
-    if (!user || !roomId) return;
+  // Initialize realtime channel
+  const channelRef = useRealtimeChannel({
+    user,
+    roomId,
+    setActiveUsers,
+    setMessages,
+    setSharedState,
+    setStateVersion,
+    setIsConnected
+  });
 
-    const channel = supabase.channel(`room:${roomId}`)
-      .on('presence', { event: 'sync' }, () => {
-        const presenceState = channel.presenceState();
-        const users = Object.keys(presenceState).map(key => {
-          const presenceList = presenceState[key] as PresenceData[];
-          // Handle both array and single presence format, with safe property access
-          const presence = Array.isArray(presenceList) && presenceList.length > 0 ? presenceList[0] : {};
-          
-          return {
-            id: presence.user_id || key,
-            name: presence.name || 'Anonymous',
-            avatar: presence.avatar,
-            cursor: presence.cursor,
-            isActive: true,
-            lastSeen: presence.online_at || new Date().toISOString()
-          };
-        });
-        setActiveUsers(users);
-      })
-      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        const presence = (newPresences && newPresences[0] ? newPresences[0] : {}) as PresenceData;
-        toast({
-          title: 'User joined',
-          description: `${presence.name || 'Someone'} joined the collaboration`,
-        });
-      })
-      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-        const presence = (leftPresences && leftPresences[0] ? leftPresences[0] : {}) as PresenceData;
-        toast({
-          title: 'User left',
-          description: `${presence.name || 'Someone'} left the collaboration`,
-        });
-      })
-      .on('broadcast', { event: 'message' }, ({ payload }) => {
-        setMessages(prev => [...prev, payload]);
-      })
-      .on('broadcast', { event: 'state_update' }, ({ payload }) => {
-        setSharedState(prev => ({ ...prev, ...payload.state }));
-        setStateVersion(prev => prev + 1);
-      })
-      .on('broadcast', { event: 'user_action' }, ({ payload }) => {
-        // Handle user actions like editing start/stop
-        console.log('User action:', payload);
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          setIsConnected(true);
-          await channel.track({
-            user_id: user.id,
-            name: user.user_metadata?.full_name || user.email,
-            avatar: user.user_metadata?.avatar_url,
-            online_at: new Date().toISOString()
-          });
-        } else {
-          setIsConnected(false);
-        }
-      });
+  // Initialize collaboration actions
+  const {
+    sendMessage,
+    updateCursor,
+    updateSharedState,
+    broadcastUserAction
+  } = useCollaborationActions(user);
 
-    channelRef.current = channel;
-
-    return () => {
-      channel.unsubscribe();
-      setIsConnected(false);
-    };
-  }, [user, roomId, toast]);
-
-  // Send message
-  const sendMessage = useCallback(async (message: string, type: 'text' | 'cursor' | 'state_update' = 'text') => {
-    if (!channelRef.current || !user) return;
-
-    const messageData: RealtimeMessage = {
-      id: crypto.randomUUID(),
-      user_id: user.id,
-      message,
-      timestamp: new Date().toISOString(),
-      message_type: type
-    };
-
-    await channelRef.current.send({
-      type: 'broadcast',
-      event: 'message',
-      payload: messageData
-    });
-  }, [user]);
-
-  // Update cursor position
-  const updateCursor = useCallback(async (x: number, y: number) => {
-    if (!channelRef.current || !user) return;
-
-    await channelRef.current.track({
-      user_id: user.id,
-      name: user.user_metadata?.full_name || user.email,
-      cursor: { x, y },
-      online_at: new Date().toISOString()
-    });
-  }, [user]);
-
-  // Update shared state
-  const updateSharedState = useCallback(async (updates: Partial<SharedState>) => {
-    if (!channelRef.current) return;
-
-    await channelRef.current.send({
-      type: 'broadcast',
-      event: 'state_update',
-      payload: { state: updates }
-    });
-
-    setSharedState(prev => ({ ...prev, ...updates }));
-    setStateVersion(prev => prev + 1);
-  }, []);
-
-  // Broadcast user action
-  const broadcastUserAction = useCallback(async (action: string, metadata?: any) => {
-    if (!channelRef.current || !user) return;
-
-    await channelRef.current.send({
-      type: 'broadcast',
-      event: 'user_action',
-      payload: {
-        user_id: user.id,
-        action,
-        metadata,
-        timestamp: new Date().toISOString()
-      }
-    });
-  }, [user]);
+  // Update channel ref for actions
+  if (channelRef.current) {
+    const actions = useCollaborationActions(user);
+    actions.channelRef.current = channelRef.current;
+  }
 
   // Get state value
   const getStateValue = useCallback((key: string) => {
