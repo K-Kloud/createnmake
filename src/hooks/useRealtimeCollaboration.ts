@@ -28,6 +28,11 @@ interface RealtimeMessage {
 
 type ConflictResolutionStrategy = 'last_write_wins' | 'merge' | 'manual';
 
+// Type for presence data - using any to handle Supabase's dynamic presence structure
+interface PresenceData {
+  [key: string]: any;
+}
+
 export const useRealtimeCollaboration = (roomId: string, initialState?: SharedState) => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -48,33 +53,33 @@ export const useRealtimeCollaboration = (roomId: string, initialState?: SharedSt
       .on('presence', { event: 'sync' }, () => {
         const presenceState = channel.presenceState();
         const users = Object.keys(presenceState).map(key => {
-          const presenceList = presenceState[key];
-          // Handle both array and single presence format
-          const presence = Array.isArray(presenceList) ? presenceList[0] : presenceList;
+          const presenceList = presenceState[key] as PresenceData[];
+          // Handle both array and single presence format, with safe property access
+          const presence = Array.isArray(presenceList) && presenceList.length > 0 ? presenceList[0] : {};
           
           return {
-            id: presence?.user_id || key,
-            name: presence?.name || 'Anonymous',
-            avatar: presence?.avatar,
-            cursor: presence?.cursor,
+            id: presence.user_id || key,
+            name: presence.name || 'Anonymous',
+            avatar: presence.avatar,
+            cursor: presence.cursor,
             isActive: true,
-            lastSeen: presence?.online_at || new Date().toISOString()
+            lastSeen: presence.online_at || new Date().toISOString()
           };
         });
         setActiveUsers(users);
       })
       .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        const presence = newPresences[0];
+        const presence = newPresences && newPresences[0] ? newPresences[0] : {};
         toast({
           title: 'User joined',
-          description: `${presence?.name || 'Someone'} joined the collaboration`,
+          description: `${presence.name || 'Someone'} joined the collaboration`,
         });
       })
       .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-        const presence = leftPresences[0];
+        const presence = leftPresences && leftPresences[0] ? leftPresences[0] : {};
         toast({
           title: 'User left',
-          description: `${presence?.name || 'Someone'} left the collaboration`,
+          description: `${presence.name || 'Someone'} left the collaboration`,
         });
       })
       .on('broadcast', { event: 'message' }, ({ payload }) => {
