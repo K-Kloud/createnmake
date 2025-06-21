@@ -49,14 +49,16 @@ export const useRealtimeCollaboration = (roomId: string, initialState?: SharedSt
         const presenceState = channel.presenceState();
         const users = Object.keys(presenceState).map(key => {
           const presenceList = presenceState[key];
+          // Handle both array and single presence format
           const presence = Array.isArray(presenceList) ? presenceList[0] : presenceList;
+          
           return {
             id: presence?.user_id || key,
             name: presence?.name || 'Anonymous',
             avatar: presence?.avatar,
             cursor: presence?.cursor,
             isActive: true,
-            lastSeen: new Date().toISOString()
+            lastSeen: presence?.online_at || new Date().toISOString()
           };
         });
         setActiveUsers(users);
@@ -106,7 +108,7 @@ export const useRealtimeCollaboration = (roomId: string, initialState?: SharedSt
       channel.unsubscribe();
       setIsConnected(false);
     };
-  }, [user, roomId]);
+  }, [user, roomId, toast]);
 
   // Send message
   const sendMessage = useCallback(async (message: string, type: 'text' | 'cursor' | 'state_update' = 'text') => {
