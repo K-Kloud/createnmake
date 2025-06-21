@@ -26,13 +26,18 @@ interface RealtimeMessage {
   metadata?: any;
 }
 
-export const useRealtimeCollaboration = (roomId: string) => {
+type ConflictResolutionStrategy = 'last_write_wins' | 'merge' | 'manual';
+
+export const useRealtimeCollaboration = (roomId: string, initialState?: SharedState) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [activeUsers, setActiveUsers] = useState<CollaborativeUser[]>([]);
-  const [sharedState, setSharedState] = useState<SharedState>({});
+  const [sharedState, setSharedState] = useState<SharedState>(initialState || {});
   const [messages, setMessages] = useState<RealtimeMessage[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [conflictResolution, setConflictResolution] = useState<ConflictResolutionStrategy>('last_write_wins');
+  const [stateVersion, setStateVersion] = useState(1);
+  const [pendingConflicts, setPendingConflicts] = useState(0);
   const channelRef = useRef<any>(null);
 
   // Initialize realtime connection
@@ -43,12 +48,13 @@ export const useRealtimeCollaboration = (roomId: string) => {
       .on('presence', { event: 'sync' }, () => {
         const presenceState = channel.presenceState();
         const users = Object.keys(presenceState).map(key => {
-          const presence = presenceState[key][0];
+          const presenceList = presenceState[key];
+          const presence = Array.isArray(presenceList) ? presenceList[0] : presenceList;
           return {
-            id: presence.user_id,
-            name: presence.name || 'Anonymous',
-            avatar: presence.avatar,
-            cursor: presence.cursor,
+            id: presence?.user_id || key,
+            name: presence?.name || 'Anonymous',
+            avatar: presence?.avatar,
+            cursor: presence?.cursor,
             isActive: true,
             lastSeen: new Date().toISOString()
           };
@@ -56,17 +62,17 @@ export const useRealtimeCollaboration = (roomId: string) => {
         setActiveUsers(users);
       })
       .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        const user = newPresences[0];
+        const presence = newPresences[0];
         toast({
           title: 'User joined',
-          description: `${user.name || 'Someone'} joined the collaboration`,
+          description: `${presence?.name || 'Someone'} joined the collaboration`,
         });
       })
       .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-        const user = leftPresences[0];
+        const presence = leftPresences[0];
         toast({
           title: 'User left',
-          description: `${user.name || 'Someone'} left the collaboration`,
+          description: `${presence?.name || 'Someone'} left the collaboration`,
         });
       })
       .on('broadcast', { event: 'message' }, ({ payload }) => {
@@ -74,6 +80,11 @@ export const useRealtimeCollaboration = (roomId: string) => {
       })
       .on('broadcast', { event: 'state_update' }, ({ payload }) => {
         setSharedState(prev => ({ ...prev, ...payload.state }));
+        setStateVersion(prev => prev + 1);
+      })
+      .on('broadcast', { event: 'user_action' }, ({ payload }) => {
+        // Handle user actions like editing start/stop
+        console.log('User action:', payload);
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
@@ -139,6 +150,33 @@ export const useRealtimeCollaboration = (roomId: string) => {
     });
 
     setSharedState(prev => ({ ...prev, ...updates }));
+    setStateVersion(prev => prev + 1);
+  }, []);
+
+  // Broadcast user action
+  const broadcastUserAction = useCallback(async (action: string, metadata?: any) => {
+    if (!channelRef.current || !user) return;
+
+    await channelRef.current.send({
+      type: 'broadcast',
+      event: 'user_action',
+      payload: {
+        user_id: user.id,
+        action,
+        metadata,
+        timestamp: new Date().toISOString()
+      }
+    });
+  }, [user]);
+
+  // Get state value
+  const getStateValue = useCallback((key: string) => {
+    return sharedState[key];
+  }, [sharedState]);
+
+  // Set conflict resolution strategy
+  const setConflictResolutionStrategy = useCallback((strategy: ConflictResolutionStrategy) => {
+    setConflictResolution(strategy);
   }, []);
 
   // Get user presence info
@@ -154,6 +192,12 @@ export const useRealtimeCollaboration = (roomId: string) => {
     sendMessage,
     updateCursor,
     updateSharedState,
-    getUserPresence
+    getUserPresence,
+    broadcastUserAction,
+    getStateValue,
+    setConflictResolutionStrategy,
+    conflictResolution,
+    stateVersion,
+    pendingConflicts
   };
 };
