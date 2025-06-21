@@ -120,10 +120,14 @@ export const useRealtimeCollaboration = (roomId: string, initialState: Collabora
           toast({
             title: "State conflict detected",
             description: "Manual resolution required",
-            action: {
-              label: "Resolve",
-              onClick: () => resolveConflictManually(timestamp),
-            },
+            action: (
+              <button
+                onClick={() => resolveConflictManually(timestamp)}
+                className="px-3 py-1 bg-primary text-primary-foreground rounded text-sm"
+              >
+                Resolve
+              </button>
+            ),
           });
           return prevState; // Don't apply automatically
       }

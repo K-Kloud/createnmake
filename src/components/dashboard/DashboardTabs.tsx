@@ -5,6 +5,7 @@ import { ProductsPanel } from "@/components/dashboard/ProductsPanel";
 import { OrdersPanel } from "@/components/dashboard/OrdersPanel";
 import { EarningsPanel } from "@/components/dashboard/EarningsPanel";
 import { SmartRecommendations } from "@/components/automation/SmartRecommendations";
+import { AIRecommendations } from "@/components/advanced-ai/AIRecommendations";
 import { useAutonomousFeatures } from "@/hooks/useAutonomousFeatures";
 import { ProfileCard } from "@/components/dashboard/ProfileCard";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
@@ -24,6 +25,7 @@ export const DashboardTabs = ({ userId, userEmail, profile }: DashboardTabsProps
         <TabsTrigger value="products">Products</TabsTrigger>
         <TabsTrigger value="orders">Orders</TabsTrigger>
         <TabsTrigger value="earnings">Earnings</TabsTrigger>
+        <TabsTrigger value="ai-insights">AI Insights</TabsTrigger>
       </TabsList>
 
       <TabsContent value="overview" className="space-y-6">
@@ -55,6 +57,10 @@ export const DashboardTabs = ({ userId, userEmail, profile }: DashboardTabsProps
 
       <TabsContent value="earnings">
         <EarningsPanel />
+      </TabsContent>
+
+      <TabsContent value="ai-insights">
+        <AIRecommendations />
       </TabsContent>
     </Tabs>
   );

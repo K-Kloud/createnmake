@@ -1,280 +1,206 @@
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Users, MessageCircle, Eye, Edit, Share2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import React, { useState, useEffect } from 'react';
+import { useRealtimeCollaboration } from '@/hooks/useRealtimeCollaboration';
 import { useAuth } from '@/hooks/useAuth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Users, MousePointer, Edit, Share } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface CollaborativeUser {
   id: string;
   username: string;
-  avatar_url?: string;
-  cursor_position?: { x: number; y: number };
-  current_view?: string;
   last_seen: string;
-  status: 'active' | 'idle' | 'away';
+  status: 'online' | 'offline' | 'away';
+  avatar_url?: string;
 }
 
-interface CollaborativeWorkspaceProps {
-  workspaceId: string;
-  children: React.ReactNode;
-}
-
-export const CollaborativeWorkspace: React.FC<CollaborativeWorkspaceProps> = ({
-  workspaceId,
-  children
-}) => {
-  const [activeUsers, setActiveUsers] = useState<CollaborativeUser[]>([]);
-  const [isConnected, setIsConnected] = useState(false);
-  const [roomChannel, setRoomChannel] = useState<any>(null);
+export const CollaborativeWorkspace: React.FC<{
+  roomId: string;
+  documentType: 'design' | 'text' | 'canvas';
+}> = ({ roomId, documentType }) => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const cursorRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [documentContent, setDocumentContent] = useState<string>('');
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Initialize collaborative session
+  const {
+    sharedState,
+    isConnected,
+    activeUsers,
+    updateSharedState,
+    broadcastUserAction,
+    getStateValue,
+    setConflictResolutionStrategy,
+    conflictResolution,
+    stateVersion,
+    pendingConflicts,
+  } = useRealtimeCollaboration(roomId, {
+    document_content: '',
+    document_type: documentType,
+    last_modified: new Date().toISOString(),
+  });
+
+  // Convert presence data to CollaborativeUser format
+  const collaborativeUsers: CollaborativeUser[] = activeUsers.map((user: any) => ({
+    id: user.id || user.user_id || 'unknown',
+    username: user.username || user.name || 'Anonymous',
+    last_seen: user.joined_at || new Date().toISOString(),
+    status: 'online' as const,
+    avatar_url: user.avatar_url,
+  }));
+
   useEffect(() => {
-    if (!user || !workspaceId) return;
+    const content = getStateValue('document_content');
+    if (content && content !== documentContent) {
+      setDocumentContent(content);
+    }
+  }, [sharedState, getStateValue, documentContent]);
 
-    const channel = supabase.channel(`workspace_${workspaceId}`, {
-      config: {
-        presence: {
-          key: user.id,
-        },
-      },
+  const handleContentChange = (newContent: string) => {
+    setDocumentContent(newContent);
+    updateSharedState({
+      document_content: newContent,
+      last_modified: new Date().toISOString(),
     });
-
-    // Track presence
-    channel
-      .on('presence', { event: 'sync' }, () => {
-        const presenceState = channel.presenceState();
-        const users = Object.values(presenceState).flat() as CollaborativeUser[];
-        setActiveUsers(users);
-      })
-      .on('presence', { event: 'join' }, ({ newPresences }) => {
-        const newUsers = newPresences as CollaborativeUser[];
-        newUsers.forEach(newUser => {
-          if (newUser.id !== user.id) {
-            toast({
-              title: "User joined",
-              description: `${newUser.username} is now viewing this workspace`,
-            });
-          }
-        });
-      })
-      .on('presence', { event: 'leave' }, ({ leftPresences }) => {
-        const leftUsers = leftPresences as CollaborativeUser[];
-        leftUsers.forEach(leftUser => {
-          if (leftUser.id !== user.id) {
-            toast({
-              title: "User left",
-              description: `${leftUser.username} left the workspace`,
-            });
-          }
-        });
-      })
-      .on('broadcast', { event: 'cursor_move' }, (payload) => {
-        if (payload.user_id !== user.id) {
-          setActiveUsers(prev => 
-            prev.map(u => 
-              u.id === payload.user_id 
-                ? { ...u, cursor_position: payload.position }
-                : u
-            )
-          );
-        }
-      })
-      .on('broadcast', { event: 'view_change' }, (payload) => {
-        if (payload.user_id !== user.id) {
-          setActiveUsers(prev => 
-            prev.map(u => 
-              u.id === payload.user_id 
-                ? { ...u, current_view: payload.view }
-                : u
-            )
-          );
-        }
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          setIsConnected(true);
-          setRoomChannel(channel);
-          
-          // Track initial presence
-          await channel.track({
-            id: user.id,
-            username: user.user_metadata?.username || user.email?.split('@')[0] || 'Anonymous',
-            avatar_url: user.user_metadata?.avatar_url,
-            current_view: window.location.pathname,
-            last_seen: new Date().toISOString(),
-            status: 'active',
-          });
-        }
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user, workspaceId, toast]);
-
-  // Track cursor movements
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    const newPosition = { x: e.clientX, y: e.clientY };
-    cursorRef.current = newPosition;
-    
-    // Throttle cursor updates
-    if (roomChannel) {
-      roomChannel.send({
-        type: 'broadcast',
-        event: 'cursor_move',
-        payload: {
-          user_id: user?.id,
-          position: newPosition,
-        },
-      });
-    }
-  }, [roomChannel, user?.id]);
-
-  // Track view changes
-  useEffect(() => {
-    if (roomChannel && user) {
-      roomChannel.send({
-        type: 'broadcast',
-        event: 'view_change',
-        payload: {
-          user_id: user.id,
-          view: window.location.pathname,
-        },
-      });
-    }
-  }, [roomChannel, user, window.location.pathname]);
-
-  // Add mouse move listener
-  useEffect(() => {
-    let throttleTimer: NodeJS.Timeout;
-    
-    const throttledMouseMove = (e: MouseEvent) => {
-      if (throttleTimer) return;
-      
-      throttleTimer = setTimeout(() => {
-        handleMouseMove(e);
-        clearTimeout(throttleTimer);
-      }, 100); // Throttle to 10fps
-    };
-
-    document.addEventListener('mousemove', throttledMouseMove);
-    return () => {
-      document.removeEventListener('mousemove', throttledMouseMove);
-      if (throttleTimer) clearTimeout(throttleTimer);
-    };
-  }, [handleMouseMove]);
-
-  // Render other users' cursors
-  const renderUserCursors = () => {
-    return activeUsers
-      .filter(u => u.id !== user?.id && u.cursor_position)
-      .map(u => (
-        <div
-          key={u.id}
-          className="fixed pointer-events-none z-50 transition-all duration-100"
-          style={{
-            left: u.cursor_position!.x,
-            top: u.cursor_position!.y,
-            transform: 'translate(-2px, -2px)',
-          }}
-        >
-          <div className="flex items-center gap-1">
-            <div className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg" />
-            <div className="bg-blue-500 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
-              {u.username}
-            </div>
-          </div>
-        </div>
-      ));
   };
 
+  const handleCursorMove = (position: { x: number; y: number }) => {
+    broadcastUserAction('cursor_move', { position });
+  };
+
+  const toggleEditing = () => {
+    const newEditingState = !isEditing;
+    setIsEditing(newEditingState);
+    
+    if (newEditingState) {
+      broadcastUserAction('start_editing', { section: 'main_document' });
+    } else {
+      broadcastUserAction('stop_editing', { section: 'main_document' });
+    }
+  };
+
+  if (!user) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <p>Please sign in to access collaborative features.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <div className="relative">
-      {/* Collaboration status bar */}
-      <Card className="mb-4">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      {/* Collaboration Header */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              <CardTitle className="text-lg">Collaborative Workspace</CardTitle>
-              <Badge variant={isConnected ? 'default' : 'secondary'}>
-                {isConnected ? 'Connected' : 'Connecting...'}
+              <Share className="h-5 w-5" />
+              Collaborative {documentType.charAt(0).toUpperCase() + documentType.slice(1)}
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant={isConnected ? 'default' : 'destructive'}>
+                {isConnected ? 'Connected' : 'Disconnected'}
+              </Badge>
+              <Badge variant="outline">
+                v{stateVersion}
               </Badge>
             </div>
-            <Button variant="outline" size="sm">
-              <Share2 className="h-4 w-4 mr-2" />
-              Share
-            </Button>
-          </div>
+          </CardTitle>
+        </CardHeader>
+      </Card>
+
+      {/* Active Users */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Active Users ({collaborativeUsers.length})
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Active users:</span>
-            <div className="flex -space-x-2">
-              {activeUsers.slice(0, 5).map((user) => (
-                <Avatar key={user.id} className="h-8 w-8 border-2 border-background">
-                  <AvatarImage src={user.avatar_url} />
-                  <AvatarFallback className="text-xs">
-                    {user.username.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              ))}
-              {activeUsers.length > 5 && (
-                <div className="h-8 w-8 rounded-full bg-muted border-2 border-background flex items-center justify-center">
-                  <span className="text-xs text-muted-foreground">
-                    +{activeUsers.length - 5}
-                  </span>
-                </div>
-              )}
-            </div>
-            {activeUsers.length === 0 && (
-              <span className="text-sm text-muted-foreground">Just you</span>
-            )}
+          <div className="flex flex-wrap gap-2">
+            {collaborativeUsers.map((collaborativeUser) => (
+              <Badge key={collaborativeUser.id} variant="secondary" className="flex items-center gap-1">
+                <MousePointer className="h-3 w-3" />
+                {collaborativeUser.username}
+              </Badge>
+            ))}
           </div>
         </CardContent>
       </Card>
 
-      {/* Main workspace content */}
-      <div className="relative">
-        {children}
-        {renderUserCursors()}
-      </div>
-
-      {/* Activity feed */}
-      <Card className="mt-4">
+      {/* Document Editor */}
+      <Card>
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <MessageCircle className="h-4 w-4" />
-            Activity Feed
+          <CardTitle className="flex items-center justify-between">
+            <span>Document Content</span>
+            <div className="flex items-center gap-2">
+              <Button
+                variant={isEditing ? "destructive" : "default"}
+                size="sm"
+                onClick={toggleEditing}
+              >
+                <Edit className="h-4 w-4 mr-1" />
+                {isEditing ? 'Stop Editing' : 'Start Editing'}
+              </Button>
+              <select
+                value={conflictResolution}
+                onChange={(e) => setConflictResolutionStrategy(e.target.value as any)}
+                className="px-2 py-1 border rounded text-sm"
+              >
+                <option value="last_write_wins">Last Write Wins</option>
+                <option value="merge">Auto Merge</option>
+                <option value="manual">Manual Resolution</option>
+              </select>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            {activeUsers.map((user) => (
-              <div key={user.id} className="flex items-center gap-2 text-sm">
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src={user.avatar_url} />
-                  <AvatarFallback className="text-xs">
-                    {user.username.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="font-medium">{user.username}</span>
-                <span className="text-muted-foreground">
-                  {user.current_view ? `viewing ${user.current_view}` : 'active'}
-                </span>
-                <Badge variant="outline" className="text-xs">
-                  {user.status}
-                </Badge>
-              </div>
-            ))}
+          <textarea
+            value={documentContent}
+            onChange={(e) => handleContentChange(e.target.value)}
+            disabled={!isEditing}
+            className="w-full h-64 p-3 border rounded-md resize-none"
+            placeholder="Start typing to collaborate with others in real-time..."
+            onMouseMove={(e) => {
+              if (isEditing) {
+                handleCursorMove({ x: e.clientX, y: e.clientY });
+              }
+            }}
+          />
+          
+          {pendingConflicts > 0 && (
+            <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
+              <p className="text-sm text-yellow-800">
+                {pendingConflicts} pending conflict(s) require manual resolution.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Document Metadata */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Document Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <div className="text-sm">
+            <strong>Room ID:</strong> {roomId}
+          </div>
+          <div className="text-sm">
+            <strong>Document Type:</strong> {documentType}
+          </div>
+          <div className="text-sm">
+            <strong>Last Modified:</strong> {getStateValue('last_modified') || 'Never'}
+          </div>
+          <div className="text-sm">
+            <strong>Conflict Resolution:</strong> {conflictResolution}
           </div>
         </CardContent>
       </Card>
