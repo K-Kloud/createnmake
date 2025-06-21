@@ -30,6 +30,11 @@ type ConflictResolutionStrategy = 'last_write_wins' | 'merge' | 'manual';
 
 // Type for presence data - using any to handle Supabase's dynamic presence structure
 interface PresenceData {
+  user_id?: string;
+  name?: string;
+  avatar?: string;
+  cursor?: { x: number; y: number };
+  online_at?: string;
   [key: string]: any;
 }
 
@@ -69,14 +74,14 @@ export const useRealtimeCollaboration = (roomId: string, initialState?: SharedSt
         setActiveUsers(users);
       })
       .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        const presence = newPresences && newPresences[0] ? newPresences[0] : {};
+        const presence = (newPresences && newPresences[0] ? newPresences[0] : {}) as PresenceData;
         toast({
           title: 'User joined',
           description: `${presence.name || 'Someone'} joined the collaboration`,
         });
       })
       .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-        const presence = leftPresences && leftPresences[0] ? leftPresences[0] : {};
+        const presence = (leftPresences && leftPresences[0] ? leftPresences[0] : {}) as PresenceData;
         toast({
           title: 'User left',
           description: `${presence.name || 'Someone'} left the collaboration`,
