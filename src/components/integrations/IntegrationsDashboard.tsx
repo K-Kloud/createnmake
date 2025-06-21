@@ -3,309 +3,267 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { useThirdPartyIntegrations } from '@/hooks/useThirdPartyIntegrations';
-import { usePushNotifications } from '@/hooks/usePushNotifications';
-import { LoadingState } from '@/components/ui/loading-state';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Instagram, 
-  HardDrive, 
-  Mail, 
-  Bell, 
+  Settings, 
+  Zap, 
   Cloud, 
-  Share2,
-  Settings,
-  CreditCard,
-  Zap,
-  MessageSquare,
-  BarChart3,
-  Truck
+  Mail, 
+  CreditCard, 
+  Users,
+  Activity,
+  Workflow,
+  ExternalLink
 } from 'lucide-react';
-
-const integrationIcons = {
-  instagram: Instagram,
-  pinterest: Share2,
-  dropbox: HardDrive,
-  google_drive: Cloud,
-  mailchimp: Mail,
-  stripe: CreditCard,
-  zapier: Zap,
-  slack: MessageSquare,
-  analytics: BarChart3,
-  shipping: Truck
-};
+import { useThirdPartyIntegrations } from '@/hooks/useThirdPartyIntegrations';
+import { LoadingState } from '@/components/ui/loading-state';
 
 export const IntegrationsDashboard: React.FC = () => {
-  const { 
-    integrations, 
+  const {
+    integrations,
     isLoading,
     connectSocialMedia,
-    autoPostToSocial,
     syncWithCloudStorage,
+    setupMarketingAutomation,
+    triggerPaymentAutomation,
+    triggerOperationalSync,
     isConnecting,
-    isPosting,
-    isSyncing
+    isAutomating
   } = useThirdPartyIntegrations();
 
-  const {
-    isSupported: pushSupported,
-    isSubscribed: pushSubscribed,
-    requestPermission: enablePush,
-    unsubscribe: disablePush
-  } = usePushNotifications();
-
-  const triggerAutomation = async (type: string) => {
-    try {
-      const { data, error } = await supabase.functions.invoke(getAutomationFunction(type), {
-        body: { action: getAutomationAction(type) }
-      });
-      
-      if (error) throw error;
-      
-      toast({
-        title: "Automation Triggered",
-        description: `${type} automation has been executed successfully.`,
-      });
-    } catch (error) {
-      console.error(`Failed to trigger ${type} automation:`, error);
-      toast({
-        title: "Automation Failed",
-        description: `Failed to execute ${type} automation.`,
-        variant: "destructive",
-      });
+  const getIntegrationIcon = (type: string) => {
+    switch (type) {
+      case 'social':
+        return <Users className="h-4 w-4" />;
+      case 'storage':
+        return <Cloud className="h-4 w-4" />;
+      case 'marketing':
+        return <Mail className="h-4 w-4" />;
+      case 'payment':
+        return <CreditCard className="h-4 w-4" />;
+      case 'automation':
+        return <Workflow className="h-4 w-4" />;
+      default:
+        return <Settings className="h-4 w-4" />;
     }
   };
 
-  const getAutomationFunction = (type: string) => {
-    const functionMap = {
-      'payment': 'payment-automation',
-      'marketing': 'marketing-integrations', 
-      'operational': 'operational-connectors',
-      'third-party': 'third-party-automation'
-    };
-    return functionMap[type as keyof typeof functionMap];
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'connected':
+        return <Badge className="bg-green-500/10 text-green-500 border-green-500/30">Connected</Badge>;
+      case 'disconnected':
+        return <Badge variant="outline">Disconnected</Badge>;
+      case 'error':
+        return <Badge className="bg-red-500/10 text-red-500 border-red-500/30">Error</Badge>;
+      default:
+        return <Badge variant="outline">Unknown</Badge>;
+    }
   };
 
-  const getAutomationAction = (type: string) => {
-    const actionMap = {
-      'payment': 'process_bulk_payments',
-      'marketing': 'sync_email_campaigns',
-      'operational': 'sync_inventory',
-      'third-party': 'sync_zapier_webhooks'
-    };
-    return actionMap[type as keyof typeof actionMap];
-  };
+  const groupedIntegrations = integrations?.reduce((acc, integration) => {
+    if (!acc[integration.type]) {
+      acc[integration.type] = [];
+    }
+    acc[integration.type].push(integration);
+    return acc;
+  }, {} as Record<string, typeof integrations>) || {};
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2">Integrations & Automation</h2>
-        <p className="text-muted-foreground">Connect your favorite platforms and automate your workflow</p>
+        <h1 className="text-3xl font-bold">Integrations</h1>
+        <p className="text-muted-foreground">Connect and manage your third-party integrations</p>
       </div>
 
-      {/* Push Notifications */}
-      {pushSupported && (
-        <Card className="glass-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bell className="h-5 w-5" />
-              Push Notifications
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Browser Notifications</p>
-                <p className="text-sm text-muted-foreground">
-                  Get notified about new orders, messages, and updates
-                </p>
-              </div>
-              <Switch
-                checked={pushSubscribed}
-                onCheckedChange={(checked) => {
-                  if (checked) {
-                    enablePush();
-                  } else {
-                    disablePush();
-                  }
-                }}
-              />
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <LoadingState isLoading={isLoading} error={null}>
+        <Tabs defaultValue="all" className="space-y-6">
+          <TabsList className="bg-background/50 backdrop-blur-sm">
+            <TabsTrigger value="all">All Integrations</TabsTrigger>
+            <TabsTrigger value="social">Social Media</TabsTrigger>
+            <TabsTrigger value="storage">Cloud Storage</TabsTrigger>
+            <TabsTrigger value="marketing">Marketing</TabsTrigger>
+            <TabsTrigger value="payment">Payments</TabsTrigger>
+            <TabsTrigger value="automation">Automation</TabsTrigger>
+          </TabsList>
 
-      {/* Automation Controls */}
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle>Automation Hub</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Button
-              variant="outline"
-              className="h-20 flex-col gap-2"
-              onClick={() => triggerAutomation('payment')}
-            >
-              <CreditCard className="h-5 w-5" />
-              Payment Automation
-            </Button>
-            
-            <Button
-              variant="outline"
-              className="h-20 flex-col gap-2"
-              onClick={() => triggerAutomation('marketing')}
-            >
-              <Mail className="h-5 w-5" />
-              Marketing Automation
-            </Button>
-            
-            <Button
-              variant="outline"
-              className="h-20 flex-col gap-2"
-              onClick={() => triggerAutomation('operational')}
-            >
-              <Truck className="h-5 w-5" />
-              Operational Sync
-            </Button>
-            
-            <Button
-              variant="outline"
-              className="h-20 flex-col gap-2"
-              onClick={() => triggerAutomation('third-party')}
-            >
-              <Zap className="h-5 w-5" />
-              Third-party APIs
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Third-party Integrations */}
-      <LoadingState
-        isLoading={isLoading}
-        error={null}
-        loadingMessage="Loading integrations..."
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {integrations?.map((integration) => {
-            const IconComponent = integrationIcons[integration.id as keyof typeof integrationIcons] || Settings;
-            
-            return (
-              <Card key={integration.id} className="glass-card">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <IconComponent className="h-5 w-5" />
-                      {integration.name}
+          <TabsContent value="all" className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {integrations?.map((integration) => (
+                <Card key={integration.id} className="glass-card">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                    <div className="flex items-center space-x-2">
+                      {getIntegrationIcon(integration.type)}
+                      <CardTitle className="text-lg">{integration.name}</CardTitle>
                     </div>
-                    <Badge 
-                      variant={integration.status === 'connected' ? 'default' : 'secondary'}
-                    >
-                      {integration.status}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    {integration.type === 'social' && 'Share your creations automatically'}
-                    {integration.type === 'storage' && 'Backup your images to the cloud'}
-                    {integration.type === 'marketing' && 'Automate your marketing campaigns'}
-                    {integration.type === 'analytics' && 'Track your performance metrics'}
-                  </p>
-                  
-                  <div className="flex gap-2">
-                    {integration.status === 'disconnected' ? (
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          if (integration.type === 'social') {
-                            connectSocialMedia({ platform: integration.id, accessToken: 'mock-token' });
-                          } else if (integration.type === 'storage') {
-                            syncWithCloudStorage({ provider: integration.id });
-                          }
-                        }}
-                        disabled={isConnecting || isSyncing}
-                      >
-                        Connect
-                      </Button>
-                    ) : (
-                      <>
+                    {getStatusBadge(integration.status)}
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Type</span>
+                      <Badge variant="outline" className="capitalize">{integration.type}</Badge>
+                    </div>
+                    
+                    {integration.last_sync && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Last Sync</span>
+                        <span className="text-sm">{new Date(integration.last_sync).toLocaleDateString()}</span>
+                      </div>
+                    )}
+
+                    <div className="flex gap-2">
+                      {integration.status === 'disconnected' ? (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          disabled={isConnecting}
+                          onClick={() => connectSocialMedia({ platform: integration.id, accessToken: 'demo' })}
+                        >
+                          Connect
+                        </Button>
+                      ) : (
                         <Button size="sm" variant="outline">
+                          <Settings className="h-3 w-3 mr-1" />
                           Configure
                         </Button>
-                        {integration.type === 'social' && (
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              autoPostToSocial({
-                                imageId: '1',
-                                platforms: [integration.id],
-                                caption: 'Check out my latest creation!'
-                              });
-                            }}
-                            disabled={isPosting}
-                          >
-                            Test Post
-                          </Button>
-                        )}
-                      </>
-                    )}
-                  </div>
+                      )}
+                      
+                      <Button size="sm" variant="ghost">
+                        <ExternalLink className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
 
-                  {integration.last_sync && (
-                    <p className="text-xs text-muted-foreground">
-                      Last sync: {new Date(integration.last_sync).toLocaleDateString()}
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+          {Object.entries(groupedIntegrations).map(([type, typeIntegrations]) => (
+            <TabsContent key={type} value={type} className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {typeIntegrations.map((integration) => (
+                  <Card key={integration.id} className="glass-card">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                      <div className="flex items-center space-x-2">
+                        {getIntegrationIcon(integration.type)}
+                        <CardTitle className="text-lg">{integration.name}</CardTitle>
+                      </div>
+                      {getStatusBadge(integration.status)}
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {/* Type-specific actions */}
+                      {type === 'storage' && (
+                        <Button 
+                          size="sm"
+                          disabled={isAutomating}
+                          onClick={() => syncWithCloudStorage({ provider: integration.id })}
+                        >
+                          <Cloud className="h-3 w-3 mr-1" />
+                          Sync Data
+                        </Button>
+                      )}
+                      
+                      {type === 'marketing' && (
+                        <Button 
+                          size="sm"
+                          disabled={isAutomating}
+                          onClick={() => setupMarketingAutomation({ platform: integration.id, campaignConfig: {} })}
+                        >
+                          <Mail className="h-3 w-3 mr-1" />
+                          Setup Campaign
+                        </Button>
+                      )}
+                      
+                      {type === 'payment' && (
+                        <Button 
+                          size="sm"
+                          disabled={isAutomating}
+                          onClick={() => triggerPaymentAutomation('process_bulk_payments')}
+                        >
+                          <CreditCard className="h-3 w-3 mr-1" />
+                          Process Payments
+                        </Button>
+                      )}
+                      
+                      {type === 'automation' && (
+                        <Button 
+                          size="sm"
+                          disabled={isAutomating}
+                          onClick={() => triggerOperationalSync('sync_inventory')}
+                        >
+                          <Workflow className="h-3 w-3 mr-1" />
+                          Sync Operations
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+          ))}
+        </Tabs>
       </LoadingState>
 
       {/* Quick Actions */}
       <Card className="glass-card">
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Zap className="h-5 w-5" />
+            Quick Actions
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button
-              variant="outline"
-              className="h-20 flex-col gap-2"
-              onClick={() => {
-                autoPostToSocial({
-                  imageId: '1',
-                  platforms: ['instagram', 'pinterest'],
-                  caption: 'New design available!'
-                });
-              }}
-              disabled={isPosting}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Button 
+              variant="outline" 
+              className="h-auto py-4 flex flex-col items-center gap-2"
+              disabled={isAutomating}
+              onClick={() => triggerPaymentAutomation('reconcile_payments')}
             >
-              <Share2 className="h-5 w-5" />
-              Share Latest
+              <Activity className="h-6 w-6" />
+              <div className="text-center">
+                <div className="font-medium">Reconcile Payments</div>
+                <div className="text-xs text-muted-foreground">Sync payment status</div>
+              </div>
             </Button>
             
-            <Button
-              variant="outline"
-              className="h-20 flex-col gap-2"
-              onClick={() => {
-                syncWithCloudStorage({ provider: 'dropbox' });
-              }}
-              disabled={isSyncing}
+            <Button 
+              variant="outline" 
+              className="h-auto py-4 flex flex-col items-center gap-2"
+              disabled={isAutomating}
+              onClick={() => triggerOperationalSync('sync_analytics')}
             >
-              <Cloud className="h-5 w-5" />
-              Backup Images
+              <Activity className="h-6 w-6" />
+              <div className="text-center">
+                <div className="font-medium">Sync Analytics</div>
+                <div className="text-xs text-muted-foreground">Update metrics</div>
+              </div>
             </Button>
             
-            <Button
-              variant="outline"
-              className="h-20 flex-col gap-2"
+            <Button 
+              variant="outline" 
+              className="h-auto py-4 flex flex-col items-center gap-2"
+              disabled={isAutomating}
+              onClick={() => setupMarketingAutomation({ platform: 'mailchimp', campaignConfig: { type: 'weekly_digest' } })}
             >
-              <Mail className="h-5 w-5" />
-              Send Newsletter
+              <Mail className="h-6 w-6" />
+              <div className="text-center">
+                <div className="font-medium">Send Newsletter</div>
+                <div className="text-xs text-muted-foreground">Weekly digest</div>
+              </div>
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="h-auto py-4 flex flex-col items-center gap-2"
+              disabled={isAutomating}
+              onClick={() => triggerOperationalSync('backup_data')}
+            >
+              <Cloud className="h-6 w-6" />
+              <div className="text-center">
+                <div className="font-medium">Backup Data</div>
+                <div className="text-xs text-muted-foreground">Cloud backup</div>
+              </div>
             </Button>
           </div>
         </CardContent>
