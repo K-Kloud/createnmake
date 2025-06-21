@@ -12,6 +12,8 @@ import { useResponsive } from "@/hooks/useResponsive";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { useAnalyticsContext } from "@/providers/AnalyticsProvider";
+import { SmartNotificationSystem } from '@/components/notifications/SmartNotificationSystem';
+import { NetworkStatusIndicator } from '@/components/enhancement/ProgressiveEnhancement';
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -103,60 +105,65 @@ export const Header = () => {
   };
 
   return (
-    <>
-      <header className="fixed top-0 w-full z-50 glass-card">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between max-w-7xl">
-          {/* Logo */}
-          <div className="flex items-center">
-            <button 
-              className="bg-transparent text-primary border border-primary px-4 py-2 text-xl font-bold rounded-md hover:bg-primary/10 transition-all duration-200 hover:shadow-sm hover:shadow-primary/20 active:scale-95" 
-              onClick={handleLogoClick}
-            >
-              openteknologies
-            </button>
-          </div>
-          
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center justify-center flex-1">
-            <MainNavigationMenu 
-              user={session?.user || null}
-              profile={profile}
-              onShowAuthDialog={() => setShowAuthDialog(true)}
-            />
-          </div>
-          
-          {/* Right side controls */}
-          <div className="flex items-center gap-3">
-            <LanguageSwitcher />
-            <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={handleThemeToggle} />
-            
-            {session?.user && (
-              <EnhancedNotificationCenter />
-            )}
-            
-            {/* Desktop User Menu */}
-            <div className={isAtLeast('sm') ? 'block' : 'hidden'}>
-              <UserMenu 
-                onShowAuthDialog={() => setShowAuthDialog(true)} 
-              />
-            </div>
-            
-            {/* Mobile navigation */}
-            <div className="md:hidden">
-              <MobileNavigationMenu 
-                user={session?.user || null}
-                profile={profile}
-                onShowAuthDialog={() => setShowAuthDialog(true)}
-              />
-            </div>
-          </div>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center justify-between">
+        {/* Logo */}
+        <div className="flex items-center">
+          <button 
+            className="bg-transparent text-primary border border-primary px-4 py-2 text-xl font-bold rounded-md hover:bg-primary/10 transition-all duration-200 hover:shadow-sm hover:shadow-primary/20 active:scale-95" 
+            onClick={handleLogoClick}
+          >
+            openteknologies
+          </button>
         </div>
-      </header>
-      
-      <AuthDialog 
-        isOpen={showAuthDialog} 
-        onClose={() => setShowAuthDialog(false)} 
-      />
-    </>
+        
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center justify-center flex-1">
+          <MainNavigationMenu 
+            user={session?.user || null}
+            profile={profile}
+            onShowAuthDialog={() => setShowAuthDialog(true)}
+          />
+        </div>
+        
+        {/* Right side controls */}
+        <div className="flex items-center gap-4">
+          <NetworkStatusIndicator />
+          
+          {session?.user ? (
+            <div className="flex items-center gap-2">
+              <SmartNotificationSystem />
+              <LanguageSwitcher />
+              <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={handleThemeToggle} />
+              
+              {session?.user && (
+                <EnhancedNotificationCenter />
+              )}
+              
+              {/* Desktop User Menu */}
+              <div className={isAtLeast('sm') ? 'block' : 'hidden'}>
+                <UserMenu 
+                  onShowAuthDialog={() => setShowAuthDialog(true)} 
+                />
+              </div>
+              
+              {/* Mobile navigation */}
+              <div className="md:hidden">
+                <MobileNavigationMenu 
+                  user={session?.user || null}
+                  profile={profile}
+                  onShowAuthDialog={() => setShowAuthDialog(true)}
+                />
+              </div>
+            </div>
+          ) : (
+            <AuthDialog 
+              isOpen={showAuthDialog} 
+              onClose={() => setShowAuthDialog(false)} 
+            />
+          )}
+        </div>
+      </div>
+    </header>
   );
 };
