@@ -28,6 +28,7 @@ export const SignInForm = ({
   const [internalEmail, setInternalEmail] = useState("");
   const [internalPassword, setInternalPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   // Use either external state (if provided) or internal state
@@ -39,20 +40,61 @@ export const SignInForm = ({
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (isSubmitting || isLoading) return;
+    
     // Sanitize inputs
     const sanitizedEmail = sanitizeInput(email);
     
-    const { error } = await supabase.auth.signInWithPassword({
-      email: sanitizedEmail,
-      password,
-    });
+    setIsSubmitting(true);
+    
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: sanitizedEmail,
+        password,
+      });
 
-    if (error) {
+      if (error) {
+        // Handle specific error cases
+        if (error.message.includes('Invalid login credentials')) {
+          toast({
+            title: "Invalid credentials",
+            description: "The email or password you entered is incorrect. Please try again.",
+            variant: "destructive",
+          });
+        } else if (error.message.includes('Email not confirmed')) {
+          toast({
+            title: "Email not confirmed",
+            description: "Please check your email and click the confirmation link before signing in.",
+            variant: "destructive",
+          });
+        } else if (error.message.includes('Too many requests')) {
+          toast({
+            title: "Too many attempts",
+            description: "Too many sign in attempts. Please wait a few minutes and try again.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Sign in failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "Welcome back!",
+          description: "You've been signed in successfully.",
+        });
+      }
+    } catch (error: any) {
+      console.error('Sign in error:', error);
       toast({
-        title: "Error",
-        description: error.message,
+        title: "Unexpected error",
+        description: "Something went wrong. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -66,7 +108,8 @@ export const SignInForm = ({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          disabled={isLoading}
+          disabled={isLoading || isSubmitting}
+          placeholder="Enter your email"
         />
       </div>
       <div className="space-y-2">
@@ -78,7 +121,8 @@ export const SignInForm = ({
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            disabled={isLoading}
+            disabled={isLoading || isSubmitting}
+            placeholder="Enter your password"
           />
           <Button
             type="button"
@@ -86,7 +130,7 @@ export const SignInForm = ({
             size="sm"
             className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
             onClick={() => setShowPassword(!showPassword)}
-            disabled={isLoading}
+            disabled={isLoading || isSubmitting}
           >
             {showPassword ? (
               <EyeOff className="h-4 w-4" />
@@ -96,15 +140,19 @@ export const SignInForm = ({
           </Button>
         </div>
       </div>
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Signing in..." : "Sign In"}
+      <Button 
+        type="submit" 
+        className="w-full" 
+        disabled={isLoading || isSubmitting}
+      >
+        {isSubmitting ? "Signing in..." : "Sign In"}
       </Button>
       <Button
         type="button"
         variant="link"
         className="w-full"
         onClick={onForgotPassword}
-        disabled={isLoading}
+        disabled={isLoading || isSubmitting}
       >
         Forgot your password?
       </Button>
