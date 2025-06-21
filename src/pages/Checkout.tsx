@@ -1,6 +1,6 @@
 
 import { useAuth } from "@/hooks/useAuth";
-import { useCart } from "@/contexts/CartContext";
+import { useCart } from "@/providers/CartProvider";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import { ShoppingBag, CreditCard, Truck, Shield } from "lucide-react";
 
 const Checkout = () => {
   const { user } = useAuth();
-  const { state, dispatch } = useCart();
+  const { items, totalPrice, clearCart } = useCart();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
@@ -52,7 +52,7 @@ const Checkout = () => {
       return;
     }
 
-    if (state.items.length === 0 && !preSelectedProductId) {
+    if (items.length === 0 && !preSelectedProductId) {
       toast({
         title: "Empty Cart",
         description: "Your cart is empty. Add some items first!",
@@ -60,7 +60,7 @@ const Checkout = () => {
       });
       navigate("/marketplace");
     }
-  }, [user, state.items.length, navigate, toast, preSelectedProductId]);
+  }, [user, items.length, navigate, toast, preSelectedProductId]);
 
   const handleShippingChange = (field: string, value: string) => {
     setShippingInfo(prev => ({ ...prev, [field]: value }));
@@ -117,7 +117,7 @@ const Checkout = () => {
       });
 
       // Clear cart
-      dispatch({ type: 'CLEAR_CART' });
+      clearCart();
 
       // Navigate to success page or orders
       navigate('/orders');
@@ -132,7 +132,7 @@ const Checkout = () => {
     }
   };
 
-  const subtotal = state.total;
+  const subtotal = totalPrice;
   const shipping = 5.99;
   const tax = subtotal * 0.08; // 8% tax
   const total = subtotal + shipping + tax;
@@ -291,24 +291,24 @@ const Checkout = () => {
                 <CardContent className="space-y-4">
                   {/* Cart Items */}
                   <div className="space-y-3">
-                    {state.items.map((item) => (
+                    {items.map((item) => (
                       <div key={item.id} className="flex gap-3">
                         <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
                           <img
-                            src={item.product.url}
-                            alt={item.product.prompt}
+                            src={item.image_url}
+                            alt={item.name}
                             className="w-full h-full object-cover"
                           />
                         </div>
                         <div className="flex-grow">
                           <h4 className="font-medium text-sm line-clamp-2">
-                            {item.product.prompt}
+                            {item.name}
                           </h4>
                           <p className="text-sm text-muted-foreground">
                             Qty: {item.quantity}
                           </p>
                           <p className="text-sm font-medium">
-                            ${(parseFloat(item.product.price || "0") * item.quantity).toFixed(2)}
+                            ${(item.price * item.quantity).toFixed(2)}
                           </p>
                         </div>
                       </div>

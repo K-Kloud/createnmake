@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Heart, Share2, ShoppingBag, Info, Star, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
@@ -10,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { useCart } from "@/contexts/CartContext";
+import { useCart } from "@/providers/CartProvider";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -33,7 +34,7 @@ export const ProductDetail = ({
 }: ProductDetailProps) => {
   const { toast } = useToast();
   const { user } = useAuth();
-  const { dispatch } = useCart();
+  const { addItem } = useCart();
   const navigate = useNavigate();
   const [currentImage, setCurrentImage] = useState(0);
   const [isInWishlist, setIsInWishlist] = useState(product.hasLiked);
@@ -90,9 +91,12 @@ export const ProductDetail = ({
 
     try {
       // Add item to cart
-      dispatch({
-        type: 'ADD_ITEM',
-        payload: { product, quantity: 1 }
+      addItem({
+        id: product.id.toString(),
+        name: product.prompt,
+        price: parseFloat(product.price || "0"),
+        image_url: product.url,
+        metadata: product
       });
 
       toast({
@@ -127,9 +131,12 @@ export const ProductDetail = ({
 
     try {
       // Add to cart first
-      dispatch({
-        type: 'ADD_ITEM',
-        payload: { product, quantity: 1 }
+      addItem({
+        id: product.id.toString(),
+        name: product.prompt,
+        price: parseFloat(product.price || "0"),
+        image_url: product.url,
+        metadata: product
       });
 
       // Navigate to checkout

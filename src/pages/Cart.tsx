@@ -1,6 +1,6 @@
 
 import { useAuth } from "@/hooks/useAuth";
-import { useCart } from "@/contexts/CartContext";
+import { useCart } from "@/providers/CartProvider";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -12,15 +12,15 @@ import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const { user } = useAuth();
-  const { state, dispatch } = useCart();
+  const { items, totalItems, totalPrice, updateQuantity, removeItem } = useCart();
   const navigate = useNavigate();
 
   const handleUpdateQuantity = (id: string, quantity: number) => {
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
+    updateQuantity(id, quantity);
   };
 
   const handleRemoveItem = (id: string) => {
-    dispatch({ type: 'REMOVE_ITEM', payload: { id } });
+    removeItem(id);
   };
 
   const handleCheckout = () => {
@@ -52,11 +52,11 @@ const Cart = () => {
           <div>
             <h1 className="text-3xl font-bold">Shopping Cart</h1>
             <p className="text-muted-foreground">
-              {state.items.length} {state.items.length === 1 ? 'item' : 'items'} in your cart
+              {items.length} {items.length === 1 ? 'item' : 'items'} in your cart
             </p>
           </div>
 
-          {state.items.length === 0 ? (
+          {items.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
                 <ShoppingBag className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
@@ -72,23 +72,23 @@ const Cart = () => {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-4">
-                {state.items.map((item) => (
+                {items.map((item) => (
                   <Card key={item.id}>
                     <CardContent className="p-4">
                       <div className="flex gap-4">
                         <div className="w-20 h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
                           <img
-                            src={item.product.url}
-                            alt={item.product.prompt}
+                            src={item.image_url}
+                            alt={item.name}
                             className="w-full h-full object-cover"
                           />
                         </div>
                         <div className="flex-grow">
                           <h3 className="font-medium text-sm mb-1">
-                            {item.product.prompt}
+                            {item.name}
                           </h3>
                           <p className="text-sm text-muted-foreground mb-2">
-                            Created by {item.product.creator?.name || 'Unknown Creator'}
+                            Created by {item.metadata?.creator?.name || 'Unknown Creator'}
                           </p>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
@@ -112,7 +112,7 @@ const Cart = () => {
                             </div>
                             <div className="flex items-center gap-2">
                               <Badge variant="secondary">
-                                ${(parseFloat(item.product.price || "0") * item.quantity).toFixed(2)}
+                                ${(item.price * item.quantity).toFixed(2)}
                               </Badge>
                               <Button
                                 variant="ghost"
@@ -140,7 +140,7 @@ const Cart = () => {
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Subtotal</span>
-                        <span>${state.total.toFixed(2)}</span>
+                        <span>${totalPrice.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span>Estimated Shipping</span>
@@ -149,7 +149,7 @@ const Cart = () => {
                       <Separator />
                       <div className="flex justify-between font-medium">
                         <span>Total</span>
-                        <span>${(state.total + 5.99).toFixed(2)}</span>
+                        <span>${(totalPrice + 5.99).toFixed(2)}</span>
                       </div>
                     </div>
                     <Button className="w-full" onClick={handleCheckout}>
