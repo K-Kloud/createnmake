@@ -1,5 +1,4 @@
 
-import { useNotifications } from "@/hooks/useNotifications";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Bell, BellOff, Check } from "lucide-react";
@@ -8,10 +7,11 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useState } from "react";
+import { useRealtimeNotifications } from "@/components/notifications/RealtimeNotificationProvider";
 
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
-  const { notifications, unreadCount, isLoading, markAsRead, markAllAsRead } = useNotifications();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useRealtimeNotifications();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -41,11 +41,7 @@ export function NotificationBell() {
           )}
         </div>
         <ScrollArea className="h-[300px]">
-          {isLoading ? (
-            <div className="flex items-center justify-center h-full p-4">
-              <p className="text-sm text-gray-500">Loading notifications...</p>
-            </div>
-          ) : notifications.length === 0 ? (
+          {notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full p-4">
               <BellOff className="h-10 w-10 text-gray-400 mb-2" />
               <p className="text-sm text-gray-500">No notifications yet</p>
