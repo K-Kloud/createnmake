@@ -1,5 +1,6 @@
 
 import { Hero } from "@/components/Hero";
+import { HeroActions } from "@/components/HeroActions";
 import { Suspense, lazy, useEffect } from "react";
 import { addStructuredData } from "@/utils/seo";
 import { MainLayout } from "@/components/layouts/MainLayout";
@@ -46,6 +47,11 @@ const Index = () => {
             <ImageGenerator />
           </div>
         </Suspense>
+        
+        <div className="mt-12 text-center">
+          <HeroActions />
+        </div>
+        
         <Suspense fallback={<div className="h-32 w-full"></div>}>
           <OpenMarketSection />
         </Suspense>
