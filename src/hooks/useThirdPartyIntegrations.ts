@@ -8,7 +8,7 @@ import { useToast } from './use-toast';
 interface Integration {
   id: string;
   name: string;
-  type: 'social' | 'storage' | 'analytics' | 'marketing';
+  type: 'social' | 'storage' | 'analytics' | 'marketing' | 'payment' | 'automation';
   status: 'connected' | 'disconnected' | 'error';
   config: any;
   last_sync: string | null;
@@ -23,7 +23,7 @@ export const useThirdPartyIntegrations = () => {
   const { data: integrations, isLoading } = useQuery({
     queryKey: ['integrations', user?.id],
     queryFn: async (): Promise<Integration[]> => {
-      // Mock integrations - in a real app, these would be stored in database
+      // Enhanced integrations list with automation platforms
       return [
         {
           id: 'instagram',
@@ -61,6 +61,30 @@ export const useThirdPartyIntegrations = () => {
           id: 'mailchimp',
           name: 'Mailchimp',
           type: 'marketing',
+          status: 'disconnected',
+          config: {},
+          last_sync: null
+        },
+        {
+          id: 'stripe',
+          name: 'Stripe Payments',
+          type: 'payment',
+          status: 'connected',
+          config: {},
+          last_sync: new Date().toISOString()
+        },
+        {
+          id: 'zapier',
+          name: 'Zapier',
+          type: 'automation',
+          status: 'disconnected',
+          config: {},
+          last_sync: null
+        },
+        {
+          id: 'slack',
+          name: 'Slack',
+          type: 'automation',
           status: 'disconnected',
           config: {},
           last_sync: null
@@ -117,21 +141,20 @@ export const useThirdPartyIntegrations = () => {
 
       if (!image) throw new Error('Image not found');
 
-      // In a real implementation, this would call social media APIs
-      for (const platform of platforms) {
-        await supabase
-          .from('audit_logs')
-          .insert({
-            user_id: user.id,
-            action: 'auto_post_social',
-            action_details: {
-              platform,
-              image_id: imageId,
-              caption,
-              posted_at: new Date().toISOString()
-            }
-          });
-      }
+      // Trigger marketing automation
+      const { error } = await supabase.functions.invoke('marketing-integrations', {
+        body: {
+          action: 'sync_social_media',
+          platform: platforms[0],
+          data: {
+            image_url: image.image_url,
+            caption: caption,
+            platforms: platforms
+          }
+        }
+      });
+
+      if (error) throw error;
 
       toast({
         title: 'Posted to Social Media',
@@ -148,31 +171,20 @@ export const useThirdPartyIntegrations = () => {
     mutationFn: async ({ provider, folderId }: { provider: string; folderId?: string }) => {
       if (!user?.id) throw new Error('User not authenticated');
 
-      // Get user's images
-      const { data: images } = await supabase
-        .from('generated_images')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(50);
+      // Trigger operational connector
+      const { error } = await supabase.functions.invoke('operational-connectors', {
+        body: {
+          action: 'backup_data',
+          system: provider,
+          data: { folder_id: folderId }
+        }
+      });
 
-      // In a real implementation, this would upload to cloud storage
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: user.id,
-          action: 'sync_cloud_storage',
-          action_details: {
-            provider,
-            folder_id: folderId,
-            images_synced: images?.length || 0,
-            synced_at: new Date().toISOString()
-          }
-        });
+      if (error) throw error;
 
       toast({
         title: 'Cloud Sync Complete',
-        description: `Synced ${images?.length || 0} images to ${provider}`,
+        description: `Data synced to ${provider}`,
       });
     },
     onError: (error) => {
@@ -188,18 +200,15 @@ export const useThirdPartyIntegrations = () => {
     }) => {
       if (!user?.id) throw new Error('User not authenticated');
 
-      // In a real implementation, this would configure marketing automation
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: user.id,
-          action: 'setup_marketing_automation',
-          action_details: {
-            platform,
-            config: campaignConfig,
-            setup_at: new Date().toISOString()
-          }
-        });
+      const { error } = await supabase.functions.invoke('marketing-integrations', {
+        body: {
+          action: 'sync_email_campaigns',
+          platform: platform,
+          data: campaignConfig
+        }
+      });
+
+      if (error) throw error;
 
       toast({
         title: 'Marketing Automation Setup',
@@ -226,20 +235,20 @@ export const useThirdPartyIntegrations = () => {
         .select('*')
         .eq('user_id', user.id);
 
-      // In a real implementation, this would format and export data
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: user.id,
-          action: 'export_data',
-          action_details: {
-            format,
-            platform,
-            filters,
-            records_exported: userData?.length || 0,
-            exported_at: new Date().toISOString()
+      // Trigger third-party automation
+      const { error } = await supabase.functions.invoke('third-party-automation', {
+        body: {
+          action: 'update_google_sheets',
+          service: platform,
+          data: {
+            format: format,
+            records: userData,
+            filters: filters
           }
-        });
+        }
+      });
+
+      if (error) throw error;
 
       toast({
         title: 'Data Export Complete',
@@ -251,6 +260,47 @@ export const useThirdPartyIntegrations = () => {
     }
   });
 
+  // New automation functions
+  const triggerPaymentAutomation = useMutation({
+    mutationFn: async (action: string) => {
+      if (!user?.id) throw new Error('User not authenticated');
+
+      const { error } = await supabase.functions.invoke('payment-automation', {
+        body: { action }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Payment Automation',
+        description: `${action} executed successfully`,
+      });
+    },
+    onError: (error) => {
+      handleError(error, 'executing payment automation');
+    }
+  });
+
+  const triggerOperationalSync = useMutation({
+    mutationFn: async (action: string) => {
+      if (!user?.id) throw new Error('User not authenticated');
+
+      const { error } = await supabase.functions.invoke('operational-connectors', {
+        body: { action, system: 'default' }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Operational Sync',
+        description: `${action} completed successfully`,
+      });
+    },
+    onError: (error) => {
+      handleError(error, 'executing operational sync');
+    }
+  });
+
   return {
     integrations,
     isLoading,
@@ -259,10 +309,13 @@ export const useThirdPartyIntegrations = () => {
     syncWithCloudStorage: syncWithCloudStorage.mutate,
     setupMarketingAutomation: setupMarketingAutomation.mutate,
     exportData: exportData.mutate,
+    triggerPaymentAutomation: triggerPaymentAutomation.mutate,
+    triggerOperationalSync: triggerOperationalSync.mutate,
     isConnecting: connectSocialMedia.isPending,
     isPosting: autoPostToSocial.isPending,
     isSyncing: syncWithCloudStorage.isPending,
     isSettingUpMarketing: setupMarketingAutomation.isPending,
-    isExporting: exportData.isPending
+    isExporting: exportData.isPending,
+    isAutomating: triggerPaymentAutomation.isPending || triggerOperationalSync.isPending
   };
 };

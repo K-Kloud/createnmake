@@ -14,7 +14,12 @@ import {
   Bell, 
   Cloud, 
   Share2,
-  Settings 
+  Settings,
+  CreditCard,
+  Zap,
+  MessageSquare,
+  BarChart3,
+  Truck
 } from 'lucide-react';
 
 const integrationIcons = {
@@ -22,7 +27,12 @@ const integrationIcons = {
   pinterest: Share2,
   dropbox: HardDrive,
   google_drive: Cloud,
-  mailchimp: Mail
+  mailchimp: Mail,
+  stripe: CreditCard,
+  zapier: Zap,
+  slack: MessageSquare,
+  analytics: BarChart3,
+  shipping: Truck
 };
 
 export const IntegrationsDashboard: React.FC = () => {
@@ -44,10 +54,52 @@ export const IntegrationsDashboard: React.FC = () => {
     unsubscribe: disablePush
   } = usePushNotifications();
 
+  const triggerAutomation = async (type: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke(getAutomationFunction(type), {
+        body: { action: getAutomationAction(type) }
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Automation Triggered",
+        description: `${type} automation has been executed successfully.`,
+      });
+    } catch (error) {
+      console.error(`Failed to trigger ${type} automation:`, error);
+      toast({
+        title: "Automation Failed",
+        description: `Failed to execute ${type} automation.`,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getAutomationFunction = (type: string) => {
+    const functionMap = {
+      'payment': 'payment-automation',
+      'marketing': 'marketing-integrations', 
+      'operational': 'operational-connectors',
+      'third-party': 'third-party-automation'
+    };
+    return functionMap[type as keyof typeof functionMap];
+  };
+
+  const getAutomationAction = (type: string) => {
+    const actionMap = {
+      'payment': 'process_bulk_payments',
+      'marketing': 'sync_email_campaigns',
+      'operational': 'sync_inventory',
+      'third-party': 'sync_zapier_webhooks'
+    };
+    return actionMap[type as keyof typeof actionMap];
+  };
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2">Integrations</h2>
+        <h2 className="text-2xl font-bold mb-2">Integrations & Automation</h2>
         <p className="text-muted-foreground">Connect your favorite platforms and automate your workflow</p>
       </div>
 
@@ -82,6 +134,52 @@ export const IntegrationsDashboard: React.FC = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Automation Controls */}
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle>Automation Hub</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Button
+              variant="outline"
+              className="h-20 flex-col gap-2"
+              onClick={() => triggerAutomation('payment')}
+            >
+              <CreditCard className="h-5 w-5" />
+              Payment Automation
+            </Button>
+            
+            <Button
+              variant="outline"
+              className="h-20 flex-col gap-2"
+              onClick={() => triggerAutomation('marketing')}
+            >
+              <Mail className="h-5 w-5" />
+              Marketing Automation
+            </Button>
+            
+            <Button
+              variant="outline"
+              className="h-20 flex-col gap-2"
+              onClick={() => triggerAutomation('operational')}
+            >
+              <Truck className="h-5 w-5" />
+              Operational Sync
+            </Button>
+            
+            <Button
+              variant="outline"
+              className="h-20 flex-col gap-2"
+              onClick={() => triggerAutomation('third-party')}
+            >
+              <Zap className="h-5 w-5" />
+              Third-party APIs
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Third-party Integrations */}
       <LoadingState
