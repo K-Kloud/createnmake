@@ -13,7 +13,6 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { useAnalyticsContext } from "@/providers/AnalyticsProvider";
 import { SmartNotificationSystem } from '@/components/notifications/SmartNotificationSystem';
-import { NetworkStatusIndicator } from '@/components/enhancement/ProgressiveEnhancement';
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -128,8 +127,6 @@ export const Header = () => {
         
         {/* Right side controls */}
         <div className="flex items-center gap-4">
-          <NetworkStatusIndicator />
-          
           {session?.user ? (
             <div className="flex items-center gap-2">
               <SmartNotificationSystem />
