@@ -14,7 +14,7 @@
     --border: 168 70% 90%;
     --input: 168 70% 90%;
     --ring: 156 100% 50%;
-    --radius: 0.5rem;  /* Back to default border radius */
+    --radius: 1rem;  /* Increased border radius */
   }
 
   .dark {

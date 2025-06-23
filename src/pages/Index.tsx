@@ -39,7 +39,8 @@ const Index = () => {
       ogImage: "https://openteknologies.com/lovable-uploads/8373b451-38a1-4ecb-8594-cf0c25ba20c4.png"
     }}>
       {/* Generator Section */}
-      <section className="py-12 bg-background">
+      <section className="relative py-12 bg-gradient-to-b from-background via-background/95 to-background">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <Suspense fallback={
           <div className="flex items-center justify-center py-20">
             <div className="text-center space-y-4">
@@ -48,7 +49,9 @@ const Index = () => {
             </div>
           </div>
         }>
-          <ImageGenerator />
+          <div className="image-generator">
+            <ImageGenerator />
+          </div>
         </Suspense>
       </section>
 
