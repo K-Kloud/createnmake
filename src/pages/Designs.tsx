@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,12 +13,15 @@ import { LoadingState } from "@/components/ui/loading-state";
 import { SkeletonLoader } from "@/components/ui/skeleton-loader";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { StandardPageLayout } from "@/components/layouts/StandardPageLayout";
+import { ProgressiveLoader } from "@/components/optimization/ProgressiveLoader";
+import { useImageCache } from "@/hooks/useImageCache";
 
 const Designs = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const { getCachedImage, preloadImages } = useImageCache();
   const pageSize = 12;
 
   const { data: designs, isLoading, error, refetch } = useQuery({
@@ -36,6 +40,17 @@ const Designs = () => {
     },
     enabled: !!user?.id,
   });
+
+  // Preload images for better performance
+  useEffect(() => {
+    if (designs?.length) {
+      const imageUrls = designs
+        .slice(0, 20) // Preload first 20 images
+        .map(design => design.image_url)
+        .filter(Boolean) as string[];
+      preloadImages(imageUrls);
+    }
+  }, [designs, preloadImages]);
 
   const totalDesigns = designs?.length ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalDesigns / pageSize));
@@ -61,6 +76,57 @@ const Designs = () => {
     { title: "Dashboard", href: "/dashboard" },
     { title: "My Designs", href: "/designs" }
   ];
+
+  const renderDesignItem = (design: any, index: number) => (
+    <Link to={`/designs/${design.id}`} key={design.id} className="group">
+      <Card className="overflow-hidden hover:shadow-lg transition-all hover:scale-[1.02] cursor-pointer">
+        <AspectRatio ratio={1}>
+          <img
+            src={design.image_url}
+            alt={design.prompt || "Design"}
+            className="object-cover w-full h-full"
+            loading={index < 8 ? "eager" : "lazy"} // Eager load first 8 images
+          />
+        </AspectRatio>
+        <CardContent className="p-3">
+          <p className="text-sm font-medium truncate">
+            {design.prompt || "Untitled Design"}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {new Date(design.created_at).toLocaleDateString()}
+          </p>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+
+  const renderListItem = (design: any) => (
+    <Link to={`/designs/${design.id}`} key={design.id} className="group">
+      <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary cursor-pointer">
+        <CardContent className="p-4 flex items-center space-x-4">
+          <div className="w-24 h-24 rounded-md overflow-hidden shrink-0">
+            <img
+              src={design.image_url}
+              alt={design.prompt || "Design"}
+              className="object-cover w-full h-full"
+              loading="lazy"
+            />
+          </div>
+          <div>
+            <h3 className="font-medium">
+              {design.prompt || "Untitled Design"}
+            </h3>
+            <div className="flex items-center space-x-2 mt-1 text-sm text-muted-foreground">
+              <span>{new Date(design.created_at).toLocaleDateString()}</span>
+              {design.is_public && (
+                <span className="bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full text-xs">Public</span>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
+  );
 
   return (
     <StandardPageLayout
@@ -111,60 +177,19 @@ const Designs = () => {
             <Button onClick={() => navigate("/create")}>Create your first design</Button>
           </div>
         ) : viewMode === "grid" ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {currentDesigns.map((design) => (
-              <Link to={`/designs/${design.id}`} key={design.id} className="group">
-                <Card className="overflow-hidden hover:shadow-lg transition-all hover:scale-[1.02] cursor-pointer">
-                  <AspectRatio ratio={1}>
-                    <img
-                      src={design.image_url}
-                      alt={design.prompt || "Design"}
-                      className="object-cover w-full h-full"
-                      loading="lazy"
-                    />
-                  </AspectRatio>
-                  <CardContent className="p-3">
-                    <p className="text-sm font-medium truncate">
-                      {design.prompt || "Untitled Design"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(design.created_at).toLocaleDateString()}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
+          <ProgressiveLoader
+            items={currentDesigns}
+            renderItem={renderDesignItem}
+            pageSize={8}
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+          />
         ) : (
-          <div className="space-y-4">
-            {currentDesigns.map((design) => (
-              <Link to={`/designs/${design.id}`} key={design.id} className="group">
-                <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary cursor-pointer">
-                  <CardContent className="p-4 flex items-center space-x-4">
-                    <div className="w-24 h-24 rounded-md overflow-hidden shrink-0">
-                      <img
-                        src={design.image_url}
-                        alt={design.prompt || "Design"}
-                        className="object-cover w-full h-full"
-                        loading="lazy"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">
-                        {design.prompt || "Untitled Design"}
-                      </h3>
-                      <div className="flex items-center space-x-2 mt-1 text-sm text-muted-foreground">
-                        <span>{new Date(design.created_at).toLocaleDateString()}</span>
-                        {design.is_public && (
-                          <span className="bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full text-xs">Public</span>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
+          <ProgressiveLoader
+            items={currentDesigns}
+            renderItem={renderListItem}
+            pageSize={5}
+            className="space-y-4"
+          />
         )}
         
         {totalPages > 1 && (
