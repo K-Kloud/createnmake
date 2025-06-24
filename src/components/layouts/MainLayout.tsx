@@ -14,7 +14,7 @@ export const MainLayout = ({
   return <div className="min-h-screen bg-background flex flex-col">
       {seo && <SEO {...seo} />}
       <Header />
-      <main className="flex-grow pt-16 px-0 py-0">
+      <main className="flex-grow pt-16 py-0 px-[14px] my-0 mx-0">
         {children}
       </main>
       <Footer />
