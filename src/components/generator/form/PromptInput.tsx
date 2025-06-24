@@ -76,7 +76,7 @@ export const PromptInput = ({
         <div className="relative group">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div className="relative bg-background/80 backdrop-blur-sm border border-border/60 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/40 transition-all duration-200">
-            <Input value={prompt} onChange={e => onPromptChange(e.target.value)} onKeyDown={handleKeyDown} placeholder="A cozy living room with modern furniture, warm lighting, and plants..." disabled={isGenerating || disabled} className="border-0 text-base placeholder:text-muted-foreground/70 focus-visible:ring-0 focus-visible:ring-offset-0 pr-32 py-[60px] px-[15px] bg-green-950" />
+            <Input value={prompt} onChange={e => onPromptChange(e.target.value)} onKeyDown={handleKeyDown} placeholder="A cozy living room with modern furniture, warm lighting, and plants..." disabled={isGenerating || disabled} className="border-0 text-base placeholder:text-muted-foreground/70 focus-visible:ring-0 focus-visible:ring-offset-0 pr-32 py-[60px] px-[15px] bg-gray-700" />
             
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
               <TooltipProvider>
