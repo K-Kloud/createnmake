@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -9,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -22,21 +20,12 @@ import {
   Trash2, 
   Eye, 
   Heart, 
-  MessageCircle, 
-  Calendar,
+  MessageCircle,
   User,
   Settings,
   Save,
   X
 } from "lucide-react";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,7 +37,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { MainLayout } from "@/components/layouts/MainLayout";
+import { StandardPageLayout } from "@/components/layouts/StandardPageLayout";
 
 const DesignDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -204,293 +193,304 @@ const DesignDetail = () => {
 
   if (isLoading) {
     return (
-      <MainLayout>
-        <div className="container mx-auto px-4 pt-24 pb-12">
-          <div className="flex items-center justify-center py-20">
-            <LoadingSpinner />
-          </div>
+      <StandardPageLayout>
+        <div className="flex items-center justify-center py-20">
+          <LoadingSpinner />
         </div>
-      </MainLayout>
+      </StandardPageLayout>
     );
   }
 
   if (error || !design) {
     return (
-      <MainLayout>
-        <div className="container mx-auto px-4 pt-24 pb-12">
-          <div className="text-center py-20">
-            <h1 className="text-2xl font-bold mb-4">Design Not Found</h1>
-            <p className="text-muted-foreground mb-6">
-              The design you're looking for doesn't exist or has been removed.
-            </p>
-            <Button onClick={() => navigate('/designs')}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Designs
-            </Button>
-          </div>
+      <StandardPageLayout
+        title="Design Not Found"
+        seo={{
+          title: "Design Not Found | Create2Make",
+          description: "The design you're looking for doesn't exist or has been removed.",
+        }}
+      >
+        <div className="text-center py-20">
+          <p className="text-muted-foreground mb-6">
+            The design you're looking for doesn't exist or has been removed.
+          </p>
+          <Button onClick={() => navigate('/designs')}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Designs
+          </Button>
         </div>
-      </MainLayout>
+      </StandardPageLayout>
     );
   }
 
   const isOwner = user?.id === design.user_id;
   const canEdit = isOwner;
 
-  return (
-    <MainLayout>
-      <div className="container mx-auto px-4 pt-24 pb-12 max-w-6xl">
-        {/* Breadcrumbs */}
-        <Breadcrumb className="mb-6">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to="/">Home</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to="/designs">My Designs</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Design Details</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+  const breadcrumbs = [
+    { title: "Home", href: "/" },
+    { title: "My Designs", href: "/designs" },
+    { title: "Design Details", href: `/designs/${id}` }
+  ];
 
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/designs')}
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Designs
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold">Design Details</h1>
-              <p className="text-muted-foreground">
-                Created {new Date(design.created_at).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={handleShare}>
-              <Share2 className="mr-2 h-4 w-4" />
-              Share
-            </Button>
-            <Button variant="outline" onClick={handleDownload}>
-              <Download className="mr-2 h-4 w-4" />
-              Download
-            </Button>
-            {canEdit && (
-              <>
-                {!isEditing ? (
-                  <Button onClick={() => setIsEditing(true)}>
-                    <Edit2 className="mr-2 h-4 w-4" />
-                    Edit
-                  </Button>
-                ) : (
-                  <div className="flex gap-2">
-                    <Button 
-                      onClick={handleSaveChanges}
-                      disabled={updateDesignMutation.isPending}
-                    >
-                      <Save className="mr-2 h-4 w-4" />
-                      Save
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={handleCancelEdit}
-                    >
-                      <X className="mr-2 h-4 w-4" />
-                      Cancel
-                    </Button>
-                  </div>
-                )}
-              </>
-            )}
+  return (
+    <StandardPageLayout
+      breadcrumbs={breadcrumbs}
+      seo={{
+        title: `Design Details | Create2Make`,
+        description: design.prompt || "View design details and manage your AI-generated artwork.",
+      }}
+    >
+      {/* Breadcrumbs */}
+      <Breadcrumb className="mb-6">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to="/">Home</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to="/designs">My Designs</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Design Details</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/designs')}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Designs
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">Design Details</h1>
+            <p className="text-muted-foreground">
+              Created {new Date(design.created_at).toLocaleDateString()}
+            </p>
           </div>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Image Display */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardContent className="p-0">
-                <AspectRatio ratio={design.aspect_ratio === 'square' ? 1 : design.aspect_ratio === 'landscape' ? 16/9 : 9/16}>
-                  <img
-                    src={design.image_url}
-                    alt={design.prompt || "Generated design"}
-                    className="w-full h-full object-cover rounded-lg"
-                  />
-                </AspectRatio>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Metadata and Controls */}
-          <div className="space-y-6">
-            {/* Basic Info */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Design Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="prompt">Prompt</Label>
-                  {isEditing ? (
-                    <Input
-                      id="prompt"
-                      value={editedPrompt}
-                      onChange={(e) => setEditedPrompt(e.target.value)}
-                      placeholder="Enter design prompt..."
-                      className="mt-2"
-                    />
-                  ) : (
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {design.prompt || "No prompt provided"}
-                    </p>
-                  )}
+        
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={handleShare}>
+            <Share2 className="mr-2 h-4 w-4" />
+            Share
+          </Button>
+          <Button variant="outline" onClick={handleDownload}>
+            <Download className="mr-2 h-4 w-4" />
+            Download
+          </Button>
+          {canEdit && (
+            <>
+              {!isEditing ? (
+                <Button onClick={() => setIsEditing(true)}>
+                  <Edit2 className="mr-2 h-4 w-4" />
+                  Edit
+                </Button>
+              ) : (
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={handleSaveChanges}
+                    disabled={updateDesignMutation.isPending}
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    Save
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={handleCancelEdit}
+                  >
+                    <X className="mr-2 h-4 w-4" />
+                    Cancel
+                  </Button>
                 </div>
-
-                <Separator />
-
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <Label className="text-muted-foreground">Aspect Ratio</Label>
-                    <p className="font-medium">{design.aspect_ratio || 'square'}</p>
-                  </div>
-                  <div>
-                    <Label className="text-muted-foreground">Created</Label>
-                    <p className="font-medium">
-                      {new Date(design.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-
-                {canEdit && (
-                  <>
-                    <Separator />
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="public">Public Design</Label>
-                      <Switch
-                        id="public"
-                        checked={isEditing ? editedPublic : design.is_public}
-                        onCheckedChange={setEditedPublic}
-                        disabled={!isEditing}
-                      />
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Creator Info */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <User className="h-5 w-5" />
-                  Creator
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <User className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium">
-                      {design.profiles?.username || 'Anonymous User'}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {isOwner ? 'You' : 'Creator'}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Stats */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Statistics</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <div className="flex items-center justify-center mb-1">
-                      <Eye className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <p className="text-2xl font-bold">0</p>
-                    <p className="text-xs text-muted-foreground">Views</p>
-                  </div>
-                  <div>
-                    <div className="flex items-center justify-center mb-1">
-                      <Heart className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <p className="text-2xl font-bold">0</p>
-                    <p className="text-xs text-muted-foreground">Likes</p>
-                  </div>
-                  <div>
-                    <div className="flex items-center justify-center mb-1">
-                      <MessageCircle className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <p className="text-2xl font-bold">0</p>
-                    <p className="text-xs text-muted-foreground">Comments</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Delete Option for Owner */}
-            {canEdit && (
-              <Card className="border-destructive/20">
-                <CardHeader>
-                  <CardTitle className="text-destructive">Danger Zone</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" className="w-full">
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete Design
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently delete
-                          your design and remove it from our servers.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => deleteDesignMutation.mutate()}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+              )}
+            </>
+          )}
         </div>
       </div>
-    </MainLayout>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Image Display */}
+        <div className="lg:col-span-2">
+          <Card>
+            <CardContent className="p-0">
+              <AspectRatio ratio={design.aspect_ratio === 'square' ? 1 : design.aspect_ratio === 'landscape' ? 16/9 : 9/16}>
+                <img
+                  src={design.image_url}
+                  alt={design.prompt || "Generated design"}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </AspectRatio>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Metadata and Controls */}
+        <div className="space-y-6">
+          {/* Basic Info */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                Design Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="prompt">Prompt</Label>
+                {isEditing ? (
+                  <Input
+                    id="prompt"
+                    value={editedPrompt}
+                    onChange={(e) => setEditedPrompt(e.target.value)}
+                    placeholder="Enter design prompt..."
+                    className="mt-2"
+                  />
+                ) : (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {design.prompt || "No prompt provided"}
+                  </p>
+                )}
+              </div>
+
+              <Separator />
+
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <Label className="text-muted-foreground">Aspect Ratio</Label>
+                  <p className="font-medium">{design.aspect_ratio || 'square'}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Created</Label>
+                  <p className="font-medium">
+                    {new Date(design.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+
+              {canEdit && (
+                <>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="public">Public Design</Label>
+                    <Switch
+                      id="public"
+                      checked={isEditing ? editedPublic : design.is_public}
+                      onCheckedChange={setEditedPublic}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Creator Info */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Creator
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-medium">
+                    {design.profiles?.username || 'Anonymous User'}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {isOwner ? 'You' : 'Creator'}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Stats */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Statistics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <div className="flex items-center justify-center mb-1">
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <p className="text-2xl font-bold">0</p>
+                  <p className="text-xs text-muted-foreground">Views</p>
+                </div>
+                <div>
+                  <div className="flex items-center justify-center mb-1">
+                    <Heart className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <p className="text-2xl font-bold">0</p>
+                  <p className="text-xs text-muted-foreground">Likes</p>
+                </div>
+                <div>
+                  <div className="flex items-center justify-center mb-1">
+                    <MessageCircle className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <p className="text-2xl font-bold">0</p>
+                  <p className="text-xs text-muted-foreground">Comments</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Delete Option for Owner */}
+          {canEdit && (
+            <Card className="border-destructive/20">
+              <CardHeader>
+                <CardTitle className="text-destructive">Danger Zone</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" className="w-full">
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete Design
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete
+                        your design and remove it from our servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => deleteDesignMutation.mutate()}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+    </StandardPageLayout>
   );
 };
 

@@ -1,81 +1,115 @@
 
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
-import { ProfileCard } from "@/components/dashboard/ProfileCard";
-import { DashboardStats } from "@/components/dashboard/DashboardStats";
-import { QuickActions } from "@/components/dashboard/QuickActions";
-import { useDashboardData } from "@/hooks/useDashboardData";
-import { useAuthGuard } from "@/hooks/useAuthGuard";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { NotificationCenter } from "@/components/NotificationCenter";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Link, useNavigate } from "react-router-dom";
+import { Plus, Image, ShoppingBag, Settings, BarChart, Users } from "lucide-react";
+import { StandardPageLayout } from "@/components/layouts/StandardPageLayout";
+import { RecentDesigns } from "@/components/dashboard/RecentDesigns";
+import { DesignsPanel } from "@/components/dashboard/DesignsPanel";
+import { StatsOverview } from "@/components/dashboard/StatsOverview";
 
 const Dashboard = () => {
-  const { isAuthenticated } = useAuthGuard();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const { session, user } = useAuth();
-  
-  // Get dashboard data using our custom hook
-  const { 
-    profile, 
-    generatedImagesCount,
-    likesCount, 
-    ordersCount, 
-    productsCount 
-  } = useDashboardData(session, user);
 
-  useEffect(() => {
-    if (!session) {
-      navigate('/');
-    }
-  }, [session, navigate]);
-
-  if (!isAuthenticated || !profile) {
-    return null;
+  if (!user) {
+    return (
+      <StandardPageLayout
+        title="Dashboard"
+        seo={{
+          title: "Dashboard | Create2Make",
+          description: "Access your personal dashboard to manage designs, orders, and account settings.",
+        }}
+      >
+        <Card className="p-8 text-center">
+          <p className="mb-4">Please sign in to access your dashboard.</p>
+          <Button onClick={() => navigate("/auth")}>Sign In</Button>
+        </Card>
+      </StandardPageLayout>
+    );
   }
 
+  const quickActions = [
+    {
+      title: "Create New Design",
+      description: "Generate a new AI design",
+      icon: Plus,
+      href: "/create",
+      color: "bg-primary/10 text-primary"
+    },
+    {
+      title: "My Designs",
+      description: "View and manage your designs",
+      icon: Image,
+      href: "/designs",
+      color: "bg-blue-500/10 text-blue-600"
+    },
+    {
+      title: "Orders",
+      description: "Track your orders",
+      icon: ShoppingBag,
+      href: "/orders",
+      color: "bg-green-500/10 text-green-600"
+    },
+    {
+      title: "Settings",
+      description: "Account preferences",
+      icon: Settings,
+      href: "/settings",
+      color: "bg-purple-500/10 text-purple-600"
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      <ErrorBoundary>
-        <div className="container px-4 py-24 flex-grow">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Sidebar */}
-            <div className="lg:col-span-3">
-              <div className="space-y-6">
-                {/* Profile Card */}
-                <ProfileCard 
-                  profile={profile} 
-                  userEmail={session?.user.email} 
-                  userId={session?.user.id}
-                />
+    <StandardPageLayout
+      title="Dashboard"
+      description="Welcome back! Here's an overview of your account."
+      showBreadcrumbs={false}
+      seo={{
+        title: "Dashboard | Create2Make",
+        description: "Access your personal dashboard to manage designs, orders, and account settings.",
+      }}
+    >
+      <div className="space-y-8">
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {quickActions.map((action) => (
+            <Card key={action.href} className="hover:shadow-lg transition-shadow cursor-pointer">
+              <Link to={action.href}>
+                <CardHeader className="flex flex-row items-center space-y-0 pb-2">
+                  <div className={`rounded-lg p-2 ${action.color}`}>
+                    <action.icon className="h-4 w-4" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardTitle className="text-sm font-medium">{action.title}</CardTitle>
+                  <CardDescription className="text-xs mt-1">
+                    {action.description}
+                  </CardDescription>
+                </CardContent>
+              </Link>
+            </Card>
+          ))}
+        </div>
 
-                {/* Stats Overview */}
-                <DashboardStats />
+        {/* Stats Overview */}
+        <StatsOverview />
 
-                {/* Quick Actions */}
-                <QuickActions />
-              </div>
-            </div>
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Recent Designs */}
+          <div>
+            <RecentDesigns />
+          </div>
 
-            {/* Main Content */}
-            <div className="lg:col-span-9">
-              <DashboardTabs 
-                userId={session?.user.id}
-                userEmail={session?.user.email}
-                profile={profile}
-              />
-            </div>
+          {/* Designs Panel */}
+          <div>
+            <DesignsPanel />
           </div>
         </div>
-      </ErrorBoundary>
-      <Footer />
-    </div>
+      </div>
+    </StandardPageLayout>
   );
 };
 
