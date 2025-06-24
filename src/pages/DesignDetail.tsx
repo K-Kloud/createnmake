@@ -72,7 +72,7 @@ const DesignDetail = () => {
         .select(`
           *,
           profiles!generated_images_user_id_fkey (
-            full_name,
+            username,
             avatar_url
           )
         `)
@@ -409,7 +409,7 @@ const DesignDetail = () => {
                   </div>
                   <div>
                     <p className="font-medium">
-                      {design.profiles?.full_name || 'Anonymous User'}
+                      {design.profiles?.username || 'Anonymous User'}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       {isOwner ? 'You' : 'Creator'}

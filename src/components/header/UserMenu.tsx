@@ -14,19 +14,19 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/providers/CartProvider";
 import { LogIn, LogOut, Settings, User, ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { enhancedSignOut } from "@/utils/enhancedAuth";
 
 interface UserMenuProps {
   onShowAuthDialog?: () => void;
 }
 
 export const UserMenu = ({ onShowAuthDialog }: UserMenuProps) => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { items, totalItems } = useCart();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
+    await enhancedSignOut();
   };
 
   if (!user) {

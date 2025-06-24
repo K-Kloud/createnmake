@@ -6,11 +6,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { AuthTabs } from "@/components/auth/AuthTabs";
 import { SocialButtons } from "@/components/auth/SocialButtons";
 import { useAuth } from "@/hooks/useAuth";
+import { checkAndResolveAuthLimbo } from "@/utils/enhancedAuth";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { session, loading } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Check for auth limbo state on page load
+    const checkAuthState = async () => {
+      await checkAndResolveAuthLimbo();
+    };
+    
+    checkAuthState();
+  }, []);
 
   useEffect(() => {
     if (!loading && session) {
