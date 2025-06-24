@@ -37,7 +37,7 @@ export const useLazyComponents = () => {
 
 // Preload components when user interactions suggest they might be needed
 export const useComponentPreloading = () => {
-  const preloadComponent = (importFn: () => Promise<{ default: ComponentType<any> }>) => {
+  const preloadComponent = (importFn: () => Promise<any>) => {
     // Preload on hover or focus
     return {
       onMouseEnter: () => importFn(),

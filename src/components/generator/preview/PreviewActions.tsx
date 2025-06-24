@@ -1,8 +1,10 @@
+
 import React, { useState, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download, Heart, Share2, Wand2, Edit3 } from 'lucide-react';
 import { ShareDialog } from '@/components/sharing/ShareDialog';
 import { ImageEditDialog } from '@/components/editing/ImageEditDialog';
+import { InpaintingDialog } from '@/components/inpainting/InpaintingDialog';
 import { useComponentPreloading } from '@/hooks/useBundleOptimization';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
