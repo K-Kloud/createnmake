@@ -79,7 +79,10 @@ const Designs = () => {
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
                 <Link to="/">Home</Link>
-              </BreadcrumbLink>
+              </B
+ 
+
+ readcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -137,7 +140,7 @@ const Designs = () => {
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {currentDesigns.map((design) => (
-                <Link to={`/designs/${design.id}`} key={design.id}>
+                <Link to={`/designs/${design.id}`} key={design.id} className="group">
                   <Card className="overflow-hidden hover:shadow-lg transition-all hover:scale-[1.02] cursor-pointer">
                     <AspectRatio ratio={1}>
                       <img
@@ -162,7 +165,7 @@ const Designs = () => {
           ) : (
             <div className="space-y-4">
               {currentDesigns.map((design) => (
-                <Link to={`/designs/${design.id}`} key={design.id}>
+                <Link to={`/designs/${design.id}`} key={design.id} className="group">
                   <Card className="overflow-hidden hover:shadow-lg transition-all hover:border-primary cursor-pointer">
                     <CardContent className="p-4 flex items-center space-x-4">
                       <div className="w-24 h-24 rounded-md overflow-hidden shrink-0">
