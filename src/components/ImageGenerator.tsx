@@ -1,9 +1,7 @@
-
 import { useImageGeneration } from "./generator/useImageGeneration";
 import { GenerationForm } from "./generator/GenerationForm";
 import { PreviewDialog } from "./generator/PreviewDialog";
 import { AuthDialog } from "./auth/AuthDialog";
-
 export const ImageGenerator = () => {
   // Keep using the same hook which internally uses the refactored hooks
   const {
@@ -33,9 +31,7 @@ export const ImageGenerator = () => {
     console.log("Image liked:", imageId);
     // Implement like functionality if needed
   };
-
-  return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-8">
+  return <div className="w-full max-w-4xl mx-auto px-4 py-8">
       <div className="space-y-8">
         {/* Header Section */}
         <div className="text-center space-y-4">
@@ -53,27 +49,12 @@ export const ImageGenerator = () => {
         </div>
 
         {/* Main Generator Card */}
-        <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6 md:p-8 shadow-lg hover:shadow-xl transition-all duration-300">
-          <GenerationForm 
-            prompt={prompt} 
-            onPromptChange={setPrompt} 
-            selectedItem={selectedItem} 
-            onItemChange={setSelectedItem} 
-            selectedRatio={selectedRatio} 
-            onRatioChange={setSelectedRatio} 
-            referenceImage={referenceImage} 
-            onReferenceImageUpload={setReferenceImage} 
-            onGenerate={handleGenerate} 
-            isGenerating={isGenerating} 
-            isSignedIn={!!session?.user} 
-            remainingImages={remainingImages} 
-            showItemPreviews={true} 
-          />
+        <div className="backdrop-blur-sm border border-border/50 p-6 md:p-8 shadow-lg hover:shadow-xl transition-all duration-300 rounded-3xl py-[33px] my-0 mx-0 px-[33px] bg-accent-foreground">
+          <GenerationForm prompt={prompt} onPromptChange={setPrompt} selectedItem={selectedItem} onItemChange={setSelectedItem} selectedRatio={selectedRatio} onRatioChange={setSelectedRatio} referenceImage={referenceImage} onReferenceImageUpload={setReferenceImage} onGenerate={handleGenerate} isGenerating={isGenerating} isSignedIn={!!session?.user} remainingImages={remainingImages} showItemPreviews={true} />
         </div>
 
         {/* Status Indicator */}
-        {isGenerating && (
-          <div className="text-center py-4">
+        {isGenerating && <div className="text-center py-4">
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-primary/10 border border-primary/20 rounded-full">
               <div className="flex space-x-1">
                 <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
@@ -82,26 +63,12 @@ export const ImageGenerator = () => {
               </div>
               <span className="text-sm font-medium text-primary">Creating your design...</span>
             </div>
-          </div>
-        )}
+          </div>}
       </div>
 
-      <PreviewDialog 
-        open={previewOpen} 
-        onOpenChange={setPreviewOpen} 
-        isGenerating={isGenerating} 
-        selectedRatio={selectedRatio} 
-        generatedImageUrl={generatedImageUrl} 
-        prompt={prompt} 
-        onLike={handleLikeImage} 
-      />
+      <PreviewDialog open={previewOpen} onOpenChange={setPreviewOpen} isGenerating={isGenerating} selectedRatio={selectedRatio} generatedImageUrl={generatedImageUrl} prompt={prompt} onLike={handleLikeImage} />
 
-      <AuthDialog 
-        isOpen={authDialogOpen} 
-        onClose={() => setAuthDialogOpen(false)} 
-      />
-    </div>
-  );
+      <AuthDialog isOpen={authDialogOpen} onClose={() => setAuthDialogOpen(false)} />
+    </div>;
 };
-
 export default ImageGenerator;
