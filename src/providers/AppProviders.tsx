@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { EnhancedErrorBoundary } from "@/components/ui/enhanced-error-boundary";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { CartProvider } from "@/providers/CartProvider";
+import { RealtimeNotificationProvider } from "@/components/notifications/RealtimeNotificationProvider";
 import { preloadCriticalResources, trackBundlePerformance } from "@/utils/bundleOptimization";
 
 const queryClient = new QueryClient({
@@ -47,18 +48,20 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
       <BrowserRouter>
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <CartProvider>
-            <EnhancedErrorBoundary>
-              <Suspense 
-                fallback={
-                  <div className="min-h-screen flex items-center justify-center">
-                    <LoadingSpinner />
-                  </div>
-                }
-              >
-                <Toaster />
-                {children}
-              </Suspense>
-            </EnhancedErrorBoundary>
+            <RealtimeNotificationProvider>
+              <EnhancedErrorBoundary>
+                <Suspense 
+                  fallback={
+                    <div className="min-h-screen flex items-center justify-center">
+                      <LoadingSpinner />
+                    </div>
+                  }
+                >
+                  <Toaster />
+                  {children}
+                </Suspense>
+              </EnhancedErrorBoundary>
+            </RealtimeNotificationProvider>
           </CartProvider>
         </ThemeProvider>
       </BrowserRouter>
