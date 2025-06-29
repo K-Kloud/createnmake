@@ -119,6 +119,7 @@ export function AuthDialog({
                 setPassword={setPassword}
                 isLoading={isLoading}
                 onForgotPassword={() => setIsResetMode(true)}
+                onSuccess={onClose}
               />
               <div className="mt-4 text-center">
                 <button 
@@ -140,6 +141,7 @@ export function AuthDialog({
                 username={username}
                 setUsername={setUsername}
                 isLoading={isLoading}
+                onSuccess={onClose}
               />
               <div className="mt-4 text-center">
                 <button 

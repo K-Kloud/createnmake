@@ -15,6 +15,7 @@ interface SignInFormProps {
   setEmail?: (email: string) => void;
   password?: string;
   setPassword?: (password: string) => void;
+  onSuccess?: () => void;
 }
 
 export const SignInForm = ({ 
@@ -23,7 +24,8 @@ export const SignInForm = ({
   email: externalEmail, 
   setEmail: setExternalEmail, 
   password: externalPassword, 
-  setPassword: setExternalPassword 
+  setPassword: setExternalPassword,
+  onSuccess
 }: SignInFormProps) => {
   const [internalEmail, setInternalEmail] = useState("");
   const [internalPassword, setInternalPassword] = useState("");
@@ -53,6 +55,13 @@ export const SignInForm = ({
         description: error.message,
         variant: "destructive",
       });
+    } else {
+      toast({
+        title: "Success",
+        description: "You have been signed in successfully.",
+      });
+      // Call the success callback to close the dialog
+      onSuccess?.();
     }
   };
 

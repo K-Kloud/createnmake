@@ -18,6 +18,7 @@ interface SignUpFormProps {
   setPassword?: (password: string) => void;
   username?: string;
   setUsername?: (username: string) => void;
+  onSuccess?: () => void;
 }
 
 export const SignUpForm = ({ 
@@ -27,7 +28,8 @@ export const SignUpForm = ({
   password: externalPassword, 
   setPassword: setExternalPassword,
   username: externalUsername,
-  setUsername: setExternalUsername
+  setUsername: setExternalUsername,
+  onSuccess
 }: SignUpFormProps) => {
   const [internalEmail, setInternalEmail] = useState("");
   const [internalPassword, setInternalPassword] = useState("");
@@ -67,6 +69,7 @@ export const SignUpForm = ({
         data: {
           username: sanitizedUsername,
         },
+        emailRedirectTo: `${window.location.origin}/`,
       },
     });
 
@@ -81,6 +84,8 @@ export const SignUpForm = ({
         title: "Success",
         description: "Please check your email to confirm your account.",
       });
+      // Call the success callback to close the dialog
+      onSuccess?.();
     }
   };
 
