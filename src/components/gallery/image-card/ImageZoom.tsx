@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { ImageOverlay } from "./ImageOverlay";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,7 @@ export const ImageZoom = ({
   const [zoomFactor, setZoomFactor] = useState(1);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [viewMode, setViewMode] = useState<'cover' | 'contain'>('cover');
+  const [viewMode, setViewMode] = useState<'cover' | 'contain'>('contain');
 
   // Toggle zoom effect
   const toggleZoom = (e: React.MouseEvent) => {
