@@ -66,7 +66,7 @@ export const PromptInput = ({
   };
   return <div className="space-y-2">
       <label className="text-sm font-medium">Create-2-Make with AI</label>
-      <div className="relative flex items-center bg-black/30 border border-white/10 rounded-lg overflow-hidden">
+      <div className="relative flex items-center bg-black/30 border border-white/10 rounded-lg overflow-hidden px-[14px] my-0 mx-0 py-[10px]">
         <Input value={prompt} onChange={e => onPromptChange(e.target.value)} onKeyDown={handleKeyDown} placeholder="Ask anything, create anything..." disabled={isGenerating || disabled} className="border-0 bg-transparent pr-24 focus-visible:ring-0 focus-visible:ring-offset-0 my-[24px] mx-0 px-0 py-0" />
         <div className="absolute right-2 flex items-center space-x-1">
           <TooltipProvider>
