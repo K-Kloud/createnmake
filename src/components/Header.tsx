@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthDialog } from "./auth/AuthDialog";
@@ -130,40 +131,39 @@ export const Header = () => {
         <div className="flex items-center gap-4">
           <NetworkStatusIndicator />
           
-          {session?.user ? (
-            <div className="flex items-center gap-2">
-              <SmartNotificationSystem />
-              <LanguageSwitcher />
-              <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={handleThemeToggle} />
-              
-              {session?.user && (
-                <EnhancedNotificationCenter />
-              )}
-              
-              {/* Desktop User Menu */}
-              <div className={isAtLeast('sm') ? 'block' : 'hidden'}>
-                <UserMenu 
-                  onShowAuthDialog={() => setShowAuthDialog(true)} 
-                />
-              </div>
-              
-              {/* Mobile navigation */}
-              <div className="md:hidden">
-                <MobileNavigationMenu 
-                  user={session?.user || null}
-                  profile={profile}
-                  onShowAuthDialog={() => setShowAuthDialog(true)}
-                />
-              </div>
+          <div className="flex items-center gap-2">
+            {session?.user && <SmartNotificationSystem />}
+            <LanguageSwitcher />
+            <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={handleThemeToggle} />
+            
+            {session?.user && (
+              <EnhancedNotificationCenter />
+            )}
+            
+            {/* Always render UserMenu - it handles both authenticated and non-authenticated states */}
+            <div className={isAtLeast('sm') ? 'block' : 'hidden'}>
+              <UserMenu 
+                onShowAuthDialog={() => setShowAuthDialog(true)} 
+              />
             </div>
-          ) : (
-            <AuthDialog 
-              isOpen={showAuthDialog} 
-              onClose={() => setShowAuthDialog(false)} 
-            />
-          )}
+            
+            {/* Mobile navigation */}
+            <div className="md:hidden">
+              <MobileNavigationMenu 
+                user={session?.user || null}
+                profile={profile}
+                onShowAuthDialog={() => setShowAuthDialog(true)}
+              />
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* AuthDialog - always available but only opens when triggered */}
+      <AuthDialog 
+        isOpen={showAuthDialog} 
+        onClose={() => setShowAuthDialog(false)} 
+      />
     </header>
   );
 };
