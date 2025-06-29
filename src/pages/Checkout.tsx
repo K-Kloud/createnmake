@@ -133,7 +133,7 @@ const Checkout = () => {
   };
 
   const subtotal = totalPrice;
-  const shipping = 5.99;
+  const shipping = subtotal > 50 ? 0 : 5.99; // Free shipping over $50
   const tax = subtotal * 0.08; // 8% tax
   const total = subtotal + shipping + tax;
 
@@ -151,209 +151,227 @@ const Checkout = () => {
             <p className="text-muted-foreground">Complete your purchase</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Checkout Form */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Shipping Information */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Truck className="h-5 w-5" />
-                    Shipping Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="fullName">Full Name</Label>
-                      <Input
-                        id="fullName"
-                        value={shippingInfo.fullName}
-                        onChange={(e) => handleShippingChange('fullName', e.target.value)}
-                        placeholder="John Doe"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={shippingInfo.email}
-                        onChange={(e) => handleShippingChange('email', e.target.value)}
-                        placeholder="john@example.com"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="address">Address</Label>
-                    <Input
-                      id="address"
-                      value={shippingInfo.address}
-                      onChange={(e) => handleShippingChange('address', e.target.value)}
-                      placeholder="123 Main Street"
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="city">City</Label>
-                      <Input
-                        id="city"
-                        value={shippingInfo.city}
-                        onChange={(e) => handleShippingChange('city', e.target.value)}
-                        placeholder="London"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="postalCode">Postal Code</Label>
-                      <Input
-                        id="postalCode"
-                        value={shippingInfo.postalCode}
-                        onChange={(e) => handleShippingChange('postalCode', e.target.value)}
-                        placeholder="SW1A 1AA"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="country">Country</Label>
-                      <Input
-                        id="country"
-                        value={shippingInfo.country}
-                        onChange={(e) => handleShippingChange('country', e.target.value)}
-                        placeholder="United Kingdom"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Payment Information */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CreditCard className="h-5 w-5" />
-                    Payment Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="cardNumber">Card Number</Label>
-                    <Input
-                      id="cardNumber"
-                      value={paymentInfo.cardNumber}
-                      onChange={(e) => handlePaymentChange('cardNumber', e.target.value)}
-                      placeholder="1234 5678 9012 3456"
-                      maxLength={19}
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="expiryDate">Expiry Date</Label>
-                      <Input
-                        id="expiryDate"
-                        value={paymentInfo.expiryDate}
-                        onChange={(e) => handlePaymentChange('expiryDate', e.target.value)}
-                        placeholder="MM/YY"
-                        maxLength={5}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="cvv">CVV</Label>
-                      <Input
-                        id="cvv"
-                        value={paymentInfo.cvv}
-                        onChange={(e) => handlePaymentChange('cvv', e.target.value)}
-                        placeholder="123"
-                        maxLength={4}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="nameOnCard">Name on Card</Label>
-                      <Input
-                        id="nameOnCard"
-                        value={paymentInfo.nameOnCard}
-                        onChange={(e) => handlePaymentChange('nameOnCard', e.target.value)}
-                        placeholder="John Doe"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Order Summary */}
-            <div className="lg:col-span-1">
-              <Card className="sticky top-4">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <ShoppingBag className="h-5 w-5" />
-                    Order Summary
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Cart Items */}
-                  <div className="space-y-3">
-                    {items.map((item) => (
-                      <div key={item.id} className="flex gap-3">
-                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                          <img
-                            src={item.image_url}
-                            alt={item.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-grow">
-                          <h4 className="font-medium text-sm line-clamp-2">
-                            {item.name}
-                          </h4>
-                          <p className="text-sm text-muted-foreground">
-                            Qty: {item.quantity}
-                          </p>
-                          <p className="text-sm font-medium">
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </p>
-                        </div>
+          {items.length === 0 ? (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <ShoppingBag className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                <h2 className="text-xl font-semibold mb-2">Your cart is empty</h2>
+                <p className="text-muted-foreground mb-4">
+                  Browse our marketplace to find amazing designs
+                </p>
+                <Button onClick={() => navigate('/marketplace')}>
+                  Browse Marketplace
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Checkout Form */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Shipping Information */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Truck className="h-5 w-5" />
+                      Shipping Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="fullName">Full Name</Label>
+                        <Input
+                          id="fullName"
+                          value={shippingInfo.fullName}
+                          onChange={(e) => handleShippingChange('fullName', e.target.value)}
+                          placeholder="John Doe"
+                        />
                       </div>
-                    ))}
-                  </div>
+                      <div>
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={shippingInfo.email}
+                          onChange={(e) => handleShippingChange('email', e.target.value)}
+                          placeholder="john@example.com"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label htmlFor="address">Address</Label>
+                      <Input
+                        id="address"
+                        value={shippingInfo.address}
+                        onChange={(e) => handleShippingChange('address', e.target.value)}
+                        placeholder="123 Main Street"
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Label htmlFor="city">City</Label>
+                        <Input
+                          id="city"
+                          value={shippingInfo.city}
+                          onChange={(e) => handleShippingChange('city', e.target.value)}
+                          placeholder="London"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="postalCode">Postal Code</Label>
+                        <Input
+                          id="postalCode"
+                          value={shippingInfo.postalCode}
+                          onChange={(e) => handleShippingChange('postalCode', e.target.value)}
+                          placeholder="SW1A 1AA"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="country">Country</Label>
+                        <Input
+                          id="country"
+                          value={shippingInfo.country}
+                          onChange={(e) => handleShippingChange('country', e.target.value)}
+                          placeholder="United Kingdom"
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
-                  <Separator />
+                {/* Payment Information */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CreditCard className="h-5 w-5" />
+                      Payment Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label htmlFor="cardNumber">Card Number</Label>
+                      <Input
+                        id="cardNumber"
+                        value={paymentInfo.cardNumber}
+                        onChange={(e) => handlePaymentChange('cardNumber', e.target.value)}
+                        placeholder="1234 5678 9012 3456"
+                        maxLength={19}
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Label htmlFor="expiryDate">Expiry Date</Label>
+                        <Input
+                          id="expiryDate"
+                          value={paymentInfo.expiryDate}
+                          onChange={(e) => handlePaymentChange('expiryDate', e.target.value)}
+                          placeholder="MM/YY"
+                          maxLength={5}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="cvv">CVV</Label>
+                        <Input
+                          id="cvv"
+                          value={paymentInfo.cvv}
+                          onChange={(e) => handlePaymentChange('cvv', e.target.value)}
+                          placeholder="123"
+                          maxLength={4}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="nameOnCard">Name on Card</Label>
+                        <Input
+                          id="nameOnCard"
+                          value={paymentInfo.nameOnCard}
+                          onChange={(e) => handlePaymentChange('nameOnCard', e.target.value)}
+                          placeholder="John Doe"
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
 
-                  {/* Price Breakdown */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Subtotal</span>
-                      <span>${subtotal.toFixed(2)}</span>
+              {/* Order Summary */}
+              <div className="lg:col-span-1">
+                <Card className="sticky top-4">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <ShoppingBag className="h-5 w-5" />
+                      Order Summary
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Cart Items */}
+                    <div className="space-y-3">
+                      {items.map((item) => (
+                        <div key={item.id} className="flex gap-3">
+                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                            <img
+                              src={item.image_url}
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="flex-grow">
+                            <h4 className="font-medium text-sm line-clamp-2">
+                              {item.name}
+                            </h4>
+                            <p className="text-sm text-muted-foreground">
+                              Qty: {item.quantity}
+                            </p>
+                            <p className="text-sm font-medium">
+                              ${(item.price * item.quantity).toFixed(2)}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span>Shipping</span>
-                      <span>${shipping.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span>Tax</span>
-                      <span>${tax.toFixed(2)}</span>
-                    </div>
+
                     <Separator />
-                    <div className="flex justify-between font-medium">
-                      <span>Total</span>
-                      <span>${total.toFixed(2)}</span>
+
+                    {/* Price Breakdown */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Subtotal</span>
+                        <span>${subtotal.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Shipping</span>
+                        <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
+                      </div>
+                      {shipping === 0 && (
+                        <p className="text-xs text-green-600">Free shipping on orders over $50!</p>
+                      )}
+                      <div className="flex justify-between text-sm">
+                        <span>Tax</span>
+                        <span>${tax.toFixed(2)}</span>
+                      </div>
+                      <Separator />
+                      <div className="flex justify-between font-medium">
+                        <span>Total</span>
+                        <span>${total.toFixed(2)}</span>
+                      </div>
                     </div>
-                  </div>
 
-                  <Button 
-                    className="w-full" 
-                    onClick={handlePlaceOrder}
-                    disabled={isProcessing}
-                  >
-                    {isProcessing ? "Processing..." : `Place Order - $${total.toFixed(2)}`}
-                  </Button>
+                    <Button 
+                      className="w-full" 
+                      onClick={handlePlaceOrder}
+                      disabled={isProcessing}
+                    >
+                      {isProcessing ? "Processing..." : `Place Order - $${total.toFixed(2)}`}
+                    </Button>
 
-                  <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                    <Shield className="h-4 w-4" />
-                    <span>Secure checkout</span>
-                  </div>
-                </CardContent>
-              </Card>
+                    <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                      <Shield className="h-4 w-4" />
+                      <span>Secure checkout</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </main>
       <Footer />
