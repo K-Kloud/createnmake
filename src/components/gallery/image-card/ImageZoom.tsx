@@ -1,7 +1,8 @@
 
 import { useState } from "react";
 import { ImageOverlay } from "./ImageOverlay";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Button } from "@/components/ui/button";
+import { Maximize2, Minimize2 } from "lucide-react";
 
 interface ImageZoomProps {
   imageUrl: string;
@@ -20,6 +21,7 @@ export const ImageZoom = ({
   const [zoomFactor, setZoomFactor] = useState(1);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [viewMode, setViewMode] = useState<'cover' | 'contain'>('cover');
 
   // Toggle zoom effect
   const toggleZoom = (e: React.MouseEvent) => {
@@ -52,6 +54,11 @@ export const ImageZoom = ({
     }
   };
 
+  const toggleViewMode = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setViewMode(prev => prev === 'cover' ? 'contain' : 'cover');
+  };
+
   const handleImageLoad = () => {
     console.log("✅ Image loaded successfully:", imageUrl);
     setImageLoaded(true);
@@ -66,19 +73,32 @@ export const ImageZoom = ({
 
   return (
     <div 
-      className="relative group cursor-pointer h-auto w-full" 
+      className="relative group cursor-pointer w-full" 
       onClick={onImageClick}
       onDoubleClick={onDoubleClick}
+      style={{ aspectRatio: viewMode === 'contain' ? 'auto' : '16/9' }}
     >
-      <AspectRatio ratio={16/9} className="h-full w-full">
+      {/* View Mode Toggle */}
+      <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={toggleViewMode}
+          className="bg-black/50 backdrop-blur-sm hover:bg-black/70 text-white border-none"
+        >
+          {viewMode === 'cover' ? <Maximize2 size={16} /> : <Minimize2 size={16} />}
+        </Button>
+      </div>
+
+      <div className={`w-full ${viewMode === 'contain' ? 'h-auto' : 'h-full'} overflow-hidden rounded-lg`}>
         {!imageLoaded && !imageError && (
-          <div className="w-full h-full bg-muted/20 animate-pulse flex items-center justify-center">
+          <div className="w-full h-48 bg-muted/20 animate-pulse flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
           </div>
         )}
         
         {imageError && (
-          <div className="w-full h-full bg-muted/40 flex items-center justify-center">
+          <div className="w-full h-48 bg-muted/40 flex items-center justify-center">
             <div className="text-center p-4">
               <div className="text-muted-foreground text-sm">Failed to load image</div>
               <button 
@@ -100,9 +120,9 @@ export const ImageZoom = ({
           alt={alt}
           width="800"
           height="450"
-          className={`w-full h-full object-cover transition-all duration-300 ${
+          className={`w-full transition-all duration-300 ${
             imageLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
+          } ${viewMode === 'cover' ? 'h-full object-cover' : 'h-auto object-contain'}`}
           loading="lazy"
           decoding="async"
           style={{
@@ -113,7 +133,7 @@ export const ImageZoom = ({
           onLoad={handleImageLoad}
           onError={handleImageError}
         />
-      </AspectRatio>
+      </div>
       
       <ImageOverlay 
         isZoomed={isZoomed}

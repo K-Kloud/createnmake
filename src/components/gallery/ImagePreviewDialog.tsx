@@ -66,8 +66,8 @@ export const ImagePreviewDialog = ({
   });
   
   const dialogClasses = isMaximized 
-    ? "max-w-[100vw] max-h-[100vh] p-0 sm:p-0 inset-0 rounded-none bg-black/95 backdrop-blur-xl flex flex-col" 
-    : "max-w-[95vw] max-h-[95vh] p-1 sm:p-6 bg-background/95 backdrop-blur-sm flex flex-col";
+    ? "max-w-[100vw] max-h-[100vh] w-full h-full p-0 sm:p-0 inset-0 rounded-none bg-black/95 backdrop-blur-xl flex flex-col overflow-hidden" 
+    : "max-w-[95vw] max-h-[95vh] w-full h-full p-1 sm:p-6 bg-background/95 backdrop-blur-sm flex flex-col";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -75,11 +75,11 @@ export const ImagePreviewDialog = ({
         ref={dialogRef}
         className={`${dialogClasses} z-[100] transition-all duration-300`}
       >
-        <DialogTitle className="sr-only">Image Preview</DialogTitle>
+        <DialogTitle className="sr-only">Image Preview - Full Size View</DialogTitle>
         
-        <div className="relative flex-1 flex items-center justify-center w-full h-full">
-          <div className="w-full h-full flex justify-center items-center overflow-auto">
-            <div className={`flex items-center justify-center ${isMaximized ? 'w-full h-full' : 'max-w-5xl'}`}>
+        <div className="relative flex-1 flex items-center justify-center w-full h-full overflow-auto">
+          <div className="w-full h-full flex justify-center items-center">
+            <div className={`flex items-center justify-center ${isMaximized ? 'w-full h-full' : 'w-full h-full max-w-none'}`}>
               <div className="relative w-full h-full flex items-center justify-center">
                 {!imageLoaded && (
                   <div className="absolute inset-0 flex items-center justify-center">

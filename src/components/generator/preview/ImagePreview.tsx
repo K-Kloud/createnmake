@@ -1,4 +1,8 @@
 
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Maximize2, Minimize2 } from "lucide-react";
+
 interface ImagePreviewProps {
   imageUrl: string;
   prompt: string;
@@ -6,6 +10,8 @@ interface ImagePreviewProps {
 }
 
 export const ImagePreview = ({ imageUrl, prompt, onLike }: ImagePreviewProps) => {
+  const [viewMode, setViewMode] = useState<'fit' | 'actual'>('fit');
+  
   console.log("🖼️ ImagePreview rendering with:", { imageUrl, prompt });
 
   const handleImageLoad = () => {
@@ -16,12 +22,35 @@ export const ImagePreview = ({ imageUrl, prompt, onLike }: ImagePreviewProps) =>
     console.error("❌ Image failed to load:", error, "URL:", imageUrl);
   };
 
+  const toggleViewMode = () => {
+    setViewMode(prev => prev === 'fit' ? 'actual' : 'fit');
+  };
+
   return (
-    <div className="flex items-center justify-center h-full w-full">
+    <div className="flex items-center justify-center h-full w-full relative">
+      {/* View Mode Toggle */}
+      <div className="absolute top-2 right-2 z-10">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={toggleViewMode}
+          className="bg-black/50 backdrop-blur-sm hover:bg-black/70 text-white border-none"
+        >
+          {viewMode === 'fit' ? <Maximize2 size={16} /> : <Minimize2 size={16} />}
+          <span className="ml-1 text-xs">
+            {viewMode === 'fit' ? 'Actual Size' : 'Fit'}
+          </span>
+        </Button>
+      </div>
+
       <img
         src={imageUrl}
         alt={prompt}
-        className="w-full h-full object-cover rounded-lg"
+        className={`rounded-lg transition-all duration-300 ${
+          viewMode === 'fit' 
+            ? 'w-full h-full object-contain' 
+            : 'max-w-none max-h-none w-auto h-auto object-contain'
+        }`}
         onLoad={handleImageLoad}
         onError={handleImageError}
       />
