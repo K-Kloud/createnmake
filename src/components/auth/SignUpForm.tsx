@@ -33,7 +33,6 @@ export const SignUpForm = ({
   const [internalPassword, setInternalPassword] = useState("");
   const [internalUsername, setInternalUsername] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   // Use either external state (if provided) or internal state
@@ -46,8 +45,6 @@ export const SignUpForm = ({
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (isSubmitting || isLoading) return;
     
     // Validate password strength
     if (!validatePassword(password)) {
@@ -63,61 +60,27 @@ export const SignUpForm = ({
     const sanitizedEmail = sanitizeInput(email);
     const sanitizedUsername = sanitizeInput(username);
     
-    setIsSubmitting(true);
-    
-    try {
-      const { error } = await supabase.auth.signUp({
-        email: sanitizedEmail,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-          data: {
-            username: sanitizedUsername,
-          },
+    const { error } = await supabase.auth.signUp({
+      email: sanitizedEmail,
+      password,
+      options: {
+        data: {
+          username: sanitizedUsername,
         },
-      });
+      },
+    });
 
-      if (error) {
-        // Handle specific error cases
-        if (error.message.includes('User already registered')) {
-          toast({
-            title: "Account exists",
-            description: "An account with this email already exists. Please sign in instead.",
-            variant: "destructive",
-          });
-        } else if (error.message.includes('Invalid email')) {
-          toast({
-            title: "Invalid email",
-            description: "Please enter a valid email address.",
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Sign up failed",
-            description: error.message,
-            variant: "destructive",
-          });
-        }
-      } else {
-        toast({
-          title: "Account created successfully!",
-          description: "Please check your email to confirm your account before signing in.",
-        });
-        
-        // Clear form
-        setEmail("");
-        setPassword("");
-        setUsername("");
-      }
-    } catch (error: any) {
-      console.error('Sign up error:', error);
+    if (error) {
       toast({
-        title: "Unexpected error",
-        description: "Something went wrong. Please try again.",
+        title: "Error",
+        description: error.message,
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      toast({
+        title: "Success",
+        description: "Please check your email to confirm your account.",
+      });
     }
   };
 
@@ -131,8 +94,7 @@ export const SignUpForm = ({
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
-          disabled={isLoading || isSubmitting}
-          placeholder="Enter your username"
+          disabled={isLoading}
         />
       </div>
       <div className="space-y-2">
@@ -143,8 +105,7 @@ export const SignUpForm = ({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          disabled={isLoading || isSubmitting}
-          placeholder="Enter your email"
+          disabled={isLoading}
         />
       </div>
       <div className="space-y-2">
@@ -156,8 +117,7 @@ export const SignUpForm = ({
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            disabled={isLoading || isSubmitting}
-            placeholder="Create a strong password"
+            disabled={isLoading}
           />
           <Button
             type="button"
@@ -165,7 +125,7 @@ export const SignUpForm = ({
             size="sm"
             className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
             onClick={() => setShowPassword(!showPassword)}
-            disabled={isLoading || isSubmitting}
+            disabled={isLoading}
           >
             {showPassword ? (
               <EyeOff className="h-4 w-4" />
@@ -176,12 +136,8 @@ export const SignUpForm = ({
         </div>
         <PasswordStrengthIndicator password={password} />
       </div>
-      <Button 
-        type="submit" 
-        className="w-full" 
-        disabled={isLoading || isSubmitting}
-      >
-        {isSubmitting ? "Creating account..." : "Create Account"}
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? "Creating account..." : "Create Account"}
       </Button>
     </form>
   );

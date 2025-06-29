@@ -12,7 +12,6 @@ import ManufacturerRoutes from "./ManufacturerRoutes";
 const Index = lazy(() => import("@/pages/Index"));
 const Create = lazy(() => import("@/pages/Create"));
 const Designs = lazy(() => import("@/pages/Designs"));
-const DesignDetail = lazy(() => import("@/pages/DesignDetail"));
 const Marketplace = lazy(() => import("@/pages/Marketplace"));
 const Cart = lazy(() => import("@/pages/Cart"));
 const Checkout = lazy(() => import("@/pages/Checkout"));
@@ -50,11 +49,6 @@ export const AppRoutes = () => {
         <Route path="/" element={<Index />} />
         <Route path="/create" element={<Create />} />
         <Route path="/designs" element={<Designs />} />
-        <Route path="/designs/:id" element={
-          <ProtectedRoute>
-            <DesignDetail />
-          </ProtectedRoute>
-        } />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />

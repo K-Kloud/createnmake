@@ -60,7 +60,7 @@ export const DesignsPanel = () => {
               <Link 
                 key={design.id} 
                 to={`/designs/${design.id}`} 
-                className="group relative overflow-hidden rounded-lg border hover:shadow-lg transition-all"
+                className="group relative overflow-hidden rounded-lg border"
               >
                 <AspectRatio ratio={1/1} className="bg-muted">
                   <img

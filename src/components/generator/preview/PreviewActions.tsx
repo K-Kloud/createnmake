@@ -1,12 +1,8 @@
 
-import React, { useState, Suspense } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Heart, Share2, Wand2, Edit3 } from 'lucide-react';
-import { ShareDialog } from '@/components/sharing/ShareDialog';
-import { ImageEditDialog } from '@/components/editing/ImageEditDialog';
+import { Download, Heart, Share2, Wand2 } from 'lucide-react';
 import { InpaintingDialog } from '@/components/inpainting/InpaintingDialog';
-import { useComponentPreloading } from '@/hooks/useBundleOptimization';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 interface PreviewActionsProps {
   imageUrl?: string;
@@ -24,8 +20,6 @@ export const PreviewActions: React.FC<PreviewActionsProps> = ({
   onImageEdited
 }) => {
   const [inpaintingOpen, setInpaintingOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const { preloadImageEdit, preloadShare } = useComponentPreloading();
 
   const handleDownload = () => {
     if (!imageUrl) return;
@@ -36,6 +30,17 @@ export const PreviewActions: React.FC<PreviewActionsProps> = ({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleShare = async () => {
+    if (!imageUrl) return;
+    
+    try {
+      await navigator.clipboard.writeText(imageUrl);
+      // Could add toast notification here
+    } catch (error) {
+      console.error('Failed to copy image URL:', error);
+    }
   };
 
   const handleLike = () => {
@@ -53,26 +58,14 @@ export const PreviewActions: React.FC<PreviewActionsProps> = ({
         </Button>
         
         {imageUrl && imageId && (
-          <>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setEditDialogOpen(true)}
-              {...preloadImageEdit}
-            >
-              <Edit3 className="mr-2 h-4 w-4" />
-              Edit
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setInpaintingOpen(true)}
-            >
-              <Wand2 className="mr-2 h-4 w-4" />
-              AI Edit
-            </Button>
-          </>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setInpaintingOpen(true)}
+          >
+            <Wand2 className="mr-2 h-4 w-4" />
+            Edit Image
+          </Button>
         )}
         
         <Button variant="outline" size="sm" onClick={handleLike}>
@@ -80,35 +73,12 @@ export const PreviewActions: React.FC<PreviewActionsProps> = ({
           Like
         </Button>
         
-        {imageUrl && imageId && (
-          <ShareDialog
-            imageUrl={imageUrl}
-            imageId={imageId}
-            prompt={prompt}
-          >
-            <Button variant="outline" size="sm" {...preloadShare}>
-              <Share2 className="mr-2 h-4 w-4" />
-              Share
-            </Button>
-          </ShareDialog>
-        )}
+        <Button variant="outline" size="sm" onClick={handleShare}>
+          <Share2 className="mr-2 h-4 w-4" />
+          Share
+        </Button>
       </div>
 
-      {/* Lazy loaded dialogs */}
-      {editDialogOpen && imageUrl && (
-        <Suspense fallback={<LoadingSpinner />}>
-          <ImageEditDialog
-            open={editDialogOpen}
-            onOpenChange={setEditDialogOpen}
-            imageUrl={imageUrl}
-            onSave={(editedUrl) => {
-              onImageEdited?.(editedUrl, imageId || 0);
-            }}
-          />
-        </Suspense>
-      )}
-
-      {/* Keep existing inpainting dialog */}
       {imageUrl && imageId && (
         <InpaintingDialog
           open={inpaintingOpen}
