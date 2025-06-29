@@ -219,7 +219,7 @@ export const ProductDetail = ({
               <TabsContent value="details" className="space-y-4">
                 <div className="space-y-2">
                   <h3 className="font-medium">Description</h3>
-                  <p className="text-sm">{product.prompt}</p>
+                  <p className="font-thin text-sm">{product.prompt}</p>
                 </div>
                 
                 <div className="space-y-2">
