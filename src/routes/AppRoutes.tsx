@@ -12,7 +12,10 @@ import { AdminRoutes } from "./AdminRoutes";
 // Lazy load components
 const Index = lazy(() => import("@/pages/Index"));
 const Create = lazy(() => import("@/pages/Create"));
+const Design = lazy(() => import("@/pages/Design"));
 const Designs = lazy(() => import("@/pages/Designs"));
+const Products = lazy(() => import("@/pages/Products"));
+const Earnings = lazy(() => import("@/pages/Earnings"));
 const Marketplace = lazy(() => import("@/pages/Marketplace"));
 const Cart = lazy(() => import("@/pages/Cart"));
 const Checkout = lazy(() => import("@/pages/Checkout"));
@@ -30,8 +33,6 @@ const JoinArtisan = lazy(() => import("@/pages/JoinArtisan"));
 const JoinManufacturer = lazy(() => import("@/pages/JoinManufacturer"));
 const ArtisanOnboarding = lazy(() => import("@/pages/ArtisanOnboarding"));
 const ManufacturerOnboarding = lazy(() => import("@/pages/ManufacturerOnboarding"));
-const CreatorOnboardingPage = lazy(() => import("@/pages/CreatorOnboardingPage"));
-const CreatorDashboardPage = lazy(() => import("@/pages/CreatorDashboardPage"));
 const MakerDetail = lazy(() => import("@/pages/MakerDetail"));
 const Subscription = lazy(() => import("@/pages/Subscription"));
 const Success = lazy(() => import("@/pages/subscription/Success"));
@@ -48,7 +49,18 @@ export const AppRoutes = () => {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/create" element={<Create />} />
+        <Route path="/design" element={<Design />} />
         <Route path="/designs" element={<Designs />} />
+        <Route path="/products" element={
+          <ProtectedRoute>
+            <Products />
+          </ProtectedRoute>
+        } />
+        <Route path="/earnings" element={
+          <ProtectedRoute>
+            <Earnings />
+          </ProtectedRoute>
+        } />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
@@ -84,8 +96,6 @@ export const AppRoutes = () => {
         <Route path="/join/manufacturer" element={<JoinManufacturer />} />
         <Route path="/artisan/onboarding" element={<ArtisanOnboarding />} />
         <Route path="/manufacturer/onboarding" element={<ManufacturerOnboarding />} />
-        <Route path="/creator/onboarding" element={<CreatorOnboardingPage />} />
-        <Route path="/creator/dashboard" element={<CreatorDashboardPage />} />
         <Route path="/maker/:id" element={<MakerDetail />} />
         <Route path="/subscription" element={<Subscription />} />
         <Route path="/subscription/success" element={<Success />} />
