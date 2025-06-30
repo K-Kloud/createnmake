@@ -26,8 +26,26 @@ export const transformImageWithMetrics = (image: any, session: Session | null, m
 });
 
 export const transformComments = (comments: any[] = []) => {
+  console.log(`🔄 Transforming ${comments.length} comments`);
+  
   return comments.map(comment => {
     const createdDate = comment.created_at ? new Date(comment.created_at) : new Date();
+    
+    // Debug log the raw comment data
+    console.log('🔍 Raw comment data:', {
+      user_id: comment.user_id,
+      profiles: comment.profiles,
+      username: comment.profiles?.username
+    });
+    
+    // Get the username using our improved fallback logic
+    const username = getFallbackUsername(
+      comment.profiles?.username || null,
+      comment.profiles?.email || null, // This might be null since email isn't in profiles
+      comment.user_id
+    );
+    
+    console.log(`👤 Final username for comment: "${username}"`);
     
     return {
       id: comment.id,
@@ -35,15 +53,25 @@ export const transformComments = (comments: any[] = []) => {
       createdAt: createdDate,
       user: {
         id: comment.user_id,
-        name: getFallbackUsername(
-          comment.profiles?.username,
-          comment.profiles?.email || comment.user_metadata?.email,
-          comment.user_id
-        ),
+        name: username,
         avatar: comment.profiles?.avatar_url || 'https://github.com/shadcn.png'
       },
       replies: (comment.comment_replies || []).map((reply: any) => {
         const replyDate = reply.created_at ? new Date(reply.created_at) : new Date();
+        
+        console.log('🔍 Raw reply data:', {
+          user_id: reply.user_id,
+          profiles: reply.profiles,
+          username: reply.profiles?.username
+        });
+        
+        const replyUsername = getFallbackUsername(
+          reply.profiles?.username || null,
+          reply.profiles?.email || null,
+          reply.user_id
+        );
+        
+        console.log(`👤 Final username for reply: "${replyUsername}"`);
         
         return {
           id: reply.id,
@@ -51,11 +79,7 @@ export const transformComments = (comments: any[] = []) => {
           createdAt: replyDate,
           user: {
             id: reply.user_id,
-            name: getFallbackUsername(
-              reply.profiles?.username,
-              reply.profiles?.email || reply.user_metadata?.email,
-              reply.user_id
-            ),
+            name: replyUsername,
             avatar: reply.profiles?.avatar_url || 'https://github.com/shadcn.png'
           }
         };

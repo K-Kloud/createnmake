@@ -24,21 +24,30 @@ export const generateUsernameFromEmail = (email: string): string => {
 };
 
 export const getFallbackUsername = (username: string | null, email?: string, userId?: string): string => {
+  console.log('🔍 getFallbackUsername called with:', { username, email, userId });
+  
   // If username exists, use it
   if (username && username.trim()) {
+    console.log('✅ Using existing username:', username);
     return username;
   }
   
   // If email exists, generate username from email
   if (email) {
-    return generateUsernameFromEmail(email);
+    const generatedName = generateUsernameFromEmail(email);
+    console.log('✅ Generated username from email:', generatedName);
+    return generatedName;
   }
   
-  // If userId exists, use a shortened version
+  // If userId exists, use a shortened version with better formatting
   if (userId) {
-    return `User${userId.slice(0, 8)}`;
+    const shortId = userId.slice(-8); // Take last 8 characters
+    const formattedName = `User_${shortId}`;
+    console.log('✅ Generated username from userId:', formattedName);
+    return formattedName;
   }
   
   // Final fallback
+  console.log('⚠️ Using final fallback: Anonymous User');
   return 'Anonymous User';
 };

@@ -22,6 +22,17 @@ export const fetchImageComments = async (imageId: number) => {
     return [];
   }
 
+  console.log(`📝 Fetched ${comments?.length || 0} comments for image ${imageId}`);
+  
+  // Add debug logging for each comment's user data
+  comments?.forEach((comment, index) => {
+    console.log(`👤 Comment ${index + 1} user data:`, {
+      user_id: comment.user_id,
+      profiles: comment.profiles,
+      username: comment.profiles?.username
+    });
+  });
+
   return comments || [];
 };
 
@@ -46,6 +57,17 @@ export const fetchCommentReplies = async (commentId: number) => {
     return [];
   }
 
+  console.log(`💬 Fetched ${replies?.length || 0} replies for comment ${commentId}`);
+  
+  // Add debug logging for each reply's user data
+  replies?.forEach((reply, index) => {
+    console.log(`👤 Reply ${index + 1} user data:`, {
+      user_id: reply.user_id,
+      profiles: reply.profiles,
+      username: reply.profiles?.username
+    });
+  });
+
   return replies || [];
 };
 
@@ -53,7 +75,11 @@ export const fetchCommentsWithReplies = async (comments: any[]) => {
   return await Promise.all(
     comments.map(async (comment) => {
       const replies = await fetchCommentReplies(comment.id);
-      console.log(`👤 Comment user profile:`, comment.profiles, `Username: ${comment.profiles?.username}`);
+      console.log(`👤 Processing comment from user:`, {
+        user_id: comment.user_id,
+        profiles: comment.profiles,
+        username: comment.profiles?.username
+      });
       return { ...comment, comment_replies: replies };
     })
   );

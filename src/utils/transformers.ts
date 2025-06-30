@@ -4,38 +4,78 @@ import { formatDistanceToNow } from "date-fns";
 import { getFallbackUsername } from "@/utils/usernameUtils";
 
 export const transformComments = (comments: any[]): Comment[] => {
-  return comments.map(comment => ({
-    id: comment.id,
-    text: comment.text,
-    user: {
-      id: comment.user_id,
-      name: getFallbackUsername(
-        comment.profiles?.username,
-        comment.profiles?.email || comment.user_metadata?.email,
-        comment.user_id
-      ),
-      avatar: comment.profiles?.avatar_url || '/placeholder.svg'
-    },
-    createdAt: new Date(comment.created_at || Date.now()),
-    replies: comment.comment_replies?.map((reply: any): Reply => ({
-      id: reply.id,
-      text: reply.text,
+  console.log(`🔄 [transformers.ts] Transforming ${comments.length} comments`);
+  
+  return comments.map(comment => {
+    console.log('🔍 [transformers.ts] Raw comment data:', {
+      user_id: comment.user_id,
+      profiles: comment.profiles,
+      username: comment.profiles?.username
+    });
+    
+    const username = getFallbackUsername(
+      comment.profiles?.username || null,
+      comment.profiles?.email || null,
+      comment.user_id
+    );
+    
+    console.log(`👤 [transformers.ts] Final username for comment: "${username}"`);
+    
+    return {
+      id: comment.id,
+      text: comment.text,
       user: {
-        id: reply.user_id,
-        name: getFallbackUsername(
-          reply.profiles?.username,
-          reply.profiles?.email || reply.user_metadata?.email,
-          reply.user_id
-        ),
-        avatar: reply.profiles?.avatar_url || '/placeholder.svg'
+        id: comment.user_id,
+        name: username,
+        avatar: comment.profiles?.avatar_url || '/placeholder.svg'
       },
-      createdAt: new Date(reply.created_at || Date.now())
-    })) || []
-  }));
+      createdAt: new Date(comment.created_at || Date.now()),
+      replies: comment.comment_replies?.map((reply: any): Reply => {
+        console.log('🔍 [transformers.ts] Raw reply data:', {
+          user_id: reply.user_id,
+          profiles: reply.profiles,
+          username: reply.profiles?.username
+        });
+        
+        const replyUsername = getFallbackUsername(
+          reply.profiles?.username || null,
+          reply.profiles?.email || null,
+          reply.user_id
+        );
+        
+        console.log(`👤 [transformers.ts] Final username for reply: "${replyUsername}"`);
+        
+        return {
+          id: reply.id,
+          text: reply.text,
+          user: {
+            id: reply.user_id,
+            name: replyUsername,
+            avatar: reply.profiles?.avatar_url || '/placeholder.svg'
+          },
+          createdAt: new Date(reply.created_at || Date.now())
+        };
+      }) || []
+    };
+  });
 };
 
 export const transformImage = (image: any, userId?: string): GalleryImage => {
   const createdAt = new Date(image.created_at || Date.now());
+  
+  console.log('🔍 [transformers.ts] Transforming image creator data:', {
+    user_id: image.user_id,
+    profiles: image.profiles,
+    username: image.profiles?.username
+  });
+  
+  const creatorName = getFallbackUsername(
+    image.profiles?.username || null,
+    image.profiles?.email || null,
+    image.user_id
+  );
+  
+  console.log(`👤 [transformers.ts] Final creator name: "${creatorName}"`);
   
   return {
     id: image.id,
@@ -46,11 +86,7 @@ export const transformImage = (image: any, userId?: string): GalleryImage => {
     comments: transformComments(image.comments || []),
     produced: 0,
     creator: {
-      name: getFallbackUsername(
-        image.profiles?.username,
-        image.profiles?.email || image.user_metadata?.email,
-        image.user_id
-      ),
+      name: creatorName,
       avatar: image.profiles?.avatar_url || '/placeholder.svg'
     },
     createdAt,
