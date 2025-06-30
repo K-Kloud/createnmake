@@ -5,7 +5,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "./header/ThemeToggle";
 import { UserMenu } from "./header/UserMenu";
-import { EnhancedNotificationCenter } from "@/components/notifications/EnhancedNotificationCenter";
 import { MainNavigationMenu } from "./navigation/NavigationMenu";
 import { MobileNavigationMenu } from "./navigation/MobileNavigationMenu";
 import { useResponsive } from "@/hooks/useResponsive";
@@ -131,10 +130,6 @@ export const Header = () => {
             {session?.user && <SmartNotificationSystem />}
             <LanguageSwitcher />
             <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={handleThemeToggle} />
-            
-            {session?.user && (
-              <EnhancedNotificationCenter />
-            )}
             
             {/* Always render UserMenu - it handles both authenticated and non-authenticated states */}
             <div className={isAtLeast('sm') ? 'block' : 'hidden'}>
