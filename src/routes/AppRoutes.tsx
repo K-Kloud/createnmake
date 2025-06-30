@@ -7,6 +7,7 @@ import CRMRoutes from "./CRMRoutes";
 import CreatorRoutes from "./CreatorRoutes";
 import ArtisanRoutes from "./ArtisanRoutes";
 import ManufacturerRoutes from "./ManufacturerRoutes";
+import { AdminRoutes } from "./AdminRoutes";
 
 // Lazy load components
 const Index = lazy(() => import("@/pages/Index"));
@@ -20,7 +21,6 @@ const Settings = lazy(() => import("@/pages/Settings"));
 const Auth = lazy(() => import("@/pages/Auth"));
 const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
 const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
-const Admin = lazy(() => import("@/pages/Admin"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const FAQ = lazy(() => import("@/pages/FAQ"));
 const Features = lazy(() => import("@/pages/Features"));
@@ -70,9 +70,9 @@ export const AppRoutes = () => {
         <Route path="/auth" element={<Auth />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/admin" element={
+        <Route path="/admin/*" element={
           <ProtectedRoute>
-            <Admin />
+            <AdminRoutes />
           </ProtectedRoute>
         } />
         <Route path="/contact" element={<Contact />} />
