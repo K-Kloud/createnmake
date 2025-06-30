@@ -112,7 +112,7 @@ const Cart = () => {
                             </div>
                             <div className="flex items-center gap-2">
                               <Badge variant="secondary">
-                                ${(item.price * item.quantity).toFixed(2)}
+                                £{(item.price * item.quantity).toFixed(2)}
                               </Badge>
                               <Button
                                 variant="ghost"
@@ -140,16 +140,16 @@ const Cart = () => {
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Subtotal</span>
-                        <span>${totalPrice.toFixed(2)}</span>
+                        <span>£{totalPrice.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span>Estimated Shipping</span>
-                        <span>$5.99</span>
+                        <span>£5.99</span>
                       </div>
                       <Separator />
                       <div className="flex justify-between font-medium">
                         <span>Total</span>
-                        <span>${(totalPrice + 5.99).toFixed(2)}</span>
+                        <span>£{(totalPrice + 5.99).toFixed(2)}</span>
                       </div>
                     </div>
                     <Button className="w-full" onClick={handleCheckout}>

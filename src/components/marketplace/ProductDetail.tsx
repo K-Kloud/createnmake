@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Heart, Share2, ShoppingBag, Info, Star, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
@@ -13,6 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/providers/CartProvider";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 interface ProductDetailProps {
   isOpen: boolean;
   onClose: () => void;
@@ -21,6 +23,7 @@ interface ProductDetailProps {
   onShare: (imageId: number) => void;
   similarProducts?: GalleryImage[];
 }
+
 export const ProductDetail = ({
   isOpen,
   onClose,
@@ -29,15 +32,9 @@ export const ProductDetail = ({
   onShare,
   similarProducts = []
 }: ProductDetailProps) => {
-  const {
-    toast
-  } = useToast();
-  const {
-    user
-  } = useAuth();
-  const {
-    addItem
-  } = useCart();
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const { addItem } = useCart();
   const navigate = useNavigate();
   const [currentImage, setCurrentImage] = useState(0);
   const [isInWishlist, setIsInWishlist] = useState(product.hasLiked);
@@ -45,12 +42,15 @@ export const ProductDetail = ({
 
   // Example product images (in a real app, these would come from the API)
   const productImages = [product.url, ...similarProducts.slice(0, 3).map(p => p.url)];
+
   const handlePrevious = () => {
     setCurrentImage(prev => prev === 0 ? productImages.length - 1 : prev - 1);
   };
+
   const handleNext = () => {
     setCurrentImage(prev => prev === productImages.length - 1 ? 0 : prev + 1);
   };
+
   const handleToggleWishlist = () => {
     if (!user) {
       toast({
@@ -60,6 +60,7 @@ export const ProductDetail = ({
       });
       return;
     }
+
     setIsInWishlist(!isInWishlist);
     onLike(product.id);
     toast({
@@ -67,6 +68,7 @@ export const ProductDetail = ({
       description: isInWishlist ? "This item has been removed from your wishlist" : "This item has been added to your wishlist"
     });
   };
+
   const handleShare = () => {
     onShare(product.id);
     navigator.clipboard.writeText(window.location.href);
@@ -75,6 +77,7 @@ export const ProductDetail = ({
       description: "Product link copied to clipboard"
     });
   };
+
   const handleAddToCart = async () => {
     if (!user) {
       toast({
@@ -84,6 +87,7 @@ export const ProductDetail = ({
       });
       return;
     }
+
     setIsAddingToCart(true);
     try {
       // Add item to cart
@@ -94,6 +98,7 @@ export const ProductDetail = ({
         image_url: product.url,
         metadata: product
       });
+
       toast({
         title: "Added to Cart",
         description: "This product has been added to your cart"
@@ -113,6 +118,7 @@ export const ProductDetail = ({
       setIsAddingToCart(false);
     }
   };
+
   const handleBuyNow = async () => {
     if (!user) {
       toast({
@@ -122,6 +128,7 @@ export const ProductDetail = ({
       });
       return;
     }
+
     try {
       // Add to cart first
       addItem({
@@ -151,7 +158,9 @@ export const ProductDetail = ({
   const platformFee = basePrice * 0.30; // 30% platform fee
   const estimatedShipping = 5.99;
   const totalPrice = basePrice + estimatedShipping;
-  return <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
+
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Product Details</DialogTitle>
@@ -164,30 +173,62 @@ export const ProductDetail = ({
           {/* Product Images */}
           <div className="relative">
             <div className="aspect-square rounded-lg overflow-hidden bg-muted">
-              <img src={productImages[currentImage]} alt={product.prompt} className="object-cover w-full h-full" />
+              <img
+                src={productImages[currentImage]}
+                alt={product.prompt}
+                className="object-cover w-full h-full"
+              />
             </div>
             
-            {productImages.length > 1 && <>
-                <Button variant="ghost" size="icon" className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-background/80 rounded-full" onClick={handlePrevious}>
+            {productImages.length > 1 && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-background/80 rounded-full"
+                  onClick={handlePrevious}
+                >
                   <ChevronLeft className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-background/80 rounded-full" onClick={handleNext}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-background/80 rounded-full"
+                  onClick={handleNext}
+                >
                   <ChevronRight className="h-5 w-5" />
                 </Button>
                 
                 <div className="flex justify-center mt-2 space-x-2">
-                  {productImages.map((_, index) => <Button key={index} variant={index === currentImage ? "default" : "outline"} size="icon" className="w-2 h-2 rounded-full p-0 min-w-0" onClick={() => setCurrentImage(index)} />)}
+                  {productImages.map((_, index) => (
+                    <Button
+                      key={index}
+                      variant={index === currentImage ? "default" : "outline"}
+                      size="icon"
+                      className="w-2 h-2 rounded-full p-0 min-w-0"
+                      onClick={() => setCurrentImage(index)}
+                    />
+                  ))}
                 </div>
-              </>}
+              </>
+            )}
             
-            {similarProducts.length > 0 && <div className="mt-4">
+            {similarProducts.length > 0 && (
+              <div className="mt-4">
                 <h4 className="font-medium mb-2">Similar Products</h4>
                 <div className="grid grid-cols-2 gap-2">
-                  {similarProducts.slice(0, 4).map(item => <div key={item.id} className="aspect-square rounded border cursor-pointer overflow-hidden">
-                      <img src={item.url} alt={item.prompt} className="object-cover w-full h-full hover:scale-105 transition-transform" />
-                    </div>)}
+                  {similarProducts.slice(0, 4).map((item) => (
+                    <div key={item.id} className="aspect-square rounded border cursor-pointer overflow-hidden">
+                      <img
+                        src={item.url}
+                        alt={item.prompt}
+                        className="object-cover w-full h-full hover:scale-105 transition-transform"
+                      />
+                    </div>
+                  ))}
                 </div>
-              </div>}
+              </div>
+            )}
           </div>
           
           {/* Product Info */}
@@ -198,13 +239,20 @@ export const ProductDetail = ({
                   <h2 className="text-slate-50 text-left text-sm font-extralight">{product.prompt}</h2>
                   <div className="flex items-center mt-1">
                     <div className="flex">
-                      {[1, 2, 3, 4, 5].map(star => <Star key={star} className={`h-4 w-4 ${star <= 4 ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"}`} />)}
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`h-4 w-4 ${
+                            star <= 4 ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"
+                          }`}
+                        />
+                      ))}
                     </div>
                     <span className="text-sm text-muted-foreground ml-2">4.0 (12 reviews)</span>
                   </div>
                 </div>
                 <Badge variant="secondary" className="text-lg">
-                  ${product.price}
+                  £{product.price}
                 </Badge>
               </div>
             </div>
@@ -232,19 +280,26 @@ export const ProductDetail = ({
                       </Avatar>
                       <span>{product.creator.name}</span>
                     </div>
-                    <CreatorProfile creator={{
-                    id: product.user_id,
-                    name: product.creator.name,
-                    avatar: product.creator.avatar,
-                    bio: "Passionate designer creating unique pieces that blend style and functionality.",
-                    followers: 256,
-                    joined: "Jan 2023",
-                    rating: 4.8,
-                    reviewCount: 45,
-                    totalSales: 112,
-                    earnings: 5600,
-                    designs: 37
-                  }} creatorDesigns={[product, ...similarProducts]} onLike={onLike} onView={() => {}} onFollow={() => {}} onMessage={() => {}} />
+                    <CreatorProfile
+                      creator={{
+                        id: product.user_id,
+                        name: product.creator.name,
+                        avatar: product.creator.avatar,
+                        bio: "Passionate designer creating unique pieces that blend style and functionality.",
+                        followers: 256,
+                        joined: "Jan 2023",
+                        rating: 4.8,
+                        reviewCount: 45,
+                        totalSales: 112,
+                        earnings: 5600,
+                        designs: 37
+                      }}
+                      creatorDesigns={[product, ...similarProducts]}
+                      onLike={onLike}
+                      onView={() => {}}
+                      onFollow={() => {}}
+                      onMessage={() => {}}
+                    />
                   </div>
                 </div>
                 
@@ -263,7 +318,7 @@ export const ProductDetail = ({
                   <h3 className="font-medium mb-2">Shipping Information</h3>
                   <ul className="space-y-2 text-sm">
                     <li>• Estimated delivery: 5-7 business days</li>
-                    <li>• Free shipping on orders over $50</li>
+                    <li>• Free shipping on orders over £50</li>
                     <li>• International shipping available</li>
                     <li>• Express shipping options available at checkout</li>
                   </ul>
@@ -280,7 +335,14 @@ export const ProductDetail = ({
                   <div className="text-4xl font-bold">4.0</div>
                   <div className="flex-grow">
                     <div className="flex">
-                      {[1, 2, 3, 4, 5].map(star => <Star key={star} className={`h-5 w-5 ${star <= 4 ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`} />)}
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`h-5 w-5 ${
+                            star <= 4 ? "text-yellow-500 fill-yellow-500" : "text-gray-300"
+                          }`}
+                        />
+                      ))}
                     </div>
                     <div className="text-sm text-muted-foreground">Based on 12 reviews</div>
                   </div>
@@ -304,7 +366,14 @@ export const ProductDetail = ({
                         </div>
                       </div>
                       <div className="flex">
-                        {[1, 2, 3, 4, 5].map(star => <Star key={star} className={`w-4 h-4 ${star <= 5 ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`} />)}
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`w-4 h-4 ${
+                              star <= 5 ? "text-yellow-500 fill-yellow-500" : "text-gray-300"
+                            }`}
+                          />
+                        ))}
                       </div>
                     </div>
                     <p className="text-sm">The quality exceeded my expectations! The design is stunning and the product arrived quickly. Highly recommend this creator's work.</p>
@@ -323,7 +392,14 @@ export const ProductDetail = ({
                         </div>
                       </div>
                       <div className="flex">
-                        {[1, 2, 3, 4, 5].map(star => <Star key={star} className={`w-4 h-4 ${star <= 4 ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`} />)}
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`w-4 h-4 ${
+                              star <= 4 ? "text-yellow-500 fill-yellow-500" : "text-gray-300"
+                            }`}
+                          />
+                        ))}
                       </div>
                     </div>
                     <p className="text-sm">Very nice design and good quality. Shipping was a bit slow but the product is worth the wait.</p>
@@ -340,24 +416,24 @@ export const ProductDetail = ({
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span>Base Price</span>
-                    <span>${basePrice.toFixed(2)}</span>
+                    <span>£{basePrice.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-muted-foreground">
                     <span>Creator Earnings (70%)</span>
-                    <span>${creatorEarnings.toFixed(2)}</span>
+                    <span>£{creatorEarnings.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-muted-foreground">
                     <span>Platform Fee (30%)</span>
-                    <span>${platformFee.toFixed(2)}</span>
+                    <span>£{platformFee.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Estimated Shipping</span>
-                    <span>${estimatedShipping.toFixed(2)}</span>
+                    <span>£{estimatedShipping.toFixed(2)}</span>
                   </div>
                   <Separator className="my-2" />
                   <div className="flex justify-between font-medium">
                     <span>Total</span>
-                    <span>${totalPrice.toFixed(2)}</span>
+                    <span>£{totalPrice.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -392,5 +468,6 @@ export const ProductDetail = ({
           </div>
         </div>
       </DialogContent>
-    </Dialog>;
+    </Dialog>
+  );
 };

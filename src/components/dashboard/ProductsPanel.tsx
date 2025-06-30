@@ -74,10 +74,10 @@ export const ProductsPanel = () => {
                 </AspectRatio>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2">
                   <p className="text-white text-xs font-medium truncate">{product.title || "Product"}</p>
-                  <p className="text-white text-xs">${product.price}</p>
+                  <p className="text-white text-xs">£{product.price}</p>
                 </div>
                 <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                  ${product.price}
+                  £{product.price}
                 </div>
               </div>
             ))}

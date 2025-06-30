@@ -133,7 +133,7 @@ const Checkout = () => {
   };
 
   const subtotal = totalPrice;
-  const shipping = subtotal > 50 ? 0 : 5.99; // Free shipping over $50
+  const shipping = subtotal > 50 ? 0 : 5.99; // Free shipping over £50
   const tax = subtotal * 0.08; // 8% tax
   const total = subtotal + shipping + tax;
 
@@ -322,7 +322,7 @@ const Checkout = () => {
                               Qty: {item.quantity}
                             </p>
                             <p className="text-sm font-medium">
-                              ${(item.price * item.quantity).toFixed(2)}
+                              £{(item.price * item.quantity).toFixed(2)}
                             </p>
                           </div>
                         </div>
@@ -335,23 +335,23 @@ const Checkout = () => {
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Subtotal</span>
-                        <span>${subtotal.toFixed(2)}</span>
+                        <span>£{subtotal.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span>Shipping</span>
-                        <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
+                        <span>{shipping === 0 ? 'Free' : `£${shipping.toFixed(2)}`}</span>
                       </div>
                       {shipping === 0 && (
-                        <p className="text-xs text-green-600">Free shipping on orders over $50!</p>
+                        <p className="text-xs text-green-600">Free shipping on orders over £50!</p>
                       )}
                       <div className="flex justify-between text-sm">
                         <span>Tax</span>
-                        <span>${tax.toFixed(2)}</span>
+                        <span>£{tax.toFixed(2)}</span>
                       </div>
                       <Separator />
                       <div className="flex justify-between font-medium">
                         <span>Total</span>
-                        <span>${total.toFixed(2)}</span>
+                        <span>£{total.toFixed(2)}</span>
                       </div>
                     </div>
 
@@ -360,7 +360,7 @@ const Checkout = () => {
                       onClick={handlePlaceOrder}
                       disabled={isProcessing}
                     >
-                      {isProcessing ? "Processing..." : `Place Order - $${total.toFixed(2)}`}
+                      {isProcessing ? "Processing..." : `Place Order - £${total.toFixed(2)}`}
                     </Button>
 
                     <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
