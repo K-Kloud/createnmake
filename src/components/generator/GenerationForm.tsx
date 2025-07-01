@@ -1,26 +1,29 @@
 
 import { useState } from "react";
-import { PromptInput } from "./form/PromptInput";
-import { ItemSelect } from "./ItemSelect";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SearchableItemSelect } from "./SearchableItemSelect";
 import { AspectRatioSelect } from "./AspectRatioSelect";
-import { ReferenceImageDisplay } from "./form/ReferenceImageDisplay";
-import { KeywordSuggestions } from "./KeywordSuggestions";
+import { ReferenceImageUpload } from "./ReferenceImageUpload";
+import { PromptInput } from "./form/PromptInput";
 import { GenerateButton } from "./form/GenerateButton";
 import { UsageInfo } from "./form/UsageInfo";
 import { ItemTypePreviews } from "./form/ItemTypePreviews";
+import { ReferenceImageDisplay } from "./form/ReferenceImageDisplay";
+import { EnhancedKeywordSuggestions } from "./EnhancedKeywordSuggestions";
 
 interface GenerationFormProps {
   prompt: string;
-  onPromptChange: (value: string) => void;
+  onPromptChange: (prompt: string) => void;
   selectedItem: string;
-  onItemChange: (value: string) => void;
+  onItemChange: (item: string) => void;
   selectedRatio: string;
-  onRatioChange: (value: string) => void;
-  referenceImage: File | null;
-  onReferenceImageUpload: (file: File | null) => void;
+  onRatioChange: (ratio: string) => void;
+  referenceImage: string | null;
+  onReferenceImageUpload: (image: string | null) => void;
   onGenerate: () => void;
   isGenerating: boolean;
-  isSignedIn?: boolean;
+  isSignedIn: boolean;
   remainingImages?: number;
   showItemPreviews?: boolean;
 }
@@ -36,72 +39,108 @@ export const GenerationForm = ({
   onReferenceImageUpload,
   onGenerate,
   isGenerating,
-  isSignedIn = false,
+  isSignedIn,
   remainingImages,
-  showItemPreviews = false
+  showItemPreviews = false,
 }: GenerationFormProps) => {
-  const [showKeywords, setShowKeywords] = useState(true);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
-  const handleItemChange = (value: string) => {
-    onItemChange(value);
-    if (!prompt || prompt.length < 10) {
-      // If the prompt is empty or very short, show keywords
-      setShowKeywords(true);
-    }
+  const handleKeywordClick = (keyword: string) => {
+    const currentPrompt = prompt.trim();
+    const newPrompt = currentPrompt 
+      ? `${currentPrompt}, ${keyword}` 
+      : keyword;
+    onPromptChange(newPrompt);
   };
-  
+
   return (
-    <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); onGenerate(); }}>
-      <PromptInput
-        prompt={prompt}
-        onPromptChange={onPromptChange}
-        onReferenceImageUpload={onReferenceImageUpload}
-        onGenerate={onGenerate}
-        isGenerating={isGenerating}
-        disabled={!isSignedIn}
-      />
+    <div className="space-y-6">
+      {/* Main Generation Controls */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <SearchableItemSelect
+            value={selectedItem}
+            onChange={onItemChange}
+            disabled={isGenerating}
+          />
+          
+          <AspectRatioSelect
+            value={selectedRatio}
+            onChange={onRatioChange}
+            disabled={isGenerating}
+          />
+        </div>
 
-      {referenceImage && (
-        <ReferenceImageDisplay
-          file={referenceImage}
-          onRemove={() => onReferenceImageUpload(null)}
-        />
-      )}
-
-      {showKeywords && (
-        <KeywordSuggestions
-          selectedItem={selectedItem}
-          onKeywordClick={(suggestion) => {
-            const newPrompt = prompt ? `${prompt} ${suggestion}` : suggestion;
-            onPromptChange(newPrompt);
-          }}
-        />
-      )}
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <ItemSelect
-          value={selectedItem}
-          onChange={handleItemChange}
-        />
-
-        <AspectRatioSelect
-          value={selectedRatio}
-          onChange={onRatioChange}
-        />
+        <div className="space-y-4">
+          <ReferenceImageUpload
+            onImageUpload={onReferenceImageUpload}
+            disabled={isGenerating}
+          />
+          
+          {referenceImage && (
+            <ReferenceImageDisplay
+              referenceImage={referenceImage}
+              onRemove={() => onReferenceImageUpload(null)}
+            />
+          )}
+        </div>
       </div>
 
-      {showItemPreviews && (
-        <ItemTypePreviews selectedItem={selectedItem} />
-      )}
-
-      <GenerateButton
-        onClick={onGenerate}
-        isGenerating={isGenerating}
-        disabled={!prompt.trim() || !isSignedIn}
-        remainingImages={remainingImages}
+      {/* Prompt Input */}
+      <PromptInput
+        value={prompt}
+        onChange={onPromptChange}
+        disabled={isGenerating}
+        placeholder="Describe your design... (e.g., 'elegant evening dress with floral embroidery')"
       />
 
-      <UsageInfo isSignedIn={isSignedIn} />
-    </form>
+      {/* Enhanced Keyword Suggestions */}
+      <EnhancedKeywordSuggestions
+        selectedItem={selectedItem}
+        onKeywordClick={handleKeywordClick}
+        disabled={isGenerating}
+      />
+
+      {/* Advanced Options Toggle */}
+      <div className="flex justify-center">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="text-white/60 hover:text-white"
+        >
+          {showAdvanced ? "Hide" : "Show"} Advanced Options
+        </Button>
+      </div>
+
+      {/* Advanced Options */}
+      {showAdvanced && (
+        <Card className="bg-black/30 border-white/10">
+          <CardHeader>
+            <CardTitle className="text-sm">Advanced Options</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {showItemPreviews && selectedItem && (
+              <ItemTypePreviews selectedItem={selectedItem} />
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Usage Info */}
+      <UsageInfo 
+        isSignedIn={isSignedIn} 
+        remainingImages={remainingImages} 
+      />
+
+      {/* Generate Button */}
+      <GenerateButton
+        onGenerate={onGenerate}
+        isGenerating={isGenerating}
+        prompt={prompt}
+        selectedItem={selectedItem}
+        disabled={!selectedItem || !prompt.trim()}
+      />
+    </div>
   );
 };

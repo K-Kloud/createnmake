@@ -1,6 +1,7 @@
 
 import { z } from 'zod';
 import { sanitizeInput, validateEmail, isValidUsername } from './security';
+import { clothingItemSchema } from './clothingValidation';
 
 // Comprehensive input validation schemas
 export const userProfileSchema = z.object({
@@ -32,7 +33,7 @@ export const imageGenerationSchema = z.object({
     .min(3, 'Prompt must be at least 3 characters')
     .max(1000, 'Prompt must be less than 1000 characters')
     .transform(sanitizeInput),
-  item_type: z.enum(['tops', 'bottoms', 'dresses', 'outerwear', 'accessories', 'footwear']),
+  item_type: clothingItemSchema, // Use the new comprehensive clothing item validation
   aspect_ratio: z.enum(['square', 'portrait', 'landscape']),
   title: z.string()
     .max(100, 'Title must be less than 100 characters')
