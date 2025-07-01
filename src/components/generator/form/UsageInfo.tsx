@@ -11,6 +11,7 @@ interface UsageInfoProps {
   canGenerateImage?: boolean;
   onUpgrade?: () => void;
   isSignedIn?: boolean;
+  remainingImages?: number;
 }
 
 export const UsageInfo = ({ 
@@ -19,7 +20,8 @@ export const UsageInfo = ({
   tier = "free", 
   canGenerateImage = true,
   onUpgrade = () => console.log('Upgrade clicked'),
-  isSignedIn = false
+  isSignedIn = false,
+  remainingImages
 }: UsageInfoProps) => {
   
   // If the user is not signed in, show a simplified version
@@ -32,13 +34,18 @@ export const UsageInfo = ({
       </Card>
     );
   }
+
+  // Use remainingImages if provided, otherwise calculate from other values
+  const actualImagesGenerated = remainingImages !== undefined 
+    ? monthlyImageLimit - remainingImages 
+    : imagesGenerated;
   
   return (
     <Card className="bg-muted/50">
       <CardContent className="pt-4 pb-3 px-4">
         <div className="flex items-center justify-between mb-2">
           <div className="text-sm font-medium">
-            Images this month: {imagesGenerated} of {monthlyImageLimit}
+            Images this month: {actualImagesGenerated} of {monthlyImageLimit}
           </div>
           <div className="text-sm">
             {tier !== "free" ? (
@@ -57,7 +64,7 @@ export const UsageInfo = ({
         </div>
 
         <Progress
-          value={(imagesGenerated / monthlyImageLimit) * 100}
+          value={(actualImagesGenerated / monthlyImageLimit) * 100}
           className="h-1.5"
         />
 

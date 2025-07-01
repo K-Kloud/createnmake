@@ -19,8 +19,8 @@ interface GenerationFormProps {
   onItemChange: (item: string) => void;
   selectedRatio: string;
   onRatioChange: (ratio: string) => void;
-  referenceImage: string | null;
-  onReferenceImageUpload: (image: string | null) => void;
+  referenceImage: File | null;
+  onReferenceImageUpload: (file: File | null) => void;
   onGenerate: () => void;
   isGenerating: boolean;
   isSignedIn: boolean;
@@ -73,13 +73,14 @@ export const GenerationForm = ({
 
         <div className="space-y-4">
           <ReferenceImageUpload
-            onImageUpload={onReferenceImageUpload}
+            onUpload={onReferenceImageUpload}
+            file={referenceImage}
             disabled={isGenerating}
           />
           
           {referenceImage && (
             <ReferenceImageDisplay
-              referenceImage={referenceImage}
+              file={referenceImage}
               onRemove={() => onReferenceImageUpload(null)}
             />
           )}
@@ -88,10 +89,12 @@ export const GenerationForm = ({
 
       {/* Prompt Input */}
       <PromptInput
-        value={prompt}
-        onChange={onPromptChange}
+        prompt={prompt}
+        onPromptChange={onPromptChange}
+        onReferenceImageUpload={onReferenceImageUpload}
+        onGenerate={onGenerate}
+        isGenerating={isGenerating}
         disabled={isGenerating}
-        placeholder="Describe your design... (e.g., 'elegant evening dress with floral embroidery')"
       />
 
       {/* Enhanced Keyword Suggestions */}
@@ -135,11 +138,10 @@ export const GenerationForm = ({
 
       {/* Generate Button */}
       <GenerateButton
-        onGenerate={onGenerate}
+        onClick={onGenerate}
         isGenerating={isGenerating}
-        prompt={prompt}
-        selectedItem={selectedItem}
         disabled={!selectedItem || !prompt.trim()}
+        remainingImages={remainingImages}
       />
     </div>
   );

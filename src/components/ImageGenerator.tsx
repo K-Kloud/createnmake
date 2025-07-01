@@ -1,3 +1,4 @@
+
 import { useImageGeneration } from "./generator/useImageGeneration";
 import { GenerationForm } from "./generator/GenerationForm";
 import { PreviewDialog } from "./generator/PreviewDialog";
@@ -34,6 +35,11 @@ export const ImageGenerator = () => {
     // Implement like functionality if needed
   };
 
+  // Convert File to string URL for display, or handle File directly
+  const handleReferenceImageUpload = (file: File | null) => {
+    setReferenceImage(file);
+  };
+
   return (
     <div className="space-y-8 animate-float">
       <Card className="bg-black/50 border border-white/10 backdrop-blur-md p-6 rounded-xl space-y-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,157,0.3)] hover:border-primary/40">
@@ -45,7 +51,7 @@ export const ImageGenerator = () => {
           selectedRatio={selectedRatio}
           onRatioChange={setSelectedRatio}
           referenceImage={referenceImage}
-          onReferenceImageUpload={setReferenceImage}
+          onReferenceImageUpload={handleReferenceImageUpload}
           onGenerate={handleGenerate}
           isGenerating={isGenerating}
           isSignedIn={!!session?.user}
