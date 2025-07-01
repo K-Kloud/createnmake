@@ -9,7 +9,7 @@ import { PromptInput } from "./form/PromptInput";
 import { GenerateButton } from "./form/GenerateButton";
 import { UsageInfo } from "./form/UsageInfo";
 import { ItemTypePreviews } from "./form/ItemTypePreviews";
-import { ReferenceImageDisplay } from "./form/ReferenceImageDisplay";
+
 import { EnhancedKeywordSuggestions } from "./EnhancedKeywordSuggestions";
 
 interface GenerationFormProps {
@@ -77,13 +77,6 @@ export const GenerationForm = ({
             file={referenceImage}
             disabled={isGenerating}
           />
-          
-          {referenceImage && (
-            <ReferenceImageDisplay
-              file={referenceImage}
-              onRemove={() => onReferenceImageUpload(null)}
-            />
-          )}
         </div>
       </div>
 
