@@ -91,7 +91,6 @@ export const GenerationForm = ({
       <PromptInput
         prompt={prompt}
         onPromptChange={onPromptChange}
-        onReferenceImageUpload={onReferenceImageUpload}
         onGenerate={onGenerate}
         isGenerating={isGenerating}
         disabled={isGenerating}
