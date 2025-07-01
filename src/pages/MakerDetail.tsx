@@ -94,13 +94,27 @@ const MakerDetail = () => {
         return [];
       }
       
-      return data.map(review => ({
-        id: review.id,
-        rating: review.rating,
-        comment: review.comment,
-        date: new Date(review.created_at).toLocaleDateString(),
-        user: Array.isArray(review.profiles) ? review.profiles[0]?.username || 'Anonymous' : review.profiles?.username || 'Anonymous'
-      }));
+      return data.map(review => {
+        // Handle the profiles data properly
+        const profileData = review.profiles as { username: string } | { username: string }[] | null;
+        let username = 'Anonymous';
+        
+        if (profileData) {
+          if (Array.isArray(profileData)) {
+            username = profileData[0]?.username || 'Anonymous';
+          } else {
+            username = profileData.username || 'Anonymous';
+          }
+        }
+        
+        return {
+          id: review.id,
+          rating: review.rating,
+          comment: review.comment,
+          date: new Date(review.created_at).toLocaleDateString(),
+          user: username
+        };
+      });
     },
     enabled: !!makerId && makerType === 'manufacturer',
   });
