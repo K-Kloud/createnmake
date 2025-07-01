@@ -13,29 +13,36 @@ import { Manufacturer, Artisan } from "@/types/maker";
 import { toast } from "@/components/ui/use-toast";
 
 const MakerDetail = () => {
-  const { makerId } = useParams<{ makerId: string }>();
+  const { id: makerId } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const makerType = searchParams.get('type'); // 'manufacturer' or 'artisan'
   
-  const { data: maker, isLoading } = useQuery({
+  console.log('MakerDetail params:', { makerId, makerType });
+  
+  const { data: maker, isLoading, error } = useQuery({
     queryKey: ['maker', makerId, makerType],
     queryFn: async () => {
-      if (!makerId) return null;
+      if (!makerId) {
+        console.log('No makerId provided');
+        return null;
+      }
+      
+      console.log('Fetching maker:', { makerId, makerType });
       
       const tableName = makerType === 'manufacturer' ? 'manufacturers' : 'profiles';
       const query = supabase
         .from(tableName)
         .select('*')
-        .eq('id', makerId)
-        .single();
+        .eq('id', makerId);
       
-      const { data, error } = await query;
+      const { data, error } = await query.maybeSingle();
       
       if (error) {
         console.error('Error fetching maker details:', error);
-        return null;
+        throw error;
       }
       
+      console.log('Fetched maker data:', data);
       return data as Manufacturer | Artisan;
     },
     enabled: !!makerId && !!makerType,
@@ -92,8 +99,7 @@ const MakerDetail = () => {
         rating: review.rating,
         comment: review.comment,
         date: new Date(review.created_at).toLocaleDateString(),
-        // Fix: Access the first username from the profiles array or use a default value
-        user: review.profiles && review.profiles[0]?.username || 'Anonymous'
+        user: Array.isArray(review.profiles) ? review.profiles[0]?.username || 'Anonymous' : review.profiles?.username || 'Anonymous'
       }));
     },
     enabled: !!makerId && makerType === 'manufacturer',
@@ -114,13 +120,17 @@ const MakerDetail = () => {
     );
   }
 
-  if (!maker) {
+  if (error || !maker) {
+    console.log('Maker not found or error:', { error, maker, makerId, makerType });
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <Header />
         <main className="flex-1 container mx-auto px-4 py-8">
           <h1 className="text-2xl font-bold">Maker not found</h1>
           <p className="mt-4">The maker you are looking for does not exist or you don't have permission to view it.</p>
+          {error && (
+            <p className="mt-2 text-red-500">Error: {error.message}</p>
+          )}
         </main>
         <Footer />
       </div>
