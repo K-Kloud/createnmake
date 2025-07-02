@@ -4,10 +4,12 @@ import { Card, CardContent, CardFooter } from "./ui/card";
 import { MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "./ui/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { ChatHeader } from "./chat/ChatHeader";
 import { ChatModeSelector } from "./chat/ChatModeSelector";
 import { ChatMessages } from "./chat/ChatMessages";
 import { ChatInput } from "./chat/ChatInput";
+import { QuickActions } from "./chat/QuickActions";
 
 type ChatMode = "customer" | "manufacturer";
 
@@ -25,12 +27,14 @@ export const ChatBot = () => {
   const [chatMode, setChatMode] = useState<ChatMode>("customer");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { user, session } = useAuth();
 
-  const handleSend = async () => {
-    if (!inputMessage.trim() || isLoading) return;
+  const handleSend = async (message?: string) => {
+    const messageToSend = message || inputMessage;
+    if (!messageToSend.trim() || isLoading) return;
 
     const userMessage: Message = {
-      text: inputMessage,
+      text: messageToSend,
       sender: "user",
       timestamp: new Date(),
     };
@@ -40,8 +44,20 @@ export const ChatBot = () => {
     setIsLoading(true);
 
     try {
+      // Get user context for better responses
+      const userContext = {
+        isAuthenticated: !!user,
+        userId: user?.id,
+        email: user?.email,
+        currentPage: window.location.pathname,
+      };
+
       const { data, error } = await supabase.functions.invoke('chat', {
-        body: { message: inputMessage, chatMode }
+        body: { 
+          message: messageToSend, 
+          chatMode,
+          userContext
+        }
       });
 
       if (error) throw error;
@@ -63,6 +79,10 @@ export const ChatBot = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleQuickAction = (question: string) => {
+    handleSend(question);
   };
 
   if (!isOpen) {
@@ -91,6 +111,13 @@ export const ChatBot = () => {
           />
 
           <CardContent className="p-4">
+            {messages.length === 0 && (
+              <QuickActions 
+                chatMode={chatMode} 
+                onQuickAction={handleQuickAction}
+                isAuthenticated={!!user}
+              />
+            )}
             <ChatMessages messages={messages} />
           </CardContent>
 
@@ -98,7 +125,7 @@ export const ChatBot = () => {
             <ChatInput
               inputMessage={inputMessage}
               onInputChange={setInputMessage}
-              onSend={handleSend}
+              onSend={() => handleSend()}
               isLoading={isLoading}
             />
           </CardFooter>
