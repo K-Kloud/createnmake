@@ -141,6 +141,91 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_agent_health: {
+        Row: {
+          agent_id: number
+          created_at: string
+          error_count: number | null
+          id: string
+          last_check_at: string
+          metadata: Json | null
+          response_time_ms: number | null
+          status: string
+          success_rate: number | null
+        }
+        Insert: {
+          agent_id: number
+          created_at?: string
+          error_count?: number | null
+          id?: string
+          last_check_at?: string
+          metadata?: Json | null
+          response_time_ms?: number | null
+          status?: string
+          success_rate?: number | null
+        }
+        Update: {
+          agent_id?: number
+          created_at?: string
+          error_count?: number | null
+          id?: string
+          last_check_at?: string
+          metadata?: Json | null
+          response_time_ms?: number | null
+          status?: string
+          success_rate?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_agent_health_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agent"
+            referencedColumns: ["agent_id"]
+          },
+        ]
+      }
+      ai_agent_metrics: {
+        Row: {
+          agent_id: number
+          id: string
+          metadata: Json | null
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+          recorded_at: string
+        }
+        Insert: {
+          agent_id: number
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+          recorded_at?: string
+        }
+        Update: {
+          agent_id?: number
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          metric_value?: number
+          period_end?: string
+          period_start?: string
+          recorded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_agent_metrics_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agent"
+            referencedColumns: ["agent_id"]
+          },
+        ]
+      }
       ai_agent_queries: {
         Row: {
           agent_id: number
@@ -169,6 +254,62 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "ai_agent_queries_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agent"
+            referencedColumns: ["agent_id"]
+          },
+        ]
+      }
+      ai_agent_queue: {
+        Row: {
+          agent_id: number
+          attempts: number
+          completed_at: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          max_attempts: number
+          payload: Json
+          priority: number
+          scheduled_for: string
+          started_at: string | null
+          status: string
+          task_type: string
+        }
+        Insert: {
+          agent_id: number
+          attempts?: number
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          max_attempts?: number
+          payload: Json
+          priority?: number
+          scheduled_for?: string
+          started_at?: string | null
+          status?: string
+          task_type: string
+        }
+        Update: {
+          agent_id?: number
+          attempts?: number
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          max_attempts?: number
+          payload?: Json
+          priority?: number
+          scheduled_for?: string
+          started_at?: string | null
+          status?: string
+          task_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_agent_queue_agent_id_fkey"
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "ai_agent"
@@ -1576,6 +1717,10 @@ export type Database = {
         Args: { p_image_id: number; p_user_id: string }
         Returns: Json
       }
+      check_ai_agent_health: {
+        Args: { p_agent_id: number }
+        Returns: Json
+      }
       check_user_admin_role_secure: {
         Args: { target_user_id: string; required_role?: string }
         Returns: boolean
@@ -1631,6 +1776,16 @@ export type Database = {
       is_current_user_super_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      queue_ai_agent_task: {
+        Args: {
+          p_agent_id: number
+          p_task_type: string
+          p_payload: Json
+          p_priority?: number
+          p_scheduled_for?: string
+        }
+        Returns: string
       }
       sync_image_likes_count: {
         Args: { p_image_id?: number }

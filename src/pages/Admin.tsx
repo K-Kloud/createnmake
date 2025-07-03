@@ -7,7 +7,7 @@ import { ImageFilters } from "@/components/admin/ImageFilters";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Database, Loader2, CalendarRange } from "lucide-react";
+import { Database, Loader2, CalendarRange, Bot } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminStats } from "@/components/admin/stats/AdminStats";
@@ -132,6 +132,14 @@ const Admin = () => {
             <TabsTrigger value="taskflow">
               <CalendarRange className="mr-2 h-4 w-4" />
               Task Workflow
+            </TabsTrigger>
+            <TabsTrigger 
+              value="ai-agents" 
+              onClick={() => navigate('/admin/ai-agents')}
+              className="cursor-pointer"
+            >
+              <Bot className="mr-2 h-4 w-4" />
+              AI Agents
             </TabsTrigger>
           </TabsList>
 

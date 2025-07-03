@@ -17,5 +17,11 @@ export const cronJobs = [
     schedule: "0 9 * * 1", // Every Monday at 9 AM UTC
     function: "weekly-analytics",
     description: "Generate weekly analytics and insights"
+  },
+  {
+    name: "ai-agent-monitor",
+    schedule: "*/15 * * * *", // Every 15 minutes
+    function: "ai-agent-monitor",
+    description: "Monitor AI agent health and process task queues"
   }
 ];
