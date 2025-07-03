@@ -358,6 +358,94 @@ export type Database = {
           },
         ]
       }
+      ai_alert_config: {
+        Row: {
+          agent_id: number | null
+          alert_type: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          notification_channels: string[] | null
+          threshold_operator: string
+          threshold_value: number
+        }
+        Insert: {
+          agent_id?: number | null
+          alert_type: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          notification_channels?: string[] | null
+          threshold_operator: string
+          threshold_value: number
+        }
+        Update: {
+          agent_id?: number | null
+          alert_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          notification_channels?: string[] | null
+          threshold_operator?: string
+          threshold_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_alert_config_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agent"
+            referencedColumns: ["agent_id"]
+          },
+        ]
+      }
+      ai_performance_logs: {
+        Row: {
+          agent_id: number
+          created_at: string
+          duration_ms: number | null
+          end_time: string | null
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          operation_type: string
+          start_time: string
+          success: boolean | null
+        }
+        Insert: {
+          agent_id: number
+          created_at?: string
+          duration_ms?: number | null
+          end_time?: string | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          operation_type: string
+          start_time: string
+          success?: boolean | null
+        }
+        Update: {
+          agent_id?: number
+          created_at?: string
+          duration_ms?: number | null
+          end_time?: string | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          operation_type?: string
+          start_time?: string
+          success?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_performance_logs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agent"
+            referencedColumns: ["agent_id"]
+          },
+        ]
+      }
       api_keys: {
         Row: {
           api_key: string
@@ -1790,6 +1878,10 @@ export type Database = {
       sync_image_likes_count: {
         Args: { p_image_id?: number }
         Returns: undefined
+      }
+      trigger_ai_monitoring: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       validate_password_strength: {
         Args: { password: string }

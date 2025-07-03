@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { AlertTriangle, CheckCircle, Clock, RefreshCw, Settings, Activity } from 'lucide-react';
 import { useAIAgentMonitoring } from '@/hooks/useAIAgentMonitoring';
+import { AIMonitoringAlerts } from './AIMonitoringAlerts';
 import { format } from 'date-fns';
 
 export const AIAgentDashboard = () => {
@@ -13,9 +14,12 @@ export const AIAgentDashboard = () => {
     agentsLoading,
     queueStats,
     recentMetrics,
+    performanceLogs,
+    alertConfigs,
     triggerHealthCheck,
     toggleAgentStatus,
     triggerMonitoring,
+    triggerDatabaseMonitoring,
     isTriggering
   } = useAIAgentMonitoring();
 
@@ -212,6 +216,107 @@ export const AIAgentDashboard = () => {
           </Card>
         ))}
       </div>
+
+      {/* Alerts Section */}
+      <AIMonitoringAlerts />
+
+      {/* Control Panel */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Control Panel</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Button
+              onClick={() => triggerMonitoring()}
+              disabled={isTriggering}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${isTriggering ? 'animate-spin' : ''}`} />
+              Run Health Check
+            </Button>
+            
+            <Button
+              onClick={() => triggerDatabaseMonitoring()}
+              disabled={isTriggering}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Activity className={`h-4 w-4 ${isTriggering ? 'animate-spin' : ''}`} />
+              Database Trigger
+            </Button>
+
+            <Button
+              onClick={() => window.open('https://supabase.com/dashboard/project/f1ed4079-3ff6-4e5a-a513-6277112295ba/functions/ai-agent-monitor/logs', '_blank')}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Settings className="h-4 w-4" />
+              View Logs
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Performance Logs */}
+      {performanceLogs && performanceLogs.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Performance Logs</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {performanceLogs.slice(0, 10).map((log) => (
+                <div key={log.id} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
+                  <div className="flex items-center gap-3">
+                    <Badge variant={log.success ? "default" : "destructive"}>
+                      {log.operation_type}
+                    </Badge>
+                    <span className="text-sm">Agent {log.agent_id}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium">
+                      {log.duration_ms ? `${log.duration_ms}ms` : 'N/A'}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {format(new Date(log.created_at), 'HH:mm:ss')}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Alert Configuration */}
+      {alertConfigs && alertConfigs.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Alert Configurations</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {alertConfigs.map((config) => (
+                <div key={config.id} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
+                  <div className="flex items-center gap-3">
+                    <Badge variant="outline">{config.alert_type}</Badge>
+                    <span className="text-sm">Agent {config.agent_id}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium">
+                      {config.threshold_operator} {config.threshold_value}
+                    </span>
+                    <Badge variant={config.is_active ? "default" : "secondary"}>
+                      {config.is_active ? "Active" : "Inactive"}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Recent Metrics */}
       {recentMetrics && recentMetrics.length > 0 && (

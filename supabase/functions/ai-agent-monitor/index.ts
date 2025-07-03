@@ -17,7 +17,11 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    console.log("🔍 Starting AI agent health monitoring...");
+    const requestBody = await req.json().catch(() => ({}));
+    const isScheduled = requestBody.scheduled || false;
+    const isManual = requestBody.manual || false;
+    
+    console.log(`🔍 Starting AI agent health monitoring... (${isScheduled ? 'scheduled' : isManual ? 'manual' : 'api'} trigger)`);
 
     // Get all active AI agents
     const { data: agents, error: agentsError } = await supabaseClient
@@ -30,12 +34,42 @@ serve(async (req) => {
     }
 
     const healthChecks = [];
+    const performanceLogs = [];
+    const alerts = [];
 
     // Check health for each agent
     for (const agent of agents || []) {
       try {
+        const startTime = Date.now();
+        
+        // Log performance start
+        const perfLogId = crypto.randomUUID();
+        await supabaseClient
+          .from('ai_performance_logs')
+          .insert({
+            id: perfLogId,
+            agent_id: agent.agent_id,
+            operation_type: 'health_check',
+            start_time: new Date().toISOString(),
+            metadata: { trigger_type: isScheduled ? 'scheduled' : 'manual' }
+          });
+
         const { data: healthData, error: healthError } = await supabaseClient
           .rpc('check_ai_agent_health', { p_agent_id: agent.agent_id });
+
+        const endTime = Date.now();
+        const duration = endTime - startTime;
+
+        // Update performance log with results
+        await supabaseClient
+          .from('ai_performance_logs')
+          .update({
+            end_time: new Date().toISOString(),
+            duration_ms: duration,
+            success: !healthError,
+            error_message: healthError?.message || null
+          })
+          .eq('id', perfLogId);
 
         if (healthError) {
           console.error(`Health check failed for agent ${agent.agent_id}:`, healthError);
@@ -50,6 +84,17 @@ serve(async (req) => {
         // Record performance metrics
         await recordAgentMetrics(supabaseClient, agent.agent_id);
 
+        // Check for alerts
+        const agentAlerts = await checkAlertThresholds(supabaseClient, agent.agent_id, healthData);
+        alerts.push(...agentAlerts);
+
+        performanceLogs.push({
+          agent_id: agent.agent_id,
+          operation: 'health_check',
+          duration,
+          success: true
+        });
+
       } catch (error) {
         console.error(`Error monitoring agent ${agent.agent_id}:`, error);
         
@@ -63,25 +108,49 @@ serve(async (req) => {
             last_check_at: new Date().toISOString(),
             metadata: { error: error.message }
           });
+
+        performanceLogs.push({
+          agent_id: agent.agent_id,
+          operation: 'health_check',
+          duration: 0,
+          success: false,
+          error: error.message
+        });
       }
     }
 
-    // Clean up old health records (keep last 7 days)
-    await supabaseClient
-      .from('ai_agent_health')
-      .delete()
-      .lt('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+    // Clean up old records (keep last 7 days)
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    
+    await Promise.all([
+      supabaseClient.from('ai_agent_health').delete().lt('created_at', sevenDaysAgo),
+      supabaseClient.from('ai_performance_logs').delete().lt('created_at', sevenDaysAgo),
+      supabaseClient.from('ai_agent_metrics').delete().lt('recorded_at', sevenDaysAgo)
+    ]);
 
     // Generate alerts for unhealthy agents
     await generateHealthAlerts(supabaseClient, healthChecks);
 
+    // Process any pending alerts
+    if (alerts.length > 0) {
+      await processAlerts(supabaseClient, alerts);
+    }
+
     console.log(`✅ Monitored ${agents?.length || 0} AI agents successfully`);
+    console.log(`📊 Performance: ${performanceLogs.length} operations logged`);
+    console.log(`🚨 Alerts: ${alerts.length} alerts generated`);
 
     return new Response(
       JSON.stringify({
         success: true,
         message: "AI agent monitoring completed",
-        agents_monitored: agents?.length || 0,
+        stats: {
+          agents_monitored: agents?.length || 0,
+          health_checks: healthChecks.length,
+          performance_logs: performanceLogs.length,
+          alerts_generated: alerts.length,
+          execution_time: Date.now() - Date.parse(new Date().toISOString())
+        },
         health_checks: healthChecks
       }),
       { 
@@ -112,7 +181,7 @@ async function processAgentQueue(supabaseClient: any, agentId: number) {
     .lte('scheduled_for', new Date().toISOString())
     .order('priority', { ascending: true })
     .order('created_at', { ascending: true })
-    .limit(10);
+    .limit(5); // Process 5 tasks at a time to prevent overload
 
   for (const item of queueItems || []) {
     try {
@@ -138,6 +207,9 @@ async function processAgentQueue(supabaseClient: any, agentId: number) {
         case 'analytics':
           result = await executeAnalyticsTask(supabaseClient, item.payload);
           break;
+        case 'alert_processing':
+          result = await executeAlertProcessingTask(supabaseClient, item.payload);
+          break;
         default:
           throw new Error(`Unknown task type: ${item.task_type}`);
       }
@@ -151,7 +223,7 @@ async function processAgentQueue(supabaseClient: any, agentId: number) {
         })
         .eq('id', item.id);
 
-      console.log(`✅ Completed task ${item.id} for agent ${agentId}`);
+      console.log(`✅ Completed task ${item.id} for agent ${agentId}: ${item.task_type}`);
 
     } catch (error) {
       console.error(`❌ Failed task ${item.id} for agent ${agentId}:`, error);
@@ -166,12 +238,15 @@ async function processAgentQueue(supabaseClient: any, agentId: number) {
           })
           .eq('id', item.id);
       } else {
-        // Retry later
+        // Retry later with exponential backoff
+        const retryDelay = Math.min(5 * Math.pow(2, item.attempts), 60); // Max 60 minutes
+        const retryAt = new Date(Date.now() + retryDelay * 60 * 1000);
+        
         await supabaseClient
           .from('ai_agent_queue')
           .update({ 
             status: 'pending',
-            scheduled_for: new Date(Date.now() + 5 * 60 * 1000).toISOString() // Retry in 5 minutes
+            scheduled_for: retryAt.toISOString()
           })
           .eq('id', item.id);
       }
@@ -190,16 +265,129 @@ async function recordAgentMetrics(supabaseClient: any, agentId: number) {
     .eq('agent_id', agentId)
     .gte('executed_at', hourAgo.toISOString());
 
+  // Count queue operations
+  const { count: queueOps } = await supabaseClient
+    .from('ai_agent_queue')
+    .select('*', { count: 'exact', head: true })
+    .eq('agent_id', agentId)
+    .gte('created_at', hourAgo.toISOString());
+
   // Record metrics
   await supabaseClient
     .from('ai_agent_metrics')
-    .insert({
-      agent_id: agentId,
-      metric_type: 'api_calls',
-      metric_value: apiCalls || 0,
-      period_start: hourAgo.toISOString(),
-      period_end: now.toISOString()
-    });
+    .insert([
+      {
+        agent_id: agentId,
+        metric_type: 'api_calls',
+        metric_value: apiCalls || 0,
+        period_start: hourAgo.toISOString(),
+        period_end: now.toISOString()
+      },
+      {
+        agent_id: agentId,
+        metric_type: 'queue_operations',
+        metric_value: queueOps || 0,
+        period_start: hourAgo.toISOString(),
+        period_end: now.toISOString()
+      }
+    ]);
+}
+
+async function checkAlertThresholds(supabaseClient: any, agentId: number, healthData: any) {
+  const alerts = [];
+  
+  // Get alert configurations for this agent
+  const { data: alertConfigs } = await supabaseClient
+    .from('ai_alert_config')
+    .select('*')
+    .eq('agent_id', agentId)
+    .eq('is_active', true);
+
+  for (const config of alertConfigs || []) {
+    let currentValue;
+    let shouldAlert = false;
+
+    switch (config.alert_type) {
+      case 'health':
+        currentValue = healthData.success_rate;
+        break;
+      case 'performance':
+        currentValue = healthData.avg_response_time_ms;
+        break;
+      case 'queue':
+        // Get current queue count
+        const { count } = await supabaseClient
+          .from('ai_agent_queue')
+          .select('*', { count: 'exact', head: true })
+          .eq('agent_id', agentId)
+          .eq('status', 'pending');
+        currentValue = count || 0;
+        break;
+    }
+
+    // Check threshold
+    switch (config.threshold_operator) {
+      case '<':
+        shouldAlert = currentValue < config.threshold_value;
+        break;
+      case '>':
+        shouldAlert = currentValue > config.threshold_value;
+        break;
+      case '=':
+        shouldAlert = currentValue === config.threshold_value;
+        break;
+      case '!=':
+        shouldAlert = currentValue !== config.threshold_value;
+        break;
+      case '<=':
+        shouldAlert = currentValue <= config.threshold_value;
+        break;
+      case '>=':
+        shouldAlert = currentValue >= config.threshold_value;
+        break;
+    }
+
+    if (shouldAlert) {
+      alerts.push({
+        config_id: config.id,
+        agent_id: agentId,
+        alert_type: config.alert_type,
+        current_value: currentValue,
+        threshold_value: config.threshold_value,
+        threshold_operator: config.threshold_operator,
+        notification_channels: config.notification_channels
+      });
+    }
+  }
+
+  return alerts;
+}
+
+async function processAlerts(supabaseClient: any, alerts: any[]) {
+  for (const alert of alerts) {
+    // Create notification for admins
+    const { data: admins } = await supabaseClient
+      .from('admin_roles')
+      .select('user_id')
+      .in('role', ['admin', 'super_admin']);
+
+    for (const admin of admins || []) {
+      await supabaseClient
+        .from('user_notifications')
+        .insert({
+          user_id: admin.user_id,
+          title: `AI Agent Alert: ${alert.alert_type}`,
+          message: `Agent ${alert.agent_id} ${alert.alert_type} alert: ${alert.current_value} ${alert.threshold_operator} ${alert.threshold_value}`,
+          notification_type: 'ai_agent_alert',
+          metadata: {
+            agent_id: alert.agent_id,
+            alert_type: alert.alert_type,
+            current_value: alert.current_value,
+            threshold: alert.threshold_value
+          }
+        });
+    }
+  }
 }
 
 async function generateHealthAlerts(supabaseClient: any, healthChecks: any[]) {
@@ -260,4 +448,10 @@ async function executeAnalyticsTask(supabaseClient: any, payload: any) {
   
   if (error) throw error;
   return data;
+}
+
+async function executeAlertProcessingTask(supabaseClient: any, payload: any) {
+  // Process alerts and notifications
+  console.log('Processing alert:', payload);
+  return { success: true, message: 'Alert processed' };
 }

@@ -241,15 +241,74 @@ export const useAIAgentMonitoring = () => {
     }
   });
 
+  // Trigger database function for monitoring
+  const triggerDatabaseMonitoring = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase
+        .rpc('trigger_ai_monitoring');
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ai-agents-with-health'] });
+      queryClient.invalidateQueries({ queryKey: ['ai-agent-queue-stats'] });
+      toast({
+        title: 'Database Monitoring Triggered',
+        description: 'AI monitoring function executed from database',
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Database Monitoring Failed',
+        description: `Error: ${error.message}`,
+        variant: 'destructive',
+      });
+    }
+  });
+
+  // Get performance logs
+  const { data: performanceLogs } = useQuery({
+    queryKey: ['ai-performance-logs'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ai_performance_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+      return data;
+    },
+    refetchInterval: 30000,
+  });
+
+  // Get alert configurations
+  const { data: alertConfigs } = useQuery({
+    queryKey: ['ai-alert-configs'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ai_alert_config')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
   return {
     agents,
     agentsLoading,
     queueStats,
     recentMetrics,
+    performanceLogs,
+    alertConfigs,
     triggerHealthCheck: triggerHealthCheck.mutate,
     queueTask: queueTask.mutate,
     toggleAgentStatus: toggleAgentStatus.mutate,
     triggerMonitoring: triggerMonitoring.mutate,
-    isTriggering: triggerHealthCheck.isPending || triggerMonitoring.isPending
+    triggerDatabaseMonitoring: triggerDatabaseMonitoring.mutate,
+    isTriggering: triggerHealthCheck.isPending || triggerMonitoring.isPending || triggerDatabaseMonitoring.isPending
   };
 };
