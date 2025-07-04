@@ -222,6 +222,27 @@ export const adminNavigation: NavigationItem[] = [
     description: "Administrative controls",
     requiresAuth: true,
     roles: ["admin"]
+  },
+  {
+    title: "AI Agents",
+    href: "/admin/ai-agents",
+    description: "AI agent monitoring and management",
+    requiresAuth: true,
+    roles: ["admin"]
+  },
+  {
+    title: "Scheduled Jobs",
+    href: "/admin/scheduled-jobs",
+    description: "Scheduled job management",
+    requiresAuth: true,
+    roles: ["admin"]
+  },
+  {
+    title: "System Management",
+    href: "/admin/system",
+    description: "Manage pages, components, and configurations",
+    requiresAuth: true,
+    roles: ["admin"]
   }
 ];
 

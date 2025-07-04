@@ -629,6 +629,83 @@ export type Database = {
           },
         ]
       }
+      component_configs: {
+        Row: {
+          component_id: string | null
+          config_data: Json | null
+          created_at: string
+          id: string
+          instance_name: string
+          is_active: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          component_id?: string | null
+          config_data?: Json | null
+          created_at?: string
+          id?: string
+          instance_name: string
+          is_active?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          component_id?: string | null
+          config_data?: Json | null
+          created_at?: string
+          id?: string
+          instance_name?: string
+          is_active?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "component_configs_component_id_fkey"
+            columns: ["component_id"]
+            isOneToOne: false
+            referencedRelation: "ui_components"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_blocks: {
+        Row: {
+          block_key: string
+          block_type: string
+          content: Json
+          created_at: string
+          id: string
+          is_active: boolean | null
+          locale: string | null
+          metadata: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          block_key: string
+          block_type: string
+          content?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          locale?: string | null
+          metadata?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          block_key?: string
+          block_type?: string
+          content?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          locale?: string | null
+          metadata?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       conversion_events: {
         Row: {
           completed: boolean | null
@@ -784,6 +861,48 @@ export type Database = {
         }
         Relationships: []
       }
+      dynamic_pages: {
+        Row: {
+          allowed_roles: string[] | null
+          component_name: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          layout_config: Json | null
+          meta_description: string | null
+          page_title: string
+          requires_auth: boolean | null
+          route_path: string
+          updated_at: string
+        }
+        Insert: {
+          allowed_roles?: string[] | null
+          component_name: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          layout_config?: Json | null
+          meta_description?: string | null
+          page_title: string
+          requires_auth?: boolean | null
+          route_path: string
+          updated_at?: string
+        }
+        Update: {
+          allowed_roles?: string[] | null
+          component_name?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          layout_config?: Json | null
+          meta_description?: string | null
+          page_title?: string
+          requires_auth?: boolean | null
+          route_path?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ecommerce_events: {
         Row: {
           currency: string | null
@@ -878,6 +997,42 @@ export type Database = {
             referencedColumns: ["agent_id"]
           },
         ]
+      }
+      feature_flags: {
+        Row: {
+          conditions: Json | null
+          created_at: string
+          description: string | null
+          flag_name: string
+          id: string
+          is_enabled: boolean | null
+          rollout_percentage: number | null
+          target_roles: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          conditions?: Json | null
+          created_at?: string
+          description?: string | null
+          flag_name: string
+          id?: string
+          is_enabled?: boolean | null
+          rollout_percentage?: number | null
+          target_roles?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          conditions?: Json | null
+          created_at?: string
+          description?: string | null
+          flag_name?: string
+          id?: string
+          is_enabled?: boolean | null
+          rollout_percentage?: number | null
+          target_roles?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       feature_usage: {
         Row: {
@@ -1287,6 +1442,102 @@ export type Database = {
           },
         ]
       }
+      menu_items: {
+        Row: {
+          allowed_roles: string[] | null
+          created_at: string
+          description: string | null
+          href: string | null
+          icon_name: string | null
+          id: string
+          is_active: boolean | null
+          menu_id: string | null
+          opens_in_new_tab: boolean | null
+          parent_id: string | null
+          requires_auth: boolean | null
+          sort_order: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          allowed_roles?: string[] | null
+          created_at?: string
+          description?: string | null
+          href?: string | null
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          menu_id?: string | null
+          opens_in_new_tab?: boolean | null
+          parent_id?: string | null
+          requires_auth?: boolean | null
+          sort_order?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          allowed_roles?: string[] | null
+          created_at?: string
+          description?: string | null
+          href?: string | null
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          menu_id?: string | null
+          opens_in_new_tab?: boolean | null
+          parent_id?: string | null
+          requires_auth?: boolean | null
+          sort_order?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_items_menu_id_fkey"
+            columns: ["menu_id"]
+            isOneToOne: false
+            referencedRelation: "navigation_menus"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menu_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      navigation_menus: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          menu_name: string
+          menu_type: string
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          menu_name: string
+          menu_type: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          menu_name?: string
+          menu_type?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       page_analytics: {
         Row: {
           exit_page: boolean | null
@@ -1326,6 +1577,33 @@ export type Database = {
           timestamp?: string
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      page_layouts: {
+        Row: {
+          created_at: string
+          id: string
+          is_default: boolean | null
+          layout_config: Json
+          layout_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          layout_config?: Json
+          layout_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          layout_config?: Json
+          layout_name?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1638,6 +1916,42 @@ export type Database = {
           status?: string
           sync_type?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      ui_components: {
+        Row: {
+          component_name: string
+          component_type: string
+          config_schema: Json | null
+          created_at: string
+          description: string | null
+          file_path: string
+          id: string
+          is_active: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          component_name: string
+          component_type: string
+          config_schema?: Json | null
+          created_at?: string
+          description?: string | null
+          file_path: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          component_name?: string
+          component_type?: string
+          config_schema?: Json | null
+          created_at?: string
+          description?: string | null
+          file_path?: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string
         }
         Relationships: []
       }
