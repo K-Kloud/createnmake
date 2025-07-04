@@ -10,6 +10,7 @@ import { ComponentRegistry } from './ComponentRegistry';
 
 // Direct import for Index to avoid dynamic loading issues
 const IndexPage = lazy(() => import('@/pages/Index'));
+const MakerDetailPage = lazy(() => import('@/pages/MakerDetail'));
 
 // Static routes that should always be available (excluding nested routes handled by AppRoutes)
 const staticRoutes = [
@@ -56,6 +57,9 @@ export const DynamicRouter = () => {
         {staticRoutes.map(({ path, component: Component }) => (
           <Route key={path} path={path} element={<Component />} />
         ))}
+        
+        {/* Maker detail route - static parameterized route */}
+        <Route path="/maker/:id" element={<MakerDetailPage />} />
         
         {/* Dynamic routes from database (excluding nested routes) */}
         {pages?.filter(page => page.is_active && !excludedPaths.some(excluded => page.route_path.startsWith(excluded))).map((page) => {
