@@ -1,8 +1,8 @@
 
-import { Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { DynamicRouter } from "@/components/dynamic/DynamicRouter";
 import CRMRoutes from "./CRMRoutes";
 import CreatorRoutes from "./CreatorRoutes";
 import ArtisanRoutes from "./ArtisanRoutes";
@@ -46,84 +46,20 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 export const AppRoutes = () => {
   return (
     <Suspense fallback={<LoadingSpinner />}>
+      {/* Use Dynamic Router for database-driven routing */}
+      <DynamicRouter />
+      
+      {/* Keep specialized nested routes */}
       <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/create" element={<Create />} />
-        <Route path="/design" element={<Design />} />
-        <Route path="/designs" element={<Designs />} />
-        <Route path="/products" element={
-          <ProtectedRoute>
-            <Products />
-          </ProtectedRoute>
-        } />
-        <Route path="/earnings" element={
-          <ProtectedRoute>
-            <Earnings />
-          </ProtectedRoute>
-        } />
-        <Route path="/marketplace" element={<Marketplace />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/settings" element={
-          <ProtectedRoute>
-            <Settings />
-          </ProtectedRoute>
-        } />
-        <Route path="/orders" element={
-          <ProtectedRoute>
-            <Orders />
-          </ProtectedRoute>
-        } />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/admin/*" element={
           <ProtectedRoute>
             <AdminRoutes />
           </ProtectedRoute>
         } />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/faq" element={<FAQ />} />
-        <Route path="/features" element={<Features />} />
-        <Route path="/testimonials" element={<Testimonials />} />
-        <Route path="/join" element={<JoinUs />} />
-        <Route path="/join/artisan" element={<JoinArtisan />} />
-        <Route path="/join/manufacturer" element={<JoinManufacturer />} />
-        <Route path="/artisan/onboarding" element={<ArtisanOnboarding />} />
-        <Route path="/manufacturer/onboarding" element={<ManufacturerOnboarding />} />
-        <Route path="/maker/:id" element={<MakerDetail />} />
-        <Route path="/subscription" element={<Subscription />} />
-        <Route path="/subscription/success" element={<Success />} />
-        <Route path="/subscription/cancel" element={<Cancel />} />
-        <Route path="/integrations" element={
-          <ProtectedRoute>
-            <Integrations />
-          </ProtectedRoute>
-        } />
-        <Route path="/system-monitoring" element={
-          <ProtectedRoute>
-            <SystemMonitoring />
-          </ProtectedRoute>
-        } />
-        <Route path="/notifications" element={
-          <ProtectedRoute>
-            <Notifications />
-          </ProtectedRoute>
-        } />
-        
-        {/* Nested routes */}
         <Route path="/crm/*" element={<CRMRoutes />} />
         <Route path="/creator/*" element={<CreatorRoutes />} />
         <Route path="/artisan/*" element={<ArtisanRoutes />}/>
         <Route path="/manufacturer/*" element={<ManufacturerRoutes />}/>
-        
-        {/* Catch all route */}
-        <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
   );
