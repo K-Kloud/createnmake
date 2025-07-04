@@ -3,7 +3,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 // Component registry mapping component names to actual components
 const componentMap = {
-  // Pages
+  // Main Pages
   'Index': lazy(() => import('@/pages/Index')),
   'Create': lazy(() => import('@/pages/Create')),
   'Design': lazy(() => import('@/pages/Design')),
@@ -27,6 +27,29 @@ const componentMap = {
   'SystemMonitoring': lazy(() => import('@/pages/SystemMonitoring')),
   'Notifications': lazy(() => import('@/pages/Notifications')),
   'Orders': lazy(() => import('@/pages/Orders')),
+  
+  // Admin Pages
+  'Admin': lazy(() => import('@/pages/Admin')),
+  
+  // Onboarding Pages
+  'ArtisanOnboarding': lazy(() => import('@/pages/ArtisanOnboarding')),
+  'ManufacturerOnboarding': lazy(() => import('@/pages/ManufacturerOnboarding')),
+  
+  // Maker Pages
+  'MakerDetail': lazy(() => import('@/pages/MakerDetail')),
+  
+  // Subscription Pages
+  'Success': lazy(() => import('@/pages/subscription/Success')),
+  'Cancel': lazy(() => import('@/pages/subscription/Cancel')),
+  
+  // Auth Pages (for dynamic routing if needed)
+  'Auth': lazy(() => import('@/pages/Auth')),
+  'AuthCallback': lazy(() => import('@/pages/AuthCallback')),
+  'ResetPassword': lazy(() => import('@/pages/ResetPassword')),
+  
+  // Role-specific Dashboard Pages
+  'CreatorDashboardPage': lazy(() => import('@/pages/CreatorDashboardPage')),
+  'CreatorOnboardingPage': lazy(() => import('@/pages/CreatorOnboardingPage')),
   
   // Custom components for dynamic content
   'DynamicContent': lazy(() => import('./DynamicContent')),

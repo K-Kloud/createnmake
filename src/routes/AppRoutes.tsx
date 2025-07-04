@@ -47,11 +47,8 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 export const AppRoutes = () => {
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      {/* Use Dynamic Router for database-driven routing */}
-      <DynamicRouter />
-      
-      {/* Keep specialized nested routes */}
       <Routes>
+        {/* Nested routes that should override dynamic routes */}
         <Route path="/admin/*" element={
           <ProtectedRoute>
             <AdminRoutes />
@@ -61,6 +58,9 @@ export const AppRoutes = () => {
         <Route path="/creator/*" element={<CreatorRoutes />} />
         <Route path="/artisan/*" element={<ArtisanRoutes />}/>
         <Route path="/manufacturer/*" element={<ManufacturerRoutes />}/>
+        
+        {/* Dynamic Router handles all other routes */}
+        <Route path="*" element={<DynamicRouter />} />
       </Routes>
     </Suspense>
   );

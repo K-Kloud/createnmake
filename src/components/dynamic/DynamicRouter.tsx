@@ -8,12 +8,15 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import NotFound from '@/pages/NotFound';
 import { ComponentRegistry } from './ComponentRegistry';
 
-// Static routes that should always be available
+// Static routes that should always be available (excluding nested routes handled by AppRoutes)
 const staticRoutes = [
   { path: '/auth', component: lazy(() => import('@/pages/Auth')) },
   { path: '/auth/callback', component: lazy(() => import('@/pages/AuthCallback')) },
   { path: '/reset-password', component: lazy(() => import('@/pages/ResetPassword')) },
 ];
+
+// Routes that should be excluded from dynamic routing (handled by nested routers)
+const excludedPaths = ['/admin', '/crm', '/creator', '/artisan', '/manufacturer'];
 
 export const DynamicRouter = () => {
   const { pages, isLoading } = useDynamicPages();
@@ -51,8 +54,8 @@ export const DynamicRouter = () => {
           <Route key={path} path={path} element={<Component />} />
         ))}
         
-        {/* Dynamic routes from database */}
-        {pages?.filter(page => page.is_active).map((page) => {
+        {/* Dynamic routes from database (excluding nested routes) */}
+        {pages?.filter(page => page.is_active && !excludedPaths.some(excluded => page.route_path.startsWith(excluded))).map((page) => {
           const ComponentToRender = () => (
             <ComponentRegistry 
               componentName={page.component_name}
