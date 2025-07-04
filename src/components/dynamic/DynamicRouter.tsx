@@ -2,9 +2,10 @@ import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useDynamicPages } from '@/hooks/useDynamicPages';
 import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { NotFound } from '@/pages/NotFound';
+import NotFound from '@/pages/NotFound';
 import { ComponentRegistry } from './ComponentRegistry';
 
 // Static routes that should always be available
@@ -16,7 +17,8 @@ const staticRoutes = [
 
 export const DynamicRouter = () => {
   const { pages, isLoading } = useDynamicPages();
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
+  const { data: profile } = useProfile();
 
   if (isLoading) {
     return <LoadingSpinner />;

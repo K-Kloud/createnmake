@@ -1508,6 +1508,56 @@ export type Database = {
           },
         ]
       }
+      navigation_items: {
+        Row: {
+          allowed_roles: string[] | null
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string
+          metadata: Json | null
+          order_index: number
+          parent_id: string | null
+          path: string
+          requires_auth: boolean
+          updated_at: string
+        }
+        Insert: {
+          allowed_roles?: string[] | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label: string
+          metadata?: Json | null
+          order_index?: number
+          parent_id?: string | null
+          path: string
+          requires_auth?: boolean
+          updated_at?: string
+        }
+        Update: {
+          allowed_roles?: string[] | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          metadata?: Json | null
+          order_index?: number
+          parent_id?: string | null
+          path?: string
+          requires_auth?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "navigation_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "navigation_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       navigation_menus: {
         Row: {
           created_at: string

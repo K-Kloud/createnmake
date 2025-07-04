@@ -1,4 +1,5 @@
 
+import { Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";

@@ -1,9 +1,11 @@
-import { useFeatureFlags } from './useFeatureFlags';
+import { useFeatureFlags as useFeatureFlagsFromHook } from './useFeatureFlags';
 import { useAuth } from './useAuth';
+import { useProfile } from './useProfile';
 
 export const useFeatureFlag = (flagName: string): boolean => {
-  const { flags, isLoading } = useFeatureFlags();
-  const { user, profile } = useAuth();
+  const { flags, isLoading } = useFeatureFlagsFromHook();
+  const { user } = useAuth();
+  const { data: profile } = useProfile();
 
   if (isLoading || !flags) return false;
 
@@ -53,8 +55,8 @@ export const useFeatureFlag = (flagName: string): boolean => {
 };
 
 // Helper hook for multiple feature flags
-export const useFeatureFlags = () => {
-  const { flags, isLoading } = useFeatureFlags();
+export const useFeatureFlagHelpers = () => {
+  const { flags, isLoading } = useFeatureFlagsFromHook();
   
   const isEnabled = (flagName: string) => {
     return useFeatureFlag(flagName);
