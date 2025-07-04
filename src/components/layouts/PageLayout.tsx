@@ -4,6 +4,8 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import { useTranslation } from "react-i18next";
+import { ResponsiveContainer } from "@/components/ui/responsive-container";
+import { ResponsiveText } from "@/components/ui/responsive-text";
 
 interface BreadcrumbItem {
   title: string;
@@ -33,22 +35,26 @@ export const PageLayout = ({
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       
-      <main className={`flex-grow pt-20 ${className}`}>
+      <main className={`flex-grow pt-20 sm:pt-24 ${className}`}>
         {showBreadcrumbs && (
-          <div className="container mx-auto px-4 py-4 max-w-7xl">
+          <ResponsiveContainer padding="md" className="py-3 sm:py-4">
             <Breadcrumbs customItems={breadcrumbs} />
-          </div>
+          </ResponsiveContainer>
         )}
         
         {(title || description) && (
-          <div className="container mx-auto px-4 py-6 max-w-7xl">
+          <ResponsiveContainer padding="md" className="py-4 sm:py-6">
             {title && (
-              <h1 className="text-3xl font-bold mb-2 gradient-text">{title}</h1>
+              <ResponsiveText variant="h1" className="mb-2 gradient-text">
+                {title}
+              </ResponsiveText>
             )}
             {description && (
-              <p className="text-muted-foreground text-lg">{description}</p>
+              <ResponsiveText variant="body" className="text-muted-foreground">
+                {description}
+              </ResponsiveText>
             )}
-          </div>
+          </ResponsiveContainer>
         )}
         
         {children}

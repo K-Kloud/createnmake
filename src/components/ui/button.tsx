@@ -6,7 +6,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-sm font-rajdhani font-semibold ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-95",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl font-rajdhani font-semibold ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 active:scale-95 touch-manipulation",
   {
     variants: {
       variant: {
@@ -20,10 +20,12 @@ const buttonVariants = cva(
         neon: "bg-gradient-to-r from-neon-cyan to-neon-purple text-background font-bold hover:from-neon-purple hover:to-neon-cyan hover:shadow-neon",
       },
       size: {
-        default: "h-12 px-6 py-3",
-        sm: "h-10 rounded-xl px-4 text-xs",
-        lg: "h-14 rounded-2xl px-8 text-base",
-        icon: "h-12 w-12",
+        default: "h-11 px-4 py-2 text-sm sm:h-12 sm:px-6 sm:py-3 sm:text-base [&_svg]:size-4 sm:[&_svg]:size-5",
+        sm: "h-9 px-3 py-1 text-xs sm:h-10 sm:px-4 sm:text-sm rounded-xl [&_svg]:size-3 sm:[&_svg]:size-4",
+        lg: "h-12 px-6 py-3 text-base sm:h-14 sm:px-8 sm:py-4 sm:text-lg rounded-2xl [&_svg]:size-5 sm:[&_svg]:size-6",
+        icon: "h-11 w-11 sm:h-12 sm:w-12 [&_svg]:size-4 sm:[&_svg]:size-5",
+        "icon-sm": "h-9 w-9 sm:h-10 sm:w-10 rounded-xl [&_svg]:size-3 sm:[&_svg]:size-4",
+        "icon-lg": "h-12 w-12 sm:h-14 sm:w-14 rounded-2xl [&_svg]:size-5 sm:[&_svg]:size-6",
       },
     },
     defaultVariants: {

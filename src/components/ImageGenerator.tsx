@@ -4,6 +4,7 @@ import { GenerationForm } from "./generator/GenerationForm";
 import { PreviewDialog } from "./generator/PreviewDialog";
 import { AuthDialog } from "./auth/AuthDialog";
 import { Card } from "./ui/card";
+import { ResponsiveContainer } from "./ui/responsive-container";
 
 export const ImageGenerator = () => {
   // Keep using the same hook which internally uses the refactored hooks
@@ -41,8 +42,8 @@ export const ImageGenerator = () => {
   };
 
   return (
-    <div className="space-y-8 animate-float">
-      <Card className="bg-black/50 border border-white/10 backdrop-blur-md p-6 rounded-xl space-y-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,157,0.3)] hover:border-primary/40">
+    <ResponsiveContainer padding="md" className="space-y-6 sm:space-y-8 animate-float">
+      <Card className="bg-black/50 border border-white/10 backdrop-blur-md p-4 sm:p-6 rounded-xl space-y-4 sm:space-y-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,157,0.3)] hover:border-primary/40">
         <GenerationForm
           prompt={prompt}
           onPromptChange={setPrompt}
@@ -74,7 +75,7 @@ export const ImageGenerator = () => {
         isOpen={authDialogOpen} 
         onClose={() => setAuthDialogOpen(false)} 
       />
-    </div>
+    </ResponsiveContainer>
   );
 };
 
