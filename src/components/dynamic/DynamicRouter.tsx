@@ -8,6 +8,9 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import NotFound from '@/pages/NotFound';
 import { ComponentRegistry } from './ComponentRegistry';
 
+// Direct import for Index to avoid dynamic loading issues
+const IndexPage = lazy(() => import('@/pages/Index'));
+
 // Static routes that should always be available (excluding nested routes handled by AppRoutes)
 const staticRoutes = [
   { path: '/auth', component: lazy(() => import('@/pages/Auth')) },
@@ -56,6 +59,17 @@ export const DynamicRouter = () => {
         
         {/* Dynamic routes from database (excluding nested routes) */}
         {pages?.filter(page => page.is_active && !excludedPaths.some(excluded => page.route_path.startsWith(excluded))).map((page) => {
+          // Special handling for home route to avoid dynamic loading issues
+          if (page.route_path === '/') {
+            return (
+              <Route
+                key={page.id}
+                path={page.route_path}
+                element={<IndexPage />}
+              />
+            );
+          }
+
           const ComponentToRender = () => (
             <ComponentRegistry 
               componentName={page.component_name}

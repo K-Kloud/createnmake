@@ -3,7 +3,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 // Component registry mapping component names to actual components
 const componentMap = {
-  // Main Pages
+  // Main Pages - Direct imports to avoid dynamic loading issues
   'Index': lazy(() => import('@/pages/Index')),
   'Create': lazy(() => import('@/pages/Create')),
   'Design': lazy(() => import('@/pages/Design')),
