@@ -667,6 +667,42 @@ export type Database = {
           },
         ]
       }
+      contact_submissions: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          message: string
+          name: string
+          status: string | null
+          subject: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          message: string
+          name: string
+          status?: string | null
+          subject: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          status?: string | null
+          subject?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       content_blocks: {
         Row: {
           block_key: string
@@ -1733,10 +1769,12 @@ export type Database = {
           created_at: string | null
           creator_tier: string | null
           display_name: string | null
+          first_name: string | null
           id: string
           images_generated_count: number | null
           is_artisan: boolean | null
           is_creator: boolean | null
+          last_name: string | null
           location: string | null
           monthly_image_limit: number | null
           phone: string | null
@@ -1756,10 +1794,12 @@ export type Database = {
           created_at?: string | null
           creator_tier?: string | null
           display_name?: string | null
+          first_name?: string | null
           id: string
           images_generated_count?: number | null
           is_artisan?: boolean | null
           is_creator?: boolean | null
+          last_name?: string | null
           location?: string | null
           monthly_image_limit?: number | null
           phone?: string | null
@@ -1779,10 +1819,12 @@ export type Database = {
           created_at?: string | null
           creator_tier?: string | null
           display_name?: string | null
+          first_name?: string | null
           id?: string
           images_generated_count?: number | null
           is_artisan?: boolean | null
           is_creator?: boolean | null
+          last_name?: string | null
           location?: string | null
           monthly_image_limit?: number | null
           phone?: string | null
@@ -2106,6 +2148,36 @@ export type Database = {
           metadata?: Json | null
           notification_type?: string
           title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          browser_notifications: boolean | null
+          created_at: string | null
+          email_marketing: boolean | null
+          email_orders: boolean | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          browser_notifications?: boolean | null
+          created_at?: string | null
+          email_marketing?: boolean | null
+          email_orders?: boolean | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          browser_notifications?: boolean | null
+          created_at?: string | null
+          email_marketing?: boolean | null
+          email_orders?: boolean | null
+          id?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []

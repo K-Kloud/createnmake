@@ -3,12 +3,17 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminAccess } from "@/components/settings/AdminAccess";
 import { MFASettings } from "@/components/settings/MFASettings";
+import { useUserSettings } from "@/hooks/useUserSettings";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -40,6 +45,22 @@ const Settings = () => {
     },
     enabled: !!session?.user?.id,
   });
+
+  // Use settings hooks
+  const {
+    profileData,
+    preferences,
+    passwordData,
+    handleProfileChange,
+    handlePreferenceChange,
+    handlePasswordChange,
+    handleProfileSubmit,
+    handlePreferencesSubmit,
+    handlePasswordSubmit,
+    isUpdatingProfile,
+    isUpdatingPreferences,
+    isChangingPassword,
+  } = useUserSettings(session?.user?.id);
   
   // Redirect to home if not logged in
   useEffect(() => {
@@ -100,39 +121,49 @@ const Settings = () => {
 
                 <Card className="glass-card p-6">
                   <h2 className="text-xl font-bold mb-4">Profile</h2>
-                  <form className="space-y-6">
+                  <form className="space-y-6" onSubmit={handleProfileSubmit}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="text-sm font-medium block mb-1">First Name</label>
-                        <input
+                        <Input
                           type="text"
-                          className="w-full p-2 rounded-md border"
                           placeholder="Enter your first name"
+                          value={profileData.first_name}
+                          onChange={(e) => handleProfileChange('first_name', e.target.value)}
                         />
                       </div>
                       <div>
                         <label className="text-sm font-medium block mb-1">Last Name</label>
-                        <input
+                        <Input
                           type="text"
-                          className="w-full p-2 rounded-md border"
                           placeholder="Enter your last name"
+                          value={profileData.last_name}
+                          onChange={(e) => handleProfileChange('last_name', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium block mb-1">Display Name</label>
+                        <Input
+                          type="text"
+                          placeholder="Enter your display name"
+                          value={profileData.display_name}
+                          onChange={(e) => handleProfileChange('display_name', e.target.value)}
                         />
                       </div>
                       <div className="md:col-span-2">
                         <label className="text-sm font-medium block mb-1">Bio</label>
-                        <textarea
-                          className="w-full p-2 rounded-md border resize-none h-24"
+                        <Textarea
+                          className="resize-none h-24"
                           placeholder="Tell us about yourself"
-                        ></textarea>
+                          value={profileData.bio}
+                          onChange={(e) => handleProfileChange('bio', e.target.value)}
+                        />
                       </div>
                     </div>
                     <div className="flex justify-end">
-                      <button
-                        type="submit"
-                        className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90"
-                      >
-                        Update Profile
-                      </button>
+                      <Button type="submit" disabled={isUpdatingProfile}>
+                        {isUpdatingProfile ? "Updating..." : "Update Profile"}
+                      </Button>
                     </div>
                   </form>
                 </Card>
@@ -143,40 +174,40 @@ const Settings = () => {
                 
                 <Card className="glass-card p-6">
                   <h2 className="text-xl font-bold mb-4">Change Password</h2>
-                  <form className="space-y-6">
+                  <form className="space-y-6" onSubmit={handlePasswordSubmit}>
                     <div className="space-y-4">
                       <div>
                         <label className="text-sm font-medium block mb-1">Current Password</label>
-                        <input
+                        <Input
                           type="password"
-                          className="w-full p-2 rounded-md border"
                           placeholder="Enter current password"
+                          value={passwordData.current_password}
+                          onChange={(e) => handlePasswordChange('current_password', e.target.value)}
                         />
                       </div>
                       <div>
                         <label className="text-sm font-medium block mb-1">New Password</label>
-                        <input
+                        <Input
                           type="password"
-                          className="w-full p-2 rounded-md border"
                           placeholder="Enter new password"
+                          value={passwordData.new_password}
+                          onChange={(e) => handlePasswordChange('new_password', e.target.value)}
                         />
                       </div>
                       <div>
                         <label className="text-sm font-medium block mb-1">Confirm New Password</label>
-                        <input
+                        <Input
                           type="password"
-                          className="w-full p-2 rounded-md border"
                           placeholder="Confirm new password"
+                          value={passwordData.confirm_password}
+                          onChange={(e) => handlePasswordChange('confirm_password', e.target.value)}
                         />
                       </div>
                     </div>
                     <div className="flex justify-end">
-                      <button
-                        type="submit"
-                        className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90"
-                      >
-                        Update Password
-                      </button>
+                      <Button type="submit" disabled={isChangingPassword}>
+                        {isChangingPassword ? "Updating..." : "Update Password"}
+                      </Button>
                     </div>
                   </form>
                 </Card>
@@ -185,37 +216,46 @@ const Settings = () => {
               <TabsContent value="notifications">
                 <Card className="glass-card p-6">
                   <h2 className="text-xl font-bold mb-4">Notification Preferences</h2>
-                  <div className="space-y-4">
+                  <form className="space-y-4" onSubmit={handlePreferencesSubmit}>
                     <div className="flex items-start space-x-2">
-                      <input type="checkbox" id="email_orders" className="mt-1" />
+                      <Checkbox 
+                        id="email_orders" 
+                        checked={preferences.email_orders}
+                        onCheckedChange={(checked) => handlePreferenceChange('email_orders', !!checked)}
+                      />
                       <div>
                         <label htmlFor="email_orders" className="font-medium block">Order Updates</label>
                         <p className="text-sm text-muted-foreground">Receive email notifications about your orders</p>
                       </div>
                     </div>
                     <div className="flex items-start space-x-2">
-                      <input type="checkbox" id="email_marketing" className="mt-1" />
+                      <Checkbox 
+                        id="email_marketing" 
+                        checked={preferences.email_marketing}
+                        onCheckedChange={(checked) => handlePreferenceChange('email_marketing', !!checked)}
+                      />
                       <div>
                         <label htmlFor="email_marketing" className="font-medium block">Marketing</label>
                         <p className="text-sm text-muted-foreground">Receive promotional emails and offers</p>
                       </div>
                     </div>
                     <div className="flex items-start space-x-2">
-                      <input type="checkbox" id="browser_notifications" className="mt-1" />
+                      <Checkbox 
+                        id="browser_notifications" 
+                        checked={preferences.browser_notifications}
+                        onCheckedChange={(checked) => handlePreferenceChange('browser_notifications', !!checked)}
+                      />
                       <div>
                         <label htmlFor="browser_notifications" className="font-medium block">Browser Notifications</label>
                         <p className="text-sm text-muted-foreground">Receive notifications in your browser</p>
                       </div>
                     </div>
                     <div className="flex justify-end mt-6">
-                      <button
-                        type="submit"
-                        className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90"
-                      >
-                        Save Preferences
-                      </button>
+                      <Button type="submit" disabled={isUpdatingPreferences}>
+                        {isUpdatingPreferences ? "Saving..." : "Save Preferences"}
+                      </Button>
                     </div>
-                  </div>
+                  </form>
                 </Card>
               </TabsContent>
 

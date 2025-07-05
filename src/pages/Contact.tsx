@@ -5,10 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
+import { useContactForm } from "@/hooks/useContactForm";
 
 const Contact = () => {
   const phoneNumber = "+44 7438306305";
   const whatsappLink = `https://wa.me/${phoneNumber.replace(/[^0-9]/g, '')}`;
+  const { formData, handleInputChange, handleSubmit, isSubmitting } = useContactForm();
 
   return (
     <MainLayout
@@ -24,20 +26,44 @@ const Contact = () => {
           <Card className="glass-card">
             <CardContent className="p-6">
               <h2 className="text-2xl font-semibold mb-6">Get in Touch</h2>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
-                  <Input placeholder="Your Name" />
+                  <Input 
+                    placeholder="Your Name" 
+                    value={formData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    required
+                  />
                 </div>
                 <div>
-                  <Input type="email" placeholder="Your Email" />
+                  <Input 
+                    type="email" 
+                    placeholder="Your Email" 
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    required
+                  />
                 </div>
                 <div>
-                  <Input placeholder="Subject" />
+                  <Input 
+                    placeholder="Subject" 
+                    value={formData.subject}
+                    onChange={(e) => handleInputChange('subject', e.target.value)}
+                    required
+                  />
                 </div>
                 <div>
-                  <Textarea placeholder="Your Message" className="min-h-[150px]" />
+                  <Textarea 
+                    placeholder="Your Message" 
+                    className="min-h-[150px]" 
+                    value={formData.message}
+                    onChange={(e) => handleInputChange('message', e.target.value)}
+                    required
+                  />
                 </div>
-                <Button className="w-full">Send Message</Button>
+                <Button className="w-full" type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Sending..." : "Send Message"}
+                </Button>
               </form>
             </CardContent>
           </Card>
