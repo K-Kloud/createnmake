@@ -7,55 +7,74 @@ import { Badge } from "@/components/ui/badge";
 import { StarIcon, MessageSquare, Heart, Image, Package, DollarSign, Users } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
-import { MarketplaceGrid } from "./MarketplaceGrid";
 import { CreatorRatings } from "./CreatorRatings";
 import { GalleryImage } from "@/types/gallery";
+import { useCreatorProfile } from "@/hooks/useCreatorProfile";
+import { useCreatorStats } from "@/hooks/useCreatorStats";
+import { useCreatorPortfolio } from "@/hooks/useCreatorPortfolio";
+import { useFollowStatus } from "@/hooks/useFollowStatus";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface CreatorProfileProps {
-  creator: {
-    id: string;
-    name: string;
-    avatar: string;
-    bio: string;
-    followers: number;
-    joined: string;
-    rating: number;
-    reviewCount: number;
-    totalSales: number;
-    earnings: number;
-    designs: number;
-  };
-  creatorDesigns: GalleryImage[];
+  creatorId: string;
   onLike: (imageId: number) => void;
   onView: (imageId: number) => void;
-  onFollow: (creatorId: string) => void;
   onMessage: (creatorId: string) => void;
 }
 
 export const CreatorProfile = ({ 
-  creator, 
-  creatorDesigns,
+  creatorId,
   onLike,
   onView,
-  onFollow,
   onMessage
 }: CreatorProfileProps) => {
-  const [isFollowing, setIsFollowing] = useState(false);
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
-
-  const handleFollow = () => {
-    setIsFollowing(!isFollowing);
-    onFollow(creator.id);
-  };
+  
+  // Fetch creator data using hooks
+  const { data: creator, isLoading: profileLoading } = useCreatorProfile(creatorId);
+  const { data: stats, isLoading: statsLoading } = useCreatorStats(creatorId);
+  const { data: portfolio, isLoading: portfolioLoading } = useCreatorPortfolio(creatorId, 6);
+  const { isFollowing, toggleFollow, isToggling } = useFollowStatus(creatorId);
 
   const handleMessage = () => {
-    onMessage(creator.id);
+    onMessage(creatorId);
   };
 
   const handleImageClick = (image: GalleryImage) => {
     setSelectedImage(image);
     onView(image.id);
   };
+
+  if (profileLoading) {
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline">View Profile</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-3xl">
+          <div className="flex items-center justify-center p-8">
+            <LoadingSpinner />
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  if (!creator) {
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline">View Profile</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-3xl">
+          <div className="text-center p-8">
+            <p>Creator not found</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog>
@@ -76,53 +95,56 @@ export const CreatorProfile = ({
             <Card>
               <CardHeader className="text-center">
                 <Avatar className="h-20 w-20 mx-auto mb-2">
-                  <AvatarImage src={creator.avatar} alt={creator.name} />
-                  <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
+                  <AvatarImage src={creator.avatar_url || ''} alt={creator.display_name || 'Creator'} />
+                  <AvatarFallback>{(creator.display_name || 'U').charAt(0)}</AvatarFallback>
                 </Avatar>
-                <CardTitle>{creator.name}</CardTitle>
-                <CardDescription>Member since {creator.joined}</CardDescription>
-                
-                <div className="flex items-center justify-center mt-2">
-                  <StarIcon className="text-yellow-500 fill-yellow-500 h-4 w-4 mr-1" />
-                  <span>{creator.rating.toFixed(1)}</span>
-                  <span className="text-muted-foreground ml-1">({creator.reviewCount} reviews)</span>
-                </div>
+                <CardTitle>{creator.display_name || 'Anonymous Creator'}</CardTitle>
+                <CardDescription>Member since {new Date(creator.created_at).getFullYear()}</CardDescription>
               </CardHeader>
               
               <CardContent className="space-y-4">
-                <p className="text-sm">{creator.bio}</p>
+                {creator.bio && <p className="text-sm">{creator.bio}</p>}
                 
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="flex flex-col items-center p-2 bg-muted rounded-md">
-                    <Users className="h-4 w-4 mb-1" />
-                    <span className="text-xs text-muted-foreground">Followers</span>
-                    <span className="font-medium">{creator.followers}</span>
+                {statsLoading ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    {[...Array(4)].map((_, i) => (
+                      <Skeleton key={i} className="h-16 rounded-md" />
+                    ))}
                   </div>
-                  <div className="flex flex-col items-center p-2 bg-muted rounded-md">
-                    <Image className="h-4 w-4 mb-1" />
-                    <span className="text-xs text-muted-foreground">Designs</span>
-                    <span className="font-medium">{creator.designs}</span>
+                ) : stats && (
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex flex-col items-center p-2 bg-muted rounded-md">
+                      <Users className="h-4 w-4 mb-1" />
+                      <span className="text-xs text-muted-foreground">Followers</span>
+                      <span className="font-medium">{stats.followers_count}</span>
+                    </div>
+                    <div className="flex flex-col items-center p-2 bg-muted rounded-md">
+                      <Image className="h-4 w-4 mb-1" />
+                      <span className="text-xs text-muted-foreground">Designs</span>
+                      <span className="font-medium">{stats.designs_count}</span>
+                    </div>
+                    <div className="flex flex-col items-center p-2 bg-muted rounded-md">
+                      <Heart className="h-4 w-4 mb-1" />
+                      <span className="text-xs text-muted-foreground">Likes</span>
+                      <span className="font-medium">{stats.total_likes}</span>
+                    </div>
+                    <div className="flex flex-col items-center p-2 bg-muted rounded-md">
+                      <Package className="h-4 w-4 mb-1" />
+                      <span className="text-xs text-muted-foreground">Views</span>
+                      <span className="font-medium">{stats.total_views}</span>
+                    </div>
                   </div>
-                  <div className="flex flex-col items-center p-2 bg-muted rounded-md">
-                    <Package className="h-4 w-4 mb-1" />
-                    <span className="text-xs text-muted-foreground">Sales</span>
-                    <span className="font-medium">{creator.totalSales}</span>
-                  </div>
-                  <div className="flex flex-col items-center p-2 bg-muted rounded-md">
-                    <DollarSign className="h-4 w-4 mb-1" />
-                    <span className="text-xs text-muted-foreground">Earnings</span>
-                    <span className="font-medium">${creator.earnings}</span>
-                  </div>
-                </div>
+                )}
               </CardContent>
               
               <CardFooter className="flex flex-col gap-2">
                 <Button 
                   className="w-full" 
                   variant={isFollowing ? "outline" : "default"}
-                  onClick={handleFollow}
+                  onClick={toggleFollow}
+                  disabled={isToggling}
                 >
-                  {isFollowing ? "Following" : "Follow"}
+                  {isToggling ? "Loading..." : (isFollowing ? "Following" : "Follow")}
                 </Button>
                 <Button 
                   className="w-full" 
@@ -145,53 +167,77 @@ export const CreatorProfile = ({
               </TabsList>
               
               <TabsContent value="portfolio" className="mt-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {creatorDesigns.slice(0, 6).map((design) => (
-                    <div 
-                      key={design.id} 
-                      className="aspect-square relative rounded-md overflow-hidden cursor-pointer"
-                      onClick={() => handleImageClick(design)}
-                    >
-                      <img 
-                        src={design.url} 
-                        alt={design.prompt} 
-                        className="w-full h-full object-cover hover:scale-105 transition-transform"
-                      />
-                      {design.price && (
-                        <Badge className="absolute bottom-2 right-2 bg-background/80">
-                          ${design.price}
-                        </Badge>
-                      )}
-                      <div className="absolute top-2 right-2 flex items-center space-x-2">
-                        <Badge variant="outline" className="bg-background/80">
-                          <Heart className="h-3 w-3 mr-1" fill="currentColor" />
-                          {design.likes}
-                        </Badge>
+                {portfolioLoading ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {[...Array(6)].map((_, i) => (
+                      <Skeleton key={i} className="aspect-square rounded-md" />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {portfolio?.map((design) => (
+                      <div 
+                        key={design.id} 
+                        className="aspect-square relative rounded-md overflow-hidden cursor-pointer"
+                        onClick={() => handleImageClick(design)}
+                      >
+                        <img 
+                          src={design.url} 
+                          alt={design.prompt} 
+                          className="w-full h-full object-cover hover:scale-105 transition-transform"
+                        />
+                        {design.price && (
+                          <Badge className="absolute bottom-2 right-2 bg-background/80">
+                            {design.price}
+                          </Badge>
+                        )}
+                        <div className="absolute top-2 right-2 flex items-center space-x-2">
+                          <Badge variant="outline" className="bg-background/80">
+                            <Heart className="h-3 w-3 mr-1" fill="currentColor" />
+                            {design.likes}
+                          </Badge>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </TabsContent>
               
               <TabsContent value="reviews" className="mt-4">
-                <CreatorRatings creatorId={creator.id} />
+                <CreatorRatings creatorId={creatorId} />
               </TabsContent>
               
               <TabsContent value="achievements" className="mt-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <Badge variant="outline" className="flex items-center justify-center p-4">
-                    <StarIcon className="mr-2 h-4 w-4 fill-yellow-500" /> Top Seller
-                  </Badge>
-                  <Badge variant="outline" className="flex items-center justify-center p-4">
-                    <Heart className="mr-2 h-4 w-4 fill-red-500" /> Fan Favorite
-                  </Badge>
-                  <Badge variant="outline" className="flex items-center justify-center p-4">
-                    <Users className="mr-2 h-4 w-4" /> 100+ Followers
-                  </Badge>
-                  <Badge variant="outline" className="flex items-center justify-center p-4">
-                    <Package className="mr-2 h-4 w-4" /> 50+ Sales
-                  </Badge>
-                </div>
+                {statsLoading ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    {[...Array(4)].map((_, i) => (
+                      <Skeleton key={i} className="h-16 rounded-md" />
+                    ))}
+                  </div>
+                ) : stats && (
+                  <div className="grid grid-cols-2 gap-3">
+                    {stats.designs_count >= 10 && (
+                      <Badge variant="outline" className="flex items-center justify-center p-4">
+                        <Image className="mr-2 h-4 w-4" /> Prolific Creator
+                      </Badge>
+                    )}
+                    {stats.total_likes >= 100 && (
+                      <Badge variant="outline" className="flex items-center justify-center p-4">
+                        <Heart className="mr-2 h-4 w-4 fill-red-500" /> Popular Designs
+                      </Badge>
+                    )}
+                    {stats.followers_count >= 50 && (
+                      <Badge variant="outline" className="flex items-center justify-center p-4">
+                        <Users className="mr-2 h-4 w-4" /> Growing Community
+                      </Badge>
+                    )}
+                    {stats.total_views >= 1000 && (
+                      <Badge variant="outline" className="flex items-center justify-center p-4">
+                        <Package className="mr-2 h-4 w-4" /> High Visibility
+                      </Badge>
+                    )}
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </div>

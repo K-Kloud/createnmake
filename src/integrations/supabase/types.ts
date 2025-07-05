@@ -1732,16 +1732,20 @@ export type Database = {
           business_type: string | null
           created_at: string | null
           creator_tier: string | null
+          display_name: string | null
           id: string
           images_generated_count: number | null
           is_artisan: boolean | null
           is_creator: boolean | null
+          location: string | null
           monthly_image_limit: number | null
           phone: string | null
+          social_links: Json | null
           specialties: string[] | null
           subscription_updated_at: string | null
           updated_at: string | null
           username: string | null
+          website: string | null
         }
         Insert: {
           address?: string | null
@@ -1751,16 +1755,20 @@ export type Database = {
           business_type?: string | null
           created_at?: string | null
           creator_tier?: string | null
+          display_name?: string | null
           id: string
           images_generated_count?: number | null
           is_artisan?: boolean | null
           is_creator?: boolean | null
+          location?: string | null
           monthly_image_limit?: number | null
           phone?: string | null
+          social_links?: Json | null
           specialties?: string[] | null
           subscription_updated_at?: string | null
           updated_at?: string | null
           username?: string | null
+          website?: string | null
         }
         Update: {
           address?: string | null
@@ -1770,16 +1778,20 @@ export type Database = {
           business_type?: string | null
           created_at?: string | null
           creator_tier?: string | null
+          display_name?: string | null
           id?: string
           images_generated_count?: number | null
           is_artisan?: boolean | null
           is_creator?: boolean | null
+          location?: string | null
           monthly_image_limit?: number | null
           phone?: string | null
+          social_links?: Json | null
           specialties?: string[] | null
           subscription_updated_at?: string | null
           updated_at?: string | null
           username?: string | null
+          website?: string | null
         }
         Relationships: []
       }
@@ -2041,6 +2053,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_follows: {
+        Row: {
+          created_at: string | null
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
       user_notifications: {
         Row: {
           created_at: string | null
@@ -2220,6 +2253,10 @@ export type Database = {
           avg_time_spent_seconds: number
           bounce_rate: number
         }[]
+      }
+      get_user_stats: {
+        Args: { user_uuid: string }
+        Returns: Json
       }
       increment_views: {
         Args: { image_id: number }

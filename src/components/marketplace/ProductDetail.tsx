@@ -281,23 +281,9 @@ export const ProductDetail = ({
                       <span>{product.creator.name}</span>
                     </div>
                     <CreatorProfile
-                      creator={{
-                        id: product.user_id,
-                        name: product.creator.name,
-                        avatar: product.creator.avatar,
-                        bio: "Passionate designer creating unique pieces that blend style and functionality.",
-                        followers: 256,
-                        joined: "Jan 2023",
-                        rating: 4.8,
-                        reviewCount: 45,
-                        totalSales: 112,
-                        earnings: 5600,
-                        designs: 37
-                      }}
-                      creatorDesigns={[product, ...similarProducts]}
+                      creatorId={product.user_id}
                       onLike={onLike}
                       onView={() => {}}
-                      onFollow={() => {}}
                       onMessage={() => {}}
                     />
                   </div>
