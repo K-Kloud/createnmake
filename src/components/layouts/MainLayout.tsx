@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
 import { SEO, SEOProps } from "@/components/SEO";
 import { ResponsiveContainer } from "@/components/ui/responsive-container";
+import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -23,6 +24,9 @@ export const MainLayout = ({ children, seo }: MainLayoutProps) => {
       <Header />
       <main className="flex-grow pt-16 sm:pt-20">
         <ResponsiveContainer padding="none">
+          <div className="container mx-auto px-4 py-2">
+            <Breadcrumbs />
+          </div>
           {children}
         </ResponsiveContainer>
       </main>

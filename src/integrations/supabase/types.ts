@@ -551,6 +551,33 @@ export type Database = {
         }
         Relationships: []
       }
+      breadcrumb_configs: {
+        Row: {
+          created_at: string | null
+          custom_segments: Json | null
+          id: string
+          is_active: boolean | null
+          route_pattern: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          custom_segments?: Json | null
+          id?: string
+          is_active?: boolean | null
+          route_pattern: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          custom_segments?: Json | null
+          id?: string
+          is_active?: boolean | null
+          route_pattern?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       comment_replies: {
         Row: {
           comment_id: number | null

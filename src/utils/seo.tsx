@@ -8,7 +8,7 @@ import { Helmet } from "react-helmet";
 export interface SEOProps {
   title?: string;
   description?: string;
-  canonical?: string;
+  canonicalUrl?: string;
   ogImage?: string;
   ogType?: string;
   noIndex?: boolean;
@@ -18,7 +18,7 @@ export interface SEOProps {
 export const SEO = ({
   title,
   description,
-  canonical,
+  canonicalUrl: canonical,
   ogImage,
   ogType = "website",
   noIndex = false,
