@@ -769,6 +769,118 @@ export type Database = {
         }
         Relationships: []
       }
+      content_publishing: {
+        Row: {
+          content_block_id: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          published_at: string | null
+          reviewed_by: string | null
+          scheduled_at: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          content_block_id: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          published_at?: string | null
+          reviewed_by?: string | null
+          scheduled_at?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          content_block_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          published_at?: string | null
+          reviewed_by?: string | null
+          scheduled_at?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_content_publishing_block"
+            columns: ["content_block_id"]
+            isOneToOne: false
+            referencedRelation: "content_blocks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_templates: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          template_name: string
+          template_schema: Json
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          template_name: string
+          template_schema?: Json
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          template_name?: string
+          template_schema?: Json
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      content_versions: {
+        Row: {
+          content: Json
+          content_block_id: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          metadata: Json | null
+          version_number: number
+        }
+        Insert: {
+          content?: Json
+          content_block_id: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          metadata?: Json | null
+          version_number?: number
+        }
+        Update: {
+          content?: Json
+          content_block_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          metadata?: Json | null
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_content_versions_block"
+            columns: ["content_block_id"]
+            isOneToOne: false
+            referencedRelation: "content_blocks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversion_events: {
         Row: {
           completed: boolean | null

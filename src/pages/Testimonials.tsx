@@ -1,10 +1,11 @@
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import { MainLayout } from "@/components/layouts/MainLayout";
+import { DynamicContent } from "@/components/dynamic/DynamicContent";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
 
 const Testimonials = () => {
-  const testimonials = [
+  // Fallback testimonial data in case dynamic content is not available
+  const fallbackTestimonials = [
     {
       name: "Sarah Johnson",
       role: "Digital Artist",
@@ -36,12 +37,23 @@ const Testimonials = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+    <MainLayout
+      seo={{
+        title: "Customer Testimonials",
+        description: "Read what our customers say about our AI-powered image generation platform.",
+        canonicalUrl: `${window.location.origin}/testimonials`,
+        keywords: ["testimonials", "reviews", "customers", "feedback", "AI", "image generation"]
+      }}
+    >
       <div className="container px-4 py-24 flex-grow">
         <h1 className="text-4xl font-bold mb-8 gradient-text">Testimonials</h1>
+        
+        {/* Try to load dynamic content first */}
+        <DynamicContent blockKey="testimonials_section" className="mb-8" />
+        
+        {/* Fallback static content */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {testimonials.map((testimonial, index) => (
+          {fallbackTestimonials.map((testimonial, index) => (
             <Card key={index} className="glass-card">
               <CardContent className="p-6">
                 <div className="flex items-center space-x-4 mb-4">
@@ -52,10 +64,10 @@ const Testimonials = () => {
                   />
                   <div>
                     <h3 className="font-semibold">{testimonial.name}</h3>
-                    <p className="text-sm text-gray-400">{testimonial.role}</p>
+                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
                   </div>
                 </div>
-                <p className="text-gray-300 mb-4">{testimonial.content}</p>
+                <p className="text-muted-foreground mb-4">{testimonial.content}</p>
                 <div className="flex space-x-1">
                   {Array.from({ length: testimonial.rating }).map((_, i) => (
                     <Star
@@ -69,8 +81,7 @@ const Testimonials = () => {
           ))}
         </div>
       </div>
-      <Footer />
-    </div>
+    </MainLayout>
   );
 };
 

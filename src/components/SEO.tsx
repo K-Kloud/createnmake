@@ -2,11 +2,13 @@
 import { useEffect } from "react";
 
 export interface SEOProps {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   canonicalUrl?: string;
   ogImage?: string;
   ogType?: string;
+  noIndex?: boolean;
+  keywords?: string[];
   metaTags?: MetaTag[];
 }
 
@@ -21,10 +23,14 @@ export const SEO = ({
   description,
   canonicalUrl,
   ogImage,
-  ogType = "website",
+  ogType = "website", 
+  noIndex = false,
+  keywords = [],
   metaTags = []
 }: SEOProps) => {
   useEffect(() => {
+    if (!title || !description) return;
+    
     // Update document title
     document.title = title;
 
@@ -36,6 +42,28 @@ export const SEO = ({
       document.head.appendChild(metaDescription);
     }
     metaDescription.setAttribute('content', description);
+
+    // Set keywords
+    if (keywords.length > 0) {
+      let keywordsMeta = document.querySelector('meta[name="keywords"]');
+      if (!keywordsMeta) {
+        keywordsMeta = document.createElement('meta');
+        keywordsMeta.setAttribute('name', 'keywords');
+        document.head.appendChild(keywordsMeta);
+      }
+      keywordsMeta.setAttribute('content', keywords.join(', '));
+    }
+
+    // Set robots meta for noIndex
+    if (noIndex) {
+      let robotsMeta = document.querySelector('meta[name="robots"]');
+      if (!robotsMeta) {
+        robotsMeta = document.createElement('meta');
+        robotsMeta.setAttribute('name', 'robots');
+        document.head.appendChild(robotsMeta);
+      }
+      robotsMeta.setAttribute('content', 'noindex, nofollow');
+    }
 
     // Set canonical URL
     if (canonicalUrl) {
@@ -89,7 +117,7 @@ export const SEO = ({
     return () => {
       // We don't remove the tags as they should persist between page changes
     };
-  }, [title, description, canonicalUrl, ogImage, ogType, metaTags]);
+  }, [title, description, canonicalUrl, ogImage, ogType, noIndex, keywords, metaTags]);
 
   return null; // This component doesn't render anything
 };

@@ -1,5 +1,5 @@
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import { MainLayout } from "@/components/layouts/MainLayout";
+import { DynamicContent } from "@/components/dynamic/DynamicContent";
 import {
   Accordion,
   AccordionContent,
@@ -8,7 +8,8 @@ import {
 } from "@/components/ui/accordion";
 
 const FAQ = () => {
-  const faqs = [
+  // Fallback FAQ data in case dynamic content is not available
+  const fallbackFaqs = [
     {
       question: "What is OpenT?",
       answer: "OpenT is an AI-powered image generation platform that allows you to create stunning visuals using advanced machine learning technology.",
@@ -28,14 +29,25 @@ const FAQ = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+    <MainLayout
+      seo={{
+        title: "Frequently Asked Questions",
+        description: "Find answers to common questions about our AI-powered image generation platform.",
+        canonicalUrl: `${window.location.origin}/faq`,
+        keywords: ["FAQ", "questions", "help", "support", "AI", "image generation"]
+      }}
+    >
       <div className="container px-4 py-24 flex-grow">
         <h1 className="text-4xl font-bold mb-8 gradient-text">
           Frequently Asked Questions
         </h1>
+        
+        {/* Try to load dynamic content first */}
+        <DynamicContent blockKey="faq_section" className="mb-8" />
+        
+        {/* Fallback static content */}
         <Accordion type="single" collapsible className="w-full max-w-3xl mx-auto">
-          {faqs.map((faq, index) => (
+          {fallbackFaqs.map((faq, index) => (
             <AccordionItem key={index} value={`item-${index}`}>
               <AccordionTrigger>{faq.question}</AccordionTrigger>
               <AccordionContent>{faq.answer}</AccordionContent>
@@ -43,8 +55,7 @@ const FAQ = () => {
           ))}
         </Accordion>
       </div>
-      <Footer />
-    </div>
+    </MainLayout>
   );
 };
 

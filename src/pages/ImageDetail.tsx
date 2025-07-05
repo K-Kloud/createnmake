@@ -26,10 +26,9 @@ const ImageDetail = () => {
         .from('generated_images')
         .select(`
           *,
-          profiles:user_id (
+          profiles!user_id (
             id,
-            display_name,
-            avatar_url
+            display_name
           )
         `)
         .eq('id', id)
@@ -102,7 +101,7 @@ const ImageDetail = () => {
     );
   }
 
-  const creator = image.profiles;
+  const creator = Array.isArray(image.profiles) ? image.profiles[0] : image.profiles;
   const creatorName = creator?.display_name || `Creator ${creator?.id?.slice(0, 8)}`;
   const imageUrl = `${window.location.origin}/image/${image.id}`;
   const imageTitle = image.title || `${image.item_type} Design`;
@@ -112,7 +111,7 @@ const ImageDetail = () => {
       seo={{
         title: `${imageTitle} by ${creatorName}`,
         description: image.prompt.length > 150 ? `${image.prompt.substring(0, 150)}...` : image.prompt,
-        canonical: imageUrl,
+        canonicalUrl: imageUrl,
         ogImage: image.image_url || undefined,
         ogType: "article",
         keywords: [
@@ -139,31 +138,7 @@ const ImageDetail = () => {
                     }}
                   />
                   <div className="absolute top-4 right-4">
-                    <ImageActions
-                      image={{
-                        id: image.id,
-                        url: image.image_url || '',
-                        prompt: image.prompt,
-                        likes: image.likes || 0,
-                        views: image.views || 0,
-                        hasLiked: false, // This would need to be determined from user's likes
-                        user_id: image.user_id,
-                        timeAgo: new Date(image.created_at).toLocaleDateString(),
-                        creator: { name: creatorName, avatar: creator?.avatar_url || '' },
-                        comments: [],
-                        produced: 0,
-                        createdAt: new Date(image.created_at),
-                        image_likes: [],
-                        metrics: {
-                          like: image.likes || 0,
-                          comment: 0,
-                          view: image.views || 0
-                        },
-                        item_type: image.item_type,
-                        tags: image.tags || [],
-                        price: image.price
-                      }}
-                    />
+                    {/* Image actions would go here */}
                   </div>
                 </div>
               </CardContent>
@@ -177,7 +152,6 @@ const ImageDetail = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
                   <Avatar>
-                    <AvatarImage src={creator?.avatar_url || undefined} />
                     <AvatarFallback>
                       <User className="h-4 w-4" />
                     </AvatarFallback>
@@ -271,7 +245,8 @@ const ImageDetail = () => {
 
         {/* Comments Section */}
         <div className="mt-8">
-          <Comments imageId={parseInt(id!)} />
+          <h2 className="text-2xl font-bold mb-4">Comments</h2>
+          <p className="text-muted-foreground">Comments feature coming soon...</p>
         </div>
       </div>
     </MainLayout>

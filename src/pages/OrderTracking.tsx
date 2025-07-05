@@ -136,7 +136,7 @@ const OrderTracking = () => {
       seo={{
         title: `Order #${order.id} - Tracking`,
         description: `Track your order #${order.id}. Current status: ${getStatusLabel(order.status)}`,
-        canonical: orderUrl,
+        canonicalUrl: orderUrl,
         noIndex: true // Order pages should not be indexed
       }}
     >
