@@ -628,6 +628,48 @@ export type Database = {
         }
         Relationships: []
       }
+      collaborative_documents: {
+        Row: {
+          collaborators: Json | null
+          content: Json
+          created_at: string | null
+          document_name: string
+          document_type: string
+          id: string
+          lock_info: Json | null
+          owner_id: string
+          permissions: Json | null
+          updated_at: string | null
+          version: number | null
+        }
+        Insert: {
+          collaborators?: Json | null
+          content?: Json
+          created_at?: string | null
+          document_name: string
+          document_type: string
+          id?: string
+          lock_info?: Json | null
+          owner_id: string
+          permissions?: Json | null
+          updated_at?: string | null
+          version?: number | null
+        }
+        Update: {
+          collaborators?: Json | null
+          content?: Json
+          created_at?: string | null
+          document_name?: string
+          document_type?: string
+          id?: string
+          lock_info?: Json | null
+          owner_id?: string
+          permissions?: Json | null
+          updated_at?: string | null
+          version?: number | null
+        }
+        Relationships: []
+      }
       comment_replies: {
         Row: {
           comment_id: number | null
@@ -2149,6 +2191,129 @@ export type Database = {
           },
         ]
       }
+      realtime_analytics_events: {
+        Row: {
+          event_category: string
+          event_data: Json
+          event_name: string
+          id: string
+          processed: boolean | null
+          session_id: string | null
+          timestamp: string | null
+          user_id: string | null
+        }
+        Insert: {
+          event_category: string
+          event_data?: Json
+          event_name: string
+          id?: string
+          processed?: boolean | null
+          session_id?: string | null
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          event_category?: string
+          event_data?: Json
+          event_name?: string
+          id?: string
+          processed?: boolean | null
+          session_id?: string | null
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      realtime_notification_queue: {
+        Row: {
+          created_at: string | null
+          delivered_at: string | null
+          delivery_method: string[] | null
+          id: string
+          max_retries: number | null
+          message: string
+          notification_type: string
+          payload: Json | null
+          priority: number | null
+          retry_count: number | null
+          scheduled_for: string | null
+          status: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          delivered_at?: string | null
+          delivery_method?: string[] | null
+          id?: string
+          max_retries?: number | null
+          message: string
+          notification_type: string
+          payload?: Json | null
+          priority?: number | null
+          retry_count?: number | null
+          scheduled_for?: string | null
+          status?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          delivered_at?: string | null
+          delivery_method?: string[] | null
+          id?: string
+          max_retries?: number | null
+          message?: string
+          notification_type?: string
+          payload?: Json | null
+          priority?: number | null
+          retry_count?: number | null
+          scheduled_for?: string | null
+          status?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      realtime_sessions: {
+        Row: {
+          channel_name: string
+          created_at: string | null
+          device_info: Json | null
+          id: string
+          last_seen: string | null
+          presence_data: Json | null
+          session_id: string
+          status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          channel_name: string
+          created_at?: string | null
+          device_info?: Json | null
+          id?: string
+          last_seen?: string | null
+          presence_data?: Json | null
+          session_id: string
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          channel_name?: string
+          created_at?: string | null
+          device_info?: Json | null
+          id?: string
+          last_seen?: string | null
+          presence_data?: Json | null
+          session_id?: string
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       search_analytics: {
         Row: {
           clicked_result_position: number | null
@@ -2287,6 +2452,39 @@ export type Database = {
           status?: string
           sync_type?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      system_health_metrics: {
+        Row: {
+          alert_threshold_exceeded: boolean | null
+          component_name: string
+          id: string
+          metadata: Json | null
+          metric_name: string
+          metric_unit: string
+          metric_value: number
+          timestamp: string | null
+        }
+        Insert: {
+          alert_threshold_exceeded?: boolean | null
+          component_name: string
+          id?: string
+          metadata?: Json | null
+          metric_name: string
+          metric_unit: string
+          metric_value: number
+          timestamp?: string | null
+        }
+        Update: {
+          alert_threshold_exceeded?: boolean | null
+          component_name?: string
+          id?: string
+          metadata?: Json | null
+          metric_name?: string
+          metric_unit?: string
+          metric_value?: number
+          timestamp?: string | null
         }
         Relationships: []
       }
