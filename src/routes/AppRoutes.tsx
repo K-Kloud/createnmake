@@ -13,6 +13,7 @@ import { AdminRoutes } from "./AdminRoutes";
 const CreatorProfile = lazy(() => import("@/pages/CreatorProfile"));
 const ImageDetail = lazy(() => import("@/pages/ImageDetail"));
 const OrderTracking = lazy(() => import("@/pages/OrderTracking"));
+const MakerDetail = lazy(() => import("@/pages/MakerDetail"));
 
 export const AppRoutes = () => {
   return (
@@ -33,6 +34,7 @@ export const AppRoutes = () => {
         <Route path="/creator/:id" element={<CreatorProfile />} />
         <Route path="/image/:id" element={<ImageDetail />} />
         <Route path="/order/:id" element={<OrderTracking />} />
+        <Route path="/maker/:id" element={<MakerDetail />} />
         
         {/* Dynamic Router handles all other routes */}
         <Route path="*" element={<DynamicRouter />} />
