@@ -35,10 +35,16 @@ export const useMarketplaceActions = ({
   const { optimisticLike } = useOptimisticLike({ likeMutation });
 
   const handleLike = async (imageId: number) => {
+    console.log('🔴 handleLike called for imageId:', imageId);
+    
     // Find the image we want
     const allImages = images.flatMap(page => Array.isArray(page) ? page : []);
     const image = allImages.find(img => img.id === imageId);
-    if (!image) return;
+    
+    if (!image) {
+      console.log('🔴 Image not found:', imageId);
+      return;
+    }
 
     if (!session?.user) {
       toast({
@@ -50,6 +56,7 @@ export const useMarketplaceActions = ({
     }
 
     const currentHasLiked = Boolean(image.image_likes?.some(like => like.user_id === session.user.id));
+    console.log('🔴 Current like status:', { imageId, currentHasLiked, userId: session.user.id });
     
     // Use optimistic update
     await optimisticLike(imageId, currentHasLiked, session.user.id);

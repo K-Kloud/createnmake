@@ -1,13 +1,26 @@
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export const useMarketplaceRealtimeSubscription = () => {
   const queryClient = useQueryClient();
+  const invalidationTimeoutRef = useRef<NodeJS.Timeout>();
   
   useEffect(() => {
     console.log("🔴 Setting up real-time subscription for generated_images");
+    
+    // Debounced invalidation to prevent rapid successive updates
+    const debouncedInvalidation = () => {
+      if (invalidationTimeoutRef.current) {
+        clearTimeout(invalidationTimeoutRef.current);
+      }
+      
+      invalidationTimeoutRef.current = setTimeout(() => {
+        console.log('🔴 Debounced real-time invalidation triggered');
+        queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
+      }, 500); // 500ms debounce
+    };
     
     const channel = supabase
       .channel('marketplace-images-changes')
@@ -20,10 +33,10 @@ export const useMarketplaceRealtimeSubscription = () => {
           filter: 'is_public=eq.true'
         },
         (payload) => {
-          console.log('🔴 Real-time update received:', payload);
-          // Only invalidate if likes count changed (reduces unnecessary refreshes)
+          console.log('🔴 Real-time generated_images update:', payload);
+          // Only invalidate if likes count changed
           if (payload.new.likes !== payload.old?.likes) {
-            queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
+            debouncedInvalidation();
           }
         }
       )
@@ -35,8 +48,8 @@ export const useMarketplaceRealtimeSubscription = () => {
           table: 'image_likes'
         },
         (payload) => {
-          console.log('🔴 Like added:', payload);
-          queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
+          console.log('🔴 Real-time like added:', payload);
+          debouncedInvalidation();
         }
       )
       .on(
@@ -47,14 +60,17 @@ export const useMarketplaceRealtimeSubscription = () => {
           table: 'image_likes'
         },
         (payload) => {
-          console.log('🔴 Like removed:', payload);
-          queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
+          console.log('🔴 Real-time like removed:', payload);
+          debouncedInvalidation();
         }
       )
       .subscribe();
 
     return () => {
       console.log("🔴 Cleaning up real-time subscription");
+      if (invalidationTimeoutRef.current) {
+        clearTimeout(invalidationTimeoutRef.current);
+      }
       supabase.removeChannel(channel);
     };
   }, [queryClient]);

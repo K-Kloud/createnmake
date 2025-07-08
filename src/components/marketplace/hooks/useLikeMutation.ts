@@ -1,74 +1,40 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { GalleryImage } from "@/types/gallery";
 
-export const useLikeMutation = (images?: GalleryImage[]) => {
+export const useLikeMutation = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ imageId, hasLiked, userId }: { imageId: number; hasLiked: boolean; userId: string }) => {
+      console.log('🔴 Like mutation starting:', { imageId, hasLiked, userId });
+      
       try {
-        if (hasLiked) {
-          const { error: deleteLikeError } = await supabase
-            .from('image_likes')
-            .delete()
-            .eq('image_id', imageId)
-            .eq('user_id', userId);
+        // Use the atomic like function for consistency
+        const { data, error } = await supabase
+          .rpc('atomic_like_image', {
+            p_image_id: imageId,
+            p_user_id: userId
+          });
 
-          if (deleteLikeError) throw deleteLikeError;
-
-          const { error: updateLikesError } = await supabase
-            .from('generated_images')
-            .update({ likes: images?.find(img => img.id === imageId)?.likes - 1 || 0 })
-            .eq('id', imageId);
-
-          if (updateLikesError) throw updateLikesError;
-        } else {
-          const { data: existingLike, error: checkError } = await supabase
-            .from('image_likes')
-            .select()
-            .eq('image_id', imageId)
-            .eq('user_id', userId)
-            .maybeSingle();
-
-          if (checkError) throw checkError;
-
-          if (existingLike) {
-            toast({
-              title: "Already Liked",
-              description: "You have already liked this image",
-              variant: "destructive",
-            });
-            return;
-          }
-
-          const { error: insertLikeError } = await supabase
-            .from('image_likes')
-            .insert({ image_id: imageId, user_id: userId });
-
-          if (insertLikeError) throw insertLikeError;
-
-          const { error: updateLikesError } = await supabase
-            .from('generated_images')
-            .update({ likes: images?.find(img => img.id === imageId)?.likes + 1 || 1 })
-            .eq('id', imageId);
-
-          if (updateLikesError) throw updateLikesError;
+        if (error) {
+          console.error('🔴 Atomic like function error:', error);
+          throw error;
         }
+
+        console.log('🔴 Atomic like function result:', data);
+        return data;
       } catch (error: any) {
-        console.error('Like mutation error:', error);
+        console.error('🔴 Like mutation error:', error);
         throw error;
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['marketplaceImages'] });
-    },
     onError: (error: Error) => {
+      console.error('🔴 Like mutation failed:', error);
       toast({
         title: "Error",
-        description: error.message,
+        description: "Failed to update like. Please try again.",
         variant: "destructive",
       });
     },
