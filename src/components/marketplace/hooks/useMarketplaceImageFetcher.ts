@@ -15,6 +15,9 @@ export const fetchMarketplaceImages = async (pageParam: number = 0) => {
       *,
       profiles!generated_images_user_id_fkey (
         username,
+        display_name,
+        first_name,
+        last_name,
         avatar_url
       ),
       image_likes(user_id)

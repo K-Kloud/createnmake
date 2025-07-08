@@ -23,23 +23,45 @@ export const generateUsernameFromEmail = (email: string): string => {
   return cleanPrefix.charAt(0).toUpperCase() + cleanPrefix.slice(1);
 };
 
-export const getFallbackUsername = (username: string | null, email?: string, userId?: string): string => {
-  console.log('🔍 getFallbackUsername called with:', { username, email, userId });
+export const getFallbackUsername = (
+  username: string | null, 
+  email?: string, 
+  userId?: string,
+  displayName?: string | null,
+  firstName?: string | null,
+  lastName?: string | null
+): string => {
+  console.log('🔍 getFallbackUsername called with:', { username, email, userId, displayName, firstName, lastName });
   
-  // If username exists, use it
+  // Priority 1: Use username if it exists
   if (username && username.trim()) {
     console.log('✅ Using existing username:', username);
     return username;
   }
   
-  // If email exists, generate username from email
+  // Priority 2: Use display_name if it exists
+  if (displayName && displayName.trim()) {
+    console.log('✅ Using display name:', displayName);
+    return displayName;
+  }
+  
+  // Priority 3: Use first_name + last_name combination
+  if (firstName && firstName.trim()) {
+    const fullName = lastName && lastName.trim() 
+      ? `${firstName} ${lastName}` 
+      : firstName;
+    console.log('✅ Using first/last name:', fullName);
+    return fullName;
+  }
+  
+  // Priority 4: If email exists, generate username from email
   if (email) {
     const generatedName = generateUsernameFromEmail(email);
     console.log('✅ Generated username from email:', generatedName);
     return generatedName;
   }
   
-  // If userId exists, use a shortened version with better formatting
+  // Priority 5: If userId exists, use a shortened version with better formatting
   if (userId) {
     const shortId = userId.slice(-8); // Take last 8 characters
     const formattedName = `User_${shortId}`;

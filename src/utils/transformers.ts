@@ -16,7 +16,10 @@ export const transformComments = (comments: any[]): Comment[] => {
     const username = getFallbackUsername(
       comment.profiles?.username || null,
       comment.profiles?.email || null,
-      comment.user_id
+      comment.user_id,
+      comment.profiles?.display_name || null,
+      comment.profiles?.first_name || null,
+      comment.profiles?.last_name || null
     );
     
     console.log(`👤 [transformers.ts] Final username for comment: "${username}"`);
@@ -40,7 +43,10 @@ export const transformComments = (comments: any[]): Comment[] => {
         const replyUsername = getFallbackUsername(
           reply.profiles?.username || null,
           reply.profiles?.email || null,
-          reply.user_id
+          reply.user_id,
+          reply.profiles?.display_name || null,
+          reply.profiles?.first_name || null,
+          reply.profiles?.last_name || null
         );
         
         console.log(`👤 [transformers.ts] Final username for reply: "${replyUsername}"`);
@@ -72,7 +78,10 @@ export const transformImage = (image: any, userId?: string): GalleryImage => {
   const creatorName = getFallbackUsername(
     image.profiles?.username || null,
     image.profiles?.email || null,
-    image.user_id
+    image.user_id,
+    image.profiles?.display_name || null,
+    image.profiles?.first_name || null,
+    image.profiles?.last_name || null
   );
   
   console.log(`👤 [transformers.ts] Final creator name: "${creatorName}"`);
