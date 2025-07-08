@@ -1,21 +1,21 @@
-
 import React from 'react';
 import { useAdvancedAI } from '@/hooks/useAdvancedAI';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Brain, TrendingUp, Palette, Sparkles, Target } from 'lucide-react';
+import { Brain, TrendingUp, Palette, Sparkles, Target, Clock, ThumbsUp } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 export const AIRecommendations: React.FC = () => {
   const {
     recommendations,
     isLoading,
-    generatePersonalizedPrompt,
-    analyzeImageTrends,
+    generateRecommendations,
+    enhancePrompt,
     generateSmartTags,
-    isGeneratingPrompt,
-    isAnalyzingTrends,
+    applyRecommendationFeedback,
+    isGeneratingRecommendations,
+    isEnhancingPrompt,
     isGeneratingTags
   } = useAdvancedAI();
 
@@ -40,6 +40,14 @@ export const AIRecommendations: React.FC = () => {
     return 'bg-red-500';
   };
 
+  const handleApplyFeedback = (recommendationId: string, feedback: number, applied: boolean) => {
+    applyRecommendationFeedback({
+      recommendationId,
+      feedback,
+      applied
+    });
+  };
+
   if (isLoading) {
     return (
       <Card>
@@ -56,7 +64,7 @@ export const AIRecommendations: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* AI Actions */}
-      <Card>
+      <Card className="glass-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
@@ -66,43 +74,39 @@ export const AIRecommendations: React.FC = () => {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
             <Button
-              onClick={() => generatePersonalizedPrompt({
-                basePrompt: "Create a stylish outfit",
-                userPreferences: {
-                  user_id: "current_user",
-                  preferred_styles: ["minimalist", "modern"],
-                  color_preferences: ["blue", "white", "gray"],
-                  activity_patterns: {},
-                  engagement_history: {}
-                }
+              onClick={() => generateRecommendations({
+                type: 'personalized_prompt',
+                context: { action: 'create_design' }
               })}
-              disabled={isGeneratingPrompt}
+              disabled={isGeneratingRecommendations}
               className="flex items-center gap-2"
             >
               <Target className="h-4 w-4" />
-              {isGeneratingPrompt ? 'Generating...' : 'Generate Personalized Prompt'}
+              {isGeneratingRecommendations ? 'Generating...' : 'Get Recommendations'}
             </Button>
             
             <Button
-              onClick={() => analyzeImageTrends()}
-              disabled={isAnalyzingTrends}
+              onClick={() => enhancePrompt({
+                prompt: "Create a stylish outfit",
+                style: "modern"
+              })}
+              disabled={isEnhancingPrompt}
               variant="outline"
               className="flex items-center gap-2"
             >
-              <TrendingUp className="h-4 w-4" />
-              {isAnalyzingTrends ? 'Analyzing...' : 'Analyze Trends'}
+              <Sparkles className="h-4 w-4" />
+              {isEnhancingPrompt ? 'Enhancing...' : 'Enhance Prompt'}
             </Button>
             
             <Button
               onClick={() => generateSmartTags({
-                imageUrl: "https://example.com/image.jpg",
                 prompt: "Modern minimalist fashion design"
               })}
               disabled={isGeneratingTags}
               variant="outline"
               className="flex items-center gap-2"
             >
-              <Sparkles className="h-4 w-4" />
+              <Palette className="h-4 w-4" />
               {isGeneratingTags ? 'Generating...' : 'Smart Tags'}
             </Button>
           </div>
@@ -110,7 +114,7 @@ export const AIRecommendations: React.FC = () => {
       </Card>
 
       {/* AI Recommendations */}
-      <Card>
+      <Card className="glass-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
@@ -134,8 +138,13 @@ export const AIRecommendations: React.FC = () => {
                         </h4>
                         <p className="text-sm text-muted-foreground">
                           {recommendation.recommendation_data.reason || 
-                           JSON.stringify(recommendation.recommendation_data)}
+                           recommendation.recommendation_data.description ||
+                           'AI-generated recommendation based on your preferences'}
                         </p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Clock className="h-3 w-3" />
+                          {new Date(recommendation.created_at).toLocaleDateString()}
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -160,6 +169,23 @@ export const AIRecommendations: React.FC = () => {
                       ))}
                     </div>
                   )}
+
+                  <div className="mt-3 flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleApplyFeedback(recommendation.id, 5, true)}
+                      className="flex items-center gap-1"
+                    >
+                      <ThumbsUp className="h-3 w-3" />
+                      Apply
+                    </Button>
+                    {recommendation.feedback_score && (
+                      <Badge variant="secondary">
+                        Rated: {recommendation.feedback_score}/5
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -169,6 +195,13 @@ export const AIRecommendations: React.FC = () => {
               <p className="text-muted-foreground">
                 No AI recommendations available yet. Start using the platform to get personalized suggestions!
               </p>
+              <Button 
+                className="mt-4"
+                onClick={() => generateRecommendations({ type: 'image_style' })}
+                disabled={isGeneratingRecommendations}
+              >
+                Generate Recommendations
+              </Button>
             </div>
           )}
         </CardContent>

@@ -1,199 +1,384 @@
-
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useErrorHandler } from './useErrorHandler';
 import { useToast } from './use-toast';
+import { useAuth } from './useAuth';
 
 interface AIRecommendation {
   id: string;
   user_id: string;
-  recommendation_type: 'image_style' | 'color_palette' | 'trending_items' | 'personalized_prompt';
+  recommendation_type: string;
   recommendation_data: any;
   confidence_score: number;
+  is_applied: boolean;
+  feedback_score?: number;
+  created_at: string;
+  expires_at: string;
+  metadata: any;
+}
+
+interface AIContentHistory {
+  id: string;
+  user_id: string;
+  content_type: string;
+  input_data: any;
+  generated_content: any;
+  model_used: string;
+  processing_time_ms: number;
+  quality_score: number;
   created_at: string;
 }
 
 interface PersonalizationProfile {
+  id: string;
   user_id: string;
   preferred_styles: string[];
   color_preferences: string[];
-  activity_patterns: Record<string, any>;
-  engagement_history: Record<string, any>;
+  activity_patterns: any;
+  engagement_history: any;
+  learning_data: any;
+  last_updated: string;
+  created_at: string;
+}
+
+interface SmartAutomationRule {
+  id: string;
+  rule_name: string;
+  rule_type: string;
+  trigger_conditions: any;
+  actions: any;
+  is_active: boolean;
+  success_rate: number;
+  execution_count: number;
+  created_by?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export const useAdvancedAI = () => {
   const { handleError } = useErrorHandler();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   // Get AI recommendations for user
-  const { data: recommendations, isLoading: recommendationsLoading } = useQuery({
+  const {
+    data: recommendations,
+    isLoading: recommendationsLoading,
+    error: recommendationsError
+  } = useQuery({
     queryKey: ['ai-recommendations'],
     queryFn: async (): Promise<AIRecommendation[]> => {
-      // In a real implementation, this would call an AI service
-      // For now, we'll simulate recommendations based on user data
-      const { data: userImages } = await supabase
-        .from('generated_images')
+      const { data, error } = await supabase
+        .from('ai_recommendations')
         .select('*')
-        .order('created_at', { ascending: false })
-        .limit(50);
+        .gt('expires_at', new Date().toISOString())
+        .order('confidence_score', { ascending: false })
+        .limit(10);
 
-      const { data: userLikes } = await supabase
-        .from('image_likes')
-        .select('image_id')
-        .limit(100);
-
-      // Simulate AI analysis
-      const mockRecommendations: AIRecommendation[] = [
-        {
-          id: '1',
-          user_id: 'current_user',
-          recommendation_type: 'image_style',
-          recommendation_data: {
-            style: 'minimalist',
-            reason: 'Based on your recent activity, you prefer clean, simple designs'
-          },
-          confidence_score: 0.85,
-          created_at: new Date().toISOString()
-        },
-        {
-          id: '2',
-          user_id: 'current_user',
-          recommendation_type: 'color_palette',
-          recommendation_data: {
-            colors: ['#2563eb', '#7c3aed', '#059669'],
-            reason: 'These colors align with your engagement patterns'
-          },
-          confidence_score: 0.78,
-          created_at: new Date().toISOString()
-        }
-      ];
-
-      return mockRecommendations;
+      if (error) throw error;
+      return data as AIRecommendation[] || [];
     },
     refetchInterval: 300000, // Refresh every 5 minutes
   });
 
-  // Generate personalized prompts
-  const generatePersonalizedPrompt = useMutation({
-    mutationFn: async ({ basePrompt, userPreferences }: { 
-      basePrompt: string; 
-      userPreferences: PersonalizationProfile 
+  // Get AI content history
+  const {
+    data: contentHistory,
+    isLoading: historyLoading
+  } = useQuery({
+    queryKey: ['ai-content-history'],
+    queryFn: async (): Promise<AIContentHistory[]> => {
+      const { data, error } = await supabase
+        .from('ai_content_history')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+      return data as AIContentHistory[] || [];
+    },
+  });
+
+  // Get personalization profile
+  const {
+    data: personalizationProfile,
+    isLoading: profileLoading
+  } = useQuery({
+    queryKey: ['personalization-profile'],
+    queryFn: async (): Promise<PersonalizationProfile | null> => {
+      const { data, error } = await supabase
+        .from('personalization_profiles')
+        .select('*')
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      return data as PersonalizationProfile;
+    },
+  });
+
+  // Get automation rules
+  const {
+    data: automationRules,
+    isLoading: rulesLoading
+  } = useQuery({
+    queryKey: ['smart-automation-rules'],
+    queryFn: async (): Promise<SmartAutomationRule[]> => {
+      const { data, error } = await supabase
+        .from('smart_automation_rules')
+        .select('*')
+        .eq('is_active', true)
+        .order('success_rate', { ascending: false });
+
+      if (error) throw error;
+      return data as SmartAutomationRule[] || [];
+    },
+  });
+
+  // Generate personalized recommendations
+  const generateRecommendations = useMutation({
+    mutationFn: async (input: { 
+      type: string;
+      context?: any;
     }) => {
-      // In a real implementation, this would call an AI service like OpenAI
-      // to enhance the prompt based on user preferences
-      
-      const enhancedPrompt = `${basePrompt}, in ${userPreferences.preferred_styles.join(' and ')} style, 
-        with color palette focusing on ${userPreferences.color_preferences.join(', ')}`;
-
-      // Log the AI enhancement with proper JSON serialization
-      const queryResult = {
-        original: basePrompt,
-        enhanced: enhancedPrompt,
-        preferences_applied: {
-          user_id: userPreferences.user_id,
-          preferred_styles: userPreferences.preferred_styles,
-          color_preferences: userPreferences.color_preferences,
-          activity_patterns: userPreferences.activity_patterns,
-          engagement_history: userPreferences.engagement_history
+      const { data, error } = await supabase.functions.invoke('ai-content-generation', {
+        body: {
+          action: 'generate_recommendations',
+          type: input.type,
+          context: input.context,
+          user_profile: personalizationProfile
         }
-      };
+      });
 
-      await supabase
-        .from('ai_agent_queries')
-        .insert({
-          agent_id: 1,
-          query_text: `Enhanced prompt for user preferences: ${basePrompt}`,
-          query_result: queryResult as any
-        });
-
-      return enhancedPrompt;
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ai-recommendations'] });
+      toast({
+        title: 'AI Recommendations Generated',
+        description: 'New personalized recommendations are ready for you',
+      });
+    },
+    onError: (error) => {
+      handleError(error, 'generating AI recommendations');
+    }
+  });
+
+  // Enhance prompt with AI
+  const enhancePrompt = useMutation({
+    mutationFn: async (input: { 
+      prompt: string;
+      style?: string;
+      itemType?: string;
+    }) => {
+      const { data, error } = await supabase.functions.invoke('ai-content-generation', {
+        body: {
+          action: 'enhance_prompt',
+          prompt: input.prompt,
+          style: input.style,
+          item_type: input.itemType,
+          user_preferences: personalizationProfile?.preferred_styles || []
+        }
+      });
+
+      if (error) throw error;
+
+      // Log the enhancement to history
+      if (user?.id) {
+        await supabase.from('ai_content_history').insert({
+          user_id: user.id,
+          content_type: 'prompt_enhancement',
+          input_data: input,
+          generated_content: data,
+          model_used: 'gpt-4o-mini',
+          processing_time_ms: data.processing_time || 0,
+          quality_score: 0.8
+        });
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ai-content-history'] });
       toast({
         title: 'Prompt Enhanced',
-        description: 'Your prompt has been personalized based on your preferences',
+        description: 'Your prompt has been enhanced with AI suggestions',
       });
     },
     onError: (error) => {
-      handleError(error, 'generating personalized prompt');
+      handleError(error, 'enhancing prompt');
     }
   });
 
-  // Analyze image trends
-  const analyzeImageTrends = useMutation({
-    mutationFn: async () => {
-      const { data: recentImages } = await supabase
-        .from('generated_images')
-        .select('item_type, tags, likes, views, created_at')
-        .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
-        .order('created_at', { ascending: false });
-
-      // Analyze trends (simplified)
-      const trendAnalysis = {
-        trending_items: recentImages?.reduce((acc: any, img) => {
-          acc[img.item_type] = (acc[img.item_type] || 0) + (img.likes || 0) + (img.views || 0);
-          return acc;
-        }, {}),
-        popular_tags: recentImages?.flatMap(img => img.tags || [])
-          .reduce((acc: any, tag) => {
-            acc[tag] = (acc[tag] || 0) + 1;
-            return acc;
-          }, {}),
-        engagement_rate: recentImages?.reduce((sum, img) => sum + (img.likes || 0) + (img.views || 0), 0) / (recentImages?.length || 1)
-      };
-
-      // Store analysis results
-      await supabase
-        .from('ai_agent_queries')
-        .insert({
-          agent_id: 1,
-          query_text: 'Weekly trend analysis',
-          query_result: trendAnalysis as any
-        });
-
-      return trendAnalysis;
-    },
-    onSuccess: (data) => {
-      toast({
-        title: 'Trend Analysis Complete',
-        description: `Analyzed ${Object.keys(data.trending_items || {}).length} trending categories`,
-      });
-    },
-    onError: (error) => {
-      handleError(error, 'analyzing image trends');
-    }
-  });
-
-  // Smart content tagging
+  // Generate smart tags
   const generateSmartTags = useMutation({
-    mutationFn: async ({ imageUrl, prompt }: { imageUrl: string; prompt: string }) => {
-      // In a real implementation, this would use computer vision AI
-      // to analyze the image and suggest relevant tags
-      
-      const suggestedTags = [
-        // Extract keywords from prompt
-        ...prompt.toLowerCase().split(' ').filter(word => 
-          word.length > 3 && !['with', 'and', 'the', 'for', 'from'].includes(word)
-        ),
-        // Add contextual tags based on image analysis (simulated)
-        'modern', 'design', 'creative'
-      ].slice(0, 8); // Limit to 8 tags
+    mutationFn: async (input: { 
+      prompt: string;
+      imageUrl?: string;
+    }) => {
+      const { data, error } = await supabase.functions.invoke('ai-content-generation', {
+        body: {
+          action: 'generate_tags',
+          prompt: input.prompt,
+          image_url: input.imageUrl
+        }
+      });
 
-      return suggestedTags;
+      if (error) throw error;
+
+      // Log to history
+      if (user?.id) {
+        await supabase.from('ai_content_history').insert({
+          user_id: user.id,
+          content_type: 'tag_generation',
+          input_data: input,
+          generated_content: data,
+          model_used: 'gpt-4o-mini',
+          processing_time_ms: data.processing_time || 0,
+          quality_score: 0.85
+        });
+      }
+
+      return data;
     },
     onError: (error) => {
       handleError(error, 'generating smart tags');
     }
   });
 
+  // Update personalization profile
+  const updatePersonalizationProfile = useMutation({
+    mutationFn: async (updates: any) => {
+      if (!user?.id) throw new Error('User not authenticated');
+      
+      const profileData = {
+        ...updates,
+        user_id: user.id
+      };
+
+      const { data, error } = await supabase
+        .from('personalization_profiles')
+        .upsert(profileData)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['personalization-profile'] });
+      toast({
+        title: 'Profile Updated',
+        description: 'Your AI personalization settings have been saved',
+      });
+    },
+    onError: (error) => {
+      handleError(error, 'updating personalization profile');
+    }
+  });
+
+  // Apply recommendation feedback
+  const applyRecommendationFeedback = useMutation({
+    mutationFn: async (input: {
+      recommendationId: string;
+      feedback: number; // 1-5 rating
+      applied: boolean;
+    }) => {
+      const { data, error } = await supabase
+        .from('ai_recommendations')
+        .update({
+          feedback_score: input.feedback,
+          is_applied: input.applied
+        })
+        .eq('id', input.recommendationId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ai-recommendations'] });
+    },
+    onError: (error) => {
+      handleError(error, 'applying recommendation feedback');
+    }
+  });
+
+  // Analyze user patterns
+  const analyzeUserPatterns = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke('ai-content-generation', {
+        body: {
+          action: 'analyze_patterns',
+          user_id: personalizationProfile?.user_id
+        }
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      // Update personalization profile with new insights
+      if (data.insights) {
+        updatePersonalizationProfile.mutate({
+          learning_data: data.insights,
+          last_updated: new Date().toISOString()
+        });
+      }
+      toast({
+        title: 'Pattern Analysis Complete',
+        description: 'Your preferences have been analyzed and updated',
+      });
+    },
+    onError: (error) => {
+      handleError(error, 'analyzing user patterns');
+    }
+  });
+
+  // For backward compatibility with existing component
+  const generatePersonalizedPrompt = (input: any) => enhancePrompt.mutate(input);
+  const analyzeImageTrends = () => analyzeUserPatterns.mutate();
+
   return {
+    // Data
     recommendations,
-    isLoading: recommendationsLoading,
-    generatePersonalizedPrompt: generatePersonalizedPrompt.mutate,
-    analyzeImageTrends: analyzeImageTrends.mutate,
+    contentHistory,
+    personalizationProfile,
+    automationRules,
+
+    // Loading states
+    isLoading: recommendationsLoading || historyLoading || profileLoading || rulesLoading,
+    recommendationsLoading,
+    historyLoading,
+    profileLoading,
+    rulesLoading,
+
+    // Errors
+    recommendationsError,
+
+    // Mutations
+    generateRecommendations: generateRecommendations.mutate,
+    enhancePrompt: enhancePrompt.mutate,
     generateSmartTags: generateSmartTags.mutate,
-    isGeneratingPrompt: generatePersonalizedPrompt.isPending,
-    isAnalyzingTrends: analyzeImageTrends.isPending,
-    isGeneratingTags: generateSmartTags.isPending
+    updatePersonalizationProfile: updatePersonalizationProfile.mutate,
+    applyRecommendationFeedback: applyRecommendationFeedback.mutate,
+    analyzeUserPatterns: analyzeUserPatterns.mutate,
+    
+    // Backward compatibility
+    generatePersonalizedPrompt,
+    analyzeImageTrends,
+
+    // Mutation states
+    isGeneratingRecommendations: generateRecommendations.isPending,
+    isEnhancingPrompt: enhancePrompt.isPending,
+    isGeneratingTags: generateSmartTags.isPending,
+    isUpdatingProfile: updatePersonalizationProfile.isPending,
+    isAnalyzingPatterns: analyzeUserPatterns.isPending,
+    
+    // Backward compatibility states
+    isGeneratingPrompt: enhancePrompt.isPending,
+    isAnalyzingTrends: analyzeUserPatterns.isPending
   };
 };

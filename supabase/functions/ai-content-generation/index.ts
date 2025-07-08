@@ -44,6 +44,15 @@ serve(async (req) => {
       case 'generate_email_templates':
         return await generateEmailTemplates(prompt, parameters, OPENAI_API_KEY, supabaseClient);
       
+      case 'enhance_prompt':
+        return await enhancePrompt(prompt, parameters, OPENAI_API_KEY);
+        
+      case 'generate_tags':
+        return await generateTags(prompt, OPENAI_API_KEY);
+        
+      case 'generate_recommendations':
+        return await generateRecommendations(parameters, supabaseClient);
+      
       default:
         throw new Error('Invalid action');
     }

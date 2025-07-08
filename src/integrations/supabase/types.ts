@@ -404,6 +404,78 @@ export type Database = {
           },
         ]
       }
+      ai_content_history: {
+        Row: {
+          content_type: string
+          created_at: string | null
+          generated_content: Json
+          id: string
+          input_data: Json
+          model_used: string
+          processing_time_ms: number | null
+          quality_score: number | null
+          user_id: string
+        }
+        Insert: {
+          content_type: string
+          created_at?: string | null
+          generated_content: Json
+          id?: string
+          input_data: Json
+          model_used: string
+          processing_time_ms?: number | null
+          quality_score?: number | null
+          user_id: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string | null
+          generated_content?: Json
+          id?: string
+          input_data?: Json
+          model_used?: string
+          processing_time_ms?: number | null
+          quality_score?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_model_configs: {
+        Row: {
+          configuration: Json
+          cost_per_request: number | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          model_name: string
+          model_type: string
+          performance_metrics: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          configuration?: Json
+          cost_per_request?: number | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          model_name: string
+          model_type: string
+          performance_metrics?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          configuration?: Json
+          cost_per_request?: number | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          model_name?: string
+          model_type?: string
+          performance_metrics?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       ai_performance_logs: {
         Row: {
           agent_id: number
@@ -450,6 +522,78 @@ export type Database = {
             referencedColumns: ["agent_id"]
           },
         ]
+      }
+      ai_recommendations: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          expires_at: string | null
+          feedback_score: number | null
+          id: string
+          is_applied: boolean | null
+          metadata: Json | null
+          recommendation_data: Json
+          recommendation_type: string
+          user_id: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          expires_at?: string | null
+          feedback_score?: number | null
+          id?: string
+          is_applied?: boolean | null
+          metadata?: Json | null
+          recommendation_data?: Json
+          recommendation_type: string
+          user_id: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          expires_at?: string | null
+          feedback_score?: number | null
+          id?: string
+          is_applied?: boolean | null
+          metadata?: Json | null
+          recommendation_data?: Json
+          recommendation_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_training_data: {
+        Row: {
+          created_at: string | null
+          data_quality_score: number | null
+          data_source: string
+          data_type: string
+          id: string
+          is_processed: boolean | null
+          processed_at: string | null
+          training_data: Json
+        }
+        Insert: {
+          created_at?: string | null
+          data_quality_score?: number | null
+          data_source: string
+          data_type: string
+          id?: string
+          is_processed?: boolean | null
+          processed_at?: string | null
+          training_data: Json
+        }
+        Update: {
+          created_at?: string | null
+          data_quality_score?: number | null
+          data_source?: string
+          data_type?: string
+          id?: string
+          is_processed?: boolean | null
+          processed_at?: string | null
+          training_data?: Json
+        }
+        Relationships: []
       }
       analytics_insights: {
         Row: {
@@ -2068,6 +2212,42 @@ export type Database = {
         }
         Relationships: []
       }
+      personalization_profiles: {
+        Row: {
+          activity_patterns: Json | null
+          color_preferences: string[] | null
+          created_at: string | null
+          engagement_history: Json | null
+          id: string
+          last_updated: string | null
+          learning_data: Json | null
+          preferred_styles: string[] | null
+          user_id: string
+        }
+        Insert: {
+          activity_patterns?: Json | null
+          color_preferences?: string[] | null
+          created_at?: string | null
+          engagement_history?: Json | null
+          id?: string
+          last_updated?: string | null
+          learning_data?: Json | null
+          preferred_styles?: string[] | null
+          user_id: string
+        }
+        Update: {
+          activity_patterns?: Json | null
+          color_preferences?: string[] | null
+          created_at?: string | null
+          engagement_history?: Json | null
+          id?: string
+          last_updated?: string | null
+          learning_data?: Json | null
+          preferred_styles?: string[] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -2344,6 +2524,48 @@ export type Database = {
           session_id?: string
           timestamp?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      smart_automation_rules: {
+        Row: {
+          actions: Json
+          created_at: string | null
+          created_by: string | null
+          execution_count: number | null
+          id: string
+          is_active: boolean | null
+          rule_name: string
+          rule_type: string
+          success_rate: number | null
+          trigger_conditions: Json
+          updated_at: string | null
+        }
+        Insert: {
+          actions: Json
+          created_at?: string | null
+          created_by?: string | null
+          execution_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          rule_name: string
+          rule_type: string
+          success_rate?: number | null
+          trigger_conditions: Json
+          updated_at?: string | null
+        }
+        Update: {
+          actions?: Json
+          created_at?: string | null
+          created_by?: string | null
+          execution_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          rule_name?: string
+          rule_type?: string
+          success_rate?: number | null
+          trigger_conditions?: Json
+          updated_at?: string | null
         }
         Relationships: []
       }
