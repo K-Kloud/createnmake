@@ -4,6 +4,7 @@ import { MarketplaceContent } from "@/components/marketplace/MarketplaceContent"
 import { useMarketplace } from "@/components/marketplace/useMarketplace";
 import { useMarketplaceFilters } from "@/components/marketplace/hooks/useMarketplaceFilters";
 import { useState } from "react";
+import { parsePrice } from "@/lib/utils";
 
 export const OpenMarketSection = () => {
   const {
@@ -50,7 +51,7 @@ export const OpenMarketSection = () => {
     
     // Apply price filter (if the image has a price)
     if (image.price) {
-      const price = parseFloat(image.price);
+      const price = parsePrice(image.price);
       if (price < priceRange[0] || price > priceRange[1]) {
         return false;
       }

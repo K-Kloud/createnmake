@@ -24,3 +24,22 @@ export function generateRandomPrice(id: number): string {
   
   return `£${roundedPrice}`;
 }
+
+// Parse price strings safely (removes currency symbols and converts to number)
+export function parsePrice(priceString: string | null | undefined): number {
+  if (!priceString) return 0;
+  
+  // Remove currency symbols, commas, and spaces, then parse
+  const cleanedPrice = priceString.toString()
+    .replace(/[£$€¥₹₽¢]/g, '') // Remove common currency symbols
+    .replace(/[,\s]/g, '') // Remove commas and spaces
+    .trim();
+  
+  const parsed = parseFloat(cleanedPrice);
+  return isNaN(parsed) ? 0 : parsed;
+}
+
+// Format number as price with currency symbol
+export function formatPrice(amount: number, currency: string = '£'): string {
+  return `${currency}${amount.toFixed(2)}`;
+}

@@ -2,6 +2,7 @@
 import { useState, useMemo } from "react";
 import { Session } from "@supabase/supabase-js";
 import { transformImage } from "@/utils/transformers";
+import { parsePrice } from "@/lib/utils";
 
 export const useMarketplaceFilters = (images: any[], session: Session | null) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -42,9 +43,9 @@ export const useMarketplaceFilters = (images: any[], session: Session | null) =>
         case "most-viewed":
           return (b.metrics?.view || b.views || 0) - (a.metrics?.view || a.views || 0);
         case "price-high":
-          return parseFloat(b.price || '0') - parseFloat(a.price || '0');
+          return parsePrice(b.price) - parsePrice(a.price);
         case "price-low":
-          return parseFloat(a.price || '0') - parseFloat(b.price || '0');
+          return parsePrice(a.price) - parsePrice(b.price);
         case "best-rated":
           // Use likes as a proxy for rating since we don't have a dedicated rating field
           const aLikes = (a.metrics?.like || 0);

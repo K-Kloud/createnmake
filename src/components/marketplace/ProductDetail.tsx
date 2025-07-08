@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/providers/CartProvider";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { parsePrice } from "@/lib/utils";
 
 interface ProductDetailProps {
   isOpen: boolean;
@@ -94,7 +95,7 @@ export const ProductDetail = ({
       addItem({
         id: product.id.toString(),
         name: product.prompt,
-        price: parseFloat(product.price || "0"),
+        price: parsePrice(product.price),
         image_url: product.url,
         metadata: product
       });
@@ -134,7 +135,7 @@ export const ProductDetail = ({
       addItem({
         id: product.id.toString(),
         name: product.prompt,
-        price: parseFloat(product.price || "0"),
+        price: parsePrice(product.price),
         image_url: product.url,
         metadata: product
       });
@@ -153,7 +154,7 @@ export const ProductDetail = ({
   };
 
   // Format price components
-  const basePrice = parseFloat(product.price || "0");
+  const basePrice = parsePrice(product.price);
   const creatorEarnings = basePrice * 0.70; // 70% to creator
   const platformFee = basePrice * 0.30; // 30% platform fee
   const estimatedShipping = 5.99;
