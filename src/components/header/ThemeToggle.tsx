@@ -1,27 +1,25 @@
 
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
+import { useTheme } from "next-themes";
 
-interface ThemeToggleProps {
-  isDarkMode: boolean;
-  setIsDarkMode: (value: boolean) => void;
-}
-
-export const ThemeToggle = ({ isDarkMode, setIsDarkMode }: ThemeToggleProps) => {
+export const ThemeToggle = () => {
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
 
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
     toast({
-      title: `${isDarkMode ? 'Light' : 'Dark'} mode activated`,
-      description: `Switched to ${isDarkMode ? 'light' : 'dark'} theme.`,
+      title: `${newTheme === 'dark' ? 'Dark' : 'Light'} mode activated`,
+      description: `Switched to ${newTheme} theme.`,
     });
   };
 
   return (
     <div className="flex items-center space-x-2 mr-2">
       <Switch
-        checked={isDarkMode}
+        checked={theme === 'dark'}
         onCheckedChange={toggleTheme}
         className="data-[state=checked]:bg-secondary transition-colors"
       />

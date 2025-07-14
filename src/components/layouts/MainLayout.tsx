@@ -1,5 +1,5 @@
 
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
@@ -13,10 +13,6 @@ interface MainLayoutProps {
 }
 
 export const MainLayout = ({ children, seo }: MainLayoutProps) => {
-  // Ensure dark mode is always applied
-  useEffect(() => {
-    document.documentElement.classList.add("dark");
-  }, []);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

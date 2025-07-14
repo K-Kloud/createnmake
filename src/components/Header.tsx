@@ -17,10 +17,9 @@ export const Header = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const { isAtLeast } = useResponsive();
   const { t } = useTranslation('common');
-  const { trackInteraction, trackFeatureUsage } = useAnalyticsContext();
+  const { trackInteraction } = useAnalyticsContext();
 
   // Set up auth state listener
   useEffect(() => {
@@ -82,24 +81,9 @@ export const Header = () => {
     enabled: !!session?.user?.id,
   });
 
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  }, [isDarkMode]);
-
   const handleLogoClick = () => {
     trackInteraction('logo', 'header-logo', 'openteknologies');
     navigate("/");
-  };
-
-  const handleThemeToggle = (newMode: boolean) => {
-    trackFeatureUsage('theme_toggle', 'appearance', { from: isDarkMode ? 'dark' : 'light', to: newMode ? 'dark' : 'light' });
-    setIsDarkMode(newMode);
   };
 
   return (
@@ -129,7 +113,7 @@ export const Header = () => {
           <div className="flex items-center gap-2">
             {session?.user && <SmartNotificationSystem />}
             <LanguageSwitcher />
-            <ThemeToggle isDarkMode={isDarkMode} setIsDarkMode={handleThemeToggle} />
+            <ThemeToggle />
             
             {/* Always render UserMenu - it handles both authenticated and non-authenticated states */}
             <div className={isAtLeast('sm') ? 'block' : 'hidden'}>
