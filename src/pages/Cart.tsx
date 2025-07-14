@@ -138,6 +138,16 @@ const Cart = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
+                      {/* Debug info */}
+                      <div className="text-xs text-muted-foreground p-2 bg-muted rounded">
+                        <div>Debug: Cart items count: {items.length}</div>
+                        <div>Debug: Total price: {totalPrice}</div>
+                        {items.map(item => (
+                          <div key={item.id}>
+                            {item.name}: £{item.price} x {item.quantity} = £{(item.price * item.quantity).toFixed(2)}
+                          </div>
+                        ))}
+                      </div>
                       <div className="flex justify-between text-sm">
                         <span>Subtotal</span>
                         <span>£{totalPrice.toFixed(2)}</span>

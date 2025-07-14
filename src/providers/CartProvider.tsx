@@ -55,6 +55,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   }, [items]);
 
   const addItem = (newItem: Omit<CartItem, 'quantity'>) => {
+    console.log('CartProvider.addItem called with:', newItem);
+    console.log('Item price type:', typeof newItem.price, 'value:', newItem.price);
+    
     setItems(prev => {
       const existingItem = prev.find(item => item.id === newItem.id);
       if (existingItem) {
@@ -89,7 +92,13 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   };
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const totalPrice = items.reduce((sum, item) => {
+    const itemTotal = item.price * item.quantity;
+    console.log(`Item ${item.name}: price=${item.price}, quantity=${item.quantity}, total=${itemTotal}`);
+    return sum + itemTotal;
+  }, 0);
+  
+  console.log('Cart totals - items:', totalItems, 'price:', totalPrice);
 
   const value: CartContextType = {
     items,

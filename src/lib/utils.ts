@@ -27,7 +27,12 @@ export function generateRandomPrice(id: number): string {
 
 // Parse price strings safely (removes currency symbols and converts to number)
 export function parsePrice(priceString: string | null | undefined): number {
-  if (!priceString) return 0;
+  console.log('parsePrice called with:', priceString, typeof priceString);
+  
+  if (!priceString) {
+    console.log('parsePrice: empty/null price, returning 0');
+    return 0;
+  }
   
   // Remove currency symbols, commas, and spaces, then parse
   const cleanedPrice = priceString.toString()
@@ -35,8 +40,13 @@ export function parsePrice(priceString: string | null | undefined): number {
     .replace(/[,\s]/g, '') // Remove commas and spaces
     .trim();
   
+  console.log('parsePrice: cleaned price:', cleanedPrice);
+  
   const parsed = parseFloat(cleanedPrice);
-  return isNaN(parsed) ? 0 : parsed;
+  const result = isNaN(parsed) ? 0 : parsed;
+  
+  console.log('parsePrice: final result:', result);
+  return result;
 }
 
 // Format number as price with currency symbol
