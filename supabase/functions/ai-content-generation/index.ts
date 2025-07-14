@@ -106,7 +106,7 @@ async function generateProductDescription(prompt: string, parameters: any, apiKe
 
   // Store generated content
   await supabase
-    .from('generated_content')
+    .from('generated_contents')
     .insert({
       content_type: 'product_description',
       content_data: { prompt, content, parameters },
@@ -157,7 +157,7 @@ async function createMarketingCopy(prompt: string, parameters: any, apiKey: stri
   const content = data.choices[0].message.content;
 
   await supabase
-    .from('generated_content')
+    .from('generated_contents')
     .insert({
       content_type: 'marketing_copy',
       content_data: { prompt, content, parameters },
@@ -208,7 +208,7 @@ async function generateSEOContent(prompt: string, parameters: any, apiKey: strin
   const content = data.choices[0].message.content;
 
   await supabase
-    .from('generated_content')
+    .from('generated_contents')
     .insert({
       content_type: 'seo_content',
       content_data: { prompt, content, parameters },
@@ -264,7 +264,7 @@ async function createSocialMediaPosts(prompt: string, parameters: any, apiKey: s
   }
 
   await supabase
-    .from('generated_content')
+    .from('generated_contents')
     .insert({
       content_type: 'social_media_posts',
       content_data: { prompt, content: posts, parameters },
@@ -330,7 +330,7 @@ async function generateEmailTemplates(prompt: string, parameters: any, apiKey: s
   }
 
   await supabase
-    .from('generated_content')
+    .from('generated_contents')
     .insert({
       content_type: 'email_templates',
       content_data: { prompt, content: templates, parameters },
@@ -342,4 +342,181 @@ async function generateEmailTemplates(prompt: string, parameters: any, apiKey: s
     JSON.stringify({ templates }),
     { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
   );
+}
+
+async function enhancePrompt(prompt: string, parameters: any, apiKey: string) {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: `Enhance and optimize user prompts for fashion design. Make them:
+          - More specific and detailed
+          - Include relevant style keywords
+          - Add color, material, and mood descriptors
+          - Include technical fashion terms
+          - Optimize for AI image generation`
+        },
+        {
+          role: 'user',
+          content: `Original prompt: ${prompt}
+          Style preference: ${parameters?.style || 'modern'}
+          Target use: ${parameters?.target_use || 'casual wear'}`
+        }
+      ],
+      temperature: 0.6,
+      max_tokens: 300,
+    }),
+  });
+
+  const data = await response.json();
+  const enhancedPrompt = data.choices[0].message.content;
+
+  return new Response(
+    JSON.stringify({ enhanced_prompt: enhancedPrompt }),
+    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+  );
+}
+
+async function generateTags(prompt: string, apiKey: string) {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: `Generate relevant tags for fashion designs. Return 8-12 tags that include:
+          - Style categories (casual, formal, vintage, etc.)
+          - Color descriptors
+          - Material types
+          - Seasonal tags
+          - Trend keywords
+          Return as a comma-separated list.`
+        },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.5,
+      max_tokens: 100,
+    }),
+  });
+
+  const data = await response.json();
+  const tagsText = data.choices[0].message.content;
+  const tags = tagsText.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag.length > 0);
+
+  return new Response(
+    JSON.stringify({ tags }),
+    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+  );
+}
+
+async function generateRecommendations(parameters: any, supabase: any) {
+  const userId = parameters?.user_id;
+  if (!userId) {
+    throw new Error('User ID required for recommendations');
+  }
+
+  // Get user's design history
+  const { data: userImages } = await supabase
+    .from('generated_images')
+    .select('prompt, tags, item_type')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  // Get popular designs
+  const { data: popularImages } = await supabase
+    .from('generated_images')
+    .select('prompt, tags, item_type, likes')
+    .eq('is_public', true)
+    .order('likes', { ascending: false })
+    .limit(10);
+
+  // Analyze patterns and generate recommendations
+  const recommendations = analyzeUserPatterns(userImages, popularImages);
+
+  // Store recommendations
+  await supabase
+    .from('ai_recommendations')
+    .insert({
+      user_id: userId,
+      recommendation_type: 'design_suggestions',
+      recommendation_data: recommendations,
+      confidence_score: 0.8,
+      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+    });
+
+  return new Response(
+    JSON.stringify({ recommendations }),
+    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+  );
+}
+
+function analyzeUserPatterns(userImages: any[], popularImages: any[]) {
+  const recommendations = [];
+
+  // Analyze user preferences
+  const userStyles = userImages?.map(img => img.item_type).filter(Boolean) || [];
+  const mostCommonStyle = getMostFrequent(userStyles);
+
+  if (mostCommonStyle) {
+    recommendations.push({
+      type: 'style_variation',
+      title: `Try ${mostCommonStyle} variations`,
+      description: `Based on your ${mostCommonStyle} designs, try these variations`,
+      suggestions: [`Modern ${mostCommonStyle}`, `Vintage ${mostCommonStyle}`, `Minimalist ${mostCommonStyle}`]
+    });
+  }
+
+  // Recommend trending styles
+  const trendingStyles = popularImages?.map(img => img.item_type).filter(Boolean) || [];
+  const topTrending = getMostFrequent(trendingStyles);
+
+  if (topTrending && topTrending !== mostCommonStyle) {
+    recommendations.push({
+      type: 'trending',
+      title: `Try trending ${topTrending} designs`,
+      description: 'Currently popular with the community',
+      suggestions: [`Classic ${topTrending}`, `Contemporary ${topTrending}`]
+    });
+  }
+
+  // Color recommendations
+  recommendations.push({
+    type: 'color_palette',
+    title: 'Seasonal color trends',
+    description: 'Colors that are trending this season',
+    suggestions: ['Earth tones', 'Pastels', 'Bold contrasts', 'Monochrome']
+  });
+
+  return recommendations;
+}
+
+function getMostFrequent(arr: string[]): string | null {
+  const frequency: Record<string, number> = {};
+  arr.forEach(item => {
+    frequency[item] = (frequency[item] || 0) + 1;
+  });
+  
+  let maxCount = 0;
+  let mostFrequent = null;
+  for (const [item, count] of Object.entries(frequency)) {
+    if (count > maxCount) {
+      maxCount = count;
+      mostFrequent = item;
+    }
+  }
+  
+  return mostFrequent;
 }

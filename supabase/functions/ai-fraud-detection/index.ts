@@ -75,15 +75,18 @@ async function analyzeUserBehavior(userId: string, supabase: any): Promise<Respo
 
   const analysis = performBehaviorAnalysis(activities, images);
 
-  // Store fraud analysis
+  // Store fraud analysis in error logs for now
   await supabase
-    .from('fraud_detection_logs')
+    .from('error_logs')
     .insert({
       user_id: userId,
-      analysis_type: 'user_behavior',
-      risk_score: analysis.risk_score,
-      flags: analysis.flags,
-      created_at: new Date().toISOString()
+      error_type: 'fraud_analysis',
+      error_message: `Fraud risk analysis: ${analysis.risk_level}`,
+      error_details: {
+        analysis_type: 'user_behavior',
+        risk_score: analysis.risk_score,
+        flags: analysis.flags
+      }
     });
 
   return new Response(
