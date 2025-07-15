@@ -2,6 +2,7 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { usePageAnalytics } from '@/hooks/usePageAnalytics';
+import { AutomaticAnalyticsProvider } from '@/components/analytics/AutomaticAnalyticsProvider';
 
 interface AnalyticsContextType {
   trackInteraction: (elementType: string, elementId?: string, elementText?: string, metadata?: any) => void;
@@ -51,7 +52,9 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }
 
   return (
     <AnalyticsContext.Provider value={value}>
-      {children}
+      <AutomaticAnalyticsProvider>
+        {children}
+      </AutomaticAnalyticsProvider>
     </AnalyticsContext.Provider>
   );
 };
