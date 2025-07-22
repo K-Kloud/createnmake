@@ -16,24 +16,26 @@ export const useMarketplaceFilters = (images: any[], session: Session | null) =>
       transformImage(image, session?.user?.id)
     );
 
-    // Apply search filter
+    // Apply search filter with null/undefined checks
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
-      filtered = filtered.filter(image => 
-        image.prompt.toLowerCase().includes(searchLower) ||
-        image.creator.name.toLowerCase().includes(searchLower)
-      );
-    }
-
-    // Apply category filter
-    if (selectedCategory !== "all") {
       filtered = filtered.filter(image => {
-        const promptLower = image.prompt.toLowerCase();
-        return promptLower.includes(selectedCategory.toLowerCase());
+        const prompt = image.prompt || '';
+        const creatorName = image.creator?.name || '';
+        return prompt.toLowerCase().includes(searchLower) ||
+               creatorName.toLowerCase().includes(searchLower);
       });
     }
 
-    // Apply sorting
+    // Apply category filter with null/undefined checks
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter(image => {
+        const prompt = image.prompt || '';
+        return prompt.toLowerCase().includes(selectedCategory.toLowerCase());
+      });
+    }
+
+    // Apply sorting with proper fallback values
     return filtered.sort((a, b) => {
       switch (sortBy) {
         case "oldest":
@@ -43,11 +45,10 @@ export const useMarketplaceFilters = (images: any[], session: Session | null) =>
         case "most-viewed":
           return (b.metrics?.view || b.views || 0) - (a.metrics?.view || a.views || 0);
         case "price-high":
-          return parsePrice(b.price) - parsePrice(a.price);
+          return parsePrice(b.price || '0') - parsePrice(a.price || '0');
         case "price-low":
-          return parsePrice(a.price) - parsePrice(b.price);
+          return parsePrice(a.price || '0') - parsePrice(b.price || '0');
         case "best-rated":
-          // Use likes as a proxy for rating since we don't have a dedicated rating field
           const aLikes = (a.metrics?.like || 0);
           const bLikes = (b.metrics?.like || 0);
           return bLikes - aLikes;

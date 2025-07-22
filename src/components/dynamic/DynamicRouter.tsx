@@ -1,3 +1,4 @@
+
 import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useDynamicPages } from '@/hooks/useDynamicPages';
@@ -5,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { EnhancedErrorBoundary } from '@/components/ui/enhanced-error-boundary';
 import NotFound from '@/pages/NotFound';
 import { ComponentRegistry } from './ComponentRegistry';
 
@@ -50,63 +52,90 @@ export const DynamicRouter = () => {
   };
 
   return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <Routes>
-        {/* Static routes */}
-        {staticRoutes.map(({ path, component: Component }) => (
-          <Route key={path} path={path} element={<Component />} />
-        ))}
-        
-        {/* Dynamic routes from database (excluding nested routes) */}
-        {pages?.filter(page => page.is_active && !excludedPaths.some(excluded => page.route_path.startsWith(excluded))).map((page) => {
-          // Special handling for home route to avoid dynamic loading issues
-          if (page.route_path === '/') {
-            return (
-              <Route
-                key={page.id}
-                path={page.route_path}
-                element={<IndexPage />}
+    <EnhancedErrorBoundary>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Routes>
+          {/* Static routes */}
+          {staticRoutes.map(({ path, component: Component }) => (
+            <Route 
+              key={path} 
+              path={path} 
+              element={
+                <EnhancedErrorBoundary>
+                  <Component />
+                </EnhancedErrorBoundary>
+              } 
+            />
+          ))}
+          
+          {/* Dynamic routes from database (excluding nested routes) */}
+          {pages?.filter(page => page.is_active && !excludedPaths.some(excluded => page.route_path.startsWith(excluded))).map((page) => {
+            // Special handling for home route to avoid dynamic loading issues
+            if (page.route_path === '/') {
+              return (
+                <Route
+                  key={page.id}
+                  path={page.route_path}
+                  element={
+                    <EnhancedErrorBoundary>
+                      <IndexPage />
+                    </EnhancedErrorBoundary>
+                  }
+                />
+              );
+            }
+
+            const ComponentToRender = () => (
+              <ComponentRegistry 
+                componentName={page.component_name}
+                config={page.layout_config}
               />
             );
-          }
 
-          const ComponentToRender = () => (
-            <ComponentRegistry 
-              componentName={page.component_name}
-              config={page.layout_config}
-            />
-          );
+            if (page.requires_auth) {
+              return (
+                <Route
+                  key={page.id}
+                  path={page.route_path}
+                  element={
+                    <EnhancedErrorBoundary>
+                      <ProtectedRoute>
+                        {hasAccess(page) ? (
+                          <ComponentToRender />
+                        ) : (
+                          <Navigate to="/auth" replace />
+                        )}
+                      </ProtectedRoute>
+                    </EnhancedErrorBoundary>
+                  }
+                />
+              );
+            }
 
-          if (page.requires_auth) {
             return (
               <Route
                 key={page.id}
                 path={page.route_path}
                 element={
-                  <ProtectedRoute>
-                    {hasAccess(page) ? (
-                      <ComponentToRender />
-                    ) : (
-                      <Navigate to="/auth" replace />
-                    )}
-                  </ProtectedRoute>
+                  <EnhancedErrorBoundary>
+                    <ComponentToRender />
+                  </EnhancedErrorBoundary>
                 }
               />
             );
-          }
-
-          return (
-            <Route
-              key={page.id}
-              path={page.route_path}
-              element={<ComponentToRender />}
-            />
-          );
-        })}
-        
-        {/* Catch all route */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Suspense>
+          })}
+          
+          {/* Catch all route */}
+          <Route 
+            path="*" 
+            element={
+              <EnhancedErrorBoundary>
+                <NotFound />
+              </EnhancedErrorBoundary>
+            } 
+          />
+        </Routes>
+      </Suspense>
+    </EnhancedErrorBoundary>
   );
 };

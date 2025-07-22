@@ -36,20 +36,24 @@ export const OpenMarketSection = () => {
     session
   );
 
-  // Enhanced filtering that includes style, creator and price range
+  // Enhanced filtering with proper null/undefined checks
   const enhancedFilteredImages = filteredAndSortedImages.filter(image => {
-    // Apply design style filter
+    // Apply design style filter with null check
     if (designStyle !== 'all') {
-      const hasStyle = image.prompt?.toLowerCase().includes(designStyle.toLowerCase());
+      const prompt = image.prompt || '';
+      const hasStyle = prompt.toLowerCase().includes(designStyle.toLowerCase());
       if (!hasStyle) return false;
     }
     
-    // Apply creator filter
-    if (creatorFilter !== 'all' && image.creator.name !== creatorFilter) {
-      return false;
+    // Apply creator filter with null check
+    if (creatorFilter !== 'all') {
+      const creatorName = image.creator?.name || '';
+      if (creatorName !== creatorFilter) {
+        return false;
+      }
     }
     
-    // Apply price filter (if the image has a price)
+    // Apply price filter with null check
     if (image.price) {
       const price = parsePrice(image.price);
       if (price < priceRange[0] || price > priceRange[1]) {

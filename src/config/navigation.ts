@@ -6,9 +6,7 @@ export interface NavigationItem {
   title: string;
   href: string;
   description?: string;
-  requiresAuth?: boolean;
-  roles?: string[];
-  children?: NavigationItem[];
+  icon?: string;
 }
 
 export interface NavigationSection {
@@ -16,163 +14,107 @@ export interface NavigationSection {
   items: NavigationItem[];
 }
 
-// Main navigation items accessible to all users
+// Public navigation (always visible)
 export const publicNavigation: NavigationItem[] = [
   {
-    title: "Home",
-    href: "/",
-    description: "Welcome to Create2Make"
+    title: "Marketplace",
+    href: "/marketplace",
+    description: "Discover and purchase unique designs from creators"
   },
   {
     title: "Features",
     href: "/features",
-    description: "Discover our platform capabilities"
-  },
-  {
-    title: "Marketplace",
-    href: "/marketplace",
-    description: "Browse and purchase unique designs"
-  },
-  {
-    title: "Testimonials",
-    href: "/testimonials",
-    description: "What our users say about us"
+    description: "Learn about our platform's capabilities"
   },
   {
     title: "FAQ",
     href: "/faq",
-    description: "Frequently asked questions"
+    description: "Get answers to common questions"
   },
   {
     title: "Contact",
     href: "/contact",
-    description: "Get in touch with us"
+    description: "Get in touch with our support team"
+  },
+  {
+    title: "Testimonials",
+    href: "/testimonials",
+    description: "See what our users are saying"
   }
 ];
 
-// Partnership navigation for joining the platform
+// Partnership navigation (joining opportunities)
 export const partnershipNavigation: NavigationItem[] = [
   {
-    title: "Join Us",
-    href: "/join",
-    description: "Explore opportunities to join our creative community"
-  },
-  {
-    title: "Join as Manufacturer",
-    href: "/join/manufacturer",
-    description: "Partner with creators to provide manufacturing services"
+    title: "Join as Creator",
+    href: "/join-us",
+    description: "Start creating and selling your designs"
   },
   {
     title: "Join as Artisan",
-    href: "/join/artisan",
-    description: "Share your craft and connect with customers"
+    href: "/join-artisan",
+    description: "Craft custom products for customers"
+  },
+  {
+    title: "Join as Manufacturer",
+    href: "/join-manufacturer",
+    description: "Partner with us for bulk production"
   }
 ];
 
 // Authenticated user navigation
 export const authenticatedNavigation: NavigationItem[] = [
   {
-    title: "Create",
+    title: "Create Design",
     href: "/create",
-    description: "Generate new AI designs",
-    requiresAuth: true
-  },
-  {
-    title: "Dashboard",
-    href: "/dashboard",
-    description: "Manage your account and creations",
-    requiresAuth: true
+    description: "Generate new AI-powered designs"
   },
   {
     title: "My Designs",
     href: "/designs",
-    description: "View and manage your designs",
-    requiresAuth: true
+    description: "View and manage your design collection"
+  },
+  {
+    title: "Dashboard",
+    href: "/dashboard",
+    description: "Manage your account and view analytics"
   },
   {
     title: "Orders",
     href: "/orders",
-    description: "Track your orders and purchases",
-    requiresAuth: true
+    description: "Track your orders and purchases"
   },
   {
-    title: "Notifications",
-    href: "/notifications",
-    description: "View your notifications",
-    requiresAuth: true
+    title: "Cart",
+    href: "/cart",
+    description: "View items in your shopping cart"
+  },
+  {
+    title: "Earnings",
+    href: "/earnings",
+    description: "View your creator earnings"
   },
   {
     title: "Settings",
     href: "/settings",
-    description: "Account and preference settings",
-    requiresAuth: true
-  },
-  {
-    title: "Subscription",
-    href: "/subscription",
-    description: "Manage your subscription plan",
-    requiresAuth: true
+    description: "Configure your account preferences"
   }
 ];
 
 // Role-specific navigation sections
 export const roleNavigation: NavigationSection[] = [
   {
-    title: "CRM",
-    items: [
-      {
-        title: "CRM Dashboard",
-        href: "/crm",
-        description: "Customer relationship management",
-        requiresAuth: true
-      },
-      {
-        title: "Contacts",
-        href: "/crm/contacts",
-        description: "Manage your contacts",
-        requiresAuth: true
-      },
-      {
-        title: "Tasks",
-        href: "/crm/tasks",
-        description: "Manage your tasks",
-        requiresAuth: true
-      },
-      {
-        title: "Calendar",
-        href: "/crm/calendar",
-        description: "View your calendar",
-        requiresAuth: true
-      },
-      {
-        title: "Analytics",
-        href: "/crm/analytics",
-        description: "Business analytics",
-        requiresAuth: true
-      },
-      {
-        title: "Communications",
-        href: "/crm/communications",
-        description: "Communication center",
-        requiresAuth: true
-      }
-    ]
-  },
-  {
     title: "Creator",
     items: [
       {
         title: "Creator Dashboard",
-        href: "/creator",
-        description: "Manage your creative business",
-        requiresAuth: true,
-        roles: ["creator"]
+        href: "/creator/dashboard",
+        description: "Manage your creative business"
       },
       {
         title: "Creator Onboarding",
         href: "/creator/onboarding",
-        description: "Complete your creator profile",
-        requiresAuth: true
+        description: "Complete your creator profile"
       }
     ]
   },
@@ -181,16 +123,13 @@ export const roleNavigation: NavigationSection[] = [
     items: [
       {
         title: "Artisan Dashboard",
-        href: "/artisan",
-        description: "Manage your craft business",
-        requiresAuth: true,
-        roles: ["artisan"]
+        href: "/artisan/dashboard",
+        description: "Manage your artisan services"
       },
       {
-        title: "Artisan Onboarding",
-        href: "/artisan/onboarding",
-        description: "Complete your artisan profile",
-        requiresAuth: true
+        title: "Artisan Orders",
+        href: "/artisan/orders",
+        description: "View and fulfill custom orders"
       }
     ]
   },
@@ -199,16 +138,13 @@ export const roleNavigation: NavigationSection[] = [
     items: [
       {
         title: "Manufacturer Dashboard",
-        href: "/manufacturer",
-        description: "Manage your manufacturing business",
-        requiresAuth: true,
-        roles: ["manufacturer"]
+        href: "/manufacturer/dashboard",
+        description: "Manage bulk production orders"
       },
       {
-        title: "Manufacturer Onboarding",
-        href: "/manufacturer/onboarding",
-        description: "Complete your manufacturer profile",
-        requiresAuth: true
+        title: "Production Queue",
+        href: "/manufacturer/production",
+        description: "View and manage production pipeline"
       }
     ]
   }
@@ -217,72 +153,68 @@ export const roleNavigation: NavigationSection[] = [
 // Admin navigation
 export const adminNavigation: NavigationItem[] = [
   {
-    title: "Admin Panel",
-    href: "/admin",
-    description: "Administrative controls",
-    requiresAuth: true,
-    roles: ["admin"]
+    title: "Admin Dashboard",
+    href: "/admin/dashboard",
+    description: "System administration overview"
   },
   {
-    title: "AI Agents",
-    href: "/admin/ai-agents",
-    description: "AI agent monitoring and management",
-    requiresAuth: true,
-    roles: ["admin"]
+    title: "User Management",
+    href: "/admin/users",
+    description: "Manage user accounts and roles"
   },
   {
-    title: "Scheduled Jobs",
-    href: "/admin/scheduled-jobs",
-    description: "Scheduled job management",
-    requiresAuth: true,
-    roles: ["admin"]
+    title: "System Monitoring",
+    href: "/system-monitoring",
+    description: "Monitor system performance and health"
   },
   {
-    title: "System Management",
-    href: "/admin/system",
-    description: "Manage pages, components, and configurations",
-    requiresAuth: true,
-    roles: ["admin"]
+    title: "Analytics",
+    href: "/admin/analytics",
+    description: "View detailed system analytics"
   }
 ];
 
-// Helper function to check if user has access to a navigation item
-export const hasAccessToNavItem = (
-  item: NavigationItem,
-  user: User | null,
-  profile: Profile | null
-): boolean => {
-  if (!item.requiresAuth) return true;
-  if (!user) return false;
-  
-  if (item.roles && item.roles.length > 0) {
-    if (!profile) return false;
-    
-    // Check if user has any of the required roles
-    return item.roles.some(role => {
-      switch (role) {
-        case "admin":
-          return profile.is_admin;
-        case "creator":
-          return profile.is_creator;
-        case "artisan":
-          return profile.is_artisan;
-        case "manufacturer":
-          return profile.is_manufacturer;
-        default:
-          return false;
-      }
-    });
+// CRM navigation
+export const crmNavigation: NavigationItem[] = [
+  {
+    title: "CRM Dashboard",
+    href: "/crm/dashboard",
+    description: "Customer relationship management"
+  },
+  {
+    title: "CRM Tasks",
+    href: "/crm/tasks",
+    description: "Manage customer tasks and follow-ups"
   }
-  
-  return true;
-};
+];
 
-// Get filtered navigation based on user permissions
+// Helper function to filter navigation based on user permissions
 export const getFilteredNavigation = (
-  navigation: NavigationItem[],
+  items: NavigationItem[],
   user: User | null,
   profile: Profile | null
 ): NavigationItem[] => {
-  return navigation.filter(item => hasAccessToNavItem(item, user, profile));
+  // For now, return all items if user is authenticated
+  // This can be enhanced with more granular permission checks
+  return items;
+};
+
+// Helper function to check if user has access to a specific role section
+export const hasRoleAccess = (
+  sectionTitle: string,
+  user: User | null,
+  profile: Profile | null
+): boolean => {
+  if (!user || !profile) return false;
+  
+  switch (sectionTitle.toLowerCase()) {
+    case 'creator':
+      return profile.is_creator || false;
+    case 'artisan':
+      return profile.is_artisan || false;
+    case 'manufacturer':
+      return profile.is_manufacturer || false;
+    default:
+      return false;
+  }
 };

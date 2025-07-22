@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { EnhancedErrorBoundary } from "@/components/ui/enhanced-error-boundary";
 import { DynamicRouter } from "@/components/dynamic/DynamicRouter";
 import CRMRoutes from "./CRMRoutes";
 import CreatorRoutes from "./CreatorRoutes";
@@ -17,28 +18,64 @@ const MakerDetail = lazy(() => import("@/pages/MakerDetail"));
 
 export const AppRoutes = () => {
   return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <Routes>
-        {/* Nested routes that should override dynamic routes */}
-        <Route path="/admin/*" element={
-          <ProtectedRoute>
-            <AdminRoutes />
-          </ProtectedRoute>
-        } />
-        <Route path="/crm/*" element={<CRMRoutes />} />
-        <Route path="/creator/*" element={<CreatorRoutes />} />
-        <Route path="/artisan/*" element={<ArtisanRoutes />}/>
-        <Route path="/manufacturer/*" element={<ManufacturerRoutes />}/>
-        
-        {/* Deep linking routes */}
-        <Route path="/creator/:id" element={<CreatorProfile />} />
-        <Route path="/image/:id" element={<ImageDetail />} />
-        <Route path="/order/:id" element={<OrderTracking />} />
-        <Route path="/maker/:id" element={<MakerDetail />} />
-        
-        {/* Dynamic Router handles all other routes */}
-        <Route path="*" element={<DynamicRouter />} />
-      </Routes>
-    </Suspense>
+    <EnhancedErrorBoundary>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Routes>
+          {/* Nested routes that should override dynamic routes */}
+          <Route path="/admin/*" element={
+            <EnhancedErrorBoundary>
+              <ProtectedRoute>
+                <AdminRoutes />
+              </ProtectedRoute>
+            </EnhancedErrorBoundary>
+          } />
+          <Route path="/crm/*" element={
+            <EnhancedErrorBoundary>
+              <CRMRoutes />
+            </EnhancedErrorBoundary>
+          } />
+          <Route path="/creator/*" element={
+            <EnhancedErrorBoundary>
+              <CreatorRoutes />
+            </EnhancedErrorBoundary>
+          } />
+          <Route path="/artisan/*" element={
+            <EnhancedErrorBoundary>
+              <ArtisanRoutes />
+            </EnhancedErrorBoundary>
+          }/>
+          <Route path="/manufacturer/*" element={
+            <EnhancedErrorBoundary>
+              <ManufacturerRoutes />
+            </EnhancedErrorBoundary>
+          }/>
+          
+          {/* Deep linking routes */}
+          <Route path="/creator/:id" element={
+            <EnhancedErrorBoundary>
+              <CreatorProfile />
+            </EnhancedErrorBoundary>
+          } />
+          <Route path="/image/:id" element={
+            <EnhancedErrorBoundary>
+              <ImageDetail />
+            </EnhancedErrorBoundary>
+          } />
+          <Route path="/order/:id" element={
+            <EnhancedErrorBoundary>
+              <OrderTracking />
+            </EnhancedErrorBoundary>
+          } />
+          <Route path="/maker/:id" element={
+            <EnhancedErrorBoundary>
+              <MakerDetail />
+            </EnhancedErrorBoundary>
+          } />
+          
+          {/* Dynamic Router handles all other routes */}
+          <Route path="*" element={<DynamicRouter />} />
+        </Routes>
+      </Suspense>
+    </EnhancedErrorBoundary>
   );
 };

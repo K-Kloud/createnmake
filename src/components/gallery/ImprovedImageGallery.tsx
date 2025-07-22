@@ -4,6 +4,7 @@ import { useInView } from "react-intersection-observer";
 import { ImageCard } from "@/components/gallery/ImageCard";
 import { GalleryImage } from "@/types/gallery";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
+import { EnhancedErrorBoundary } from "@/components/ui/enhanced-error-boundary";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -64,24 +65,26 @@ export const ImprovedImageGallery = ({
   if (error) {
     console.error("❌ Gallery error:", error);
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center">
-        <AlertCircle className="h-12 w-12 text-destructive mb-4" />
-        <h3 className="text-xl font-semibold mb-4">
-          {isNetworkError ? t('gallery.connectionProblem') : t('gallery.failedToLoad')}
-        </h3>
-        <p className="text-muted-foreground mb-6 max-w-md">
-          {isNetworkError 
-            ? t('gallery.connectionDescription')
-            : error.message || t('gallery.failedToLoadDescription')
-          }
-        </p>
-        {onRetry && (
-          <Button onClick={onRetry} className="flex items-center gap-2">
-            <RefreshCcw className="h-4 w-4" />
-            {t('buttons.tryAgain')}
-          </Button>
-        )}
-      </div>
+      <EnhancedErrorBoundary>
+        <div className="flex flex-col items-center justify-center p-12 text-center">
+          <AlertCircle className="h-12 w-12 text-destructive mb-4" />
+          <h3 className="text-xl font-semibold mb-4">
+            {isNetworkError ? t('gallery.connectionProblem') : t('gallery.failedToLoad')}
+          </h3>
+          <p className="text-muted-foreground mb-6 max-w-md">
+            {isNetworkError 
+              ? t('gallery.connectionDescription')
+              : error.message || t('gallery.failedToLoadDescription')
+            }
+          </p>
+          {onRetry && (
+            <Button onClick={onRetry} className="flex items-center gap-2">
+              <RefreshCcw className="h-4 w-4" />
+              {t('buttons.tryAgain')}
+            </Button>
+          )}
+        </div>
+      </EnhancedErrorBoundary>
     );
   }
 
@@ -116,29 +119,37 @@ export const ImprovedImageGallery = ({
   }
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {images.map((image) => (
-          <div
-            key={image.id}
-            className="transform transition-all duration-300 hover:scale-[1.02]"
-          >
-            <ImageCard
-              image={image}
-              onLike={onLike}
-              onView={onView}
-              onAddComment={onAddComment}
-              onAddReply={onAddReply}
-              onFullImageClick={() => onImageClick(image)}
-            />
-          </div>
-        ))}
-      </div>
-      {hasMore && (
-        <div ref={ref} className="flex justify-center p-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    <EnhancedErrorBoundary>
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {images.map((image) => (
+            <EnhancedErrorBoundary
+              key={image.id}
+              fallback={
+                <div className="aspect-square bg-muted/40 rounded-lg flex items-center justify-center">
+                  <p className="text-muted-foreground text-sm">Failed to load image</p>
+                </div>
+              }
+            >
+              <div className="transform transition-all duration-300 hover:scale-[1.02]">
+                <ImageCard
+                  image={image}
+                  onLike={onLike}
+                  onView={onView}
+                  onAddComment={onAddComment}
+                  onAddReply={onAddReply}
+                  onFullImageClick={() => onImageClick(image)}
+                />
+              </div>
+            </EnhancedErrorBoundary>
+          ))}
         </div>
-      )}
-    </div>
+        {hasMore && (
+          <div ref={ref} className="flex justify-center p-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        )}
+      </div>
+    </EnhancedErrorBoundary>
   );
 };

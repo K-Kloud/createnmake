@@ -1,5 +1,7 @@
+
 import React, { lazy, Suspense } from 'react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { EnhancedErrorBoundary } from '@/components/ui/enhanced-error-boundary';
 
 // Component registry mapping component names to actual components
 const componentMap = {
@@ -71,23 +73,39 @@ export const ComponentRegistry: React.FC<ComponentRegistryProps> = ({
   const Component = componentMap[componentName as keyof typeof componentMap];
 
   if (!Component) {
+    console.error(`Component "${componentName}" not found in registry`);
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-destructive">Component Not Found</h2>
-          <p className="text-muted-foreground mt-2">
-            Component "{componentName}" is not registered in the component registry.
-          </p>
+      <EnhancedErrorBoundary>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-destructive">Component Not Found</h2>
+            <p className="text-muted-foreground mt-2">
+              Component "{componentName}" is not registered in the component registry.
+            </p>
+          </div>
         </div>
-      </div>
+      </EnhancedErrorBoundary>
     );
   }
 
   return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <div className={className}>
-        <Component {...config} />
-      </div>
-    </Suspense>
+    <EnhancedErrorBoundary
+      fallback={
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-destructive">Component Error</h2>
+            <p className="text-muted-foreground mt-2">
+              Failed to load component "{componentName}". Please try refreshing the page.
+            </p>
+          </div>
+        </div>
+      }
+    >
+      <Suspense fallback={<LoadingSpinner />}>
+        <div className={className}>
+          <Component {...config} />
+        </div>
+      </Suspense>
+    </EnhancedErrorBoundary>
   );
 };

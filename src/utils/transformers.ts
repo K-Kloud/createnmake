@@ -26,7 +26,7 @@ export const transformComments = (comments: any[]): Comment[] => {
     
     return {
       id: comment.id,
-      text: comment.text,
+      text: comment.text || '',
       user: {
         id: comment.user_id,
         name: username,
@@ -53,7 +53,7 @@ export const transformComments = (comments: any[]): Comment[] => {
         
         return {
           id: reply.id,
-          text: reply.text,
+          text: reply.text || '',
           user: {
             id: reply.user_id,
             name: replyUsername,
@@ -89,7 +89,7 @@ export const transformImage = (image: any, userId?: string): GalleryImage => {
   return {
     id: image.id,
     url: image.image_url || '',
-    prompt: image.prompt,
+    prompt: image.prompt || 'No prompt available',
     likes: image.likes || 0,
     views: image.views || 0,
     comments: transformComments(image.comments || []),
@@ -107,6 +107,7 @@ export const transformImage = (image: any, userId?: string): GalleryImage => {
       comment: (image.comments || []).length,
       view: image.views || 0
     },
-    user_id: image.user_id || ''
+    user_id: image.user_id || '',
+    price: image.price || undefined
   };
 };
