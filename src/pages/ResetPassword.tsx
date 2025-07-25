@@ -168,7 +168,7 @@ const ResetPassword = () => {
   return (
     <MainLayout
       seo={{
-        title: "Reset Password | Create2Make",
+        title: "Reset Password | OpenTeknologies",
         description: "Reset your password to regain access to your account.",
       }}
     >

@@ -34,7 +34,7 @@ const Index = () => {
   return (
     <MainLayout
       seo={{
-        title: "Create2Make | Bring Custom Designs to Life",
+        title: "OpenTeknologies | Bring Custom Designs to Life",
         description: "Connect with skilled artisans and manufacturers to bring your custom designs to life with our AI-powered design generator.",
         ogImage: "https://openteknologies.com/lovable-uploads/8373b451-38a1-4ecb-8594-cf0c25ba20c4.png"
       }}

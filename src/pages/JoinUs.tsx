@@ -9,7 +9,7 @@ const JoinUs = () => {
   return (
     <MainLayout
       seo={{
-        title: "Join Us | Create2Make",
+        title: "Join Us | OpenTeknologies",
         description: "Join our creative community as a manufacturer or artisan and connect with creators worldwide.",
         ogImage: "https://openteknologies.com/lovable-uploads/8373b451-38a1-4ecb-8594-cf0c25ba20c4.png"
       }}

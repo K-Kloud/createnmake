@@ -31,8 +31,8 @@ const Auth = () => {
   return (
     <MainLayout
       seo={{
-        title: "Sign In | Create2Make",
-        description: "Sign in to your Create2Make account to access your designs and connect with makers.",
+        title: "Sign In | OpenTeknologies",
+        description: "Sign in to your OpenTeknologies account to access your designs and connect with makers.",
       }}
     >
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/20 p-4">

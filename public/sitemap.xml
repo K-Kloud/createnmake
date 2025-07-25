@@ -2,42 +2,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://create2make.com/</loc>
+    <loc>https://openteknologies.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://create2make.com/marketplace</loc>
+    <loc>https://openteknologies.com/marketplace</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://create2make.com/features</loc>
+    <loc>https://openteknologies.com/features</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://create2make.com/contact</loc>
+    <loc>https://openteknologies.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://create2make.com/faq</loc>
+    <loc>https://openteknologies.com/faq</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://create2make.com/testimonials</loc>
+    <loc>https://openteknologies.com/testimonials</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://create2make.com/artisan</loc>
+    <loc>https://openteknologies.com/artisan</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://create2make.com/manufacturer</loc>
+    <loc>https://openteknologies.com/manufacturer</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

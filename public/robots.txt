@@ -16,4 +16,4 @@ Disallow: /dashboard
 Disallow: /crm
 
 # Sitemap
-Sitemap: https://create2make.com/sitemap.xml
+Sitemap: https://openteknologies.com/sitemap.xml

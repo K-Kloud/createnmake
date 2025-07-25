@@ -26,7 +26,7 @@ serve(async (req) => {
 
     // Enhanced system prompts with website knowledge
     const websiteKnowledge = `
-Website: Create2Make (Openteknologies)
+Website: OpenTeknologies (Create2Make)
 Features:
 - AI-powered image generation with prompts (5 images/month free, more with subscription)
 - Custom clothing and accessories marketplace
@@ -44,7 +44,7 @@ Current page: ${userContext?.currentPage || '/'}
 `;
 
     const systemPrompt = chatMode === 'manufacturer' 
-      ? `You are a helpful manufacturing expert assistant for Create2Make platform. You specialize in custom clothing and accessories manufacturing processes, materials, specifications, and connecting customers with manufacturers.
+      ? `You are a helpful manufacturing expert assistant for OpenTeknologies platform. You specialize in custom clothing and accessories manufacturing processes, materials, specifications, and connecting customers with manufacturers.
 
 ${websiteKnowledge}
 
@@ -58,7 +58,7 @@ Focus on:
 - Quote management system
 
 Be specific about the platform features and guide users through the process.`
-      : `You are a helpful customer service assistant for Create2Make platform. You help customers with image generation, finding manufacturers, placing orders, account management, and using platform features.
+      : `You are a helpful customer service assistant for OpenTeknologies platform. You help customers with image generation, finding manufacturers, placing orders, account management, and using platform features.
 
 ${websiteKnowledge}
 

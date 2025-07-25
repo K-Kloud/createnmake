@@ -38,7 +38,7 @@ export const QuickActions = ({ chatMode, onQuickAction, isAuthenticated }: Quick
     {
       icon: <Users className="h-4 w-4" />,
       label: "Platform overview",
-      question: "How does Create2Make work for manufacturers?",
+      question: "How does OpenTeknologies work for manufacturers?",
     },
     {
       icon: <Settings className="h-4 w-4" />,
@@ -69,7 +69,7 @@ export const QuickActions = ({ chatMode, onQuickAction, isAuthenticated }: Quick
     {
       icon: <Users className="h-4 w-4" />,
       label: "Getting started",
-      question: "How do I get started with Create2Make? Do I need to sign up?",
+      question: "How do I get started with OpenTeknologies? Do I need to sign up?",
     },
   ];
 
@@ -85,7 +85,7 @@ export const QuickActions = ({ chatMode, onQuickAction, isAuthenticated }: Quick
       </div>
       
       <div className="text-sm text-muted-foreground mb-3">
-        Hi! I'm here to help you with Create2Make. Choose a quick question below or ask me anything:
+        Hi! I'm here to help you with OpenTeknologies. Choose a quick question below or ask me anything:
       </div>
 
       <div className="grid grid-cols-1 gap-2">

@@ -62,8 +62,8 @@ const JoinManufacturer = () => {
   return (
     <MainLayout
       seo={{
-        title: "Join as a Manufacturer | Create2Make",
-        description: "Partner with creators and designers to provide custom manufacturing services. Grow your manufacturing business with Create2Make."
+        title: "Join as a Manufacturer | OpenTeknologies",
+        description: "Partner with creators and designers to provide custom manufacturing services. Grow your manufacturing business with OpenTeknologies."
       }}
     >
       <div className="container mx-auto px-4 py-12">
@@ -160,7 +160,7 @@ const JoinManufacturer = () => {
         <div className="text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of manufacturers already growing their business with Create2Make
+            Join thousands of manufacturers already growing their business with OpenTeknologies
           </p>
           {user ? (
             <Button size="lg" asChild>

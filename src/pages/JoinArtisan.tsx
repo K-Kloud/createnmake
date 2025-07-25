@@ -67,7 +67,7 @@ const JoinArtisan = () => {
   return (
     <MainLayout
       seo={{
-        title: "Join as an Artisan | Create2Make",
+        title: "Join as an Artisan | OpenTeknologies",
         description: "Share your craft with the world. Connect with customers who value handmade, custom creations. Join our community of skilled artisans."
       }}
     >
