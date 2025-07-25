@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ServiceMonitor
+metadata:
+  name: opentech-webapp-monitor
+  namespace: opentech-webapp
+  labels:
+    app: opentech-webapp
+spec:
+  selector:
+    matchLabels:
+      app: opentech-webapp
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 30s
+    scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: opentech-webapp-alerts
+  namespace: opentech-webapp
+  labels:
+    app: opentech-webapp
+spec:
+  groups:
+  - name: opentech-webapp.rules
+    rules:
+    - alert: WebappDown
+      expr: up{job="opentech-webapp-service"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "OpenTech webapp is down"
+        description: "The OpenTech webapp has been down for more than 5 minutes."
+    
+    - alert: WebappHighCPU
+      expr: rate(container_cpu_usage_seconds_total{pod=~"opentech-webapp-.*"}[5m]) > 0.8
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High CPU usage on OpenTech webapp"
+        description: "CPU usage is above 80% for more than 10 minutes."
+    
+    - alert: WebappHighMemory
+      expr: container_memory_usage_bytes{pod=~"opentech-webapp-.*"} / container_spec_memory_limit_bytes > 0.9
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High memory usage on OpenTech webapp"
+        description: "Memory usage is above 90% for more than 5 minutes."
+    
+    - alert: WebappHighErrorRate
+      expr: rate(nginx_http_requests_total{status=~"5.."}[5m]) / rate(nginx_http_requests_total[5m]) > 0.1
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "High error rate on OpenTech webapp"
+        description: "Error rate is above 10% for more than 5 minutes."
