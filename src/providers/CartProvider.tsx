@@ -55,13 +55,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   }, [items]);
 
   const addItem = (newItem: Omit<CartItem, 'quantity'>) => {
-    console.log('CartProvider.addItem called with:', newItem);
-    console.log('Item price type:', typeof newItem.price, 'value:', newItem.price);
-    
-    // Ensure price is a valid number
-    const validPrice = typeof newItem.price === 'number' && !isNaN(newItem.price) ? newItem.price : 0;
-    console.log('CartProvider: Using valid price:', validPrice);
-    
     setItems(prev => {
       const existingItem = prev.find(item => item.id === newItem.id);
       if (existingItem) {
@@ -71,7 +64,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             : item
         );
       }
-      return [...prev, { ...newItem, price: validPrice, quantity: 1 }];
+      return [...prev, { ...newItem, quantity: 1 }];
     });
   };
 
@@ -96,13 +89,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   };
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = items.reduce((sum, item) => {
-    const itemTotal = item.price * item.quantity;
-    console.log(`Item ${item.name}: price=${item.price}, quantity=${item.quantity}, total=${itemTotal}`);
-    return sum + itemTotal;
-  }, 0);
-  
-  console.log('Cart totals - items:', totalItems, 'price:', totalPrice);
+  const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   const value: CartContextType = {
     items,

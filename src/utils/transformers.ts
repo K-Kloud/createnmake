@@ -2,6 +2,7 @@
 import { GalleryImage, Comment, Reply } from "@/types/gallery";
 import { formatDistanceToNow } from "date-fns";
 import { getFallbackUsername } from "@/utils/usernameUtils";
+import { generateRandomPrice } from "@/lib/utils";
 
 export const transformComments = (comments: any[]): Comment[] => {
   console.log(`🔄 [transformers.ts] Transforming ${comments.length} comments`);
@@ -108,6 +109,6 @@ export const transformImage = (image: any, userId?: string): GalleryImage => {
       view: image.views || 0
     },
     user_id: image.user_id || '',
-    price: image.price || undefined
+    price: image.price || generateRandomPrice(image.id)
   };
 };
