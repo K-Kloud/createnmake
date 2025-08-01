@@ -33,6 +33,10 @@ const componentMap = {
   // Admin Pages
   'Admin': lazy(() => import('@/pages/Admin')),
   
+  // Role-specific Pages
+  'Artisan': lazy(() => import('@/pages/Artisan')),
+  'Manufacturer': lazy(() => import('@/pages/Manufacturer')),
+  
   // Onboarding Pages
   'ArtisanOnboarding': lazy(() => import('@/pages/ArtisanOnboarding')),
   'ManufacturerOnboarding': lazy(() => import('@/pages/ManufacturerOnboarding')),
