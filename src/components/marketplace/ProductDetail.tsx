@@ -91,11 +91,14 @@ export const ProductDetail = ({
 
     setIsAddingToCart(true);
     try {
+      const parsedPrice = parsePrice(product.price);
+      console.log('ProductDetail: Adding to cart - Original price:', product.price, 'Parsed price:', parsedPrice);
+      
       // Add item to cart
       addItem({
         id: product.id.toString(),
         name: product.prompt,
-        price: parsePrice(product.price),
+        price: parsedPrice,
         image_url: product.url,
         metadata: product
       });
@@ -131,11 +134,14 @@ export const ProductDetail = ({
     }
 
     try {
+      const parsedPrice = parsePrice(product.price);
+      console.log('ProductDetail: Buy now - Original price:', product.price, 'Parsed price:', parsedPrice);
+      
       // Add to cart first
       addItem({
         id: product.id.toString(),
         name: product.prompt,
-        price: parsePrice(product.price),
+        price: parsedPrice,
         image_url: product.url,
         metadata: product
       });

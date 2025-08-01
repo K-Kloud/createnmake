@@ -16,11 +16,11 @@ export function getInitials(name: string) {
 
 // Generate a consistent price based on the image ID
 export function generateRandomPrice(id: number): string {
-  // Use the image ID to create a deterministic price between £50 and £500
-  const basePrice = (id * 17) % 451 + 50;
+  // Use the image ID to create a deterministic price between £5 and £85
+  const basePrice = (id * 7) % 81 + 5;
   
-  // Round to nearest £5
-  const roundedPrice = Math.round(basePrice / 5) * 5;
+  // Round to nearest £1 for more realistic pricing
+  const roundedPrice = Math.round(basePrice);
   
   return `£${roundedPrice}`;
 }
@@ -51,5 +51,6 @@ export function parsePrice(priceString: string | null | undefined): number {
 
 // Format number as price with currency symbol
 export function formatPrice(amount: number, currency: string = '£'): string {
-  return `${currency}${amount.toFixed(2)}`;
+  // For digital art, use whole numbers for cleaner pricing
+  return `${currency}${Math.round(amount)}`;
 }

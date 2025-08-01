@@ -24,13 +24,13 @@ export const usePriceEditing = (
   const handleBlur = () => {
     setIsEditing(false);
     if (editedPrice && onPriceChange) {
-      // Validate price format (£ followed by numbers)
-      if (/^£\d+$/.test(editedPrice)) {
+      // Validate price format (£ followed by numbers, allow decimals)
+      if (/^£\d+(\.\d{1,2})?$/.test(editedPrice)) {
         onPriceChange(editedPrice);
       } else {
         toast({
           title: "Invalid price format",
-          description: "Price should be in format £XX",
+          description: "Price should be in format £XX or £XX.XX",
           variant: "destructive",
         });
         setEditedPrice(initialPrice || "");

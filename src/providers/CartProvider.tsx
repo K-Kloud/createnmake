@@ -58,6 +58,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     console.log('CartProvider.addItem called with:', newItem);
     console.log('Item price type:', typeof newItem.price, 'value:', newItem.price);
     
+    // Ensure price is a valid number
+    const validPrice = typeof newItem.price === 'number' && !isNaN(newItem.price) ? newItem.price : 0;
+    console.log('CartProvider: Using valid price:', validPrice);
+    
     setItems(prev => {
       const existingItem = prev.find(item => item.id === newItem.id);
       if (existingItem) {
@@ -67,7 +71,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             : item
         );
       }
-      return [...prev, { ...newItem, quantity: 1 }];
+      return [...prev, { ...newItem, price: validPrice, quantity: 1 }];
     });
   };
 
