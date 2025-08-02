@@ -31,9 +31,9 @@ export function useOptimisticLike({ likeMutation }: OptimisticLikeOptions) {
     queryClient.setQueryData(['marketplace-images'], (oldData: any) => {
       if (!oldData) return oldData;
       
-      console.log('🔴 Applying optimistic update to data');
+      console.log('🔴 Applying optimistic update to data:', { imageId, currentHasLiked });
       
-      // Handle both paginated and non-paginated data
+      // Handle paginated data structure
       if (oldData.pages) {
         return {
           ...oldData,
@@ -45,6 +45,9 @@ export function useOptimisticLike({ likeMutation }: OptimisticLikeOptions) {
                 likes: currentHasLiked 
                   ? Math.max(0, (image.likes || 0) - 1)
                   : (image.likes || 0) + 1,
+                image_likes: currentHasLiked
+                  ? image.image_likes?.filter(like => like.user_id !== userId) || []
+                  : [...(image.image_likes || []), { user_id: userId }],
                 metrics: {
                   ...image.metrics,
                   like: currentHasLiked 
@@ -55,22 +58,6 @@ export function useOptimisticLike({ likeMutation }: OptimisticLikeOptions) {
             )
           ),
         };
-      } else if (Array.isArray(oldData)) {
-        return oldData.map((image: GalleryImage) =>
-          image.id === imageId ? {
-            ...image,
-            hasLiked: !currentHasLiked,
-            likes: currentHasLiked 
-              ? Math.max(0, (image.likes || 0) - 1)
-              : (image.likes || 0) + 1,
-            metrics: {
-              ...image.metrics,
-              like: currentHasLiked 
-                ? Math.max(0, (image.metrics?.like || 0) - 1)
-                : (image.metrics?.like || 0) + 1
-            }
-          } : image
-        );
       }
       
       return oldData;

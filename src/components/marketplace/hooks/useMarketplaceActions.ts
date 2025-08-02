@@ -36,13 +36,13 @@ export const useMarketplaceActions = ({
 
   const handleLike = async (imageId: number) => {
     console.log('🔴 handleLike called for imageId:', imageId);
+    console.log('🔴 Available images:', images);
     
-    // Find the image we want
-    const allImages = images.flatMap(page => Array.isArray(page) ? page : []);
-    const image = allImages.find(img => img.id === imageId);
+    // Images are already flattened from useMarketplace, no need to double-flatten
+    const image = images.find(img => img.id === imageId);
     
     if (!image) {
-      console.log('🔴 Image not found:', imageId);
+      console.log('🔴 Image not found:', { imageId, availableImages: images.length });
       return;
     }
 
