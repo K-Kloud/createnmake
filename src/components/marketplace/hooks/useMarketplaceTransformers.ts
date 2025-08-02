@@ -3,52 +3,101 @@ import { formatDistanceToNow } from "date-fns";
 import { Session } from "@supabase/supabase-js";
 import { getFallbackUsername } from "@/utils/usernameUtils";
 
-export const transformImageWithDefaultMetrics = (image: any, session: Session | null) => ({
-  ...image,
-  hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
-  comments: transformComments(image.comments || []),
-  metrics: {
-    like: image.likes || 0,
-    comment: (image.comments || []).length,
-    view: image.views || 0
-  },
-  timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true }),
-  price: image.price
-});
+export const transformImageWithDefaultMetrics = (image: any, session: Session | null) => {
+  console.log('🔍 [transformers.ts] Transforming image creator data:', {
+    user_id: image.user_id,
+    profiles: image.profiles,
+    username: image.profiles?.username
+  });
 
-export const transformImageWithMetrics = (image: any, session: Session | null, metricsMap: any) => ({
-  ...image,
-  hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
-  comments: transformComments(image.comments || []),
-  metrics: metricsMap,
-  timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true }),
-  price: image.price
-});
+  const creatorName = getFallbackUsername(
+    image.profiles?.username || null,
+    null, // email not available in profiles
+    image.user_id,
+    image.profiles?.display_name || null,
+    image.profiles?.first_name || null,
+    image.profiles?.last_name || null
+  );
+
+  console.log(`👤 [transformers.ts] Final creator name: "${creatorName}"`);
+
+  return {
+    ...image,
+    hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
+    comments: transformComments(image.comments || []),
+    creator: {
+      name: creatorName,
+      avatar: image.profiles?.avatar_url || 'https://github.com/shadcn.png'
+    },
+    metrics: {
+      like: image.likes || 0,
+      comment: (image.comments || []).length,
+      view: image.views || 0
+    },
+    timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true }),
+    price: image.price
+  };
+};
+
+export const transformImageWithMetrics = (image: any, session: Session | null, metricsMap: any) => {
+  console.log('🔍 [transformers.ts] Transforming image creator data:', {
+    user_id: image.user_id,
+    profiles: image.profiles,
+    username: image.profiles?.username
+  });
+
+  const creatorName = getFallbackUsername(
+    image.profiles?.username || null,
+    null, // email not available in profiles
+    image.user_id,
+    image.profiles?.display_name || null,
+    image.profiles?.first_name || null,
+    image.profiles?.last_name || null
+  );
+
+  console.log(`👤 [transformers.ts] Final creator name: "${creatorName}"`);
+
+  return {
+    ...image,
+    hasLiked: image.image_likes?.some(like => like.user_id === session?.user?.id),
+    comments: transformComments(image.comments || []),
+    creator: {
+      name: creatorName,
+      avatar: image.profiles?.avatar_url || 'https://github.com/shadcn.png'
+    },
+    metrics: metricsMap,
+    timeAgo: formatDistanceToNow(new Date(image.created_at), { addSuffix: true }),
+    price: image.price
+  };
+};
 
 export const transformComments = (comments: any[] = []) => {
-  console.log(`🔄 Transforming ${comments.length} comments`);
+  console.log(`🔄 [transformers.ts] Transforming ${comments.length} comments`);
   
   return comments.map(comment => {
     const createdDate = comment.created_at ? new Date(comment.created_at) : new Date();
     
     // Debug log the raw comment data
-    console.log('🔍 Raw comment data:', {
+    console.log('🔍 [transformers.ts] Raw comment data:', {
       user_id: comment.user_id,
       profiles: comment.profiles,
-      username: comment.profiles?.username
+      username: comment.username
     });
+    
+    // Handle both array and object profile structures
+    const profile = Array.isArray(comment.profiles) ? comment.profiles[0] : comment.profiles;
     
     // Get the username using our improved fallback logic
     const username = getFallbackUsername(
-      comment.profiles?.username || null,
-      comment.profiles?.email || null, // This might be null since email isn't in profiles
+      profile?.username || comment.username || null,
+      null, // email not available
       comment.user_id,
-      comment.profiles?.display_name || null,
-      comment.profiles?.first_name || null,
-      comment.profiles?.last_name || null
+      profile?.display_name || null,
+      profile?.first_name || null,
+      profile?.last_name || null
     );
     
-    console.log(`👤 Final username for comment: "${username}"`);
+    console.log(`👤 [transformers.ts] Final username for comment: "${username}"`);
     
     return {
       id: comment.id,
@@ -57,27 +106,30 @@ export const transformComments = (comments: any[] = []) => {
       user: {
         id: comment.user_id,
         name: username,
-        avatar: comment.profiles?.avatar_url || 'https://github.com/shadcn.png'
+        avatar: profile?.avatar_url || 'https://github.com/shadcn.png'
       },
       replies: (comment.comment_replies || []).map((reply: any) => {
         const replyDate = reply.created_at ? new Date(reply.created_at) : new Date();
         
-        console.log('🔍 Raw reply data:', {
+        console.log('🔍 [transformers.ts] Raw reply data:', {
           user_id: reply.user_id,
           profiles: reply.profiles,
-          username: reply.profiles?.username
+          username: reply.username
         });
         
+        // Handle both array and object profile structures
+        const replyProfile = Array.isArray(reply.profiles) ? reply.profiles[0] : reply.profiles;
+        
         const replyUsername = getFallbackUsername(
-          reply.profiles?.username || null,
-          reply.profiles?.email || null,
+          replyProfile?.username || reply.username || null,
+          null, // email not available
           reply.user_id,
-          reply.profiles?.display_name || null,
-          reply.profiles?.first_name || null,
-          reply.profiles?.last_name || null
+          replyProfile?.display_name || null,
+          replyProfile?.first_name || null,
+          replyProfile?.last_name || null
         );
         
-        console.log(`👤 Final username for reply: "${replyUsername}"`);
+        console.log(`👤 [transformers.ts] Final username for reply: "${replyUsername}"`);
         
         return {
           id: reply.id,
@@ -86,7 +138,7 @@ export const transformComments = (comments: any[] = []) => {
           user: {
             id: reply.user_id,
             name: replyUsername,
-            avatar: reply.profiles?.avatar_url || 'https://github.com/shadcn.png'
+            avatar: replyProfile?.avatar_url || 'https://github.com/shadcn.png'
           }
         };
       })

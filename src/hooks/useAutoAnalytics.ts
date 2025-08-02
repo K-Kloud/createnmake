@@ -9,56 +9,63 @@ export const useAutoAnalytics = () => {
   const performanceObserverRef = useRef<PerformanceObserver>();
   const mutationObserverRef = useRef<MutationObserver>();
   
-  // Generate unique element identifier
+  // Generate unique element identifier with null safety
   const getElementIdentifier = useCallback((element: Element): string => {
+    if (!element) return 'unknown';
     if (element.id) return element.id;
-    if (element.className) return `.${element.className.split(' ').join('.')}`;
-    return element.tagName.toLowerCase();
+    if (element.className && typeof element.className === 'string') {
+      return `.${element.className.split(' ').filter(Boolean).join('.')}`;
+    }
+    return element.tagName?.toLowerCase() || 'unknown';
   }, []);
 
   // Track all user interactions automatically
   const setupGlobalEventTracking = useCallback(() => {
     const trackEvent = (event: Event) => {
-      const target = event.target as Element;
-      if (!target) return;
+      try {
+        const target = event.target as Element;
+        if (!target || !target.tagName) return;
 
-      const elementId = getElementIdentifier(target);
-      const elementText = target.textContent?.slice(0, 100) || '';
-      
-      const metadata = {
-        eventType: event.type,
-        timestamp: Date.now(),
-        elementTag: target.tagName,
-        elementClasses: target.className,
-        pageX: (event as MouseEvent).pageX || 0,
-        pageY: (event as MouseEvent).pageY || 0,
-        viewport: {
-          width: window.innerWidth,
-          height: window.innerHeight
+        const elementId = getElementIdentifier(target);
+        const elementText = target.textContent?.slice(0, 100) || '';
+        
+        const metadata = {
+          eventType: event.type,
+          timestamp: Date.now(),
+          elementTag: target.tagName || 'unknown',
+          elementClasses: typeof target.className === 'string' ? target.className : '',
+          pageX: (event as MouseEvent).pageX || 0,
+          pageY: (event as MouseEvent).pageY || 0,
+          viewport: {
+            width: window.innerWidth,
+            height: window.innerHeight
+          }
+        };
+
+        // Track different types of interactions
+        switch (event.type) {
+          case 'click':
+            trackInteraction('click', elementId, elementText, metadata);
+            break;
+          case 'input':
+            trackInteraction('input', elementId, '', { ...metadata, inputType: (target as HTMLInputElement).type });
+            break;
+          case 'submit':
+            trackInteraction('form_submit', elementId, '', metadata);
+            break;
+          case 'focus':
+            trackInteraction('focus', elementId, '', metadata);
+            break;
+          case 'blur':
+            trackInteraction('blur', elementId, '', metadata);
+            break;
+          case 'scroll':
+            const scrollPercentage = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+            trackInteraction('scroll', 'window', '', { ...metadata, scrollPercentage });
+            break;
         }
-      };
-
-      // Track different types of interactions
-      switch (event.type) {
-        case 'click':
-          trackInteraction('click', elementId, elementText, metadata);
-          break;
-        case 'input':
-          trackInteraction('input', elementId, '', { ...metadata, inputType: (target as HTMLInputElement).type });
-          break;
-        case 'submit':
-          trackInteraction('form_submit', elementId, '', metadata);
-          break;
-        case 'focus':
-          trackInteraction('focus', elementId, '', metadata);
-          break;
-        case 'blur':
-          trackInteraction('blur', elementId, '', metadata);
-          break;
-        case 'scroll':
-          const scrollPercentage = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
-          trackInteraction('scroll', 'window', '', { ...metadata, scrollPercentage });
-          break;
+      } catch (error) {
+        console.error('Error in trackEvent:', error);
       }
     };
 

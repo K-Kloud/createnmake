@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export const fetchImageComments = async (imageId: number) => {
@@ -9,9 +8,12 @@ export const fetchImageComments = async (imageId: number) => {
       text,
       created_at,
       user_id,
-      profiles (
+      profiles!comments_user_id_fkey (
         id, 
         username,
+        display_name,
+        first_name,
+        last_name,
         avatar_url
       )
     `)
@@ -29,7 +31,7 @@ export const fetchImageComments = async (imageId: number) => {
     console.log(`👤 Comment ${index + 1} user data:`, {
       user_id: comment.user_id,
       profiles: comment.profiles,
-      username: comment.profiles?.username
+      username: Array.isArray(comment.profiles) ? (comment.profiles[0] as any)?.username : (comment.profiles as any)?.username
     });
   });
 
@@ -44,9 +46,12 @@ export const fetchCommentReplies = async (commentId: number) => {
       text,
       created_at,
       user_id,
-      profiles (
+      profiles!comment_replies_user_id_fkey (
         id,
         username,
+        display_name,
+        first_name,
+        last_name,
         avatar_url
       )
     `)
@@ -64,7 +69,7 @@ export const fetchCommentReplies = async (commentId: number) => {
     console.log(`👤 Reply ${index + 1} user data:`, {
       user_id: reply.user_id,
       profiles: reply.profiles,
-      username: reply.profiles?.username
+      username: Array.isArray(reply.profiles) ? (reply.profiles[0] as any)?.username : (reply.profiles as any)?.username
     });
   });
 
@@ -78,7 +83,7 @@ export const fetchCommentsWithReplies = async (comments: any[]) => {
       console.log(`👤 Processing comment from user:`, {
         user_id: comment.user_id,
         profiles: comment.profiles,
-        username: comment.profiles?.username
+        username: Array.isArray(comment.profiles) ? (comment.profiles[0] as any)?.username : (comment.profiles as any)?.username
       });
       return { ...comment, comment_replies: replies };
     })

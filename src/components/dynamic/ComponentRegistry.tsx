@@ -61,6 +61,12 @@ const componentMap = {
   'DynamicContent': lazy(() => import('./DynamicContent')),
   'LandingPage': lazy(() => import('./templates/LandingPage')),
   'ContentPage': lazy(() => import('./templates/ContentPage')),
+  
+  // Dashboard and Analytics Pages
+  'RealtimeDashboard': lazy(() => import('@/pages/Dashboard')), // Map to existing Dashboard
+  'AdvancedAI': lazy(() => import('@/pages/Create')), // Map to existing Create page
+  'UserInsights': lazy(() => import('@/pages/Dashboard')), // Map to existing Dashboard
+  'APIDocumentation': lazy(() => import('@/pages/Integrations')), // Map to existing Integrations
 };
 
 interface ComponentRegistryProps {
