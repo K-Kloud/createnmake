@@ -25,12 +25,12 @@ export const useLikeImage = () => {
     },
     onSuccess: (data) => {
       console.log('🔴 Like operation successful:', data);
-      // Invalidate queries to refresh from server state
-      queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
+      // Don't invalidate queries immediately - let optimistic updates handle the UI
+      // Real-time subscription will sync the data across other instances
     },
     onError: (error) => {
       console.error('Like mutation failed:', error);
-      // Invalidate queries to refresh from server state
+      // Only invalidate on error to trigger rollback
       queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
     }
   });

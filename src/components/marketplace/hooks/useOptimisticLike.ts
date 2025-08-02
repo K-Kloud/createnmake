@@ -15,7 +15,7 @@ export function useOptimisticLike({ likeMutation }: OptimisticLikeOptions) {
   const optimisticLike = async (imageId: number, currentHasLiked: boolean, userId: string) => {
     console.log('🔴 Optimistic like starting:', { imageId, currentHasLiked, userId, isPending: likeMutation.isPending });
     
-    // Prevent multiple simultaneous requests
+    // Prevent multiple simultaneous requests for the same image
     if (likeMutation.isPending) {
       console.log('🔴 Like operation already in progress, skipping');
       return;

@@ -47,12 +47,22 @@ export const ImageActions = ({
     }
     
     setIsLiking(true);
-    onLike();
     
-    // Reset after a short delay
-    setTimeout(() => {
-      setIsLiking(false);
-    }, 1000);
+    try {
+      onLike();
+    } catch (error) {
+      console.error('🔴 Like action failed:', error);
+      toast({
+        title: "Like failed",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      // Reset after a shorter delay for better responsiveness
+      setTimeout(() => {
+        setIsLiking(false);
+      }, 500);
+    }
   };
 
   return (

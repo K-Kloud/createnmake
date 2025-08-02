@@ -19,7 +19,7 @@ export const useMarketplaceRealtimeSubscription = () => {
       invalidationTimeoutRef.current = setTimeout(() => {
         console.log('🔴 Debounced real-time invalidation triggered');
         queryClient.invalidateQueries({ queryKey: ['marketplace-images'] });
-      }, 500); // 500ms debounce
+      }, 100); // 100ms debounce for faster real-time updates
     };
     
     const channel = supabase
