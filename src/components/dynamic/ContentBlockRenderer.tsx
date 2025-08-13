@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { sanitizeAdminHtml, escapeHtml } from '@/utils/security';
 
 interface ContentBlock {
   id: string;
@@ -19,22 +20,24 @@ export const ContentBlockRenderer: React.FC<ContentBlockRendererProps> = ({ bloc
   const renderContent = () => {
     switch (block.block_type) {
       case 'text':
+        // Sanitize HTML content to prevent XSS attacks
+        const sanitizedContent = sanitizeAdminHtml(block.content.html || block.content.text || '');
         return (
           <div className="prose prose-sm max-w-none">
-            <div dangerouslySetInnerHTML={{ __html: block.content.html || block.content.text }} />
+            <div dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
           </div>
         );
 
       case 'hero':
         return (
           <div className="text-center py-12">
-            <h1 className="text-4xl font-bold mb-4">{block.content.heading}</h1>
+            <h1 className="text-4xl font-bold mb-4">{escapeHtml(block.content.heading || '')}</h1>
             {block.content.subheading && (
-              <p className="text-xl text-muted-foreground mb-6">{block.content.subheading}</p>
+              <p className="text-xl text-muted-foreground mb-6">{escapeHtml(block.content.subheading)}</p>
             )}
             {block.content.cta && (
               <Button size="lg" asChild>
-                <a href={block.content.cta.url}>{block.content.cta.text}</a>
+                <a href={escapeHtml(block.content.cta.url || '#')}>{escapeHtml(block.content.cta.text || '')}</a>
               </Button>
             )}
           </div>
@@ -44,14 +47,14 @@ export const ContentBlockRenderer: React.FC<ContentBlockRendererProps> = ({ bloc
         return (
           <Card>
             <CardHeader>
-              <CardTitle>{block.title}</CardTitle>
+              <CardTitle>{escapeHtml(block.title || '')}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>{block.content.description}</p>
+              <p>{escapeHtml(block.content.description || '')}</p>
               {block.content.features && (
                 <ul className="list-disc pl-5 mt-4">
                   {block.content.features.map((feature: string, index: number) => (
-                    <li key={index}>{feature}</li>
+                    <li key={index}>{escapeHtml(feature || '')}</li>
                   ))}
                 </ul>
               )}
@@ -63,12 +66,12 @@ export const ContentBlockRenderer: React.FC<ContentBlockRendererProps> = ({ bloc
         return (
           <div className="text-center">
             <img 
-              src={block.content.url} 
-              alt={block.content.alt || block.title}
+              src={escapeHtml(block.content.url || '')} 
+              alt={escapeHtml(block.content.alt || block.title || '')}
               className="max-w-full h-auto rounded-lg"
             />
             {block.content.caption && (
-              <p className="text-sm text-muted-foreground mt-2">{block.content.caption}</p>
+              <p className="text-sm text-muted-foreground mt-2">{escapeHtml(block.content.caption)}</p>
             )}
           </div>
         );
@@ -81,13 +84,13 @@ export const ContentBlockRenderer: React.FC<ContentBlockRendererProps> = ({ bloc
                 <CardContent className="p-4">
                   {item.image && (
                     <img 
-                      src={item.image} 
-                      alt={item.title}
+                      src={escapeHtml(item.image || '')} 
+                      alt={escapeHtml(item.title || '')}
                       className="w-full h-32 object-cover rounded mb-3"
                     />
                   )}
-                  <h3 className="font-semibold mb-2">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground">{item.description}</p>
+                  <h3 className="font-semibold mb-2">{escapeHtml(item.title || '')}</h3>
+                  <p className="text-sm text-muted-foreground">{escapeHtml(item.description || '')}</p>
                 </CardContent>
               </Card>
             ))}

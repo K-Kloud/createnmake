@@ -3141,6 +3141,10 @@ export type Database = {
           location: string
         }[]
       }
+      get_user_public_profile: {
+        Args: { user_uuid: string }
+        Returns: Json
+      }
       get_user_stats: {
         Args: { user_uuid: string }
         Returns: Json
