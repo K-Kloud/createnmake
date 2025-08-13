@@ -713,24 +713,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "artisan_quotes_artisan_id_fkey"
-            columns: ["artisan_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "artisan_quotes_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "artisan_quotes_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -865,13 +851,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "comment_replies_user_profile_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
-            referencedColumns: ["id"]
-          },
         ]
       }
       comments: {
@@ -909,13 +888,6 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "comments_user_profile_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1645,13 +1617,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "generated_images_assigned_artisan_id_fkey"
-            columns: ["assigned_artisan_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "generated_images_assigned_manufacturer_id_fkey"
             columns: ["assigned_manufacturer_id"]
             isOneToOne: false
@@ -1670,13 +1635,6 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "generated_images_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -2411,13 +2369,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "quote_requests_user_profile_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
-            referencedColumns: ["id"]
-          },
         ]
       }
       realtime_analytics_events: {
@@ -3019,45 +2970,7 @@ export type Database = {
       }
     }
     Views: {
-      public_profiles: {
-        Row: {
-          avatar_url: string | null
-          bio: string | null
-          created_at: string | null
-          display_name: string | null
-          id: string | null
-          is_artisan: boolean | null
-          is_creator: boolean | null
-          location: string | null
-          username: string | null
-          website: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          display_name?: string | null
-          id?: string | null
-          is_artisan?: boolean | null
-          is_creator?: boolean | null
-          location?: string | null
-          username?: string | null
-          website?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          display_name?: string | null
-          id?: string | null
-          is_artisan?: boolean | null
-          is_creator?: boolean | null
-          location?: string | null
-          username?: string | null
-          website?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       add_admin_role: {
@@ -3125,6 +3038,21 @@ export type Database = {
           total_views: number
           avg_time_spent_seconds: number
           bounce_rate: number
+        }[]
+      }
+      get_public_profile_info: {
+        Args: { profile_id?: string }
+        Returns: {
+          id: string
+          username: string
+          display_name: string
+          avatar_url: string
+          bio: string
+          is_creator: boolean
+          is_artisan: boolean
+          website: string
+          location: string
+          created_at: string
         }[]
       }
       get_safe_profile_info: {
