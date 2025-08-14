@@ -107,7 +107,7 @@ export const useNavigationConfig = () => {
     },
     {
       label: "Documentation",
-      href: "/docs",
+      href: "/documentation",
     },
   ];
 
