@@ -8,7 +8,7 @@ export const fetchImageComments = async (imageId: number) => {
       text,
       created_at,
       user_id,
-      profiles (
+      profiles!inner (
         id, 
         username,
         display_name,
@@ -44,7 +44,7 @@ export const fetchCommentReplies = async (commentId: number) => {
       text,
       created_at,
       user_id,
-      profiles (
+      profiles!inner (
         id,
         username,
         display_name,
