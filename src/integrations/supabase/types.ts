@@ -2901,6 +2901,7 @@ export type Database = {
           browser: string | null
           city: string | null
           country: string | null
+          created_at: string | null
           device_type: string | null
           duration_seconds: number | null
           end_time: string | null
@@ -2916,6 +2917,7 @@ export type Database = {
           browser?: string | null
           city?: string | null
           country?: string | null
+          created_at?: string | null
           device_type?: string | null
           duration_seconds?: number | null
           end_time?: string | null
@@ -2931,6 +2933,7 @@ export type Database = {
           browser?: string | null
           city?: string | null
           country?: string | null
+          created_at?: string | null
           device_type?: string | null
           duration_seconds?: number | null
           end_time?: string | null
@@ -2997,6 +3000,10 @@ export type Database = {
         Returns: boolean
       }
       cleanup_expired_api_keys: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      cleanup_expired_sessions: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
