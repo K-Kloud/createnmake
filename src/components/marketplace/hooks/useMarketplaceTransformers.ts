@@ -72,32 +72,35 @@ export const transformImageWithMetrics = (image: any, session: Session | null, m
 };
 
 export const transformComments = (comments: any[] = []) => {
-  console.log(`🔄 [transformers.ts] Transforming ${comments.length} comments`);
+  console.log(`🔄 [Marketplace transformers.ts] Transforming ${comments.length} comments`);
   
   return comments.map(comment => {
     const createdDate = comment.created_at ? new Date(comment.created_at) : new Date();
     
-    // Debug log the raw comment data
-    console.log('🔍 [transformers.ts] Raw comment data:', {
+    // Debug log the raw comment data with more detail
+    console.log('🔍 [Marketplace transformers.ts] Raw comment data:', {
+      comment_id: comment.id,
       user_id: comment.user_id,
       profiles: comment.profiles,
-      username: comment.username
+      profiles_username: comment.profiles?.username,
+      profiles_display_name: comment.profiles?.display_name,
+      has_profiles: !!comment.profiles
     });
     
-    // Handle both array and object profile structures
-    const profile = Array.isArray(comment.profiles) ? comment.profiles[0] : comment.profiles;
+    // Since we're using profiles!inner, profiles should always be an object, not array
+    const profile = comment.profiles;
     
-    // Get the username using our improved fallback logic
+    // Get the username - prioritize profiles.username from the inner join
     const username = getFallbackUsername(
-      profile?.username || comment.username || null,
-      null, // email not available
+      profile?.username || null,
+      null, // email not available in profiles
       comment.user_id,
       profile?.display_name || null,
       profile?.first_name || null,
       profile?.last_name || null
     );
     
-    console.log(`👤 [transformers.ts] Final username for comment: "${username}"`);
+    console.log(`👤 [Marketplace transformers.ts] Final username for comment ${comment.id}: "${username}"`);
     
     return {
       id: comment.id,
@@ -111,17 +114,19 @@ export const transformComments = (comments: any[] = []) => {
       replies: (comment.comment_replies || []).map((reply: any) => {
         const replyDate = reply.created_at ? new Date(reply.created_at) : new Date();
         
-        console.log('🔍 [transformers.ts] Raw reply data:', {
+        console.log('🔍 [Marketplace transformers.ts] Raw reply data:', {
+          reply_id: reply.id,
           user_id: reply.user_id,
           profiles: reply.profiles,
-          username: reply.username
+          profiles_username: reply.profiles?.username,
+          has_profiles: !!reply.profiles
         });
         
-        // Handle both array and object profile structures
-        const replyProfile = Array.isArray(reply.profiles) ? reply.profiles[0] : reply.profiles;
+        // Since we're using profiles!inner, profiles should always be an object
+        const replyProfile = reply.profiles;
         
         const replyUsername = getFallbackUsername(
-          replyProfile?.username || reply.username || null,
+          replyProfile?.username || null,
           null, // email not available
           reply.user_id,
           replyProfile?.display_name || null,
@@ -129,7 +134,7 @@ export const transformComments = (comments: any[] = []) => {
           replyProfile?.last_name || null
         );
         
-        console.log(`👤 [transformers.ts] Final username for reply: "${replyUsername}"`);
+        console.log(`👤 [Marketplace transformers.ts] Final username for reply ${reply.id}: "${replyUsername}"`);
         
         return {
           id: reply.id,
