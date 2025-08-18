@@ -2,7 +2,7 @@
 import React from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { SystemMonitor } from '@/components/monitoring/SystemMonitor';
+import { EnhancedSystemMonitor } from '@/components/monitoring/EnhancedSystemMonitor';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { Card, CardContent } from '@/components/ui/card';
@@ -52,7 +52,7 @@ const SystemMonitoring = () => {
             <h1 className="text-3xl font-bold">System Monitoring</h1>
             <p className="text-muted-foreground">Monitor system health and performance metrics</p>
           </div>
-          <SystemMonitor />
+          <EnhancedSystemMonitor />
         </div>
       </main>
       <Footer />

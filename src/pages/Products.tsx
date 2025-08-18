@@ -1,6 +1,6 @@
 
 import { MainLayout } from "@/components/layouts/MainLayout";
-import { ProductsPanel } from "@/components/dashboard/ProductsPanel";
+import { EnhancedProductsPanel } from "@/components/dashboard/products/EnhancedProductsPanel";
 import { useTranslation } from "react-i18next";
 
 const Products = () => {
@@ -21,7 +21,7 @@ const Products = () => {
           </p>
         </div>
         
-        <ProductsPanel />
+        <EnhancedProductsPanel />
       </div>
     </MainLayout>
   );

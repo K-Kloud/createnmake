@@ -1,6 +1,6 @@
 
 import { MainLayout } from "@/components/layouts/MainLayout";
-import { EarningsPanel } from "@/components/dashboard/EarningsPanel";
+import { EnhancedEarningsPanel } from "@/components/dashboard/earnings/EnhancedEarningsPanel";
 import { useTranslation } from "react-i18next";
 
 const Earnings = () => {
@@ -21,7 +21,7 @@ const Earnings = () => {
           </p>
         </div>
         
-        <EarningsPanel />
+        <EnhancedEarningsPanel />
       </div>
     </MainLayout>
   );
