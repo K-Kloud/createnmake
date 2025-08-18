@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -2977,14 +2977,14 @@ export type Database = {
     }
     Functions: {
       add_admin_role: {
-        Args: { target_user_id: string; admin_role: string }
+        Args: { admin_role: string; target_user_id: string }
         Returns: undefined
       }
       analyze_user_activity: {
         Args: { lookback_days?: number; usage_threshold?: number }
         Returns: {
-          user_id: string
           total_usage: number
+          user_id: string
         }[]
       }
       atomic_like_image: {
@@ -2996,7 +2996,7 @@ export type Database = {
         Returns: Json
       }
       check_user_admin_role_secure: {
-        Args: { target_user_id: string; required_role?: string }
+        Args: { required_role?: string; target_user_id: string }
         Returns: boolean
       }
       cleanup_expired_api_keys: {
@@ -3009,15 +3009,15 @@ export type Database = {
       }
       get_conversion_funnel_stats: {
         Args: {
+          end_date?: string
           funnel_name_param: string
           start_date?: string
-          end_date?: string
         }
         Returns: {
+          conversion_rate: number
           step: string
           step_order: number
           total_users: number
-          conversion_rate: number
         }[]
       }
       get_image_metrics: {
@@ -3030,50 +3030,50 @@ export type Database = {
       get_image_versions: {
         Args: { image_id: number }
         Returns: {
-          id: number
-          image_url: string
+          created_at: string
           edit_prompt: string
           edit_version: number
-          created_at: string
+          id: number
+          image_url: string
         }[]
       }
       get_page_performance_stats: {
-        Args: { start_date?: string; end_date?: string }
+        Args: { end_date?: string; start_date?: string }
         Returns: {
-          page_path: string
           avg_load_time_ms: number
-          total_views: number
           avg_time_spent_seconds: number
           bounce_rate: number
+          page_path: string
+          total_views: number
         }[]
       }
       get_public_profile_info: {
         Args: { profile_id?: string }
         Returns: {
-          id: string
-          username: string
-          display_name: string
           avatar_url: string
           bio: string
-          is_creator: boolean
-          is_artisan: boolean
-          website: string
-          location: string
           created_at: string
+          display_name: string
+          id: string
+          is_artisan: boolean
+          is_creator: boolean
+          location: string
+          username: string
+          website: string
         }[]
       }
       get_safe_profile_info: {
         Args: { profile_id: string }
         Returns: {
-          id: string
-          username: string
-          display_name: string
           avatar_url: string
           bio: string
-          is_creator: boolean
+          display_name: string
+          id: string
           is_artisan: boolean
-          website: string
+          is_creator: boolean
           location: string
+          username: string
+          website: string
         }[]
       }
       get_user_public_profile: {
@@ -3095,10 +3095,10 @@ export type Database = {
       queue_ai_agent_task: {
         Args: {
           p_agent_id: number
-          p_task_type: string
           p_payload: Json
           p_priority?: number
           p_scheduled_for?: string
+          p_task_type: string
         }
         Returns: string
       }

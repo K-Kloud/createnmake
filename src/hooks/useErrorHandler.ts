@@ -38,27 +38,36 @@ export const useErrorHandler = () => {
   // Log error to backend if needed
   const logError = useCallback(async (error: ErrorWithMessage, context?: string) => {
     try {
+      const { data: session } = await supabase.auth.getSession();
+      const userId = session?.session?.user?.id;
+
       const errorDetails = {
         message: error.message,
         code: error.code,
         details: error.details,
         context,
         timestamp: new Date().toISOString(),
+        user_agent: navigator.userAgent,
+        url: window.location.href
       };
       
       const { error: logError } = await supabase
         .from('error_logs')
         .insert({
+          user_id: userId,
           error_message: error.message,
           error_type: context || 'app_error',
           error_details: errorDetails
         });
         
       if (logError) {
-        console.error('Failed to log error:', logError);
+        console.error('Failed to log error to database:', logError);
+        // Fallback: at least log to console with full context
+        console.error('Original error details:', errorDetails);
       }
     } catch (e) {
-      console.error('Error while logging error:', e);
+      console.error('Exception while logging error:', e);
+      // Graceful degradation - app continues to work even if error logging fails
     }
   }, []);
 
