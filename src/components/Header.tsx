@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "./header/ThemeToggle";
 import { UserMenu } from "./header/UserMenu";
-import { MainNavigationMenu } from "./navigation/NavigationMenu";
+import { EnhancedNavigationMenu } from "./navigation/EnhancedNavigationMenu";
 import { MobileNavigationMenu } from "./navigation/MobileNavigationMenu";
 import { useResponsive } from "@/hooks/useResponsive";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -101,7 +101,7 @@ export const Header = () => {
         
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-center flex-1">
-          <MainNavigationMenu 
+          <EnhancedNavigationMenu 
             user={session?.user || null}
             profile={profile}
             onShowAuthDialog={() => setShowAuthDialog(true)}
