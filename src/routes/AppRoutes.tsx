@@ -23,6 +23,7 @@ const Earnings = lazy(() => import("@/pages/Earnings"));
 const SystemMonitoring = lazy(() => import("@/pages/SystemMonitoring"));
 const UserActivity = lazy(() => import("@/pages/UserActivity"));
 const Performance = lazy(() => import("@/pages/Performance"));
+const AdvancedAnalytics = lazy(() => import("@/pages/AdvancedAnalytics"));
 
 export const AppRoutes = () => {
   return (
@@ -83,6 +84,14 @@ export const AppRoutes = () => {
             <EnhancedErrorBoundary>
               <ProtectedRoute>
                 <Performance />
+              </ProtectedRoute>
+            </EnhancedErrorBoundary>
+          } />
+          
+          <Route path="/advanced-analytics" element={
+            <EnhancedErrorBoundary>
+              <ProtectedRoute>
+                <AdvancedAnalytics />
               </ProtectedRoute>
             </EnhancedErrorBoundary>
           } />
