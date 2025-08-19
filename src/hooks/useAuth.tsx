@@ -31,19 +31,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (currentSession?.user) {
           if (event === 'PASSWORD_RECOVERY') {
             setTimeout(async () => {
-              await sendSecurityAlert(
-                currentSession.user.id,
-                'password_recovery',
-                'Your password was reset'
-              );
+              await sendSecurityAlert('password_recovery', {
+                userId: currentSession.user.id,
+                message: 'Your password was reset'
+              });
             }, 0);
           } else if (event === 'SIGNED_IN') {
             setTimeout(async () => {
-              await sendSecurityAlert(
-                currentSession.user.id,
-                'new_login',
-                'New login detected on your account'
-              );
+              await sendSecurityAlert('new_login', {
+                userId: currentSession.user.id,
+                message: 'New login detected on your account'
+              });
             }, 0);
           }
         }

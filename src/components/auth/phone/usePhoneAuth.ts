@@ -96,7 +96,7 @@ export const usePhoneAuth = (
 
       // Send verification notification
       if (data?.user) {
-        await sendVerificationNotification(data.user.id);
+        await sendVerificationNotification(data.user.phone || '', 'verification-code');
       }
 
       toast({

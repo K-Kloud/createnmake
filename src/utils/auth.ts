@@ -1,43 +1,34 @@
-
-/**
- * Utility functions for authentication
- */
-
-/**
- * Cleans up auth state to prevent authentication limbo
- */
 export const cleanupAuthState = () => {
-  // Remove standard auth tokens
-  localStorage.removeItem('supabase.auth.token');
+  // Clear any cached auth state
+  localStorage.removeItem('auth-state');
+  localStorage.removeItem('user-preferences');
   
-  // Remove all Supabase auth keys from localStorage
-  Object.keys(localStorage).forEach((key) => {
-    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-      localStorage.removeItem(key);
+  // Clear any expired tokens or session data
+  const keys = Object.keys(localStorage);
+  keys.forEach(key => {
+    if (key.startsWith('sb-') || key.startsWith('supabase')) {
+      try {
+        const item = localStorage.getItem(key);
+        if (item) {
+          const parsed = JSON.parse(item);
+          // Remove if expired or invalid
+          if (parsed.expires_at && new Date(parsed.expires_at * 1000) < new Date()) {
+            localStorage.removeItem(key);
+          }
+        }
+      } catch (error) {
+        // Remove if can't parse
+        localStorage.removeItem(key);
+      }
     }
   });
-  
-  // Remove from sessionStorage if in use
-  try {
-    Object.keys(sessionStorage || {}).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-        sessionStorage.removeItem(key);
-      }
-    });
-  } catch (e) {
-    console.error("Error cleaning sessionStorage:", e);
-  }
 };
 
-/**
- * Refreshes the auth state by getting a new session
- */
-export const refreshAuthState = async (supabaseClient: any) => {
-  try {
-    const { data } = await supabaseClient.auth.getSession();
-    return data.session;
-  } catch (error) {
-    console.error("Error refreshing auth state:", error);
-    return null;
-  }
+export const isAuthenticated = () => {
+  // Check if user has valid authentication
+  const authKeys = Object.keys(localStorage).filter(key => 
+    key.startsWith('sb-') && key.includes('auth-token')
+  );
+  
+  return authKeys.length > 0;
 };
