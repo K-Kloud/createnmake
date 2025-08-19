@@ -10,29 +10,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { getInitials } from "@/lib/utils";
+import { Comment, Reply } from "@/types/gallery";
+import { log } from "@/lib/logger";
 
-interface Reply {
-  id: number;
-  text: string;
-  user: {
-    id: string;
-    name: string;
-    avatar: string;
-  };
-  createdAt: Date;
-}
-
-interface Comment {
-  id: number;
-  text: string;
-  user: {
-    id: string;
-    name: string;
-    avatar: string;
-  };
-  createdAt: Date;
-  replies?: Reply[];
-}
+// Types now imported from @/types/gallery
 
 interface CommentListProps {
   comments: Comment[];
@@ -75,7 +56,7 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
         description: "Your comment has been successfully deleted.",
       });
     } catch (error) {
-      console.error('Error deleting comment:', error);
+      log.error('Error deleting comment', 'CommentList', { error, commentId, userId });
       toast({
         title: "Error",
         description: "Failed to delete comment. Please try again.",
@@ -93,7 +74,7 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
       try {
         dateObj = parseISO(date);
       } catch (error) {
-        console.error('Error parsing date string:', error, date);
+        log.error('Error parsing date string', 'CommentList', { error, date });
         return 'Invalid date';
       }
     } else {
@@ -101,14 +82,14 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
     }
     
     if (!isValid(dateObj)) {
-      console.warn('Invalid date object:', dateObj);
+      log.warn('Invalid date object', 'CommentList', { dateObj });
       return 'Recently';
     }
     
     try {
       return format(dateObj, "MMM d, yyyy 'at' h:mm a");
     } catch (error) {
-      console.error('Error formatting date:', error, dateObj);
+      log.error('Error formatting date', 'CommentList', { error, dateObj });
       return 'Recently';
     }
   };
@@ -125,12 +106,12 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
     return getInitials(name);
   };
 
-  console.log(`🎨 [CommentList] Rendering ${comments.length} comments`);
+  log.componentRender('CommentList', { commentsCount: comments.length });
 
   return (
     <div className="space-y-4">
       {comments.map((comment) => {
-        console.log(`👤 [CommentList] Rendering comment from: "${comment.user.name}"`);
+        log.debug(`Rendering comment`, 'CommentList', { commentId: comment.id, userName: comment.user.name });
         
         return (
           <div key={comment.id} className="space-y-2">
@@ -195,7 +176,7 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-2">
                   {comment.replies.map((reply) => {
-                    console.log(`👤 [CommentList] Rendering reply from: "${reply.user.name}"`);
+                    log.debug(`Rendering reply`, 'CommentList', { replyId: reply.id, userName: reply.user.name });
                     
                     return (
                       <div key={reply.id} className="flex space-x-3 mt-2">

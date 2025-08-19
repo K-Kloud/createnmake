@@ -8,20 +8,26 @@ import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { AddPortfolioDialog } from "./portfolio/AddPortfolioDialog";
 import { PortfolioPreviewDialog } from "./portfolio/PortfolioPreviewDialog";
+import { PortfolioItem, PortfolioItemEditData, NewPortfolioItem } from "@/types/admin";
+import { log } from "@/lib/logger";
 
 interface PortfolioListProps {
-  items: any[];
+  items: PortfolioItem[];
   onDelete: (id: number) => void;
-  onUpdate: (id: number, data: any) => void;
+  onUpdate: (id: number, data: PortfolioItemEditData) => void;
 }
 
 export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps) => {
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editData, setEditData] = useState<any>({});
-  const [previewItem, setPreviewItem] = useState<any>(null);
+  const [editData, setEditData] = useState<PortfolioItemEditData>({
+    description: '',
+    generatedimage: '',
+    productimage: ''
+  });
+  const [previewItem, setPreviewItem] = useState<PortfolioItem | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
 
-  const startEditing = (item: any) => {
+  const startEditing = (item: PortfolioItem) => {
     setEditingId(item.id);
     setEditData({
       description: item.description || '',
@@ -32,16 +38,24 @@ export const PortfolioList = ({ items, onDelete, onUpdate }: PortfolioListProps)
 
   const cancelEditing = () => {
     setEditingId(null);
-    setEditData({});
+    setEditData({
+      description: '',
+      generatedimage: '',
+      productimage: ''
+    });
   };
 
   const handleSaveEdit = (id: number) => {
     onUpdate(id, editData);
     setEditingId(null);
-    setEditData({});
+    setEditData({
+      description: '',
+      generatedimage: '',
+      productimage: ''
+    });
   };
 
-  const handleAddNew = async (newItem: any) => {
+  const handleAddNew = async (newItem: NewPortfolioItem) => {
     try {
       const { data, error } = await supabase
         .from('manufacturer_portfolios')

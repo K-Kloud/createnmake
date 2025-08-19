@@ -5,6 +5,8 @@ import { useReferenceImageUpload } from "@/hooks/useReferenceImageUpload";
 import { useImageGenerationAPI } from "@/hooks/useImageGenerationAPI";
 import { useAuthDialog } from "@/hooks/useAuthDialog";
 import { useSubscription } from "@/hooks/useSubscription";
+import { GenerationParams, GenerationState, GenerationError } from "@/types/generator";
+import { log } from "@/lib/logger";
 
 export const useImageGeneration = () => {
   const [prompt, setPrompt] = useState("");
@@ -24,7 +26,7 @@ export const useImageGeneration = () => {
     refetchStatus
   } = useSubscription();
 
-  console.log("🎨 useImageGeneration state:", {
+  log.debug('useImageGeneration state', 'ImageGeneration', {
     prompt,
     selectedItem,
     selectedRatio,
@@ -37,16 +39,16 @@ export const useImageGeneration = () => {
 
   // Handle generate button click
   const handleGenerate = async () => {
-    console.log("🎯 handleGenerate called");
+    log.info('handleGenerate called', 'ImageGeneration');
     
     if (!isSignedIn) {
-      console.log("❌ User not signed in, opening auth dialog");
+      log.warn('User not signed in, opening auth dialog', 'ImageGeneration');
       setAuthDialogOpen(true);
       return;
     }
 
     if (!prompt.trim()) {
-      console.log("❌ Empty prompt");
+      log.warn('Empty prompt provided', 'ImageGeneration');
       toast({
         variant: "destructive",
         title: "Error",
@@ -57,8 +59,9 @@ export const useImageGeneration = () => {
 
     // Check subscription limits
     if (!canGenerateImage) {
-      console.log("❌ Generation limit reached");
-      // Prompt for upgrade
+      log.warn('Generation limit reached', 'ImageGeneration', { 
+        monthlyLimit: subscriptionStatus?.monthly_image_limit 
+      });
       toast({
         variant: "destructive",
         title: "Image Limit Reached",
@@ -68,44 +71,49 @@ export const useImageGeneration = () => {
     }
 
     try {
-      console.log("🖼️ Starting image generation process...");
+      log.info('Starting image generation process', 'ImageGeneration');
       
       // Upload reference image if provided
-      let referenceImageUrl = null;
+      let referenceImageUrl: string | null = null;
       if (referenceImage) {
-        console.log("📎 Uploading reference image...");
+        log.info('Uploading reference image', 'ImageGeneration', { fileName: referenceImage.name });
         referenceImageUrl = await uploadReferenceImage(referenceImage);
         if (!referenceImageUrl) {
-          console.log("❌ Reference image upload failed");
+          log.error('Reference image upload failed', 'ImageGeneration');
           return; // Upload failed
         }
-        console.log("✅ Reference image uploaded:", referenceImageUrl);
+        log.info('Reference image uploaded successfully', 'ImageGeneration', { url: referenceImageUrl });
       }
 
       const generateParams = {
         prompt,
         itemType: selectedItem,
         aspectRatio: selectedRatio,
-        referenceImageUrl,
+        referenceImageUrl: referenceImageUrl || null,
       };
 
-      console.log("🚀 Calling createImage with params:", generateParams);
+      log.info('Calling createImage with params', 'ImageGeneration', generateParams);
 
       // Call the generate image function with all parameters
       createImage(generateParams);
       
       // Open preview dialog when generation starts
-      console.log("🎬 Opening preview dialog");
+      log.debug('Opening preview dialog', 'ImageGeneration');
       setPreviewOpen(true);
       
       // Refresh subscription status after generating an image
       refetchStatus();
-    } catch (error: any) {
-      console.error("💥 Generation preparation error:", error);
+    } catch (error) {
+      const generationError = error as GenerationError;
+      log.error('Generation preparation error', 'ImageGeneration', { 
+        error: generationError.message,
+        code: generationError.code,
+        details: generationError.details
+      });
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to prepare for image generation",
+        description: generationError.message || "Failed to prepare for image generation",
       });
     }
   };

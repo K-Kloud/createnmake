@@ -6,9 +6,11 @@ import { ImageListRow } from "./images/ImageListRow";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { AdminImage, AdminImageEditData } from "@/types/admin";
+import { log } from "@/lib/logger";
 
 interface ImageListProps {
-  images: any[];
+  images: AdminImage[];
   onDelete: (id: number) => Promise<void>;
   isLoading?: boolean;
 }
@@ -16,9 +18,9 @@ interface ImageListProps {
 export const ImageList = ({ images, onDelete, isLoading = false }: ImageListProps) => {
   const { deletingId, handleDelete } = useImageDeletion(onDelete);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editData, setEditData] = useState<any>(null);
+  const [editData, setEditData] = useState<AdminImageEditData | null>(null);
 
-  const handleEdit = (image: any) => {
+  const handleEdit = (image: AdminImage) => {
     setEditingId(image.id);
     setEditData({
       title: image.title || '',
@@ -29,14 +31,16 @@ export const ImageList = ({ images, onDelete, isLoading = false }: ImageListProp
   };
 
   const handleSave = async (id: number) => {
+    if (!editData) return;
+    
     try {
       const { error } = await supabase
         .from('generated_images')
         .update({
           title: editData.title,
           prompt: editData.prompt,
-          likes: parseInt(editData.likes) || 0,
-          views: parseInt(editData.views) || 0
+          likes: editData.likes,
+          views: editData.views
         })
         .eq('id', id);
 
@@ -46,7 +50,7 @@ export const ImageList = ({ images, onDelete, isLoading = false }: ImageListProp
       setEditingId(null);
       setEditData(null);
     } catch (error) {
-      console.error('Error updating image:', error);
+      log.error('Error updating image', 'ImageList', { error, id });
       toast.error('Failed to update image');
     }
   };
