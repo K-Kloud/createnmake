@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useErrorHandler } from './useErrorHandler';
+import { useRetry } from './useRetry';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface NavigationItem {
@@ -82,6 +83,9 @@ export const useNavigation = () => {
   const [navigationItems, setNavigationItems] = useState<NavigationItem[]>(mockNavigationItems);
   const [isLoading, setIsLoading] = useState(false);
   const { handleError } = useErrorHandler();
+  const { executeWithRetry } = useRetry({
+    config: { maxRetries: 2, delay: 500 },
+  });
 
   // Load navigation items from database on mount
   useEffect(() => {
@@ -91,13 +95,16 @@ export const useNavigation = () => {
   const loadNavigationItems = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
-        .from('navigation_items')
-        .select('*')
-        .eq('is_active', true)
-        .order('order_index', { ascending: true });
+      const data = await executeWithRetry(async () => {
+        const { data, error } = await supabase
+          .from('navigation_items')
+          .select('*')
+          .eq('is_active', true)
+          .order('order_index', { ascending: true });
 
-      if (error) throw error;
+        if (error) throw error;
+        return data;
+      }, 'load navigation items');
       
       if (data && data.length > 0) {
         setNavigationItems(data);
