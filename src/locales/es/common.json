@@ -22,6 +22,28 @@
   "buttons": {
     "startCreating": "Comenzar a Crear",
     "viewOpenMarket": "Ver Mercado Abierto",
-    "exploreFeatures": "Explorar Características"
+    "exploreFeatures": "Explorar Características",
+    "viewAll": "Ver Todo",
+    "view": "Ver",
+    "continueShopping": "Continuar Comprando",
+    "checkout": "Finalizar Compra"
+  },
+  "marketplace": {
+    "openMarket": "Mercado Abierto",
+    "searchPlaceholder": "Buscar en el mercado...",
+    "advancedFilters": "Filtros Avanzados",
+    "filterOptions": "Opciones de Filtro",
+    "refineSearch": "Refinar Tu Búsqueda",
+    "clearFilters": "Limpiar Todos los Filtros",
+    "applyFilters": "Aplicar Filtros",
+    "noResults": "No se encontraron resultados",
+    "noResultsDescription": "Intenta ajustar tus criterios de búsqueda"
+  },
+  "gallery": {
+    "linkCopied": "¡Enlace Copiado!",
+    "linkCopiedDescription": "El enlace del producto ha sido copiado al portapapeles",
+    "shareProduct": "Compartir Producto",
+    "viewDetails": "Ver Detalles",
+    "addToCart": "Agregar al Carrito"
   }
 }

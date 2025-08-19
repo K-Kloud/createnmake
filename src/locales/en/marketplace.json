@@ -5,10 +5,53 @@
   "trending": "Trending",
   "new": "New",
   "popular": "Popular",
-  "categories": "Categories",
-  "filters": "Filters",
   "like": "Like",
   "download": "Download",
   "share": "Share",
-  "view_details": "View Details"
+  "view_details": "View Details",
+  "categories": {
+    "all": "All Categories",
+    "fashion": "Fashion",
+    "accessories": "Accessories",
+    "footwear": "Footwear",
+    "clothing": "Clothing",
+    "jewelry": "Jewelry"
+  },
+  "filters": {
+    "sortBy": "Sort By",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "priceDesc": "Price: High to Low",
+    "priceAsc": "Price: Low to High",
+    "mostPopular": "Most Popular",
+    "mostLiked": "Most Liked",
+    "priceRange": "Price Range",
+    "designStyle": "Design Style",
+    "creatorReputation": "Creator Reputation"
+  },
+  "product": {
+    "createdBy": "Created By",
+    "price": "Price",
+    "likes": "Likes",
+    "views": "Views",
+    "addToWishlist": "Add to Wishlist",
+    "removeFromWishlist": "Remove from Wishlist"
+  },
+  "titles": {
+    "featuredCollections": "Featured Collections",
+    "trendingNow": "Trending Now",
+    "newArrivals": "New Arrivals"
+  },
+  "viewMode": {
+    "paginated": "Paginated View",
+    "infiniteScroll": "Infinite Scroll"
+  },
+  "wishlist": {
+    "title": "My Wishlist",
+    "empty": "Your wishlist is empty",
+    "emptyDescription": "Start browsing to add items to your wishlist",
+    "removeItem": "Remove from wishlist",
+    "continueShopping": "Continue Shopping",
+    "checkout": "Checkout"
+  }
 }

@@ -22,6 +22,28 @@
   "buttons": {
     "startCreating": "Start Creating",
     "viewOpenMarket": "View Open Market",
-    "exploreFeatures": "Explore Features"
+    "exploreFeatures": "Explore Features",
+    "viewAll": "View All",
+    "view": "View",
+    "continueShopping": "Continue Shopping",
+    "checkout": "Checkout"
+  },
+  "marketplace": {
+    "openMarket": "Open Market",
+    "searchPlaceholder": "Search marketplace...",
+    "advancedFilters": "Advanced Filters",
+    "filterOptions": "Filter Options",
+    "refineSearch": "Refine Your Search",
+    "clearFilters": "Clear All Filters",
+    "applyFilters": "Apply Filters",
+    "noResults": "No results found",
+    "noResultsDescription": "Try adjusting your search criteria"
+  },
+  "gallery": {
+    "linkCopied": "Link Copied!",
+    "linkCopiedDescription": "Product link has been copied to clipboard",
+    "shareProduct": "Share Product",
+    "viewDetails": "View Details",
+    "addToCart": "Add to Cart"
   }
 }

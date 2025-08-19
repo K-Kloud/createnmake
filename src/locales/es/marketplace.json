@@ -5,10 +5,53 @@
   "trending": "Tendencias",
   "new": "Nuevo",
   "popular": "Popular",
-  "categories": "Categorías",
-  "filters": "Filtros",
   "like": "Me gusta",
   "download": "Descargar",
   "share": "Compartir",
-  "view_details": "Ver Detalles"
+  "view_details": "Ver Detalles",
+  "categories": {
+    "all": "Todas las Categorías",
+    "fashion": "Moda",
+    "accessories": "Accesorios",
+    "footwear": "Calzado",
+    "clothing": "Ropa",
+    "jewelry": "Joyería"
+  },
+  "filters": {
+    "sortBy": "Ordenar Por",
+    "newest": "Más Reciente",
+    "oldest": "Más Antiguo",
+    "priceDesc": "Precio: Mayor a Menor",
+    "priceAsc": "Precio: Menor a Mayor",
+    "mostPopular": "Más Popular",
+    "mostLiked": "Más Gustado",
+    "priceRange": "Rango de Precio",
+    "designStyle": "Estilo de Diseño",
+    "creatorReputation": "Reputación del Creador"
+  },
+  "product": {
+    "createdBy": "Creado Por",
+    "price": "Precio",
+    "likes": "Me Gusta",
+    "views": "Visualizaciones",
+    "addToWishlist": "Agregar a Lista de Deseos",
+    "removeFromWishlist": "Quitar de Lista de Deseos"
+  },
+  "titles": {
+    "featuredCollections": "Colecciones Destacadas",
+    "trendingNow": "Tendencia Ahora",
+    "newArrivals": "Nuevos Lanzamientos"
+  },
+  "viewMode": {
+    "paginated": "Vista Paginada",
+    "infiniteScroll": "Desplazamiento Infinito"
+  },
+  "wishlist": {
+    "title": "Mi Lista de Deseos",
+    "empty": "Tu lista de deseos está vacía",
+    "emptyDescription": "Comienza a navegar para agregar artículos a tu lista de deseos",
+    "removeItem": "Quitar de lista de deseos",
+    "continueShopping": "Continuar Comprando",
+    "checkout": "Finalizar Compra"
+  }
 }
