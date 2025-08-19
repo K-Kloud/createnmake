@@ -40,7 +40,7 @@ export const MarketplaceContent = ({
   onRetry
 }: MarketplaceContentProps) => {
   const { toast } = useToast();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['common', 'marketplace']);
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [isProductDetailOpen, setIsProductDetailOpen] = useState(false);
   const [similarProducts, setSimilarProducts] = useState<GalleryImage[]>([]);
@@ -116,8 +116,8 @@ export const MarketplaceContent = ({
     trackInteraction('share', productId.toString(), 'product_share', { method: 'clipboard' });
     
     toast({
-      title: t('gallery.linkCopied'),
-      description: t('gallery.linkCopiedDescription')
+      title: t('common:gallery.linkCopied'),
+      description: t('common:gallery.linkCopiedDescription')
     });
   };
 
@@ -154,14 +154,14 @@ export const MarketplaceContent = ({
             className={`px-3 py-1 rounded-md ${viewMode === "paginated" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
             aria-label="Switch to paginated view"
           >
-            {t('marketplace.viewMode.paginated')}
+            {t('marketplace:viewMode.paginated')}
           </button>
           <button 
             onClick={() => handleViewModeChange("infinite")}
             className={`px-3 py-1 rounded-md ${viewMode === "infinite" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
             aria-label="Switch to infinite scroll view"
           >
-            {t('marketplace.viewMode.infiniteScroll')}
+            {t('marketplace:viewMode.infiniteScroll')}
           </button>
         </div>
         <Wishlist onProductClick={handleImageClick} />
