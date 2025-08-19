@@ -15,6 +15,8 @@ import { Toaster as Sonner } from "sonner";
 import { UnifiedErrorBoundary } from "@/components/error/UnifiedErrorBoundary";
 // Phase 4: Add asset loading provider
 import { AssetLoadingProvider } from "@/providers/AssetLoadingProvider";
+// Phase 5: Add performance monitoring provider  
+import { PerformanceMonitoringProvider } from "@/providers/PerformanceMonitoringProvider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,18 +32,20 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Phase 4: Wrap with asset loading provider to handle CSS and asset loading */}
-      <AssetLoadingProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <BrowserRouter>
-          <CartProvider>
-            <RealtimeNotificationProvider>
-              <AnalyticsProvider>
+      {/* Phase 5: Add performance monitoring provider */}
+      <PerformanceMonitoringProvider>
+        {/* Phase 4: Wrap with asset loading provider to handle CSS and asset loading */}
+        <AssetLoadingProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <BrowserRouter>
+            <CartProvider>
+              <RealtimeNotificationProvider>
+                <AnalyticsProvider>
                 {/* Phase 3: Use unified error boundary for better error handling */}
                 <UnifiedErrorBoundary 
                   componentName="AppProviders"
@@ -76,7 +80,8 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
           </CartProvider>
         </BrowserRouter>
       </ThemeProvider>
-      </AssetLoadingProvider>
+        </AssetLoadingProvider>
+      </PerformanceMonitoringProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
