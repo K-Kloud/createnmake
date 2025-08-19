@@ -24,6 +24,7 @@ const SystemMonitoring = lazy(() => import("@/pages/SystemMonitoring"));
 const UserActivity = lazy(() => import("@/pages/UserActivity"));
 const Performance = lazy(() => import("@/pages/Performance"));
 const AdvancedAnalytics = lazy(() => import("@/pages/AdvancedAnalytics"));
+const PerformanceDashboard = lazy(() => import("@/pages/PerformanceDashboard"));
 
 export const AppRoutes = () => {
   return (
@@ -84,6 +85,14 @@ export const AppRoutes = () => {
             <EnhancedErrorBoundary>
               <ProtectedRoute>
                 <Performance />
+              </ProtectedRoute>
+            </EnhancedErrorBoundary>
+          } />
+          
+          <Route path="/performance-dashboard" element={
+            <EnhancedErrorBoundary>
+              <ProtectedRoute>
+                <PerformanceDashboard />
               </ProtectedRoute>
             </EnhancedErrorBoundary>
           } />
