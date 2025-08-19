@@ -1,3 +1,4 @@
+// Notification service for handling various app notifications
 export const sendSecurityAlert = async (alertType: string, details: Record<string, any>) => {
   // Log security alert for monitoring
   console.warn('Security Alert:', { alertType, details, timestamp: new Date().toISOString() });
