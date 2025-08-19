@@ -1,12 +1,18 @@
 // Notification service for handling various app notifications
 export const sendSecurityAlert = async (alertType: string, details: Record<string, any>) => {
-  // Log security alert for monitoring
-  console.warn('Security Alert:', { alertType, details, timestamp: new Date().toISOString() });
-  
-  // In a real application, this would send to monitoring service
-  // For now, we'll just log it
-  
-  return Promise.resolve({ success: true, alertId: Date.now().toString() });
+  try {
+    // Log security alert for monitoring
+    console.warn('Security Alert:', { alertType, details, timestamp: new Date().toISOString() });
+    
+    // In a real application, this would send to monitoring service
+    // For now, we'll just log it and continue without errors
+    
+    return Promise.resolve({ success: true, alertId: Date.now().toString() });
+  } catch (error) {
+    // Never throw from security alerts to prevent breaking auth flow
+    console.error('Error in sendSecurityAlert:', error);
+    return Promise.resolve({ success: false, error: error.message });
+  }
 };
 
 export const sendWelcomeNotification = async (userId: string, userDetails?: Record<string, any>) => {
