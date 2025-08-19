@@ -18,5 +18,10 @@
   "profile": "Perfil",
   "logout": "Cerrar sesión",
   "login": "Iniciar sesión",
-  "register": "Registrarse"
+  "register": "Registrarse",
+  "buttons": {
+    "startCreating": "Comenzar a Crear",
+    "viewOpenMarket": "Ver Mercado Abierto",
+    "exploreFeatures": "Explorar Características"
+  }
 }

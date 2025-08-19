@@ -18,5 +18,10 @@
   "profile": "Profile",
   "logout": "Logout",
   "login": "Login",
-  "register": "Register"
+  "register": "Register",
+  "buttons": {
+    "startCreating": "Start Creating",
+    "viewOpenMarket": "View Open Market",
+    "exploreFeatures": "Explore Features"
+  }
 }
