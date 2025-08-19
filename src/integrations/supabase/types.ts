@@ -3046,6 +3046,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      enable_leaked_password_protection: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       get_conversion_funnel_stats: {
         Args: {
           end_date?: string
