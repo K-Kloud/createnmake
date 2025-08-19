@@ -1,7 +1,5 @@
 
 import { ThemeProvider } from "@/components/theme-provider"
-import { ErrorBoundary } from 'react-error-boundary'
-import { ErrorFallback } from "@/components/ErrorFallback"
 import { BrowserRouter } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
@@ -13,6 +11,8 @@ import { RouteDebugger } from "@/components/routing/RouteDebugger";
 import { SystemHealthMonitor } from "@/components/monitoring/SystemHealthMonitor";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "sonner";
+// Phase 3: Use unified error boundary instead of multiple boundaries
+import { UnifiedErrorBoundary } from "@/components/error/UnifiedErrorBoundary";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,11 +38,10 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
           <CartProvider>
             <RealtimeNotificationProvider>
               <AnalyticsProvider>
-                <ErrorBoundary
-                  FallbackComponent={ErrorFallback}
-                  onError={(error, errorInfo) => {
-                    console.error('Error caught by boundary:', error, errorInfo);
-                  }}
+                {/* Phase 3: Use unified error boundary for better error handling */}
+                <UnifiedErrorBoundary 
+                  componentName="AppProviders"
+                  errorType="critical"
                 >
                   <div className="relative">
                     {children}
@@ -67,7 +66,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                     <Toaster />
                     <Sonner />
                   </div>
-                </ErrorBoundary>
+                </UnifiedErrorBoundary>
               </AnalyticsProvider>
             </RealtimeNotificationProvider>
           </CartProvider>

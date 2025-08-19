@@ -6,12 +6,18 @@ import { addStructuredData } from "@/utils/seo";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { useTranslationFallback } from "@/hooks/useTranslationFallback";
 
-// Phase 1: Remove lazy loading temporarily for critical components
+// Phase 3: Use progressive loading instead of simple lazy loading
 import { ImageGenerator } from "@/components/ImageGenerator";
 import { OpenMarketSection } from "@/components/OpenMarketSection";
+import { ProgressiveLoader } from "@/components/loading/ProgressiveLoader";
+import { lazyWithPreload } from "@/utils/componentPreloader";
 
-// Keep ChatBot lazy since it's not critical
-const ChatBot = lazy(() => import("@/components/ChatBot").then(module => ({ default: module.ChatBot })));
+// Phase 3: Convert ChatBot to use progressive loading
+const ChatBot = lazyWithPreload(
+  () => import("@/components/ChatBot").then(module => ({ default: module.ChatBot })),
+  'ChatBot',
+  'low'
+);
 
 const Index = () => {
   console.log('🏠 [INDEX] Index page rendering...');
@@ -56,7 +62,7 @@ const Index = () => {
       }}
     >
       <div className="py-8 sm:py-16">
-        {/* Phase 1: Add error handling for critical components */}
+        {/* Phase 3: Add progressive loading for critical components */}
         <div className="image-generator">
           <div className="container mx-auto px-4">
             <div className="text-center mb-8">
@@ -67,7 +73,13 @@ const Index = () => {
                 Transform your ideas into stunning visuals instantly
               </p>
             </div>
-            <ImageGenerator />
+            <ProgressiveLoader 
+              componentName="ImageGenerator"
+              timeout={15000}
+              retryAttempts={2}
+            >
+              <ImageGenerator />
+            </ProgressiveLoader>
           </div>
         </div>
       </div>
@@ -79,7 +91,7 @@ const Index = () => {
           <HeroActions />
         </div>
         
-        {/* Phase 1: Add fallback content for marketplace */}
+        {/* Phase 3: Add progressive loading for marketplace */}
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold mb-4">
@@ -89,12 +101,24 @@ const Index = () => {
               Discover amazing designs from our community
             </p>
           </div>
-          <OpenMarketSection />
+          <ProgressiveLoader 
+            componentName="OpenMarketSection"
+            timeout={12000}
+            retryAttempts={3}
+          >
+            <OpenMarketSection />
+          </ProgressiveLoader>
         </div>
       </div>
-      <Suspense fallback={null}>
+      
+      {/* Phase 3: Keep ChatBot with progressive loading */}
+      <ProgressiveLoader 
+        componentName="ChatBot"
+        timeout={8000}
+        retryAttempts={1}
+      >
         <ChatBot />
-      </Suspense>
+      </ProgressiveLoader>
     </MainLayout>
   );
 };
