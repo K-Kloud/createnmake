@@ -22,7 +22,7 @@ export const NavigationManager = () => {
     label: '',
     path: '',
     icon: '',
-    order: 1,
+    order_index: 1,
     is_active: true,
     requires_auth: false,
     allowed_roles: ['user'] as string[],
@@ -36,7 +36,7 @@ export const NavigationManager = () => {
       label: '',
       path: '',
       icon: '',
-      order: Math.max(...navigationItems.map(item => item.order), 0) + 1,
+      order_index: Math.max(...navigationItems.map(item => item.order_index), 0) + 1,
       is_active: true,
       requires_auth: false,
       allowed_roles: ['user'],
@@ -66,7 +66,7 @@ export const NavigationManager = () => {
       label: item.label,
       path: item.path,
       icon: item.icon || '',
-      order: item.order,
+      order_index: item.order_index,
       is_active: item.is_active,
       requires_auth: item.requires_auth,
       allowed_roles: item.allowed_roles,
@@ -86,16 +86,16 @@ export const NavigationManager = () => {
   const handleMoveUp = (item: NavigationItem) => {
     const currentIndex = navigationItems.findIndex(nav => nav.id === item.id);
     if (currentIndex > 0) {
-      const newOrder = navigationItems[currentIndex - 1].order;
-      updateNavigationItem({ id: item.id, order: newOrder - 0.5 });
+      const newOrder = navigationItems[currentIndex - 1].order_index;
+      updateNavigationItem({ id: item.id, order_index: newOrder - 0.5 });
     }
   };
 
   const handleMoveDown = (item: NavigationItem) => {
     const currentIndex = navigationItems.findIndex(nav => nav.id === item.id);
     if (currentIndex < navigationItems.length - 1) {
-      const newOrder = navigationItems[currentIndex + 1].order;
-      updateNavigationItem({ id: item.id, order: newOrder + 0.5 });
+      const newOrder = navigationItems[currentIndex + 1].order_index;
+      updateNavigationItem({ id: item.id, order_index: newOrder + 0.5 });
     }
   };
 
@@ -159,12 +159,12 @@ export const NavigationManager = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="order">Order</Label>
+                    <Label htmlFor="order_index">Order</Label>
                     <Input
-                      id="order"
+                      id="order_index"
                       type="number"
-                      value={formData.order}
-                      onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) })}
+                      value={formData.order_index}
+                      onChange={(e) => setFormData({ ...formData, order_index: parseInt(e.target.value) })}
                       required
                     />
                   </div>
@@ -264,7 +264,7 @@ export const NavigationManager = () => {
                 <TableRow key={item.id}>
                   <TableCell>
                     <div className="flex items-center space-x-1">
-                      <span className="font-mono text-sm">{item.order}</span>
+                      <span className="font-mono text-sm">{item.order_index}</span>
                       <div className="flex flex-col">
                         <Button
                           size="sm"

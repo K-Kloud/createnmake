@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { useErrorHandler } from './useErrorHandler';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface NavigationItem {
   id: string;
@@ -7,13 +9,14 @@ export interface NavigationItem {
   path: string;
   icon?: string;
   parent_id?: string;
-  order: number;
+  order_index: number;
   is_active: boolean;
   requires_auth: boolean;
   allowed_roles: string[];
-  is_external: boolean;
+  is_external?: boolean;
   target?: '_blank' | '_self';
   description?: string;
+  metadata?: any;
   created_at: string;
   updated_at: string;
 }
@@ -25,7 +28,7 @@ const mockNavigationItems: NavigationItem[] = [
     label: 'Dashboard',
     path: '/dashboard',
     icon: 'Home',
-    order: 1,
+    order_index: 1,
     is_active: true,
     requires_auth: true,
     allowed_roles: ['user', 'admin'],
@@ -38,7 +41,7 @@ const mockNavigationItems: NavigationItem[] = [
     label: 'Products',
     path: '/products',
     icon: 'Package',
-    order: 2,
+    order_index: 2,
     is_active: true,
     requires_auth: false,
     allowed_roles: ['user', 'admin', 'guest'],
@@ -51,7 +54,7 @@ const mockNavigationItems: NavigationItem[] = [
     label: 'Admin Panel',
     path: '/admin',
     icon: 'Shield',
-    order: 3,
+    order_index: 3,
     is_active: true,
     requires_auth: true,
     allowed_roles: ['admin'],
@@ -64,7 +67,7 @@ const mockNavigationItems: NavigationItem[] = [
     label: 'External Link',
     path: 'https://example.com',
     icon: 'ExternalLink',
-    order: 4,
+    order_index: 4,
     is_active: true,
     requires_auth: false,
     allowed_roles: ['user', 'admin', 'guest'],
@@ -78,20 +81,60 @@ const mockNavigationItems: NavigationItem[] = [
 export const useNavigation = () => {
   const [navigationItems, setNavigationItems] = useState<NavigationItem[]>(mockNavigationItems);
   const [isLoading, setIsLoading] = useState(false);
+  const { handleError } = useErrorHandler();
+
+  // Load navigation items from database on mount
+  useEffect(() => {
+    loadNavigationItems();
+  }, []);
+
+  const loadNavigationItems = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('navigation_items')
+        .select('*')
+        .eq('is_active', true)
+        .order('order_index', { ascending: true });
+
+      if (error) throw error;
+      
+      if (data && data.length > 0) {
+        setNavigationItems(data);
+      }
+    } catch (error) {
+      handleError(error, 'Failed to load navigation items');
+      // Keep using mock data as fallback
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const createNavigationItem = async (itemData: Omit<NavigationItem, 'id' | 'created_at' | 'updated_at'>) => {
     setIsLoading(true);
     try {
+      const { data, error } = await supabase
+        .from('navigation_items')
+        .insert([itemData])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setNavigationItems(prev => [...prev, data].sort((a, b) => a.order_index - b.order_index));
+        toast.success('Navigation item created successfully');
+      }
+    } catch (error) {
+      handleError(error, 'Failed to create navigation item');
+      // Fallback to local state update
       const newItem: NavigationItem = {
         ...itemData,
         id: Date.now().toString(),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
-      setNavigationItems(prev => [...prev, newItem].sort((a, b) => a.order - b.order));
-      toast.success('Navigation item created successfully');
-    } catch (error) {
-      toast.error('Failed to create navigation item');
+      setNavigationItems(prev => [...prev, newItem].sort((a, b) => a.order_index - b.order_index));
     } finally {
       setIsLoading(false);
     }
@@ -100,14 +143,27 @@ export const useNavigation = () => {
   const updateNavigationItem = async (itemData: Partial<NavigationItem> & { id: string }) => {
     setIsLoading(true);
     try {
+      const { error } = await supabase
+        .from('navigation_items')
+        .update({ ...itemData, updated_at: new Date().toISOString() })
+        .eq('id', itemData.id);
+
+      if (error) throw error;
+
       setNavigationItems(prev => prev.map(item => 
         item.id === itemData.id 
           ? { ...item, ...itemData, updated_at: new Date().toISOString() }
           : item
-      ).sort((a, b) => a.order - b.order));
+      ).sort((a, b) => a.order_index - b.order_index));
       toast.success('Navigation item updated successfully');
     } catch (error) {
-      toast.error('Failed to update navigation item');
+      handleError(error, 'Failed to update navigation item');
+      // Fallback to local state update
+      setNavigationItems(prev => prev.map(item => 
+        item.id === itemData.id 
+          ? { ...item, ...itemData, updated_at: new Date().toISOString() }
+          : item
+      ).sort((a, b) => a.order_index - b.order_index));
     } finally {
       setIsLoading(false);
     }
@@ -116,10 +172,19 @@ export const useNavigation = () => {
   const deleteNavigationItem = async (id: string) => {
     setIsLoading(true);
     try {
+      const { error } = await supabase
+        .from('navigation_items')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
       setNavigationItems(prev => prev.filter(item => item.id !== id));
       toast.success('Navigation item deleted successfully');
     } catch (error) {
-      toast.error('Failed to delete navigation item');
+      handleError(error, 'Failed to delete navigation item');
+      // Fallback to local state update
+      setNavigationItems(prev => prev.filter(item => item.id !== id));
     } finally {
       setIsLoading(false);
     }
@@ -130,7 +195,7 @@ export const useNavigation = () => {
     try {
       const reorderedItems = items.map((item, index) => ({
         ...item,
-        order: index + 1,
+        order_index: index + 1,
         updated_at: new Date().toISOString(),
       }));
       setNavigationItems(reorderedItems);
