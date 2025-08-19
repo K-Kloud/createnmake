@@ -2947,6 +2947,7 @@ export type Database = {
           id: string
           interactions_count: number | null
           ip_address: unknown | null
+          last_activity: string | null
           pages_visited: number | null
           session_id: string
           start_time: string
@@ -2963,6 +2964,7 @@ export type Database = {
           id?: string
           interactions_count?: number | null
           ip_address?: unknown | null
+          last_activity?: string | null
           pages_visited?: number | null
           session_id: string
           start_time?: string
@@ -2979,6 +2981,7 @@ export type Database = {
           id?: string
           interactions_count?: number | null
           ip_address?: unknown | null
+          last_activity?: string | null
           pages_visited?: number | null
           session_id?: string
           start_time?: string

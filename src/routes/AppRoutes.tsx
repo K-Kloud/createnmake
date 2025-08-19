@@ -16,7 +16,8 @@ const ImageDetail = lazy(() => import("@/pages/ImageDetail"));
 const OrderTracking = lazy(() => import("@/pages/OrderTracking"));
 const MakerDetail = lazy(() => import("@/pages/MakerDetail"));
 
-// Commonly accessed pages that should be preloaded
+// Critical pages that should be preloaded to prevent routing issues
+const Index = lazy(() => import("@/pages/Index"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const Products = lazy(() => import("@/pages/Products"));
 const Earnings = lazy(() => import("@/pages/Earnings"));
@@ -32,6 +33,13 @@ export const AppRoutes = () => {
     <EnhancedErrorBoundary>
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
+          {/* CRITICAL: Home route must be handled directly, not by DynamicRouter */}
+          <Route path="/" element={
+            <EnhancedErrorBoundary>
+              <Index />
+            </EnhancedErrorBoundary>
+          } />
+
           {/* High-priority routes - most commonly accessed */}
           <Route path="/dashboard" element={
             <EnhancedErrorBoundary>
