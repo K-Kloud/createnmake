@@ -9,6 +9,10 @@ import { AnalyticsProvider } from "@/providers/AnalyticsProvider"
 import { CartProvider } from "@/providers/CartProvider"
 import { RealtimeNotificationProvider } from "@/components/notifications/RealtimeNotificationProvider"
 import { EnhancementStatusPanel, PWAInstallPrompt } from "@/components/enhancement/ProgressiveEnhancement"
+import { RouteDebugger } from "@/components/routing/RouteDebugger";
+import { SystemHealthMonitor } from "@/components/monitoring/SystemHealthMonitor";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "sonner";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,6 +45,10 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                   <div className="relative">
                     {children}
                     
+                    {/* System monitoring components */}
+                    <SystemHealthMonitor />
+                    <RouteDebugger />
+                    
                     {/* Progressive enhancement components */}
                     <div className="fixed bottom-4 right-4 space-y-2 z-50">
                       <PWAInstallPrompt />
@@ -52,6 +60,10 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                         <EnhancementStatusPanel />
                       </div>
                     )}
+                    
+                    {/* Toast notifications */}
+                    <Toaster />
+                    <Sonner />
                   </div>
                 </ErrorBoundary>
               </AnalyticsProvider>

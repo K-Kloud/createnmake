@@ -3130,6 +3130,16 @@ export type Database = {
         Args: { user_uuid: string }
         Returns: Json
       }
+      handle_session_upsert: {
+        Args: {
+          p_browser?: string
+          p_device_type?: string
+          p_ip_address?: unknown
+          p_session_id: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
       increment_views: {
         Args: { image_id: number }
         Returns: undefined
