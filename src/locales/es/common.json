@@ -44,6 +44,10 @@
     "linkCopiedDescription": "El enlace del producto ha sido copiado al portapapeles",
     "shareProduct": "Compartir Producto",
     "viewDetails": "Ver Detalles",
-    "addToCart": "Agregar al Carrito"
+    "addToCart": "Agregar al Carrito",
+    "errorLoadingWishlist": "Error al Cargar Lista de Deseos",
+    "errorLoadingWishlistDescription": "No se pudieron cargar los artículos de tu lista de deseos. Inténtalo de nuevo.",
+    "errorRemovingItem": "Error al Remover Artículo",
+    "errorRemovingItemDescription": "No se pudo remover el artículo de la lista de deseos. Inténtalo de nuevo."
   }
 }

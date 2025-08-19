@@ -44,6 +44,10 @@
     "linkCopiedDescription": "Product link has been copied to clipboard",
     "shareProduct": "Share Product",
     "viewDetails": "View Details",
-    "addToCart": "Add to Cart"
+    "addToCart": "Add to Cart",
+    "errorLoadingWishlist": "Error Loading Wishlist",
+    "errorLoadingWishlistDescription": "Unable to load your wishlist items. Please try again.",
+    "errorRemovingItem": "Error Removing Item",
+    "errorRemovingItemDescription": "Unable to remove item from wishlist. Please try again."
   }
 }

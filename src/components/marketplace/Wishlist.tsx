@@ -30,7 +30,7 @@ export const Wishlist = ({ onProductClick }: WishlistProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['common', 'marketplace']);
   const [isOpen, setIsOpen] = useState(false);
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);

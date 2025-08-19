@@ -52,6 +52,11 @@
     "emptyDescription": "Start browsing to add items to your wishlist",
     "removeItem": "Remove from wishlist",
     "continueShopping": "Continue Shopping",
-    "checkout": "Checkout"
+    "checkout": "Checkout",
+    "itemCount": "{{count}} item",
+    "itemCount_plural": "{{count}} items",
+    "removedFromWishlist": "Removed from wishlist",
+    "removedDescription": "Item has been removed from your wishlist",
+    "browseMarketplace": "Browse Marketplace"
   }
 }

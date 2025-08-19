@@ -52,6 +52,11 @@
     "emptyDescription": "Comienza a navegar para agregar artículos a tu lista de deseos",
     "removeItem": "Quitar de lista de deseos",
     "continueShopping": "Continuar Comprando",
-    "checkout": "Finalizar Compra"
+    "checkout": "Finalizar Compra",
+    "itemCount": "{{count}} artículo",
+    "itemCount_plural": "{{count}} artículos",
+    "removedFromWishlist": "Removido de lista de deseos",
+    "removedDescription": "El artículo ha sido removido de tu lista de deseos",
+    "browseMarketplace": "Explorar Mercado"
   }
 }
