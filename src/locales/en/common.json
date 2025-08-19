@@ -1,124 +1,22 @@
 {
-  "buttons": {
-    "create": "Create",
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit",
-    "submit": "Submit",
-    "close": "Close",
-    "back": "Back",
-    "next": "Next",
-    "loading": "Loading...",
-    "tryAgain": "Try Again",
-    "getStarted": "Get Started",
-    "learnMore": "Learn More",
-    "viewAll": "View All",
-    "share": "Share",
-    "download": "Download",
-    "upload": "Upload",
-    "startCreating": "Start Creating",
-    "viewOpenMarket": "View Marketplace",
-    "exploreFeatures": "Explore Features"
-  },
-  "hero": {
-    "title": "Create Stunning Designs with AI",
-    "subtitle": "Transform your ideas into beautiful designs instantly using our advanced AI technology."
-  },
-  "features": {
-    "main": {
-      "advancedAI": {
-        "title": "Advanced AI Generation",
-        "description": "Cutting-edge AI technology that creates professional-quality designs from your text descriptions.",
-        "steps": {
-          "step1": "Describe your vision in simple words",
-          "step2": "Our AI interprets and creates",
-          "step3": "Get stunning results in seconds"
-        }
-      },
-      "lightningFast": {
-        "title": "Lightning Fast Processing",
-        "description": "Generate beautiful designs in seconds, not hours. Our optimized infrastructure delivers results instantly.",
-        "steps": {
-          "step1": "Upload your prompt or reference",
-          "step2": "AI processes at lightning speed",
-          "step3": "Download your design immediately"
-        }
-      },
-      "securePrivate": {
-        "title": "Secure and Private",
-        "description": "Your designs and data are protected with enterprise-grade security. What you create stays yours.",
-        "steps": {
-          "step1": "Your data is encrypted end-to-end",
-          "step2": "No third-party access to your designs",
-          "step3": "Complete ownership of your creations"
-        }
-      },
-      "styleVariety": {
-        "title": "Endless Style Variety",
-        "description": "From minimalist to elaborate, abstract to photorealistic - explore unlimited creative possibilities.",
-        "steps": {
-          "step1": "Choose from hundreds of styles",
-          "step2": "Customize every detail",
-          "step3": "Create your unique aesthetic"
-        }
-      }
-    },
-    "additional": {
-      "referenceUpload": {
-        "title": "Reference Upload",
-        "description": "Upload images to guide the AI and achieve exactly the style you envision."
-      },
-      "easySharing": {
-        "title": "Easy Sharing",
-        "description": "Share your creations instantly with built-in social features and export options."
-      }
-    }
-  },
-  "marketplace": {
-    "searchPlaceholder": "Search designs, creators, styles...",
-    "filterBy": "Filter by",
-    "sortBy": "Sort by",
-    "priceRange": "Price Range",
-    "designStyle": "Design Style",
-    "creatorRating": "Creator Rating"
-  },
-  "common": {
-    "home": "Home",
-    "about": "About",
-    "contact": "Contact",
-    "help": "Help",
-    "name": "Name",
-    "email": "Email",
-    "password": "Password",
-    "address": "Address",
-    "phone": "Phone",
-    "price": "Price",
-    "description": "Description",
-    "category": "Category",
-    "tags": "Tags",
-    "search": "Search",
-    "filter": "Filter",
-    "sort": "Sort",
-    "loading": "Loading...",
-    "noResults": "No results found",
-    "comingSoon": "Coming Soon"
-  },
-  "status": {
-    "success": "Success",
-    "error": "Error",
-    "warning": "Warning",
-    "info": "Information",
-    "pending": "Pending",
-    "completed": "Completed",
-    "inProgress": "In Progress",
-    "cancelled": "Cancelled"
-  },
-  "messages": {
-    "welcomeBack": "Welcome back!",
-    "operationSuccessful": "Operation completed successfully",
-    "somethingWentWrong": "Something went wrong",
-    "pleaseWait": "Please wait...",
-    "confirmDelete": "Are you sure you want to delete this item?"
-  }
+  "welcome": "Welcome",
+  "loading": "Loading...",
+  "error": "Error",
+  "success": "Success",
+  "cancel": "Cancel",
+  "save": "Save",
+  "delete": "Delete",
+  "edit": "Edit",
+  "back": "Back",
+  "next": "Next",
+  "previous": "Previous",
+  "search": "Search",
+  "filter": "Filter",
+  "sort": "Sort",
+  "actions": "Actions",
+  "settings": "Settings",
+  "profile": "Profile",
+  "logout": "Logout",
+  "login": "Login",
+  "register": "Register"
 }

@@ -1,66 +1,11 @@
-
 {
-  "titles": {
-    "dashboard": "Panel de control",
-    "myDashboard": "Mi panel de control",
-    "overview": "Resumen",
-    "stats": "Estadísticas",
-    "quickActions": "Acciones rápidas",
-    "recentActivity": "Actividad reciente"
-  },
-  "stats": {
-    "totalDesigns": "Total de diseños",
-    "totalEarnings": "Ganancias totales",
-    "totalOrders": "Total de pedidos",
-    "totalProducts": "Total de productos",
-    "thisMonth": "Este mes",
-    "lastMonth": "Mes pasado",
-    "growth": "Crecimiento",
-    "views": "Visualizaciones",
-    "likes": "Me gusta",
-    "downloads": "Descargas"
-  },
-  "tabs": {
-    "overview": "Resumen",
-    "designs": "Diseños",
-    "orders": "Pedidos",
-    "earnings": "Ganancias",
-    "products": "Productos"
-  },
-  "actions": {
-    "createDesign": "Crear nuevo diseño",
-    "viewMarketplace": "Ver mercado",
-    "manageOrders": "Gestionar pedidos",
-    "updateProfile": "Actualizar perfil",
-    "viewAnalytics": "Ver analíticas",
-    "exportData": "Exportar datos"
-  },
-  "orders": {
-    "noOrders": "No hay pedidos aún",
-    "exploreMarketplace": "Explorar mercado",
-    "orderNumber": "Pedido #",
-    "status": "Estado",
-    "date": "Fecha",
-    "total": "Total",
-    "pending": "Pendiente",
-    "processing": "Procesando",
-    "completed": "Completado",
-    "cancelled": "Cancelado"
-  },
-  "earnings": {
-    "totalEarnings": "Ganancias totales",
-    "monthlyEarnings": "Ganancias mensuales",
-    "dailyAverage": "Promedio diario",
-    "topPerforming": "Mejor rendimiento",
-    "revenueGrowth": "Crecimiento de ingresos"
-  },
-  "profile": {
-    "welcome": "Bienvenido",
-    "editProfile": "Editar perfil",
-    "viewProfile": "Ver perfil",
-    "profilePicture": "Foto de perfil",
-    "personalInfo": "Información personal",
-    "contactInfo": "Información de contacto",
-    "preferences": "Preferencias"
-  }
+  "title": "Panel de Control",
+  "overview": "Resumen",
+  "analytics": "Analíticas",
+  "recent_activity": "Actividad Reciente",
+  "statistics": "Estadísticas",
+  "total_images": "Imágenes Totales",
+  "generated_today": "Generadas Hoy",
+  "favorites": "Favoritos",
+  "collections": "Colecciones"
 }

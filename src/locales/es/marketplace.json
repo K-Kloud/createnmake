@@ -1,67 +1,14 @@
-
 {
-  "titles": {
-    "marketplace": "Mercado",
-    "featuredCollections": "Colecciones destacadas",
-    "categories": "Categorías",
-    "searchResults": "Resultados de búsqueda",
-    "productDetails": "Detalles del producto"
-  },
-  "filters": {
-    "filterBy": "Filtrar por",
-    "sortBy": "Ordenar por",
-    "category": "Categoría",
-    "priceRange": "Rango de precio",
-    "dateAdded": "Fecha agregada",
-    "popularity": "Popularidad",
-    "rating": "Calificación",
-    "newest": "Más nuevos",
-    "oldest": "Más antiguos",
-    "priceHighToLow": "Precio: Mayor a menor",
-    "priceLowToHigh": "Precio: Menor a mayor",
-    "mostPopular": "Más popular",
-    "topRated": "Mejor calificados"
-  },
-  "product": {
-    "addToCart": "Agregar al carrito",
-    "buyNow": "Comprar ahora",
-    "addToWishlist": "Agregar a lista de deseos",
-    "shareProduct": "Compartir producto",
-    "productDescription": "Descripción del producto",
-    "specifications": "Especificaciones",
-    "reviews": "Reseñas",
-    "relatedProducts": "Productos relacionados",
-    "createdBy": "Creado por",
-    "price": "Precio",
-    "availability": "Disponibilidad",
-    "inStock": "En stock",
-    "outOfStock": "Agotado",
-    "limitedStock": "Stock limitado"
-  },
-  "search": {
-    "searchPlaceholder": "Buscar diseños, productos, creadores...",
-    "noResults": "No se encontraron resultados",
-    "tryDifferentKeywords": "Prueba con palabras clave diferentes",
-    "searchSuggestions": "Sugerencias de búsqueda",
-    "popularSearches": "Búsquedas populares"
-  },
-  "categories": {
-    "clothing": "Ropa",
-    "accessories": "Accesorios",
-    "furniture": "Muebles",
-    "decor": "Decoración del hogar",
-    "electronics": "Electrónicos",
-    "jewelry": "Joyería",
-    "art": "Arte",
-    "crafts": "Manualidades",
-    "all": "Todas las categorías"
-  },
-  "actions": {
-    "viewDetails": "Ver detalles",
-    "quickView": "Vista rápida",
-    "compare": "Comparar",
-    "contact": "Contactar creador",
-    "customize": "Personalizar",
-    "requestQuote": "Solicitar cotización"
-  }
+  "title": "Mercado",
+  "browse": "Navegar",
+  "featured": "Destacados",
+  "trending": "Tendencias",
+  "new": "Nuevo",
+  "popular": "Popular",
+  "categories": "Categorías",
+  "filters": "Filtros",
+  "like": "Me gusta",
+  "download": "Descargar",
+  "share": "Compartir",
+  "view_details": "Ver Detalles"
 }
