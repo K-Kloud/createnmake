@@ -3127,7 +3127,15 @@ export type Database = {
         Args: { image_id: number }
         Returns: undefined
       }
+      is_admin_user: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_authenticated: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_authenticated_user: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
