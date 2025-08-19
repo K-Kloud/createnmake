@@ -17,6 +17,8 @@ import { UnifiedErrorBoundary } from "@/components/error/UnifiedErrorBoundary";
 import { AssetLoadingProvider } from "@/providers/AssetLoadingProvider";
 // Phase 5: Add performance monitoring provider  
 import { PerformanceMonitoringProvider } from "@/providers/PerformanceMonitoringProvider";
+// Phase 6: Add loading manager provider
+import { LoadingManagerProvider } from "@/providers/LoadingManagerProvider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,16 +34,18 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Phase 5: Add performance monitoring provider */}
-      <PerformanceMonitoringProvider>
-        {/* Phase 4: Wrap with asset loading provider to handle CSS and asset loading */}
-        <AssetLoadingProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
+      {/* Phase 6: Add loading manager for centralized loading state */}
+      <LoadingManagerProvider>
+        {/* Phase 5: Add performance monitoring provider */}
+        <PerformanceMonitoringProvider>
+          {/* Phase 4: Wrap with asset loading provider to handle CSS and asset loading */}
+          <AssetLoadingProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem
+              disableTransitionOnChange
+            >
             <BrowserRouter>
             <CartProvider>
               <RealtimeNotificationProvider>
@@ -80,8 +84,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
           </CartProvider>
         </BrowserRouter>
       </ThemeProvider>
-        </AssetLoadingProvider>
-      </PerformanceMonitoringProvider>
+            </AssetLoadingProvider>
+          </PerformanceMonitoringProvider>
+        </LoadingManagerProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
