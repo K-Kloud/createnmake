@@ -13,6 +13,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "sonner";
 // Phase 3: Use unified error boundary instead of multiple boundaries
 import { UnifiedErrorBoundary } from "@/components/error/UnifiedErrorBoundary";
+// Phase 4: Add asset loading provider
+import { AssetLoadingProvider } from "@/providers/AssetLoadingProvider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,13 +30,15 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="dark"
-        enableSystem
-        disableTransitionOnChange
-      >
-        <BrowserRouter>
+      {/* Phase 4: Wrap with asset loading provider to handle CSS and asset loading */}
+      <AssetLoadingProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <BrowserRouter>
           <CartProvider>
             <RealtimeNotificationProvider>
               <AnalyticsProvider>
@@ -72,6 +76,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
           </CartProvider>
         </BrowserRouter>
       </ThemeProvider>
+      </AssetLoadingProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
