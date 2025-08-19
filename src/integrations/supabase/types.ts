@@ -2527,6 +2527,45 @@ export type Database = {
         }
         Relationships: []
       }
+      security_events: {
+        Row: {
+          created_at: string | null
+          details: Json | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          resolved: boolean | null
+          severity: string | null
+          timestamp: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          details?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          resolved?: boolean | null
+          severity?: string | null
+          timestamp?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          details?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          resolved?: boolean | null
+          severity?: string | null
+          timestamp?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       smart_automation_rules: {
         Row: {
           actions: Json
@@ -3088,6 +3127,10 @@ export type Database = {
         Args: { image_id: number }
         Returns: undefined
       }
+      is_authenticated: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_current_user_super_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
@@ -3102,6 +3145,10 @@ export type Database = {
         }
         Returns: string
       }
+      sanitize_text_input: {
+        Args: { input_text: string }
+        Returns: string
+      }
       sync_image_likes_count: {
         Args: { p_image_id?: number }
         Returns: undefined
@@ -3109,6 +3156,10 @@ export type Database = {
       trigger_ai_monitoring: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      validate_admin_operation: {
+        Args: { operation_type: string }
+        Returns: boolean
       }
       validate_password_strength: {
         Args: { password: string }

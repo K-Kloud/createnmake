@@ -160,14 +160,18 @@ export const useSecurityMonitoring = () => {
     details: Record<string, any>
   ) => {
     try {
-      await supabase.from('security_events').insert({
-        event_type: eventType,
+      // Use audit_logs table for security events until security_events is available in types
+      await supabase.from('audit_logs').insert({
         user_id: user?.id,
-        details,
-        timestamp: new Date().toISOString(),
-        user_agent: navigator.userAgent,
-        ip_address: 'client-side',
-        severity: calculateSeverity(eventType)
+        action: `security_${eventType}`,
+        action_details: {
+          event_type: eventType,
+          details,
+          timestamp: new Date().toISOString(),
+          user_agent: navigator.userAgent,
+          ip_address: 'client-side',
+          severity: calculateSeverity(eventType)
+        }
       });
       
       metricsRef.current.lastThreatDetected = new Date();

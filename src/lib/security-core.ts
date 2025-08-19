@@ -127,13 +127,17 @@ export class InputSanitizer {
 
   private static async logSecurityEvent(event: SecurityEvent, details: Record<string, any>) {
     try {
-      await supabase.from('security_events').insert({
-        event_type: event,
-        details,
-        timestamp: new Date().toISOString(),
-        user_agent: navigator.userAgent,
-        ip_address: 'client-side',
-        severity: event.includes('injection') || event.includes('xss') ? 'high' : 'medium'
+      // Use audit_logs table for security events until security_events is available in types
+      await supabase.from('audit_logs').insert({
+        action: `security_${event}`,
+        action_details: {
+          event_type: event,
+          details,
+          timestamp: new Date().toISOString(),
+          user_agent: navigator.userAgent,
+          ip_address: 'client-side',
+          severity: event.includes('injection') || event.includes('xss') ? 'high' : 'medium'
+        }
       });
     } catch (error) {
       console.error('Failed to log security event:', error);
