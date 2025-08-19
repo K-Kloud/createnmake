@@ -6,12 +6,15 @@ import { addStructuredData } from "@/utils/seo";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { useTranslation } from "react-i18next";
 
-// Lazy load non-critical components
-const ImageGenerator = lazy(() => import("@/components/ImageGenerator").then(module => ({ default: module.ImageGenerator })));
-const OpenMarketSection = lazy(() => import("@/components/OpenMarketSection").then(module => ({ default: module.OpenMarketSection })));
+// Phase 1: Remove lazy loading temporarily for critical components
+import { ImageGenerator } from "@/components/ImageGenerator";
+import { OpenMarketSection } from "@/components/OpenMarketSection";
+
+// Keep ChatBot lazy since it's not critical
 const ChatBot = lazy(() => import("@/components/ChatBot").then(module => ({ default: module.ChatBot })));
 
 const Index = () => {
+  console.log('🏠 [INDEX] Index page rendering...');
   const { t } = useTranslation('common');
 
   // Add structured data for SEO
@@ -40,11 +43,20 @@ const Index = () => {
       }}
     >
       <div className="py-8 sm:py-16">
-        <Suspense fallback={<div className="h-64 w-full flex items-center justify-center">{t('common.loading')}</div>}>
-          <div className="image-generator">
+        {/* Phase 1: Add error handling for critical components */}
+        <div className="image-generator">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+                AI Design Generator
+              </h2>
+              <p className="text-muted-foreground">
+                Transform your ideas into stunning visuals instantly
+              </p>
+            </div>
             <ImageGenerator />
           </div>
-        </Suspense>
+        </div>
       </div>
 
       <Hero />
@@ -54,9 +66,18 @@ const Index = () => {
           <HeroActions />
         </div>
         
-        <Suspense fallback={<div className="h-32 w-full"></div>}>
+        {/* Phase 1: Add fallback content for marketplace */}
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+              Marketplace
+            </h2>
+            <p className="text-muted-foreground">
+              Discover amazing designs from our community
+            </p>
+          </div>
           <OpenMarketSection />
-        </Suspense>
+        </div>
       </div>
       <Suspense fallback={null}>
         <ChatBot />

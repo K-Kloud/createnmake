@@ -24,6 +24,8 @@ const queryClient = new QueryClient({
 })
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
+  console.log('🔧 [PROVIDERS] AppProviders initializing...');
+  
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider

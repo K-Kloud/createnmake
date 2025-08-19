@@ -13,6 +13,7 @@ interface MainLayoutProps {
 }
 
 export const MainLayout = ({ children, seo }: MainLayoutProps) => {
+  console.log('🎨 [LAYOUT] MainLayout rendering...');
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

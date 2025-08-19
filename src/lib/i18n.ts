@@ -34,6 +34,8 @@ const resources = {
   },
 };
 
+console.log('🌐 [I18N] Initializing internationalization...');
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -57,7 +59,13 @@ i18n
       useSuspense: false,
     },
 
-    debug: false,
+    debug: process.env.NODE_ENV === 'development',
+  })
+  .then(() => {
+    console.log('✅ [I18N] Internationalization initialized successfully');
+  })
+  .catch((error) => {
+    console.error('❌ [I18N] Failed to initialize internationalization:', error);
   });
 
 export default i18n;
