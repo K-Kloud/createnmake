@@ -4,7 +4,7 @@ import { HeroActions } from "@/components/HeroActions";
 import { Suspense, lazy, useEffect } from "react";
 import { addStructuredData } from "@/utils/seo";
 import { MainLayout } from "@/components/layouts/MainLayout";
-import { useTranslation } from "react-i18next";
+import { useTranslationFallback } from "@/hooks/useTranslationFallback";
 
 // Phase 1: Remove lazy loading temporarily for critical components
 import { ImageGenerator } from "@/components/ImageGenerator";
@@ -15,7 +15,7 @@ const ChatBot = lazy(() => import("@/components/ChatBot").then(module => ({ defa
 
 const Index = () => {
   console.log('🏠 [INDEX] Index page rendering...');
-  const { t } = useTranslation('common');
+  const { t, isTranslationReady } = useTranslationFallback('common');
 
   // Add structured data for SEO
   useEffect(() => {
@@ -30,9 +30,22 @@ const Index = () => {
         "https://instagram.com/openteknologies"
       ]
     });
-    
     return cleanup;
   }, []);
+
+  // Phase 2: Show loading state if translations aren't ready
+  if (!isTranslationReady) {
+    return (
+      <MainLayout seo={{ title: "OpenTeknologies | Loading...", description: "Loading application..." }}>
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center space-y-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <p className="text-muted-foreground">Loading application...</p>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout
