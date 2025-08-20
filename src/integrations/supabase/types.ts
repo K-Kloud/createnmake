@@ -2951,7 +2951,7 @@ export type Database = {
           pages_visited: number | null
           session_id: string
           start_time: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           browser?: string | null
@@ -2968,7 +2968,7 @@ export type Database = {
           pages_visited?: number | null
           session_id: string
           start_time?: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           browser?: string | null
@@ -2985,7 +2985,7 @@ export type Database = {
           pages_visited?: number | null
           session_id?: string
           start_time?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
