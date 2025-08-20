@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Typography } from "@/components/ui/responsive-text";
 
 export const Footer = () => {
   const { data: session } = useQuery({
@@ -64,7 +65,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {footerSections.map((section) => (
             <div key={section.title}>
-              <h3 className="font-semibold text-foreground mb-4">{section.title}</h3>
+              <Typography variant="h5" className="mb-4">{section.title}</Typography>
               <ul className="space-y-2">
                 {section.links.map((link) => (
                   <li key={link.href}>
@@ -82,9 +83,9 @@ export const Footer = () => {
         </div>
         
         <div className="border-t mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center">
-          <div className="text-sm text-muted-foreground">
+          <Typography variant="body-small" color="muted">
             © 2024 openteknologies. All rights reserved.
-          </div>
+          </Typography>
           <div className="flex space-x-4 mt-4 sm:mt-0">
             <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Privacy Policy

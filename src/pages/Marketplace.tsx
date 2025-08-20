@@ -4,6 +4,7 @@ import { Footer } from "@/components/Footer";
 import { OpenMarketSection } from "@/components/OpenMarketSection";
 import { MarketplaceTabs } from "@/components/marketplace/MarketplaceTabs";
 import { FeaturedCollections } from "@/components/marketplace/FeaturedCollections";
+import { Typography } from "@/components/ui/responsive-text";
 import { useTranslation } from "react-i18next";
 
 const Marketplace = () => {
@@ -14,12 +15,12 @@ const Marketplace = () => {
       <Header />
       <div className="container px-4 py-12 flex-grow">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4 gradient-text text-center">
+          <Typography variant="h1" color="gradient" className="mb-4 text-center">
             {t('navigation:main.marketplace')}
-          </h1>
-          <p className="text-muted-foreground text-center mb-8 max-w-2xl mx-auto">
+          </Typography>
+          <Typography variant="body-large" color="muted" className="text-center mb-8 max-w-2xl mx-auto">
             {t('marketplace:title')}
-          </p>
+          </Typography>
         </div>
         <MarketplaceTabs />
         <FeaturedCollections />

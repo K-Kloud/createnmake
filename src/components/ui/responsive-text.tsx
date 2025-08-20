@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { Typography, TypographyVariant, ColorVariant } from "./typography";
 
 interface ResponsiveTextProps {
   children: ReactNode;
@@ -7,14 +8,15 @@ interface ResponsiveTextProps {
   className?: string;
 }
 
-const textVariantClasses = {
-  h1: "text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-orbitron font-bold leading-tight",
-  h2: "text-xl sm:text-2xl md:text-3xl lg:text-4xl font-orbitron font-bold leading-tight",
-  h3: "text-lg sm:text-xl md:text-2xl lg:text-3xl font-rajdhani font-semibold leading-tight",
-  h4: "text-base sm:text-lg md:text-xl lg:text-2xl font-rajdhani font-medium leading-tight",
-  body: "text-sm sm:text-base md:text-lg leading-relaxed",
-  small: "text-xs sm:text-sm leading-normal",
-  caption: "text-xs leading-tight"
+// Legacy mapping for backward compatibility
+const legacyVariantMapping: Record<ResponsiveTextProps['variant'] & string, TypographyVariant> = {
+  h1: "h1",
+  h2: "h2", 
+  h3: "h3",
+  h4: "h4",
+  body: "body",
+  small: "body-small",
+  caption: "caption"
 };
 
 export const ResponsiveText = ({ 
@@ -22,14 +24,18 @@ export const ResponsiveText = ({
   variant = "body",
   className = "" 
 }: ResponsiveTextProps) => {
-  const Component = variant.startsWith('h') ? variant as keyof JSX.IntrinsicElements : 'p';
+  // Use new Typography system with legacy support
+  const mappedVariant = legacyVariantMapping[variant] || "body";
   
   return (
-    <Component className={cn(
-      textVariantClasses[variant],
-      className
-    )}>
+    <Typography 
+      variant={mappedVariant}
+      className={className}
+    >
       {children}
-    </Component>
+    </Typography>
   );
 };
+
+// Re-export Typography system for new usage
+export { Typography, type TypographyVariant, type ColorVariant } from "./typography";

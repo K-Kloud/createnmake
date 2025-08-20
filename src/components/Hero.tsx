@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Zap } from "lucide-react";
 import { ResponsiveContainer } from "@/components/ui/responsive-container";
-import { ResponsiveText } from "@/components/ui/responsive-text";
+import { Typography } from "@/components/ui/responsive-text";
 import { ResponsiveGrid } from "@/components/ui/responsive-grid";
 
 export const Hero = () => {
@@ -21,28 +21,29 @@ export const Hero = () => {
 
       <ResponsiveContainer className="relative z-10 text-center">
         {/* Hero Badge */}
-        <div className="inline-flex items-center gap-2 glass-card px-3 py-2 sm:px-4 sm:py-2 mb-6 sm:mb-8 animate-slide-up text-xs sm:text-sm">
+        <div className="inline-flex items-center gap-2 glass-card px-3 py-2 sm:px-4 sm:py-2 mb-6 sm:mb-8 animate-slide-up">
           <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-accent" />
-          <span className="font-rajdhani font-medium text-muted-foreground">
+          <Typography variant="body-small" color="muted" className="font-rajdhani font-medium" as="span">
             Powered by Advanced AI Technology
-          </span>
+          </Typography>
         </div>
 
         {/* Main Headline */}
-        <ResponsiveText variant="h1" className="hero-text mb-4 sm:mb-6 animate-slide-up delay-200">
+        <Typography variant="display" color="gradient" className="mb-4 sm:mb-6 animate-slide-up delay-200">
           Create Amazing Designs
           <br />
-          <span className="accent-text">Instantly</span>
-        </ResponsiveText>
+          <Typography variant="display" color="accent" as="span">Instantly</Typography>
+        </Typography>
 
         {/* Subtitle */}
-        <ResponsiveText 
-          variant="body" 
-          className="font-rajdhani font-light text-muted-foreground max-w-3xl mx-auto mb-6 sm:mb-8 animate-slide-up delay-300 text-base sm:text-xl md:text-2xl"
+        <Typography 
+          variant="body-large" 
+          color="muted"
+          className="font-rajdhani font-light max-w-3xl mx-auto mb-6 sm:mb-8 animate-slide-up delay-300"
         >
           Transform your ideas into stunning visuals with our AI-powered design generator. 
           Connect with skilled artisans and bring your creations to life.
-        </ResponsiveText>
+        </Typography>
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center animate-slide-up delay-500 px-4 sm:px-0">
@@ -74,28 +75,28 @@ export const Hero = () => {
           className="mt-12 sm:mt-16 max-w-2xl mx-auto animate-slide-up delay-700"
         >
           <div className="text-center">
-            <ResponsiveText variant="h3" className="font-orbitron font-bold gradient-text mb-1 sm:mb-2">
+            <Typography variant="h3" color="gradient" className="mb-1 sm:mb-2">
               10K+
-            </ResponsiveText>
-            <ResponsiveText variant="small" className="font-rajdhani text-muted-foreground">
+            </Typography>
+            <Typography variant="body-small" color="muted">
               Designs Created
-            </ResponsiveText>
+            </Typography>
           </div>
           <div className="text-center">
-            <ResponsiveText variant="h3" className="font-orbitron font-bold gradient-text mb-1 sm:mb-2">
+            <Typography variant="h3" color="gradient" className="mb-1 sm:mb-2">
               500+
-            </ResponsiveText>
-            <ResponsiveText variant="small" className="font-rajdhani text-muted-foreground">
+            </Typography>
+            <Typography variant="body-small" color="muted">
               Active Makers
-            </ResponsiveText>
+            </Typography>
           </div>
           <div className="text-center">
-            <ResponsiveText variant="h3" className="font-orbitron font-bold gradient-text mb-1 sm:mb-2">
+            <Typography variant="h3" color="gradient" className="mb-1 sm:mb-2">
               99%
-            </ResponsiveText>
-            <ResponsiveText variant="small" className="font-rajdhani text-muted-foreground">
+            </Typography>
+            <Typography variant="body-small" color="muted">
               Satisfaction Rate
-            </ResponsiveText>
+            </Typography>
           </div>
         </ResponsiveGrid>
       </ResponsiveContainer>
