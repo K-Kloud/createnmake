@@ -1,137 +1,119 @@
 
 import { MainLayout } from "@/components/layouts/MainLayout";
-import { EnhancedContactForm } from "@/components/contact/EnhancedContactForm";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Phone, MapPin, Clock, MessageSquare, Headphones, MessageCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent } from "@/components/ui/card";
+import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
+import { useContactForm } from "@/hooks/useContactForm";
 
 const Contact = () => {
   const phoneNumber = "+44 7438306305";
   const whatsappLink = `https://wa.me/${phoneNumber.replace(/[^0-9]/g, '')}`;
+  const { formData, handleInputChange, handleSubmit, isSubmitting } = useContactForm();
 
   return (
     <MainLayout
       seo={{
         title: "Contact Us | Get in Touch",
-        description: "Contact our team for support, questions, or feedback. We're here to help you succeed."
+        description: "Have a question or need assistance? Get in touch with our team today."
       }}
     >
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold tracking-tight mb-4">
-              Get in Touch
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Have questions or need support? We're here to help. Send us a message and we'll get back to you as soon as possible.
-            </p>
-          </div>
+      <div className="container px-4 py-24 flex-grow">
+        <h1 className="text-4xl font-bold mb-8 gradient-text">Contact Us</h1>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <Card className="glass-card">
+            <CardContent className="p-6">
+              <h2 className="text-2xl font-semibold mb-6">Get in Touch</h2>
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                <div>
+                  <Input 
+                    placeholder="Your Name" 
+                    value={formData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <Input 
+                    type="email" 
+                    placeholder="Your Email" 
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <Input 
+                    placeholder="Subject" 
+                    value={formData.subject}
+                    onChange={(e) => handleInputChange('subject', e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <Textarea 
+                    placeholder="Your Message" 
+                    className="min-h-[150px]" 
+                    value={formData.message}
+                    onChange={(e) => handleInputChange('message', e.target.value)}
+                    required
+                  />
+                </div>
+                <Button className="w-full" type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Sending..." : "Send Message"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Contact Information */}
-            <div className="lg:col-span-1 space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Mail className="h-5 w-5" />
-                    Email Support
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-2">Send us an email anytime</p>
-                  <p className="font-medium">support@openteknologies.com</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Response time: Within 2-4 hours
-                  </p>
-                </CardContent>
-              </Card>
+          <div className="space-y-6">
+            <Card className="glass-card">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-4">
+                  <Mail className="h-6 w-6 text-primary" />
+                  <div>
+                    <h3 className="font-semibold">Email</h3>
+                    <p className="text-gray-400">support@openteknologies.com</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Phone className="h-5 w-5" />
-                    Phone Support
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between">
+            <Card className="glass-card">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <Phone className="h-6 w-6 text-primary" />
                     <div>
-                      <p className="text-muted-foreground mb-2">Talk to our team directly</p>
-                      <p className="font-medium">{phoneNumber}</p>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Mon-Fri: 9am - 6pm GMT
-                      </p>
+                      <h3 className="font-semibold">Phone</h3>
+                      <p className="text-gray-400">{phoneNumber}</p>
                     </div>
-                    <a 
-                      href={whatsappLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 hover:bg-primary/10 rounded-full transition-colors"
-                    >
-                      <MessageCircle className="h-6 w-6 text-primary" />
-                    </a>
                   </div>
-                </CardContent>
-              </Card>
+                  <a 
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 hover:bg-primary/10 rounded-full transition-colors"
+                  >
+                    <MessageCircle className="h-6 w-6 text-primary" />
+                  </a>
+                </div>
+              </CardContent>
+            </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageSquare className="h-5 w-5" />
-                    Live Chat
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-2">Chat with us in real-time</p>
-                  <p className="font-medium">Available 24/7</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Click the chat bubble in the bottom right
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    Office Location
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-2">Visit us in person</p>
-                  <p className="font-medium">
-                    123 AI Street<br />
-                    Tech City, UK
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">
-                      Mon-Fri: 9am - 5pm GMT
-                    </p>
+            <Card className="glass-card">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-4">
+                  <MapPin className="h-6 w-6 text-primary" />
+                  <div>
+                    <h3 className="font-semibold">Address</h3>
+                    <p className="text-gray-400">123 AI Street, Tech City</p>
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Headphones className="h-5 w-5" />
-                    Priority Support
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-2">Enterprise customers</p>
-                  <p className="font-medium">priority@openteknologies.com</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Dedicated support team with 1-hour response time
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Enhanced Contact Form */}
-            <div className="lg:col-span-2">
-              <EnhancedContactForm />
-            </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

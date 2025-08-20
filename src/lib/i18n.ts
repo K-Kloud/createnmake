@@ -3,7 +3,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// Import existing translation files
+// Import translation files
 import enCommon from '@/locales/en/common.json';
 import enAuth from '@/locales/en/auth.json';
 import enDashboard from '@/locales/en/dashboard.json';
@@ -16,6 +16,41 @@ import esDashboard from '@/locales/es/dashboard.json';
 import esNavigation from '@/locales/es/navigation.json';
 import esMarketplace from '@/locales/es/marketplace.json';
 
+import frCommon from '@/locales/fr/common.json';
+import frAuth from '@/locales/fr/auth.json';
+import frDashboard from '@/locales/fr/dashboard.json';
+import frNavigation from '@/locales/fr/navigation.json';
+import frMarketplace from '@/locales/fr/marketplace.json';
+
+import deCommon from '@/locales/de/common.json';
+import deAuth from '@/locales/de/auth.json';
+import deDashboard from '@/locales/de/dashboard.json';
+import deNavigation from '@/locales/de/navigation.json';
+import deMarketplace from '@/locales/de/marketplace.json';
+
+import ptCommon from '@/locales/pt/common.json';
+import ptAuth from '@/locales/pt/auth.json';
+import ptDashboard from '@/locales/pt/dashboard.json';
+import ptNavigation from '@/locales/pt/navigation.json';
+import ptMarketplace from '@/locales/pt/marketplace.json';
+
+import itCommon from '@/locales/it/common.json';
+import itAuth from '@/locales/it/auth.json';
+import itDashboard from '@/locales/it/dashboard.json';
+import itNavigation from '@/locales/it/navigation.json';
+import itMarketplace from '@/locales/it/marketplace.json';
+
+import zhCommon from '@/locales/zh/common.json';
+import zhAuth from '@/locales/zh/auth.json';
+import zhDashboard from '@/locales/zh/dashboard.json';
+import zhNavigation from '@/locales/zh/navigation.json';
+import zhMarketplace from '@/locales/zh/marketplace.json';
+
+import jaCommon from '@/locales/ja/common.json';
+import jaAuth from '@/locales/ja/auth.json';
+import jaDashboard from '@/locales/ja/dashboard.json';
+import jaNavigation from '@/locales/ja/navigation.json';
+import jaMarketplace from '@/locales/ja/marketplace.json';
 
 const resources = {
   en: {
@@ -32,96 +67,74 @@ const resources = {
     navigation: esNavigation,
     marketplace: esMarketplace,
   },
+  fr: {
+    common: frCommon,
+    auth: frAuth,
+    dashboard: frDashboard,
+    navigation: frNavigation,
+    marketplace: frMarketplace,
+  },
+  de: {
+    common: deCommon,
+    auth: deAuth,
+    dashboard: deDashboard,
+    navigation: deNavigation,
+    marketplace: deMarketplace,
+  },
+  pt: {
+    common: ptCommon,
+    auth: ptAuth,
+    dashboard: ptDashboard,
+    navigation: ptNavigation,
+    marketplace: ptMarketplace,
+  },
+  it: {
+    common: itCommon,
+    auth: itAuth,
+    dashboard: itDashboard,
+    navigation: itNavigation,
+    marketplace: itMarketplace,
+  },
+  zh: {
+    common: zhCommon,
+    auth: zhAuth,
+    dashboard: zhDashboard,
+    navigation: zhNavigation,
+    marketplace: zhMarketplace,
+  },
+  ja: {
+    common: jaCommon,
+    auth: jaAuth,
+    dashboard: jaDashboard,
+    navigation: jaNavigation,
+    marketplace: jaMarketplace,
+  },
 };
 
-console.log('🌐 [I18N] Initializing internationalization...');
+i18n
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources,
+    fallbackLng: 'en',
+    defaultNS: 'common',
+    ns: ['common', 'auth', 'dashboard', 'navigation', 'marketplace'],
+    
+    detection: {
+      order: ['localStorage', 'navigator', 'htmlTag'],
+      lookupLocalStorage: 'i18nextLng',
+      caches: ['localStorage'],
+    },
 
-// Phase 2: Add translation validation and error handling
-const validateTranslations = () => {
-  const requiredKeys = {
-    common: ['loading', 'error', 'success', 'buttons.startCreating'],
-    marketplace: ['title', 'viewMode.paginated', 'viewMode.infiniteScroll']
-  };
+    interpolation: {
+      escapeValue: false,
+    },
 
-  let hasErrors = false;
-  Object.entries(requiredKeys).forEach(([namespace, keys]) => {
-    const nsResources = resources.en[namespace as keyof typeof resources.en];
-    keys.forEach(key => {
-      if (!key.split('.').reduce((obj, k) => obj?.[k], nsResources)) {
-        console.error(`❌ [I18N] Missing required key: ${namespace}.${key}`);
-        hasErrors = true;
-      }
-    });
+    react: {
+      useSuspense: false,
+    },
+
+    debug: false,
   });
-
-  if (!hasErrors) {
-    console.log('✅ [I18N] Translation validation passed');
-  }
-  return !hasErrors;
-};
-
-// Phase 2: Implement retry logic for i18n initialization
-const initializeI18nWithRetry = async (retries = 3) => {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      console.log(`🔄 [I18N] Initialization attempt ${attempt}/${retries}`);
-      
-      await i18n
-        .use(LanguageDetector)
-        .use(initReactI18next)
-        .init({
-          resources,
-          fallbackLng: 'en',
-          defaultNS: 'common',
-          ns: ['common', 'auth', 'dashboard', 'navigation', 'marketplace'],
-          
-          detection: {
-            order: ['localStorage', 'navigator', 'htmlTag'],
-            lookupLocalStorage: 'i18nextLng',
-            caches: ['localStorage'],
-          },
-
-          interpolation: {
-            escapeValue: false,
-          },
-
-          react: {
-            useSuspense: false,
-          },
-
-          debug: process.env.NODE_ENV === 'development',
-          
-          // Phase 2: Add missing key handler
-          missingKeyHandler: (lng, ns, key, fallbackValue) => {
-            console.warn(`🔍 [I18N] Missing translation key: ${ns}:${key} for language: ${lng}`);
-            return fallbackValue || key;
-          },
-
-          // Phase 2: Add post-processing for graceful degradation
-          postProcess: ['fallback'],
-        });
-
-      console.log('✅ [I18N] Internationalization initialized successfully');
-      validateTranslations();
-      return true;
-      
-    } catch (error) {
-      console.error(`❌ [I18N] Initialization attempt ${attempt} failed:`, error);
-      
-      if (attempt === retries) {
-        console.error('🚨 [I18N] All initialization attempts failed, using fallback');
-        // Phase 2: Provide hardcoded fallbacks for critical functionality
-        return false;
-      }
-      
-      // Wait before retry
-      await new Promise(resolve => setTimeout(resolve, 100 * attempt));
-    }
-  }
-  return false;
-};
-
-// Start initialization
-initializeI18nWithRetry();
 
 export default i18n;

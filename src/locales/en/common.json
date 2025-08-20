@@ -1,53 +1,245 @@
+
 {
-  "welcome": "Welcome",
-  "loading": "Loading...",
-  "error": "Error",
-  "success": "Success",
-  "cancel": "Cancel",
-  "save": "Save",
-  "delete": "Delete",
-  "edit": "Edit",
-  "back": "Back",
-  "next": "Next",
-  "previous": "Previous",
-  "search": "Search",
-  "filter": "Filter",
-  "sort": "Sort",
-  "actions": "Actions",
-  "settings": "Settings",
-  "profile": "Profile",
-  "logout": "Logout",
-  "login": "Login",
-  "register": "Register",
   "buttons": {
-    "startCreating": "Start Creating",
-    "viewOpenMarket": "View Open Market",
-    "exploreFeatures": "Explore Features",
+    "create": "Create",
+    "generate": "Generate",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "submit": "Submit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "loading": "Loading...",
+    "tryAgain": "Try Again",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
     "viewAll": "View All",
-    "view": "View",
+    "share": "Share",
+    "download": "Download",
+    "upload": "Upload",
+    "startCreating": "Start Creating",
+    "viewOpenMarket": "View OpenMarket",
+    "exploreFeatures": "Explore Features",
+    "refresh": "Refresh",
+    "viewProduct": "View Product",
+    "checkout": "Checkout",
     "continueShopping": "Continue Shopping",
-    "checkout": "Checkout"
+    "removeFromWishlist": "Remove from Wishlist",
+    "addToWishlist": "Add to Wishlist",
+    "retry": "Retry",
+    "view": "View"
+  },
+  "status": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information",
+    "pending": "Pending",
+    "completed": "Completed",
+    "inProgress": "In Progress",
+    "cancelled": "Cancelled"
+  },
+  "common": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "help": "Help",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "date": "Date",
+    "time": "Time",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "description": "Description",
+    "price": "Price",
+    "quantity": "Quantity",
+    "category": "Category",
+    "tags": "Tags",
+    "settings": "Settings",
+    "profile": "Profile",
+    "account": "Account",
+    "preferences": "Preferences",
+    "privacy": "Privacy",
+    "terms": "Terms of Service",
+    "loading": "Loading...",
+    "noResults": "No results found",
+    "comingSoon": "Coming Soon"
+  },
+  "hero": {
+    "title": "Create-2-Make with AI",
+    "subtitle": "Transform your imaginary visual creations into reality using our Advanced Create-2-Make AI platform. Start creating your unique items and get them delivered to your doorstep."
+  },
+  "features": {
+    "title": "Our Features",
+    "subtitle": "Discover our comprehensive suite of features designed to help you create, customize, and bring your ideas to life.",
+    "main": {
+      "advancedAI": {
+        "title": "Advanced AI Generation",
+        "description": "Create stunning, custom-made images with our state-of-the-art AI technology.",
+        "steps": [
+          "Navigate to the Create page",
+          "Choose from various item categories",
+          "Enter detailed descriptions",
+          "Select your preferred aspect ratio",
+          "Upload reference images (optional)",
+          "Click Generate to create your design"
+        ]
+      },
+      "lightningFast": {
+        "title": "Lightning Fast Processing",
+        "description": "Experience rapid image generation with our optimized infrastructure.",
+        "steps": [
+          "Average generation time: 10-30 seconds",
+          "Real-time preview of progress",
+          "Batch processing capabilities",
+          "Instant image optimization",
+          "Quick download and sharing"
+        ]
+      },
+      "secure": {
+        "title": "Secure & Private",
+        "description": "Your data and creations are protected with enterprise-grade security.",
+        "steps": [
+          "Secure user authentication",
+          "End-to-end encryption",
+          "Private image storage",
+          "Customizable privacy settings",
+          "Regular security audits",
+          "GDPR compliance"
+        ]
+      },
+      "styleVariety": {
+        "title": "Style Variety",
+        "description": "Choose from multiple artistic styles to match your vision.",
+        "steps": [
+          "Multiple design aesthetics",
+          "Customizable style parameters",
+          "Style mixing capabilities",
+          "Reference-based styling",
+          "Trending style suggestions"
+        ]
+      }
+    },
+    "additional": {
+      "referenceUpload": {
+        "title": "Reference Upload",
+        "description": "Upload inspiration images"
+      },
+      "easySharing": {
+        "title": "Easy Sharing",
+        "description": "Share to social media"
+      },
+      "quickDownloads": {
+        "title": "Quick Downloads",
+        "description": "Multiple format options"
+      },
+      "colorControl": {
+        "title": "Color Control",
+        "description": "Precise color selection"
+      },
+      "advancedSettings": {
+        "title": "Advanced Settings",
+        "description": "Fine-tune your results"
+      },
+      "artisanNetwork": {
+        "title": "Artisan Network",
+        "description": "Connect with creators"
+      },
+      "marketplace": {
+        "title": "Marketplace",
+        "description": "Buy & sell designs"
+      },
+      "community": {
+        "title": "Community",
+        "description": "Get feedback & tips"
+      }
+    },
+    "howToUse": "How to use:",
+    "additionalFeaturesTitle": "Additional Features"
   },
   "marketplace": {
-    "openMarket": "Open Market",
-    "searchPlaceholder": "Search marketplace...",
+    "openMarket": "OpenMarket",
+    "searchPlaceholder": "Search designs, products, creators...",
     "advancedFilters": "Advanced Filters",
     "filterOptions": "Filter Options",
-    "refineSearch": "Refine Your Search",
-    "clearFilters": "Clear All Filters",
+    "refineSearch": "Refine your search with these additional filters",
+    "designStyle": "Design Style",
+    "allStyles": "All Styles",
+    "minimalist": "Minimalist",
+    "vintage": "Vintage",
+    "modern": "Modern",
+    "elegant": "Elegant",
+    "priceRange": "Price Range",
+    "creatorReputation": "Creator Reputation",
+    "allRatings": "All Ratings",
+    "clearAll": "Clear All",
     "applyFilters": "Apply Filters",
-    "noResults": "No results found",
-    "noResultsDescription": "Try adjusting your search criteria"
+    "viewMode": {
+      "paginated": "Paginated",
+      "infiniteScroll": "Infinite Scroll"
+    },
+    "wishlist": {
+      "title": "Your Wishlist",
+      "empty": "Your wishlist is empty",
+      "emptyDescription": "Save items you like by clicking the heart icon",
+      "browseMarketplace": "Browse Marketplace",
+      "itemCount": "{{count}} Item",
+      "itemCount_plural": "{{count}} Items",
+      "removedFromWishlist": "Removed from Wishlist",
+      "removedDescription": "Item has been removed from your saved items"
+    }
   },
   "gallery": {
-    "linkCopied": "Link Copied!",
-    "linkCopiedDescription": "Product link has been copied to clipboard",
-    "shareProduct": "Share Product",
-    "viewDetails": "View Details",
-    "addToCart": "Add to Cart",
-    "errorLoadingWishlist": "Error Loading Wishlist",
-    "errorLoadingWishlistDescription": "Unable to load your wishlist items. Please try again.",
-    "errorRemovingItem": "Error Removing Item",
-    "errorRemovingItemDescription": "Unable to remove item from wishlist. Please try again."
+    "noImagesFound": "No images found",
+    "noImagesDescription": "There are no images to display at the moment. Try refreshing the page or check back later.",
+    "connectionProblem": "Connection Problem",
+    "connectionDescription": "Please check your internet connection and try again.",
+    "failedToLoad": "Failed to load images",
+    "failedToLoadDescription": "There was a problem loading the gallery. This might be a temporary issue.",
+    "linkCopied": "Link Copied",
+    "linkCopiedDescription": "Product link has been copied to your clipboard",
+    "errorLoadingWishlist": "Failed to load wishlist",
+    "errorLoadingWishlistDescription": "There was a problem loading your saved items",
+    "errorRemovingItem": "Error",
+    "errorRemovingItemDescription": "Failed to remove item from wishlist"
+  },
+  "generator": {
+    "prompt": {
+      "label": "Describe what you want to create",
+      "placeholder": "e.g., A vintage-style leather handbag with brass buckles"
+    },
+    "category": {
+      "label": "Item Category",
+      "placeholder": "Select a category"
+    },
+    "aspectRatio": {
+      "label": "Aspect Ratio"
+    },
+    "reference": {
+      "label": "Reference Image (Optional)",
+      "uploadText": "Upload reference image",
+      "dragText": "or drag and drop"
+    },
+    "generate": "Generate",
+    "generating": "Generating...",
+    "signInRequired": "Sign in to generate images",
+    "imagesRemaining": "{{count}} image remaining",
+    "imagesRemaining_plural": "{{count}} images remaining"
+  },
+  "messages": {
+    "welcomeBack": "Welcome back!",
+    "thanksForJoining": "Thanks for joining!",
+    "operationSuccessful": "Operation completed successfully",
+    "somethingWentWrong": "Something went wrong",
+    "pleaseCheckConnection": "Please check your internet connection",
+    "dataUpdated": "Data updated successfully",
+    "changesSaved": "Changes saved",
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "cannotUndoAction": "This action cannot be undone"
   }
 }

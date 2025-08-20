@@ -10,19 +10,18 @@ import { EnhancedErrorBoundary } from '@/components/ui/enhanced-error-boundary';
 import NotFound from '@/pages/NotFound';
 import { ComponentRegistry } from './ComponentRegistry';
 
+// Direct import for Index to avoid dynamic loading issues
+const IndexPage = lazy(() => import('@/pages/Index'));
+
 // Static routes that should always be available (excluding nested routes handled by AppRoutes)
 const staticRoutes = [
   { path: '/auth', component: lazy(() => import('@/pages/Auth')) },
   { path: '/auth/callback', component: lazy(() => import('@/pages/AuthCallback')) },
   { path: '/reset-password', component: lazy(() => import('@/pages/ResetPassword')) },
-  { path: '/marketplace', component: lazy(() => import('@/pages/Marketplace')) },
-  { path: '/features', component: lazy(() => import('@/pages/Features')) },
-  { path: '/faq', component: lazy(() => import('@/pages/FAQ')) },
-  { path: '/contact', component: lazy(() => import('@/pages/Contact')) },
 ];
 
-// Routes that should be excluded from dynamic routing (handled by main AppRoutes)
-const excludedPaths = ['/', '/admin', '/crm', '/creator', '/artisan', '/manufacturer', '/dashboard', '/products', '/earnings'];
+// Routes that should be excluded from dynamic routing (handled by nested routers)
+const excludedPaths = ['/admin', '/crm', '/creator', '/artisan', '/manufacturer'];
 
 export const DynamicRouter = () => {
   const { pages, isLoading } = useDynamicPages();
@@ -69,8 +68,22 @@ export const DynamicRouter = () => {
             />
           ))}
           
-          {/* Dynamic routes from database (excluding routes handled by AppRoutes) */}
-          {pages?.filter(page => page.is_active && !excludedPaths.some(excluded => page.route_path === excluded || page.route_path.startsWith(excluded + '/'))).map((page) => {
+          {/* Dynamic routes from database (excluding nested routes) */}
+          {pages?.filter(page => page.is_active && !excludedPaths.some(excluded => page.route_path.startsWith(excluded))).map((page) => {
+            // Special handling for home route to avoid dynamic loading issues
+            if (page.route_path === '/') {
+              return (
+                <Route
+                  key={page.id}
+                  path={page.route_path}
+                  element={
+                    <EnhancedErrorBoundary>
+                      <IndexPage />
+                    </EnhancedErrorBoundary>
+                  }
+                />
+              );
+            }
 
             const ComponentToRender = () => (
               <ComponentRegistry 

@@ -1,53 +1,135 @@
-// Notification service for handling various app notifications
-export const sendSecurityAlert = async (alertType: string, details: Record<string, any>) => {
+
+import { supabase } from "@/integrations/supabase/client";
+
+interface SendNotificationParams {
+  userId: string;
+  title: string;
+  message: string;
+  type: string;
+  metadata?: Record<string, any>;
+}
+
+export const sendNotification = async ({
+  userId,
+  title,
+  message,
+  type,
+  metadata = {}
+}: SendNotificationParams) => {
   try {
-    // Log security alert for monitoring
-    console.warn('Security Alert:', { alertType, details, timestamp: new Date().toISOString() });
-    
-    // In a real application, this would send to monitoring service
-    // For now, we'll just log it and continue without errors
-    
-    return Promise.resolve({ success: true, alertId: Date.now().toString() });
+    const { error } = await supabase.functions.invoke("user-notifications", {
+      body: {
+        userId,
+        title,
+        message,
+        type,
+        metadata
+      }
+    });
+
+    if (error) throw error;
+    return { success: true };
   } catch (error) {
-    // Never throw from security alerts to prevent breaking auth flow
-    console.error('Error in sendSecurityAlert:', error);
-    return Promise.resolve({ success: false, error: error.message });
+    console.error("Error sending notification:", error);
+    return { success: false, error };
   }
 };
 
-export const sendWelcomeNotification = async (userId: string, userDetails?: Record<string, any>) => {
-  console.log('Welcome notification sent to user:', userId, userDetails);
-  
-  // In a real application, this would send to notification service
-  return Promise.resolve({ success: true, notificationId: Date.now().toString() });
+// Helper functions for specific notification types
+export const sendWelcomeNotification = async (userId: string) => {
+  return sendNotification({
+    userId,
+    title: "Welcome to OpenTeknologies!",
+    message: "Start exploring and creating amazing designs today.",
+    type: "welcome"
+  });
 };
 
-export const sendVerificationNotification = async (phone: string, code: string) => {
-  console.log('Verification notification sent to:', phone, 'with code:', code);
-  
-  // In a real application, this would send SMS/email
-  return Promise.resolve({ success: true, notificationId: Date.now().toString() });
+export const sendVerificationNotification = async (userId: string) => {
+  return sendNotification({
+    userId,
+    title: "Account Verified",
+    message: "Your account has been successfully verified.",
+    type: "verification"
+  });
 };
 
-export const logSecurityEvent = (event: string, metadata?: Record<string, any>) => {
-  const securityEvent = {
-    event,
-    metadata,
-    timestamp: new Date().toISOString(),
-    userAgent: navigator.userAgent,
-    url: window.location.href
-  };
-  
-  console.log('Security Event:', securityEvent);
-  
-  // Store in local storage for debugging (in production, send to monitoring service)
-  const events = JSON.parse(localStorage.getItem('security-events') || '[]');
-  events.push(securityEvent);
-  
-  // Keep only last 100 events
-  if (events.length > 100) {
-    events.splice(0, events.length - 100);
-  }
-  
-  localStorage.setItem('security-events', JSON.stringify(events));
+export const sendMilestoneNotification = async (userId: string, milestone: string) => {
+  return sendNotification({
+    userId,
+    title: "Achievement Unlocked!",
+    message: `You've reached a new milestone: ${milestone}`,
+    type: "milestone",
+    metadata: { milestone }
+  });
+};
+
+export const sendInactivityReminder = async (userId: string, daysInactive: number) => {
+  return sendNotification({
+    userId,
+    title: "We miss you!",
+    message: `It's been ${daysInactive} days since your last visit. Come back and see what's new!`,
+    type: "re_engagement",
+    metadata: { daysInactive }
+  });
+};
+
+export const sendSecurityAlert = async (userId: string, alertType: string, details: string) => {
+  return sendNotification({
+    userId,
+    title: "Security Alert",
+    message: details,
+    type: "security",
+    metadata: { alertType }
+  });
+};
+
+export const sendRecommendationNotification = async (userId: string, imageId: number, reason: string) => {
+  return sendNotification({
+    userId,
+    title: "New Design Recommendation",
+    message: `We found a new design you might like: ${reason}`,
+    type: "recommendation",
+    metadata: { imageId, reason }
+  });
+};
+
+export const sendContentUpdateNotification = async (userId: string, contentType: string, contentId: string) => {
+  return sendNotification({
+    userId,
+    title: "New Content Available",
+    message: `New ${contentType} content is now available to explore.`,
+    type: "content_update",
+    metadata: { contentType, contentId }
+  });
+};
+
+export const sendDealAnnouncement = async (userId: string, dealTitle: string, discount: string) => {
+  return sendNotification({
+    userId,
+    title: "Special Deal Alert!",
+    message: `${dealTitle}: ${discount} off for a limited time!`,
+    type: "deal",
+    metadata: { dealTitle, discount }
+  });
+};
+
+export const sendMakeThisReminder = async (userId: string, imageId: number, daysSinceCreation: number) => {
+  return sendNotification({
+    userId,
+    title: "Make This Reminder",
+    message: `Don't forget about your design idea from ${daysSinceCreation} days ago. Want to make it real?`,
+    type: "make_reminder",
+    metadata: { imageId, daysSinceCreation }
+  });
+};
+
+export const sendCreatorActivityNotification = async (userId: string, creatorId: string, activityType: string) => {
+  return sendNotification({
+    userId,
+    title: "Creator Activity",
+    message: `A creator you follow has new activity: ${activityType}`,
+    type: "creator_activity",
+    metadata: { creatorId, activityType }
+  });
 };

@@ -46,41 +46,29 @@ export function useSubscription() {
     queryFn: async () => {
       if (!session?.access_token) throw new Error("Not authenticated");
       
-      try {
-        const { data, error } = await supabase.functions.invoke("check-subscription", {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        });
-        
-        if (error) throw error;
-        if (!data.success) throw new Error(data.error || "Failed to check subscription");
-        
-        return data.subscription as SubscriptionStatus;
-      } catch (error) {
-        // Fallback: return a basic free plan with limited generations
-        console.warn('Subscription check failed, using fallback:', error);
-        return {
-          tier: 'free',
-          monthly_image_limit: 5,
-          images_generated: 0,
-          is_active: true,
-          current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        } as SubscriptionStatus;
-      }
+      const { data, error } = await supabase.functions.invoke("check-subscription", {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+      
+      if (error) throw error;
+      if (!data.success) throw new Error(data.error || "Failed to check subscription");
+      
+      return data.subscription as SubscriptionStatus;
     },
     enabled: !!userId && !!session?.access_token,
   });
   
-  // Check if user can generate an image (always allow for testing, limit to 5 free images)
+  // Check if user can generate an image
   const canGenerateImage = subscriptionStatus 
     ? subscriptionStatus.images_generated < subscriptionStatus.monthly_image_limit
-    : true; // Allow generation by default for testing
+    : false;
   
   // Calculate remaining image count
   const remainingImages = subscriptionStatus 
     ? Math.max(0, subscriptionStatus.monthly_image_limit - subscriptionStatus.images_generated)
-    : 5; // Default 5 free images for testing
+    : 0;
   
   // Create checkout session
   const createCheckout = async (planId: number) => {

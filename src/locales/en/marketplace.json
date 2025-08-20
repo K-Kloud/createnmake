@@ -1,62 +1,67 @@
+
 {
-  "title": "Marketplace",
-  "browse": "Browse",
-  "featured": "Featured",
-  "trending": "Trending",
-  "new": "New",
-  "popular": "Popular",
-  "like": "Like",
-  "download": "Download",
-  "share": "Share",
-  "view_details": "View Details",
-  "categories": {
-    "all": "All Categories",
-    "fashion": "Fashion",
-    "accessories": "Accessories",
-    "footwear": "Footwear",
-    "clothing": "Clothing",
-    "jewelry": "Jewelry"
+  "titles": {
+    "marketplace": "Marketplace",
+    "featuredCollections": "Featured Collections",
+    "categories": "Categories",
+    "searchResults": "Search Results",
+    "productDetails": "Product Details"
   },
   "filters": {
+    "filterBy": "Filter By",
     "sortBy": "Sort By",
+    "category": "Category",
+    "priceRange": "Price Range",
+    "dateAdded": "Date Added",
+    "popularity": "Popularity",
+    "rating": "Rating",
     "newest": "Newest",
     "oldest": "Oldest",
-    "priceDesc": "Price: High to Low",
-    "priceAsc": "Price: Low to High",
+    "priceHighToLow": "Price: High to Low",
+    "priceLowToHigh": "Price: Low to High",
     "mostPopular": "Most Popular",
-    "mostLiked": "Most Liked",
-    "priceRange": "Price Range",
-    "designStyle": "Design Style",
-    "creatorReputation": "Creator Reputation"
+    "topRated": "Top Rated"
   },
   "product": {
-    "createdBy": "Created By",
-    "price": "Price",
-    "likes": "Likes",
-    "views": "Views",
+    "addToCart": "Add to Cart",
+    "buyNow": "Buy Now",
     "addToWishlist": "Add to Wishlist",
-    "removeFromWishlist": "Remove from Wishlist"
+    "shareProduct": "Share Product",
+    "productDescription": "Product Description",
+    "specifications": "Specifications",
+    "reviews": "Reviews",
+    "relatedProducts": "Related Products",
+    "createdBy": "Created by",
+    "price": "Price",
+    "availability": "Availability",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "limitedStock": "Limited Stock"
   },
-  "titles": {
-    "featuredCollections": "Featured Collections",
-    "trendingNow": "Trending Now",
-    "newArrivals": "New Arrivals"
+  "search": {
+    "searchPlaceholder": "Search for designs, products, creators...",
+    "noResults": "No results found",
+    "tryDifferentKeywords": "Try different keywords",
+    "searchSuggestions": "Search Suggestions",
+    "popularSearches": "Popular Searches"
   },
-  "viewMode": {
-    "paginated": "Paginated View",
-    "infiniteScroll": "Infinite Scroll"
+  "categories": {
+    "clothing": "Clothing",
+    "accessories": "Accessories",
+    "furniture": "Furniture",
+    "decor": "Home Decor",
+    "electronics": "Electronics",
+    "jewelry": "Jewelry",
+    "art": "Art",
+    "crafts": "Crafts",
+    "all": "All Categories"
   },
-  "wishlist": {
-    "title": "My Wishlist",
-    "empty": "Your wishlist is empty",
-    "emptyDescription": "Start browsing to add items to your wishlist",
-    "removeItem": "Remove from wishlist",
-    "continueShopping": "Continue Shopping",
-    "checkout": "Checkout",
-    "itemCount": "{{count}} item",
-    "itemCount_plural": "{{count}} items",
-    "removedFromWishlist": "Removed from wishlist",
-    "removedDescription": "Item has been removed from your wishlist",
-    "browseMarketplace": "Browse Marketplace"
+  "actions": {
+    "viewDetails": "View Details",
+    "quickView": "Quick View",
+    "compare": "Compare",
+    "contact": "Contact Creator",
+    "customize": "Customize",
+    "requestQuote": "Request Quote"
   }
 }

@@ -9,7 +9,7 @@ import { Wishlist } from "@/components/marketplace/Wishlist";
 import { useToast } from "@/hooks/use-toast";
 import { ImprovedImageGallery } from "@/components/gallery/ImprovedImageGallery";
 import { useInView } from "react-intersection-observer";
-import { useTranslationFallback } from "@/hooks/useTranslationFallback";
+import { useTranslation } from "react-i18next";
 import { useEcommerceTracking } from "@/hooks/useEcommerceTracking";
 import { useConversionTracking } from "@/hooks/useConversionTracking";
 import { useAnalyticsContext } from "@/providers/AnalyticsProvider";
@@ -40,7 +40,7 @@ export const MarketplaceContent = ({
   onRetry
 }: MarketplaceContentProps) => {
   const { toast } = useToast();
-  const { t, isTranslationReady } = useTranslationFallback(['common', 'marketplace']);
+  const { t } = useTranslation('common');
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [isProductDetailOpen, setIsProductDetailOpen] = useState(false);
   const [similarProducts, setSimilarProducts] = useState<GalleryImage[]>([]);
@@ -154,14 +154,14 @@ export const MarketplaceContent = ({
             className={`px-3 py-1 rounded-md ${viewMode === "paginated" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
             aria-label="Switch to paginated view"
           >
-            {t('viewMode.paginated')}
+            {t('marketplace.viewMode.paginated')}
           </button>
           <button 
             onClick={() => handleViewModeChange("infinite")}
             className={`px-3 py-1 rounded-md ${viewMode === "infinite" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
             aria-label="Switch to infinite scroll view"
           >
-            {t('viewMode.infiniteScroll')}
+            {t('marketplace.viewMode.infiniteScroll')}
           </button>
         </div>
         <Wishlist onProductClick={handleImageClick} />
