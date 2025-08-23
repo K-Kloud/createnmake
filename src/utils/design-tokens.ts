@@ -88,12 +88,24 @@ export const componentSizes = {
 
 // Helper functions for consistent styling
 export const getResponsiveText = (baseSize: keyof typeof fontSizes, responsiveSizes?: Partial<Record<'sm' | 'md' | 'lg' | 'xl', keyof typeof fontSizes>>) => {
-  const classes = [fontSizes[baseSize]];
+  const classes: string[] = [fontSizes[baseSize]];
   
-  if (responsiveSizes?.sm) classes.push(`sm:${fontSizes[responsiveSizes.sm].replace('text-', '')}`);
-  if (responsiveSizes?.md) classes.push(`md:${fontSizes[responsiveSizes.md].replace('text-', '')}`);
-  if (responsiveSizes?.lg) classes.push(`lg:${fontSizes[responsiveSizes.lg].replace('text-', '')}`);
-  if (responsiveSizes?.xl) classes.push(`xl:${fontSizes[responsiveSizes.xl].replace('text-', '')}`);
+  if (responsiveSizes?.sm) {
+    const size = fontSizes[responsiveSizes.sm].replace('text-', '');
+    classes.push(`sm:text-${size}`);
+  }
+  if (responsiveSizes?.md) {
+    const size = fontSizes[responsiveSizes.md].replace('text-', '');
+    classes.push(`md:text-${size}`);
+  }
+  if (responsiveSizes?.lg) {
+    const size = fontSizes[responsiveSizes.lg].replace('text-', '');
+    classes.push(`lg:text-${size}`);
+  }
+  if (responsiveSizes?.xl) {
+    const size = fontSizes[responsiveSizes.xl].replace('text-', '');
+    classes.push(`xl:text-${size}`);
+  }
   
   return cn(...classes);
 };
