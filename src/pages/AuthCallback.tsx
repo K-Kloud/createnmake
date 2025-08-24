@@ -43,8 +43,13 @@ const AuthCallback = () => {
 
             if (error) throw error;
             
-            // Send welcome notification for new users
-            await sendWelcomeNotification(session.user.id);
+            // Send welcome notification for new users (non-blocking)
+            try {
+              await sendWelcomeNotification(session.user.id);
+            } catch (notificationError) {
+              console.error("Failed to send welcome notification:", notificationError);
+              // Don't block auth flow for notification failures
+            }
           }
           
           toast({

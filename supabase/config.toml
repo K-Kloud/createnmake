@@ -220,3 +220,7 @@ gcp_jwt_path = "supabase/gcloud.json"
 # Enable realtime functionality
 [realtime]
 enabled = true
+
+# Edge Functions configuration
+[functions.user-notifications]
+verify_jwt = true
