@@ -20,49 +20,49 @@ export default {
     },
     extend: {
       colors: {
-        // Futuristic color palette
-        background: "#0F0F1A", // Deep night blue
-        foreground: "#FFFFFF", // High contrast white
+        // Using CSS custom properties for theme switching
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         card: {
-          DEFAULT: "rgba(255, 255, 255, 0.05)", // Glass layer
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
         },
         popover: {
-          DEFAULT: "rgba(15, 15, 26, 0.9)", // Dark with transparency
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
         },
         primary: {
-          DEFAULT: "#00E6A0", // Futuristic mint green
-          hover: "#00B383", // Darker hover version
-          foreground: "#0F0F1A", // Dark text on green bg
+          DEFAULT: "hsl(var(--primary))",
+          hover: "hsl(var(--primary) / 0.8)", // Using opacity for hover
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "rgba(255, 255, 255, 0.1)", // Glass secondary
-          foreground: "#C0C0C0", // Subtle grey
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
         muted: {
-          DEFAULT: "rgba(255, 255, 255, 0.05)",
-          foreground: "#C0C0C0",
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "#00FFFF", // Electric cyan
-          foreground: "#0F0F1A",
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
         destructive: {
-          DEFAULT: "#FF5C5C", // Neon red-orange
-          foreground: "#FFFFFF",
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
         },
-        border: "rgba(255, 255, 255, 0.1)",
-        input: "rgba(255, 255, 255, 0.05)",
-        ring: "#00FFFF", // Electric cyan for focus rings
-        // Custom futuristic colors
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        // Custom futuristic colors using CSS variables
         neon: {
-          cyan: "#00FFFF",
-          purple: "#9D00FF",
-          green: "#00E6A0",
-          red: "#FF5C5C",
+          cyan: "hsl(var(--accent))", // Using accent for cyan
+          purple: "hsl(157 100% 50%)", // Purple fallback
+          green: "hsl(var(--primary))", // Using primary for green
+          red: "hsl(var(--destructive))", // Using destructive for red
         },
-        glass: "rgba(255, 255, 255, 0.05)",
+        glass: "hsl(var(--card))", // Using card background for glass
       },
       fontFamily: {
         // Futuristic typography
