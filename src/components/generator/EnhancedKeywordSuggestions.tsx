@@ -54,7 +54,7 @@ export const EnhancedKeywordSuggestions = ({
             <Badge
               key={keyword}
               variant="secondary"
-              className={`cursor-pointer hover:bg-primary/20 transition-colors ${
+              className={`cursor-pointer hover:bg-primary/20 hover:text-primary-foreground transition-colors text-foreground bg-card border-border ${
                 disabled ? 'opacity-50 pointer-events-none' : ''
               }`}
               onClick={() => !disabled && onKeywordClick(keyword)}
