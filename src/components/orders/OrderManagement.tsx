@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { OrderWorkflow, OrderStatus } from './OrderWorkflow';
+import { EnhancedOrderCard } from './EnhancedOrderCard';
 import { LoadingState } from '@/components/ui/loading-state';
 import { useAuth } from '@/hooks/useAuth';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
@@ -56,13 +57,17 @@ export const OrderManagement: React.FC = () => {
           ...o, 
           id: o.id.toString(),
           type: 'artisan' as const,
-          status: (o.status || 'pending') as OrderStatus
+          status: (o.status || 'pending') as OrderStatus,
+          maker_name: `Professional Artisan #${o.artisan_id?.slice(0, 8) || 'Unknown'}`,
+          maker_avatar: null
         })),
         ...(manufacturerResult.data || []).map(o => ({ 
           ...o, 
           id: o.id.toString(),
           type: 'manufacturer' as const,
-          status: (o.status || 'pending') as OrderStatus
+          status: (o.status || 'pending') as OrderStatus,
+          maker_name: `Professional Manufacturer #${o.manufacturer_id?.slice(0, 8) || 'Unknown'}`,
+          maker_avatar: null
         }))
       ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
@@ -126,51 +131,18 @@ export const OrderManagement: React.FC = () => {
             ) : (
               <div className="space-y-6">
                 {orders?.map((order) => (
-                  <Card key={`${order.type}-${order.id}`} className="border">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">
-                          Order #{order.id.slice(-8)}
-                        </CardTitle>
-                        <Badge variant="outline">
-                          {order.type === 'artisan' ? 'Artisan' : 'Manufacturer'}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <h4 className="font-medium mb-2">Product Details</h4>
-                        <p className="text-sm text-muted-foreground">{order.product_details}</p>
-                      </div>
-
-                      {order.amount && (
-                        <div>
-                          <span className="font-medium">Amount: </span>
-                          <span>£{order.amount}</span>
-                        </div>
-                      )}
-
-                      <div className="text-sm text-muted-foreground">
-                        <p>Created: {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}</p>
-                        <p>Updated: {formatDistanceToNow(new Date(order.updated_at), { addSuffix: true })}</p>
-                      </div>
-
-                      <Separator />
-
-                      <OrderWorkflow
-                        orderId={order.id}
-                        currentStatus={order.status}
-                        orderType={order.type}
-                        onStatusUpdate={(newStatus) => {
-                          updateOrderStatus.mutate({
-                            orderId: order.id,
-                            newStatus,
-                            orderType: order.type
-                          });
-                        }}
-                      />
-                    </CardContent>
-                  </Card>
+                  <EnhancedOrderCard
+                    key={`${order.type}-${order.id}`}
+                    order={order}
+                    onStatusUpdate={(newStatus) => {
+                      updateOrderStatus.mutate({
+                        orderId: order.id,
+                        newStatus,
+                        orderType: order.type
+                      });
+                    }}
+                    showMakerInfo={true}
+                  />
                 ))}
               </div>
             )}

@@ -14,6 +14,7 @@ import { AdminStats } from "@/components/admin/stats/AdminStats";
 import { AdminPortfolio } from "@/components/admin/portfolio/AdminPortfolio";
 import { UserManagement } from "@/components/admin/users/UserManagement";
 import { TaskWorkflow } from "@/components/admin/taskflow/TaskWorkflow";
+import { AdminOrderDashboard } from "@/components/admin/orders/AdminOrderDashboard";
 import { useAdminAccess } from "@/hooks/useAdminAccess";
 
 const Admin = () => {
@@ -126,6 +127,7 @@ const Admin = () => {
         <Tabs defaultValue="images" className="space-y-8">
           <TabsList>
             <TabsTrigger value="images">Images</TabsTrigger>
+            <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="stats">Stats</TabsTrigger>
             <TabsTrigger value="portfolios">Portfolios</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
@@ -157,6 +159,10 @@ const Admin = () => {
                 />
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="orders">
+            <AdminOrderDashboard />
           </TabsContent>
 
           <TabsContent value="stats">
