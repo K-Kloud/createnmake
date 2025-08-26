@@ -20,8 +20,8 @@ export const usePortfolioData = (makerId?: string, makerType?: string | null) =>
       
       return data.map(item => ({
         id: item.id,
-        generatedImage: item.generatedimage,
-        productImage: item.productimage,
+        generatedImage: item.generatedimage || '',
+        productImage: item.productimage || item.generatedimage || '',
         description: item.description
       }));
     },

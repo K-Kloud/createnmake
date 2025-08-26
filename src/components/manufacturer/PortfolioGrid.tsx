@@ -11,6 +11,7 @@ interface PortfolioImage {
   generatedImage: string;
   productImage: string;
   description: string;
+  title?: string;
 }
 
 interface PortfolioGridProps {
@@ -58,7 +59,7 @@ export const PortfolioGrid = ({ items, manufacturerName }: PortfolioGridProps) =
             </div>
           </div>
           <p className="text-sm text-center text-muted-foreground">
-            {item.description}
+            {item.title || item.description}
           </p>
         </div>
       ))}
@@ -91,6 +92,7 @@ export const PortfolioGrid = ({ items, manufacturerName }: PortfolioGridProps) =
                 </div>
               </div>
               <div className="col-span-2">
+                <h3 className="font-semibold text-center mb-2">{selectedImage.title}</h3>
                 <p className="text-center text-muted-foreground">
                   {selectedImage.description}
                 </p>
