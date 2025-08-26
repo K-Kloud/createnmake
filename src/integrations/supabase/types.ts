@@ -691,6 +691,68 @@ export type Database = {
         }
         Relationships: []
       }
+      artisan_portfolio: {
+        Row: {
+          artisan_id: string
+          client_name: string | null
+          completion_date: string | null
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          image_url: string
+          is_featured: boolean | null
+          is_public: boolean | null
+          materials_used: string[] | null
+          project_type: string | null
+          project_value: number | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          artisan_id: string
+          client_name?: string | null
+          completion_date?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url: string
+          is_featured?: boolean | null
+          is_public?: boolean | null
+          materials_used?: string[] | null
+          project_type?: string | null
+          project_value?: number | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          artisan_id?: string
+          client_name?: string | null
+          completion_date?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string
+          is_featured?: boolean | null
+          is_public?: boolean | null
+          materials_used?: string[] | null
+          project_type?: string | null
+          project_value?: number | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artisan_portfolio_artisan_id_fkey"
+            columns: ["artisan_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artisan_quotes: {
         Row: {
           admin_notes: string | null
@@ -2308,78 +2370,105 @@ export type Database = {
       profiles: {
         Row: {
           address: string | null
+          availability_status: string | null
           avatar_url: string | null
           bio: string | null
           business_name: string | null
           business_type: string | null
+          certifications: string[] | null
           created_at: string | null
           creator_tier: string | null
           display_name: string | null
           first_name: string | null
+          hourly_rate: number | null
           id: string
           images_generated_count: number | null
           is_artisan: boolean | null
           is_creator: boolean | null
           last_name: string | null
           location: string | null
+          minimum_project_value: number | null
           monthly_image_limit: number | null
           phone: string | null
+          preferred_project_types: string[] | null
+          response_time_hours: number | null
+          skills: string[] | null
           social_links: Json | null
           specialties: string[] | null
           subscription_updated_at: string | null
           updated_at: string | null
           username: string | null
           website: string | null
+          working_hours: Json | null
+          years_experience: number | null
         }
         Insert: {
           address?: string | null
+          availability_status?: string | null
           avatar_url?: string | null
           bio?: string | null
           business_name?: string | null
           business_type?: string | null
+          certifications?: string[] | null
           created_at?: string | null
           creator_tier?: string | null
           display_name?: string | null
           first_name?: string | null
+          hourly_rate?: number | null
           id: string
           images_generated_count?: number | null
           is_artisan?: boolean | null
           is_creator?: boolean | null
           last_name?: string | null
           location?: string | null
+          minimum_project_value?: number | null
           monthly_image_limit?: number | null
           phone?: string | null
+          preferred_project_types?: string[] | null
+          response_time_hours?: number | null
+          skills?: string[] | null
           social_links?: Json | null
           specialties?: string[] | null
           subscription_updated_at?: string | null
           updated_at?: string | null
           username?: string | null
           website?: string | null
+          working_hours?: Json | null
+          years_experience?: number | null
         }
         Update: {
           address?: string | null
+          availability_status?: string | null
           avatar_url?: string | null
           bio?: string | null
           business_name?: string | null
           business_type?: string | null
+          certifications?: string[] | null
           created_at?: string | null
           creator_tier?: string | null
           display_name?: string | null
           first_name?: string | null
+          hourly_rate?: number | null
           id?: string
           images_generated_count?: number | null
           is_artisan?: boolean | null
           is_creator?: boolean | null
           last_name?: string | null
           location?: string | null
+          minimum_project_value?: number | null
           monthly_image_limit?: number | null
           phone?: string | null
+          preferred_project_types?: string[] | null
+          response_time_hours?: number | null
+          skills?: string[] | null
           social_links?: Json | null
           specialties?: string[] | null
           subscription_updated_at?: string | null
           updated_at?: string | null
           username?: string | null
           website?: string | null
+          working_hours?: Json | null
+          years_experience?: number | null
         }
         Relationships: []
       }
