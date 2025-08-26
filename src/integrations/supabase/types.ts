@@ -95,6 +95,30 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          setting_key: string
+          setting_value: Json
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       adminpages: {
         Row: {
           created_at: string | null
@@ -669,38 +693,71 @@ export type Database = {
       }
       artisan_quotes: {
         Row: {
+          admin_notes: string | null
           amount: number | null
           artisan_id: string | null
+          budget_range: string | null
+          colors: string | null
+          contact_preferences: string | null
           created_at: string
+          delivery_address: string | null
+          dimensions: string | null
+          generated_image_url: string | null
           id: number
+          materials: string | null
           payment_status: string | null
           product_details: string
+          quantity: number | null
+          special_requirements: string | null
           status: string | null
           stripe_session_id: string | null
+          timeline_days: number | null
           updated_at: string
           user_id: string | null
         }
         Insert: {
+          admin_notes?: string | null
           amount?: number | null
           artisan_id?: string | null
+          budget_range?: string | null
+          colors?: string | null
+          contact_preferences?: string | null
           created_at?: string
+          delivery_address?: string | null
+          dimensions?: string | null
+          generated_image_url?: string | null
           id?: number
+          materials?: string | null
           payment_status?: string | null
           product_details: string
+          quantity?: number | null
+          special_requirements?: string | null
           status?: string | null
           stripe_session_id?: string | null
+          timeline_days?: number | null
           updated_at?: string
           user_id?: string | null
         }
         Update: {
+          admin_notes?: string | null
           amount?: number | null
           artisan_id?: string | null
+          budget_range?: string | null
+          colors?: string | null
+          contact_preferences?: string | null
           created_at?: string
+          delivery_address?: string | null
+          dimensions?: string | null
+          generated_image_url?: string | null
           id?: number
+          materials?: string | null
           payment_status?: string | null
           product_details?: string
+          quantity?: number | null
+          special_requirements?: string | null
           status?: string | null
           stripe_session_id?: string | null
+          timeline_days?: number | null
           updated_at?: string
           user_id?: string | null
         }
@@ -2328,29 +2385,65 @@ export type Database = {
       }
       quote_requests: {
         Row: {
+          admin_notes: string | null
+          amount: number | null
+          budget_range: string | null
+          colors: string | null
+          contact_preferences: string | null
           created_at: string
+          delivery_address: string | null
+          dimensions: string | null
+          generated_image_url: string | null
           id: number
           manufacturer_id: string | null
+          materials: string | null
           product_details: string
+          quantity: number | null
+          special_requirements: string | null
           status: string | null
+          timeline_days: number | null
           updated_at: string
           user_id: string | null
         }
         Insert: {
+          admin_notes?: string | null
+          amount?: number | null
+          budget_range?: string | null
+          colors?: string | null
+          contact_preferences?: string | null
           created_at?: string
+          delivery_address?: string | null
+          dimensions?: string | null
+          generated_image_url?: string | null
           id?: never
           manufacturer_id?: string | null
+          materials?: string | null
           product_details: string
+          quantity?: number | null
+          special_requirements?: string | null
           status?: string | null
+          timeline_days?: number | null
           updated_at?: string
           user_id?: string | null
         }
         Update: {
+          admin_notes?: string | null
+          amount?: number | null
+          budget_range?: string | null
+          colors?: string | null
+          contact_preferences?: string | null
           created_at?: string
+          delivery_address?: string | null
+          dimensions?: string | null
+          generated_image_url?: string | null
           id?: never
           manufacturer_id?: string | null
+          materials?: string | null
           product_details?: string
+          quantity?: number | null
+          special_requirements?: string | null
           status?: string | null
+          timeline_days?: number | null
           updated_at?: string
           user_id?: string | null
         }
