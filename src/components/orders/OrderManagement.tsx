@@ -11,6 +11,7 @@ import { EnhancedOrderCard } from './EnhancedOrderCard';
 import { LoadingState } from '@/components/ui/loading-state';
 import { useAuth } from '@/hooks/useAuth';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useOrderRealtime } from '@/hooks/useOrderRealtime';
 import { formatDistanceToNow } from 'date-fns';
 
 interface Order {
@@ -30,6 +31,17 @@ export const OrderManagement: React.FC = () => {
   const { user } = useAuth();
   const { handleError } = useErrorHandler();
   const queryClient = useQueryClient();
+
+  // Set up real-time updates for orders
+  useOrderRealtime({
+    userId: user?.id,
+    onOrderUpdate: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+    },
+    onNewOrder: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+    }
+  });
 
   const { data: orders, isLoading, error } = useQuery({
     queryKey: ['orders', user?.id],

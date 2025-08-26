@@ -1,63 +1,40 @@
-
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Clock, AlertCircle, Package, Truck, Star } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { 
+  Clock, 
+  CheckCircle, 
+  XCircle, 
+  Package, 
+  Truck,
+  AlertCircle,
+  MessageSquare
+} from 'lucide-react';
 
-export type OrderStatus = 'pending' | 'confirmed' | 'in_production' | 'quality_check' | 'shipped' | 'delivered' | 'completed' | 'cancelled' | 'disputed';
+export type OrderStatus = 'pending' | 'review' | 'completed' | 'cancelled' | 'shipped' | 'delivered';
 
 interface OrderWorkflowProps {
   orderId: string;
   currentStatus: OrderStatus;
   orderType: 'artisan' | 'manufacturer';
-  onStatusUpdate?: (newStatus: OrderStatus) => void;
+  onStatusUpdate: (newStatus: OrderStatus) => void;
 }
 
-const orderSteps: Record<OrderStatus, { icon: React.ReactNode; label: string; description: string }> = {
-  pending: { icon: <Clock className="h-4 w-4" />, label: 'Pending', description: 'Order received, awaiting confirmation' },
-  confirmed: { icon: <CheckCircle className="h-4 w-4" />, label: 'Confirmed', description: 'Order confirmed, payment processed' },
-  in_production: { icon: <Package className="h-4 w-4" />, label: 'In Production', description: 'Item being created' },
-  quality_check: { icon: <Star className="h-4 w-4" />, label: 'Quality Check', description: 'Final quality inspection' },
-  shipped: { icon: <Truck className="h-4 w-4" />, label: 'Shipped', description: 'Order dispatched for delivery' },
-  delivered: { icon: <CheckCircle className="h-4 w-4" />, label: 'Delivered', description: 'Order delivered to customer' },
-  completed: { icon: <CheckCircle className="h-4 w-4" />, label: 'Completed', description: 'Order completed successfully' },
-  cancelled: { icon: <AlertCircle className="h-4 w-4" />, label: 'Cancelled', description: 'Order has been cancelled' },
-  disputed: { icon: <AlertCircle className="h-4 w-4" />, label: 'Disputed', description: 'Order under dispute resolution' }
+const statusConfig = {
+  pending: { icon: Clock, color: 'bg-yellow-500', label: 'Pending Review', next: ['review', 'cancelled'] },
+  review: { icon: AlertCircle, color: 'bg-purple-500', label: 'Under Review', next: ['completed', 'cancelled'] },
+  completed: { icon: CheckCircle, color: 'bg-green-500', label: 'Completed', next: ['shipped'] },
+  cancelled: { icon: XCircle, color: 'bg-red-500', label: 'Cancelled', next: [] },
+  shipped: { icon: Truck, color: 'bg-indigo-500', label: 'Shipped', next: ['delivered'] },
+  delivered: { icon: Package, color: 'bg-green-600', label: 'Delivered', next: [] }
 };
 
-const getNextStatus = (current: OrderStatus): OrderStatus | null => {
-  const flow: Record<OrderStatus, OrderStatus | null> = {
-    pending: 'confirmed',
-    confirmed: 'in_production',
-    in_production: 'quality_check',
-    quality_check: 'shipped',
-    shipped: 'delivered',
-    delivered: 'completed',
-    completed: null,
-    cancelled: null,
-    disputed: null
-  };
-  return flow[current];
-};
-
-const getStatusColor = (status: OrderStatus): string => {
-  const colors: Record<OrderStatus, string> = {
-    pending: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/30',
-    confirmed: 'bg-blue-500/10 text-blue-500 border-blue-500/30',
-    in_production: 'bg-purple-500/10 text-purple-500 border-purple-500/30',
-    quality_check: 'bg-orange-500/10 text-orange-500 border-orange-500/30',
-    shipped: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/30',
-    delivered: 'bg-green-500/10 text-green-500 border-green-500/30',
-    completed: 'bg-green-600/10 text-green-600 border-green-600/30',
-    cancelled: 'bg-red-500/10 text-red-500 border-red-500/30',
-    disputed: 'bg-gray-500/10 text-gray-500 border-gray-500/30'
-  };
-  return colors[status];
-};
+const statusFlow: OrderStatus[] = ['pending', 'review', 'completed', 'shipped', 'delivered'];
 
 export const OrderWorkflow: React.FC<OrderWorkflowProps> = ({
   orderId,
@@ -65,90 +42,187 @@ export const OrderWorkflow: React.FC<OrderWorkflowProps> = ({
   orderType,
   onStatusUpdate
 }) => {
+  const [newStatus, setNewStatus] = useState<OrderStatus>(currentStatus);
+  const [notes, setNotes] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
   const { toast } = useToast();
-  const { handleError } = useErrorHandler();
-  const [isUpdating, setIsUpdating] = React.useState(false);
 
-  const handleStatusUpdate = async (newStatus: OrderStatus) => {
+  const handleStatusUpdate = async () => {
+    if (newStatus === currentStatus) {
+      toast({
+        title: "No changes",
+        description: "Status is already set to this value",
+        variant: "default"
+      });
+      return;
+    }
+
     setIsUpdating(true);
     try {
-      const table = orderType === 'artisan' ? 'artisan_quotes' : 'quote_requests';
+      const tableName = orderType === 'artisan' ? 'artisan_quotes' : 'quote_requests';
+      
+      const updateData: any = {
+        status: newStatus,
+        updated_at: new Date().toISOString()
+      };
+
+      if (notes.trim()) {
+        updateData.admin_notes = notes.trim();
+      }
+
       const { error } = await supabase
-        .from(table)
-        .update({ 
-          status: newStatus,
-          updated_at: new Date().toISOString()
-        })
+        .from(tableName)
+        .update(updateData)
         .eq('id', orderId);
 
       if (error) throw error;
 
-      // Log the status change
-      await supabase.from('audit_logs').insert({
-        action: 'order_status_update',
-        action_details: {
-          order_id: orderId,
-          order_type: orderType,
-          old_status: currentStatus,
-          new_status: newStatus
+      // Trigger notification
+      await supabase.functions.invoke('order-status-notifications', {
+        body: {
+          orderId,
+          orderType,
+          status: newStatus,
+          previousStatus: currentStatus,
+          notes: notes.trim(),
+          eventType: 'status_change'
         }
       });
 
-      onStatusUpdate?.(newStatus);
+      onStatusUpdate(newStatus);
+      setNotes('');
+
       toast({
-        title: 'Status Updated',
-        description: `Order status changed to ${orderSteps[newStatus].label}`,
+        title: "Status updated",
+        description: `Order status changed to ${statusConfig[newStatus].label}`,
+        variant: "default"
       });
 
     } catch (error) {
-      handleError(error, 'updating order status');
+      console.error('Error updating status:', error);
+      toast({
+        title: "Update failed",
+        description: "Failed to update order status",
+        variant: "destructive"
+      });
     } finally {
       setIsUpdating(false);
     }
   };
 
-  const nextStatus = getNextStatus(currentStatus);
+  const getCurrentStepIndex = () => statusFlow.indexOf(currentStatus);
+  const getStepStatus = (step: OrderStatus, index: number) => {
+    const currentIndex = getCurrentStepIndex();
+    if (index < currentIndex) return 'completed';
+    if (index === currentIndex) return 'current';
+    return 'upcoming';
+  };
 
   return (
-    <Card className="glass-card">
+    <Card className="border-2 border-dashed border-muted">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          {orderSteps[currentStatus].icon}
-          Order Status: {orderSteps[currentStatus].label}
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <MessageSquare className="h-5 w-5" />
+          Order Workflow
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Badge className={getStatusColor(currentStatus)}>
-            {orderSteps[currentStatus].label}
-          </Badge>
-          <span className="text-sm text-muted-foreground">
-            {orderSteps[currentStatus].description}
-          </span>
+      <CardContent className="space-y-6">
+        {/* Status Progress */}
+        <div className="space-y-4">
+          <h4 className="font-medium">Progress Timeline</h4>
+          <div className="flex items-center justify-between relative">
+            {statusFlow.filter(s => s !== 'cancelled').map((step, index) => {
+              const StatusIcon = statusConfig[step].icon;
+              const stepStatus = getStepStatus(step, index);
+              
+              return (
+                <div key={step} className="flex flex-col items-center space-y-2 relative z-10">
+                  <div className={`
+                    flex items-center justify-center w-10 h-10 rounded-full
+                    ${stepStatus === 'completed' ? 'bg-green-500 text-white' : 
+                      stepStatus === 'current' ? statusConfig[step].color + ' text-white' : 
+                      'bg-muted text-muted-foreground'}
+                  `}>
+                    <StatusIcon className="h-5 w-5" />
+                  </div>
+                  <Badge 
+                    variant={stepStatus === 'current' ? 'default' : stepStatus === 'completed' ? 'secondary' : 'outline'}
+                    className="text-xs"
+                  >
+                    {statusConfig[step].label}
+                  </Badge>
+                </div>
+              );
+            })}
+            {/* Progress line */}
+            <div className="absolute top-5 left-0 right-0 h-0.5 bg-muted -z-10">
+              <div 
+                className="h-full bg-green-500 transition-all duration-300"
+                style={{ width: `${(getCurrentStepIndex() / (statusFlow.length - 2)) * 100}%` }}
+              />
+            </div>
+          </div>
         </div>
 
-        {nextStatus && (
-          <div className="pt-4 border-t">
-            <Button
-              onClick={() => handleStatusUpdate(nextStatus)}
-              disabled={isUpdating}
-              className="w-full"
-            >
-              {isUpdating ? 'Updating...' : `Move to ${orderSteps[nextStatus].label}`}
-            </Button>
-          </div>
-        )}
+        {/* Status Update Form */}
+        <div className="space-y-4 pt-4 border-t">
+          <h4 className="font-medium">Update Status</h4>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">New Status</label>
+              <Select value={newStatus} onValueChange={(value: OrderStatus) => setNewStatus(value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={currentStatus}>
+                    {statusConfig[currentStatus].label} (Current)
+                  </SelectItem>
+                  {statusConfig[currentStatus].next.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {statusConfig[status].label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-        {(currentStatus === 'pending' || currentStatus === 'confirmed') && (
-          <Button
-            variant="destructive"
-            onClick={() => handleStatusUpdate('cancelled')}
-            disabled={isUpdating}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Update Notes (Optional)</label>
+              <Textarea
+                placeholder="Add notes about this status change..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={3}
+              />
+            </div>
+          </div>
+
+          <Button 
+            onClick={handleStatusUpdate}
+            disabled={isUpdating || newStatus === currentStatus}
             className="w-full"
           >
-            Cancel Order
+            {isUpdating ? 'Updating...' : `Update to ${statusConfig[newStatus].label}`}
           </Button>
-        )}
+        </div>
+
+        {/* Current Status Display */}
+        <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+          <div className="flex items-center gap-3">
+            {React.createElement(statusConfig[currentStatus].icon, { 
+              className: "h-5 w-5" 
+            })}
+            <div>
+              <p className="font-medium">Current Status</p>
+              <p className="text-sm text-muted-foreground">{statusConfig[currentStatus].label}</p>
+            </div>
+          </div>
+          <Badge className={`text-white ${statusConfig[currentStatus].color}`}>
+            {currentStatus.toUpperCase()}
+          </Badge>
+        </div>
       </CardContent>
     </Card>
   );
