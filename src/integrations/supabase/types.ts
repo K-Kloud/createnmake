@@ -1986,11 +1986,13 @@ export type Database = {
           business_type: string
           contact_email: string
           created_at: string
+          description: string | null
           id: string
           is_verified: boolean | null
           phone: string | null
           specialties: string[] | null
           updated_at: string
+          website: string | null
         }
         Insert: {
           address?: string | null
@@ -1998,11 +2000,13 @@ export type Database = {
           business_type: string
           contact_email: string
           created_at?: string
+          description?: string | null
           id: string
           is_verified?: boolean | null
           phone?: string | null
           specialties?: string[] | null
           updated_at?: string
+          website?: string | null
         }
         Update: {
           address?: string | null
@@ -2010,11 +2014,13 @@ export type Database = {
           business_type?: string
           contact_email?: string
           created_at?: string
+          description?: string | null
           id?: string
           is_verified?: boolean | null
           phone?: string | null
           specialties?: string[] | null
           updated_at?: string
+          website?: string | null
         }
         Relationships: []
       }
