@@ -2,8 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Bell } from "lucide-react";
+import { Bell, Package } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { Link } from "react-router-dom";
 import { ManufacturerOverview } from "./ManufacturerOverview";
 import { ManufacturerQuotes } from "./ManufacturerQuotes";
 import { ManufacturerNotifications } from "./ManufacturerNotifications";
@@ -58,6 +59,12 @@ export const ManufacturerDashboard = ({ manufacturerId }: ManufacturerDashboardP
           Manufacturer Dashboard
         </h1>
         <div className="flex items-center gap-4">
+          <Link to="/manufacturer/orders">
+            <Button variant="outline" className="flex items-center gap-2">
+              <Package className="w-4 h-4" />
+              Manage Orders
+            </Button>
+          </Link>
           <Button variant="outline" className="flex items-center gap-2">
             <Bell className="w-4 h-4" />
             {notifications?.filter(n => !n.is_read).length || 0}
