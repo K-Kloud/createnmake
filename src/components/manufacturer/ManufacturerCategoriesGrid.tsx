@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { CategoryCard } from "./CategoryCard";
-import { ManufacturerCard } from "./ManufacturerCard";
+import { ManufacturerProfileCard } from "./ManufacturerProfileCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { manufacturerCategories } from "@/data/manufacturerCategories";
 import { getCategoryCount, getFilteredManufacturers } from "@/utils/manufacturerUtils";
@@ -53,7 +53,7 @@ export const ManufacturerCategoriesGrid = () => {
           </DialogHeader>
           <div className="grid grid-cols-1 gap-4 sm:gap-6 mt-4">
             {filteredManufacturers.map((manufacturer) => (
-              <ManufacturerCard
+              <ManufacturerProfileCard
                 key={manufacturer.id}
                 {...manufacturer}
                 reviewCount={manufacturer.reviews.length}

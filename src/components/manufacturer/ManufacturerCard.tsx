@@ -1,125 +1,157 @@
-
-import { Card, CardContent } from "@/components/ui/card";
-import { ManufacturerRating } from "./ManufacturerRating";
-import { PortfolioButton } from "./PortfolioButton";
-import { ManufacturerReviews } from "./ManufacturerReviews";
-import { ManufacturerReviewForm } from "./ManufacturerReviewForm";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useIsMobile } from "@/hooks/use-mobile";
-
-interface Review {
-  id: number;
-  user: string;
-  rating: number;
-  comment: string;
-  date: string;
-}
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Star, MapPin, Phone, Mail, ExternalLink, ShoppingBag } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface ManufacturerCardProps {
   id: string;
   name: string;
   type: string;
-  image?: string;
   description: string;
-  rating: number;
-  reviewCount: number;
-  reviews: Review[];
-  specialties: string[];
-  producedItems?: {
-    id: number;
-    generatedImage: string;
-    productImage: string;
-    description: string;
-  }[];
+  location?: string;
+  rating?: number;
+  reviewCount?: number;
+  portfolioCount?: number;
+  specialties?: string[];
+  verified?: boolean;
+  phone?: string;
+  email?: string;
+  website?: string;
 }
 
 export const ManufacturerCard = ({
   id,
   name,
   type,
-  image,
   description,
-  rating,
-  reviewCount,
-  reviews,
-  specialties,
-  producedItems = [],
+  location,
+  rating = 0,
+  reviewCount = 0,
+  portfolioCount = 0,
+  specialties = [],
+  verified = false,
+  phone,
+  email,
+  website
 }: ManufacturerCardProps) => {
-  const { data: session } = useQuery({
-    queryKey: ['session'],
-    queryFn: async () => {
-      const { data } = await supabase.auth.getSession();
-      return data.session;
-    },
-  });
-  
-  const isMobile = useIsMobile();
+  const renderStars = (rating: number) => {
+    return [...Array(5)].map((_, i) => (
+      <Star
+        key={i}
+        className={`w-4 h-4 ${
+          i < Math.floor(rating)
+            ? "fill-yellow-400 text-yellow-400"
+            : i < rating
+            ? "fill-yellow-200 text-yellow-400"
+            : "text-gray-300"
+        }`}
+      />
+    ));
+  };
 
   return (
-    <Card className="glass-card hover:scale-[1.02] transition-transform">
-      <CardContent className="p-4 sm:p-6">
-        <div className="flex flex-col space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-base sm:text-lg font-semibold">{name}</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground">{type}</p>
+    <Card className="p-6 hover:shadow-lg transition-shadow">
+      <div className="space-y-4">
+        {/* Header */}
+        <div className="flex justify-between items-start">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-semibold">{name}</h3>
+              {verified && (
+                <Badge variant="secondary" className="text-xs">
+                  Verified
+                </Badge>
+              )}
             </div>
-            {image && (
-              <img
-                src={image}
-                alt={name}
-                className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover"
-              />
+            <p className="text-sm text-muted-foreground">{type}</p>
+          </div>
+          
+          {rating > 0 && (
+            <div className="flex items-center gap-1">
+              <div className="flex">{renderStars(rating)}</div>
+              <span className="text-sm text-muted-foreground">
+                {rating.toFixed(1)} ({reviewCount})
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Location */}
+        {location && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <MapPin className="w-4 h-4" />
+            <span>{location}</span>
+          </div>
+        )}
+
+        {/* Description */}
+        <p className="text-sm line-clamp-3">{description}</p>
+
+        {/* Specialties */}
+        {specialties.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {specialties.slice(0, 3).map((specialty) => (
+              <Badge key={specialty} variant="outline" className="text-xs">
+                {specialty}
+              </Badge>
+            ))}
+            {specialties.length > 3 && (
+              <Badge variant="outline" className="text-xs">
+                +{specialties.length - 3} more
+              </Badge>
             )}
           </div>
+        )}
 
-          <ManufacturerRating rating={rating} reviewCount={reviewCount} />
+        {/* Stats */}
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <span>{portfolioCount} portfolio items</span>
+          <span>{reviewCount} reviews</span>
+        </div>
 
-          <p className="text-xs sm:text-sm">{description}</p>
-
-          <div className="flex flex-wrap gap-2">
-            {specialties.map((specialty, index) => (
-              <span
-                key={index}
-                className="px-2 py-1 bg-primary/10 rounded-full text-xs"
-              >
-                {specialty}
-              </span>
-            ))}
-          </div>
-
-          {producedItems.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="font-medium text-sm sm:text-base">Recent Work</h4>
-              <div className="grid grid-cols-3 gap-1 sm:gap-2">
-                {producedItems.map((item, index) => (
-                  <img
-                    key={index}
-                    src={item.productImage}
-                    alt={item.description}
-                    className="w-full h-16 sm:h-24 object-cover rounded-md"
-                    loading="lazy"
-                  />
-                ))}
-              </div>
+        {/* Contact Info */}
+        <div className="flex flex-wrap gap-3 text-sm">
+          {phone && (
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Phone className="w-4 h-4" />
+              <span>{phone}</span>
             </div>
           )}
-
-          <PortfolioButton name={name} producedItems={producedItems} />
-
-          {session && (
-            <ManufacturerReviewForm 
-              manufacturerId={id}
-              onReviewSubmitted={() => {
-                // Optionally trigger a refetch of reviews
-              }}
-            />
+          {email && (
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Mail className="w-4 h-4" />
+              <span>{email}</span>
+            </div>
           )}
-
-          <ManufacturerReviews reviews={reviews} manufacturerId={id} />
+          {website && (
+            <a 
+              href={website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-blue-600 hover:text-blue-800"
+            >
+              <ExternalLink className="w-4 h-4" />
+              <span>Website</span>
+            </a>
+          )}
         </div>
-      </CardContent>
+
+        {/* Actions */}
+        <div className="flex gap-2 pt-2">
+          <Link to={`/maker/${id}?type=manufacturer`} className="flex-1">
+            <Button variant="outline" className="w-full">
+              View Profile
+            </Button>
+          </Link>
+          <Link to={`/request-quote?manufacturer=${id}`} className="flex-1">
+            <Button className="w-full">
+              <ShoppingBag className="w-4 h-4 mr-2" />
+              Request Quote
+            </Button>
+          </Link>
+        </div>
+      </div>
     </Card>
   );
 };

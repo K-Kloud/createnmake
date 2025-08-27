@@ -1,6 +1,6 @@
 
 import { manufacturers } from "@/data/manufacturers";
-import { ManufacturerCard } from "./ManufacturerCard";
+import { ManufacturerProfileCard } from "./ManufacturerProfileCard";
 
 export const ManufacturerList = () => {
   return (
@@ -8,7 +8,7 @@ export const ManufacturerList = () => {
       <h2 className="text-xl sm:text-2xl font-semibold">All Manufacturers</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {manufacturers.map((manufacturer) => (
-          <ManufacturerCard
+          <ManufacturerProfileCard
             key={manufacturer.id}
             {...manufacturer}
             reviewCount={manufacturer.reviews.length}
