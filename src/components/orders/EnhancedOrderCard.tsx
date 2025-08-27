@@ -22,6 +22,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { OrderWorkflow, OrderStatus } from './OrderWorkflow';
 import { PaymentButton } from './PaymentButton';
 import { PaymentStatusIndicator } from './PaymentStatusIndicator';
+import { OrderMessageButton } from '@/components/messaging/OrderMessageButton';
 
 interface EnhancedOrder {
   id: string;
@@ -343,10 +344,13 @@ export const EnhancedOrderCard: React.FC<EnhancedOrderCardProps> = ({
 
         {/* Communication */}
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="flex-1">
-            <MessageCircle className="h-4 w-4 mr-2" />
-            Message
-          </Button>
+          <OrderMessageButton 
+            orderId={parseInt(order.id)} 
+            artisanId={order.artisan_id || order.manufacturer_id || ''} 
+            variant="outline" 
+            size="sm" 
+            className="flex-1"
+          />
           {isAdmin && (
             <Button variant="outline" size="sm">
               Add Note
