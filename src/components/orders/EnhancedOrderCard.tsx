@@ -15,10 +15,13 @@ import {
   MapPin,
   Palette,
   Ruler,
-  Hash
+  Hash,
+  Check
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { OrderWorkflow, OrderStatus } from './OrderWorkflow';
+import { PaymentButton } from './PaymentButton';
+import { PaymentStatusIndicator } from './PaymentStatusIndicator';
 
 interface EnhancedOrder {
   id: string;
@@ -44,6 +47,7 @@ interface EnhancedOrder {
   contact_preferences?: string | null;
   admin_notes?: string | null;
   generated_image_url?: string | null;
+  payment_status?: string | null;
   
   // Calculated fields
   progress_percentage?: number;
@@ -209,6 +213,32 @@ export const EnhancedOrderCard: React.FC<EnhancedOrderCardProps> = ({
           )}
         </div>
 
+        {/* Payment Status & Amount */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="font-medium">Payment Information</h4>
+            <PaymentStatusIndicator 
+              paymentStatus={order.payment_status}
+              amount={order.amount}
+              showAmount={true}
+            />
+          </div>
+          
+          {/* Payment Button */}
+          {order.amount && order.amount > 0 && order.payment_status !== 'paid' && (
+            <div className="pt-2">
+              <PaymentButton
+                quoteId={order.id}
+                quoteType={order.type}
+                amount={order.amount}
+                paymentStatus={order.payment_status}
+                orderStatus={order.status}
+                size="sm"
+              />
+            </div>
+          )}
+        </div>
+
         {/* Timeline and Budget */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {order.timeline_days && (
@@ -239,7 +269,15 @@ export const EnhancedOrderCard: React.FC<EnhancedOrderCardProps> = ({
                 <DollarSign className="h-4 w-4" />
                 Quote Amount
               </div>
-              <p className="text-lg font-bold text-primary">£{order.amount}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-lg font-bold text-primary">£{order.amount}</p>
+                {order.payment_status === 'paid' && (
+                  <Badge variant="default" className="bg-green-500 text-white">
+                    <Check className="w-3 h-3 mr-1" />
+                    Paid
+                  </Badge>
+                )}
+              </div>
             </div>
           )}
         </div>

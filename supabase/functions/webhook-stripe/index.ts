@@ -37,6 +37,40 @@ serve(async (req) => {
       case "checkout.session.completed": {
         const session = event.data.object;
         
+        // Check if this is a quote payment (one-time payment)
+        if (session.metadata?.quote_id && session.metadata?.quote_type) {
+          const quoteId = session.metadata.quote_id;
+          const quoteType = session.metadata.quote_type;
+          const userId = session.metadata.user_id;
+          
+          console.log(`Processing quote payment: ${quoteType} quote ${quoteId} for user ${userId}`);
+          
+          // Determine the table name
+          const tableName = quoteType === 'artisan' ? 'artisan_quotes' : 'quote_requests';
+          
+          // Update quote payment status
+          const { error: quoteUpdateError } = await supabase
+            .from(tableName)
+            .update({
+              payment_status: 'paid',
+              status: 'paid',
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', parseInt(quoteId))
+            .eq('user_id', userId);
+          
+          if (quoteUpdateError) {
+            console.error(`Error updating quote payment: ${quoteUpdateError.message}`);
+            return new Response("Error updating quote payment", { status: 500 });
+          }
+          
+          console.log(`Quote payment completed for ${quoteType} quote ${quoteId}`);
+          break;
+        }
+        
+        // Handle subscription payments (existing logic)
+        const session = event.data.object;
+        
         // Get necessary data from session metadata
         const userId = session.metadata?.user_id;
         const planId = session.metadata?.plan_id;
