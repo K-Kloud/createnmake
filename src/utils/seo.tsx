@@ -39,6 +39,10 @@ export const SEO = ({
       <meta name="description" content={metaDescription} />
       <link rel="canonical" href={canonicalUrl} />
       
+      {/* Preconnect to Supabase for faster database requests */}
+      <link rel="preconnect" href="https://igkiffajkpfwdfxwokwg.supabase.co" />
+      <link rel="dns-prefetch" href="https://igkiffajkpfwdfxwokwg.supabase.co" />
+      
       {/* Open Graph Tags */}
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={metaDescription} />

@@ -1,9 +1,9 @@
 
 import { Session } from "@supabase/supabase-js";
 import { transformImageWithMetrics, transformImageWithDefaultMetrics } from "./useMarketplaceTransformers";
-import { fetchImageComments, fetchCommentsWithReplies } from "./useMarketplaceCommentsFetcher";
+import { fetchBatchImageComments, fetchCommentsWithReplies } from "./useMarketplaceCommentsFetcher";
 
-export const processMarketplaceImage = async (image: any, session: Session | null) => {
+export const processMarketplaceImage = async (image: any, session: Session | null, commentsMap: Record<number, any[]> = {}) => {
   try {
     // Validate image URL
     if (!image.image_url) {
@@ -14,8 +14,8 @@ export const processMarketplaceImage = async (image: any, session: Session | nul
     // Log image URL for debugging
     console.log(`🖼️ Processing image ${image.id}:`, image.image_url, `Likes: ${image.likes || 0}`);
 
-    // Get comments with replies
-    const comments = await fetchImageComments(image.id);
+    // Get comments from batch or fallback to individual fetch
+    const comments = commentsMap[image.id] || [];
     const commentsWithReplies = await fetchCommentsWithReplies(comments);
 
     // Use the synchronized likes count from generated_images table
@@ -35,9 +35,13 @@ export const processMarketplaceImage = async (image: any, session: Session | nul
 };
 
 export const processMarketplaceImages = async (images: any[], session: Session | null) => {
+  // Batch fetch all comments for all images to reduce network requests
+  const imageIds = images.map(img => img.id);
+  const commentsMap = await fetchBatchImageComments(imageIds);
+
   // Process images in parallel for better performance
   const processedImages = await Promise.allSettled(
-    images.map(async (image) => processMarketplaceImage(image, session))
+    images.map(async (image) => processMarketplaceImage(image, session, commentsMap))
   );
 
   // Filter out failed transformations and null values
