@@ -20,9 +20,11 @@ export const useImagePermissions = (userId?: string) => {
     const checkAdminStatus = async () => {
       if (session?.user?.id) {
         setCurrentUserId(session.user.id);
+        console.log('🔐 Checking admin status for user:', session.user.id);
         try {
           const adminStatus = await checkUserAdminRole(session.user.id);
           setIsAdmin(adminStatus);
+          console.log('👑 Admin status:', adminStatus);
         } catch (error) {
           console.error("Error checking admin status:", error);
           setIsAdmin(false);
@@ -34,6 +36,7 @@ export const useImagePermissions = (userId?: string) => {
   }, [session]);
 
   const canDelete = isAdmin || (currentUserId && userId === currentUserId);
+  console.log('🗑️ Delete permissions:', { isAdmin, currentUserId, userId, canDelete });
 
   return {
     currentUserId,

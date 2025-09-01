@@ -8,7 +8,10 @@ export const useImageDeletion = (onClose: () => void) => {
   const { toast } = useToast();
 
   const handleDelete = async (imageId?: number, userId?: string, canDelete?: boolean) => {
+    console.log('🗑️ Delete attempt:', { imageId, userId, canDelete });
+    
     if (!imageId || !canDelete) {
+      console.log('❌ Delete blocked - missing params or no permission');
       toast({
         title: "Error",
         description: "You don't have permission to delete this image",
@@ -55,6 +58,17 @@ export const useImageDeletion = (onClose: () => void) => {
         throw commentsError;
       }
 
+      // Delete image likes
+      const { error: likesError } = await supabase
+        .from('image_likes')
+        .delete()
+        .eq('image_id', imageId);
+
+      if (likesError) {
+        console.error('Error deleting likes:', likesError);
+        throw likesError;
+      }
+
       // Next, delete related metrics
       const { error: metricsError } = await supabase
         .from('marketplace_metrics')
@@ -80,11 +94,13 @@ export const useImageDeletion = (onClose: () => void) => {
         description: "Image deleted successfully",
       });
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Delete error:', error);
+      const errorMessage = error?.message || 'Failed to delete image. Please try again.';
+      console.log('🚨 Detailed error:', { error, message: errorMessage });
       toast({
         title: "Error",
-        description: "Failed to delete image. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
