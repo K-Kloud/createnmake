@@ -55,8 +55,33 @@ export const keywordSuggestions: Record<string, string[]> = {
   "bohemian": ["flowy", "layered", "textured", "earth tones", "mixed patterns"],
   "vintage": ["retro", "classic", "second-hand", "period-inspired", "nostalgic"],
   "streetwear": ["urban", "logo-driven", "casual", "oversized", "athletic influence"],
-  "athleisure": ["sporty", "functional", "comfortable", "technical fabrics", "streamlined"],
+  "athleisure": ["sporty", "functional", "comfortable", "technical fabrics", "streamlined", "moisture-wicking", "compression", "seamless", "breathable", "performance", "stretchy"],
+  "sustainable": ["organic", "eco-friendly", "recycled", "bamboo", "hemp", "natural"],
+  "tech-wear": ["smart", "heated", "moisture-wicking", "performance", "innovative", "functional"],
+  "cultural": ["traditional", "embroidered", "handwoven", "ceremonial", "authentic", "heritage"],
+  "uniforms": ["professional", "functional", "durable", "comfortable", "protective", "practical"],
+  "seasonal": ["summer", "winter", "breathable", "insulated", "lightweight", "waterproof"],
   
-  // Fashion-styles category
-  "fashion-styles": ["minimalist", "bohemian", "vintage", "streetwear", "preppy", "gothic"]
+  // Specific new items
+  "sports-bra": ["supportive", "seamless", "medium-support", "high-support", "racerback", "wireless"],
+  "compression-shorts": ["athletic", "cycling", "running", "tight-fit", "moisture-wicking", "seamless"],
+  "base-layer": ["thermal", "merino-wool", "synthetic", "moisture-wicking", "insulating", "layering"],
+  "scrubs": ["medical", "comfortable", "antimicrobial", "stretch", "professional", "easy-care"],
+  "dashiki": ["african", "colorful", "embroidered", "cultural", "cotton", "traditional"],
+  "guayabera": ["cuban", "linen", "embroidered", "tropical", "formal", "breathable"],
+  "linen-pants": ["summer", "breathable", "lightweight", "relaxed", "natural", "casual"],
+  "mesh-top": ["breathable", "athletic", "see-through", "layering", "summer", "performance"],
+  "organic-cotton-tee": ["sustainable", "soft", "eco-friendly", "natural", "comfortable", "certified"],
+  "smart-shirt": ["technology", "sensors", "fitness-tracking", "innovative", "performance", "connected"],
+  
+  // Updated style keywords
+  "sustainable-fashion": ["zero-waste", "upcycled", "fair-trade", "biodegradable", "carbon-neutral"],
+  "performance-wear": ["four-way-stretch", "antimicrobial", "UV-protection", "quick-dry", "odor-resistant"],
+  "cultural-wear": ["handcrafted", "indigenous", "ceremonial", "festival", "heritage", "artisan"],
+  "workwear": ["safety", "high-visibility", "flame-resistant", "puncture-resistant", "industrial"],
+  
+  // Color and pattern keywords
+  "tie-dye": ["colorful", "psychedelic", "hippie", "retro", "gradient", "rainbow"],
+  "color-block": ["geometric", "bold", "contrasting", "modern", "graphic", "structured"],
+  "gradient": ["ombre", "fade", "sunset", "ocean", "rainbow", "smooth-transition"]
 };

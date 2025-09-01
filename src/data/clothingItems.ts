@@ -22,7 +22,9 @@ export const clothingCategories = {
   traditional: "Traditional Clothing",
   underwear: "Underwear & Loungewear",
   uniforms: "Uniforms & Workwear",
-  styles: "Fashion Styles"
+  styles: "Fashion Styles",
+  sustainable: "Sustainable & Eco-Friendly",
+  performance: "Performance & Tech Wear",
 } as const;
 
 export const clothingItems: ClothingItem[] = [
@@ -248,7 +250,62 @@ export const clothingItems: ClothingItem[] = [
   { value: "apron-chefs", label: "Apron (Chef's)", category: "uniforms", subcategory: "culinary", keywords: ["protective", "professional", "clean"] },
   { value: "apron-utility-work", label: "Apron (Utility/Work)", category: "uniforms", subcategory: "work", keywords: ["durable", "functional", "protective"] },
   { value: "smoking-jacket-velvet", label: "Smoking Jacket (Velvet)", category: "outerwear", subcategory: "loungewear", keywords: ["luxurious", "elegant", "vintage"] },
-  { value: "nehru-jacket", label: "Nehru Jacket", category: "outerwear", subcategory: "ethnic", keywords: ["mandarin collar", "formal", "cultural"] }
+  { value: "nehru-jacket", label: "Nehru Jacket", category: "outerwear", subcategory: "ethnic", keywords: ["mandarin collar", "formal", "cultural"] },
+
+  // Modern Accessories
+  { value: "smartwatch-band", label: "Smartwatch Band", category: "accessories", subcategory: "tech", keywords: ["technology", "fitness", "silicone", "metal", "sport"] },
+  { value: "phone-case", label: "Phone Case", category: "accessories", subcategory: "tech", keywords: ["protective", "clear", "leather", "silicone", "wireless"] },
+  { value: "oversized-sunglasses", label: "Oversized Sunglasses", category: "accessories", subcategory: "eyewear", keywords: ["statement", "designer", "fashion", "large", "retro"] },
+  { value: "designer-belt", label: "Designer Belt", category: "accessories", subcategory: "belts", keywords: ["luxury", "logo", "chain", "statement", "branded"] },
+  { value: "bamboo-jewelry", label: "Bamboo Jewelry", category: "accessories", subcategory: "jewelry", keywords: ["sustainable", "eco-friendly", "natural", "organic", "green"] },
+  { value: "cork-bag", label: "Cork Bag", category: "accessories", subcategory: "bags", keywords: ["sustainable", "vegan", "eco-friendly", "natural", "lightweight"] },
+
+  // Additional Traditional/Cultural
+  { value: "huipil", label: "Huipil", category: "traditional", subcategory: "mexican", keywords: ["mexican", "embroidered", "colorful", "traditional", "cotton"] },
+  { value: "boubou", label: "Boubou", category: "traditional", subcategory: "african", keywords: ["african", "flowing", "loose", "cotton", "ceremonial"] },
+  { value: "guayabera", label: "Guayabera", category: "traditional", subcategory: "cuban", keywords: ["cuban", "linen", "embroidered", "formal", "tropical"] },
+  { value: "batik-shirt", label: "Batik Shirt", category: "traditional", subcategory: "indonesian", keywords: ["indonesian", "dyed", "patterned", "cotton", "artistic"] },
+  { value: "kente-cloth", label: "Kente Cloth", category: "traditional", subcategory: "ghanaian", keywords: ["ghanaian", "woven", "colorful", "ceremonial", "silk"] },
+  
+  // Athleisure & Performance Wear
+  { value: "sports-bra", label: "Sports Bra", category: "activewear", subcategory: "tops", keywords: ["athletic", "support", "workout", "moisture-wicking"] },
+  { value: "compression-shorts", label: "Compression Shorts", category: "activewear", subcategory: "bottoms", keywords: ["athletic", "tight", "performance", "cycling"] },
+  { value: "athletic-dress", label: "Athletic Dress", category: "activewear", subcategory: "dresses", keywords: ["tennis", "sport", "performance", "comfortable"] },
+  { value: "base-layer", label: "Base Layer", category: "performance", subcategory: "tops", keywords: ["thermal", "moisture-wicking", "layering", "performance"] },
+  { value: "cycling-shorts", label: "Cycling Shorts", category: "activewear", subcategory: "bottoms", keywords: ["padded", "tight", "performance", "bike"] },
+  { value: "running-tights", label: "Running Tights", category: "activewear", subcategory: "bottoms", keywords: ["compression", "moisture-wicking", "athletic", "performance"] },
+  { value: "golf-attire", label: "Golf Attire", category: "activewear", keywords: ["polo", "performance", "breathable", "sport"] },
+  { value: "dance-wear", label: "Dance Wear", category: "activewear", keywords: ["stretchy", "form-fitting", "performance", "flexible"] },
+  
+  // Seasonal & Weather-Specific
+  { value: "linen-pants", label: "Linen Pants", category: "bottoms", keywords: ["summer", "breathable", "lightweight", "natural"] },
+  { value: "mesh-top", label: "Mesh Top", category: "tops", keywords: ["breathable", "see-through", "summer", "athletic"] },
+  { value: "sun-hat", label: "Sun Hat", category: "accessories", subcategory: "hats", keywords: ["wide-brim", "UV-protection", "summer", "beach"] },
+  { value: "beach-cover-up", label: "Beach Cover-up", category: "dresses", keywords: ["lightweight", "sheer", "summer", "resort"] },
+  { value: "thermal-underwear", label: "Thermal Underwear", category: "underwear", subcategory: "thermals", keywords: ["warm", "base-layer", "winter", "insulating"] },
+  { value: "snow-boots", label: "Snow Boots", category: "shoes", keywords: ["insulated", "waterproof", "winter", "warm"] },
+  { value: "rain-pants", label: "Rain Pants", category: "bottoms", keywords: ["waterproof", "weather", "protective", "outer"] },
+  { value: "waterproof-jacket", label: "Waterproof Jacket", category: "outerwear", keywords: ["rain", "weather", "breathable", "protective"] },
+  
+  // Professional & Uniforms
+  { value: "nursing-shoes", label: "Nursing Shoes", category: "shoes", keywords: ["comfortable", "non-slip", "medical", "supportive"] },
+  { value: "compression-socks", label: "Compression Socks", category: "accessories", subcategory: "socks", keywords: ["medical", "support", "circulation", "athletic"] },
+  { value: "chef-coat", label: "Chef Coat", category: "uniforms", subcategory: "culinary", keywords: ["double-breasted", "white", "culinary", "professional"] },
+  { value: "server-apron", label: "Server Apron", category: "uniforms", subcategory: "hospitality", keywords: ["hospitality", "functional", "pockets", "durable"] },
+  { value: "safety-vest", label: "Safety Vest", category: "uniforms", subcategory: "construction", keywords: ["high-visibility", "reflective", "construction", "protective"] },
+  { value: "work-boots", label: "Work Boots", category: "shoes", keywords: ["steel-toe", "durable", "protective", "industrial"] },
+  { value: "hard-hat", label: "Hard Hat", category: "accessories", subcategory: "safety", keywords: ["safety", "protective", "construction", "helmet"] },
+  
+  // Sustainable & Eco-Friendly
+  { value: "organic-cotton-tee", label: "Organic Cotton T-Shirt", category: "sustainable", subcategory: "tops", keywords: ["sustainable", "eco-friendly", "organic", "natural"] },
+  { value: "recycled-polyester-jacket", label: "Recycled Polyester Jacket", category: "sustainable", subcategory: "outerwear", keywords: ["sustainable", "eco-friendly", "recycled", "green"] },
+  { value: "hemp-pants", label: "Hemp Pants", category: "sustainable", subcategory: "bottoms", keywords: ["sustainable", "natural", "durable", "eco-friendly"] },
+  { value: "bamboo-socks", label: "Bamboo Socks", category: "sustainable", subcategory: "accessories", keywords: ["sustainable", "antibacterial", "soft", "eco-friendly"] },
+  
+  // Tech Wear & Smart Clothing
+  { value: "smart-shirt", label: "Smart Shirt", category: "performance", subcategory: "tops", keywords: ["technology", "sensors", "performance", "innovative"] },
+  { value: "heated-jacket", label: "Heated Jacket", category: "performance", subcategory: "outerwear", keywords: ["technology", "warming", "battery", "smart"] },
+  { value: "moisture-wicking-underwear", label: "Moisture-Wicking Underwear", category: "performance", subcategory: "underwear", keywords: ["performance", "dry", "athletic", "technology"] }
 ];
 
 // Helper functions for searching and filtering
