@@ -54,9 +54,20 @@ serve(async (req) => {
       throw new Error(`Profile error: ${profileError.message}`);
     }
     
+    // Get accurate monthly image count using the database function
+    const { data: monthlyCount, error: countError } = await supabase
+      .rpc('get_monthly_images_generated', { user_uuid: user.id });
+    
+    if (countError) {
+      console.error('Error getting monthly count:', countError);
+    }
+    
+    const actualMonthlyCount = monthlyCount || 0;
+    
     logStep("Profile retrieved", { 
       currentTier: profile.creator_tier,
       imagesGenerated: profile.images_generated_count,
+      actualMonthlyCount: actualMonthlyCount,
       limit: profile.monthly_image_limit
     });
     
@@ -121,15 +132,12 @@ serve(async (req) => {
           logStep("Updated subscription and profile");
           
           return new Response(JSON.stringify({
-            success: true,
-            subscription: {
-              tier: subscription.subscription_plans.name.toLowerCase(),
-              is_active: isActive,
-              current_period_end: currentPeriodEnd,
-              cancel_at_period_end: stripeSubscription.cancel_at_period_end,
-              monthly_image_limit: subscription.subscription_plans.monthly_image_limit,
-              images_generated: profile.images_generated_count
-            }
+            tier: subscription.subscription_plans.name.toLowerCase(),
+            is_active: isActive,
+            current_period_end: currentPeriodEnd,
+            cancel_at_period_end: stripeSubscription.cancel_at_period_end,
+            monthly_image_limit: subscription.subscription_plans.monthly_image_limit,
+            images_generated: actualMonthlyCount
           }), {
             status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -149,7 +157,7 @@ serve(async (req) => {
             .from("profiles")
             .update({
               creator_tier: "free",
-              monthly_image_limit: 5,
+              monthly_image_limit: 10,
               subscription_updated_at: new Date().toISOString()
             })
             .eq("id", user.id);
@@ -164,13 +172,10 @@ serve(async (req) => {
     
     // Return current subscription status from profile
     return new Response(JSON.stringify({
-      success: true,
-      subscription: {
-        tier: profile.creator_tier || "free",
-        is_active: (profile.creator_tier !== "free" && profile.creator_tier !== null),
-        monthly_image_limit: profile.monthly_image_limit || 5,
-        images_generated: profile.images_generated_count || 0
-      }
+      tier: profile.creator_tier || "free",
+      is_active: true, // Always active for image generation
+      monthly_image_limit: profile.monthly_image_limit || 10,
+      images_generated: actualMonthlyCount
     }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

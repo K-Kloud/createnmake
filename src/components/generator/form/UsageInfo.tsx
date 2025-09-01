@@ -16,7 +16,7 @@ interface UsageInfoProps {
 
 export const UsageInfo = ({ 
   imagesGenerated = 0, 
-  monthlyImageLimit = 5, 
+  monthlyImageLimit = 10, 
   tier = "free", 
   canGenerateImage = true,
   onUpgrade = () => console.log('Upgrade clicked'),

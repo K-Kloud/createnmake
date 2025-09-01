@@ -53,9 +53,8 @@ export function useSubscription() {
       });
       
       if (error) throw error;
-      if (!data.success) throw new Error(data.error || "Failed to check subscription");
       
-      return data.subscription as SubscriptionStatus;
+      return data as SubscriptionStatus;
     },
     enabled: !!userId && !!session?.access_token,
   });

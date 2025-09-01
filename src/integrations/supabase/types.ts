@@ -2578,6 +2578,7 @@ export type Database = {
           is_artisan: boolean | null
           is_creator: boolean | null
           last_name: string | null
+          last_reset_date: string | null
           location: string | null
           minimum_project_value: number | null
           monthly_image_limit: number | null
@@ -2612,6 +2613,7 @@ export type Database = {
           is_artisan?: boolean | null
           is_creator?: boolean | null
           last_name?: string | null
+          last_reset_date?: string | null
           location?: string | null
           minimum_project_value?: number | null
           monthly_image_limit?: number | null
@@ -2646,6 +2648,7 @@ export type Database = {
           is_artisan?: boolean | null
           is_creator?: boolean | null
           last_name?: string | null
+          last_reset_date?: string | null
           location?: string | null
           minimum_project_value?: number | null
           monthly_image_limit?: number | null
@@ -3457,6 +3460,10 @@ export type Database = {
           image_url: string
         }[]
       }
+      get_monthly_images_generated: {
+        Args: { user_uuid: string }
+        Returns: number
+      }
       get_page_performance_stats: {
         Args: { end_date?: string; start_date?: string }
         Returns: {
@@ -3543,6 +3550,10 @@ export type Database = {
           p_task_type: string
         }
         Returns: string
+      }
+      reset_monthly_image_counts: {
+        Args: Record<PropertyKey, never>
+        Returns: number
       }
       sanitize_text_input: {
         Args: { input_text: string }
