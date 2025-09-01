@@ -52,12 +52,40 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
+          // Core React and framework
           'react-vendor': ['react', 'react-dom'],
-          'ui-components': [
-            '@radix-ui/react-aspect-ratio'
-          ],
+          
+          // Routing and navigation
+          'router': ['react-router-dom'],
+          
+          // Data fetching and state management
           'data-fetching': ['@tanstack/react-query'],
-          'utils': ['@/lib/utils', '@/utils/seo']
+          
+          // UI component library
+          'ui-components': [
+            '@radix-ui/react-aspect-ratio',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast'
+          ],
+          
+          // Authentication and Supabase
+          'auth-supabase': [
+            '@supabase/supabase-js',
+            '@supabase/auth-helpers-react',
+            '@supabase/auth-ui-react'
+          ],
+          
+          // Utilities and helpers
+          'utils': ['@/lib/utils', '@/utils/seo'],
+          
+          // Route-specific chunks (will be loaded only when needed)
+          'admin-routes': ['@/pages/Admin', '@/pages/AdminScheduledJobs', '@/pages/AdminAIAgents'],
+          'crm-routes': ['@/pages/CRMDashboard', '@/pages/CRMContacts', '@/pages/CRMTasks'],
+          'creator-routes': ['@/pages/CreatorDashboardPage', '@/pages/CreatorOnboardingPage'],
+          'artisan-routes': ['@/pages/Artisan', '@/pages/ArtisanOnboarding', '@/pages/ArtisanOrders'],
+          'manufacturer-routes': ['@/pages/Manufacturer', '@/pages/ManufacturerOnboarding']
         }
       }
     }

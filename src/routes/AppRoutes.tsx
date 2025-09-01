@@ -5,11 +5,13 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { EnhancedErrorBoundary } from "@/components/ui/enhanced-error-boundary";
 import { DynamicRouter } from "@/components/dynamic/DynamicRouter";
-import CRMRoutes from "./CRMRoutes";
-import CreatorRoutes from "./CreatorRoutes";
-import ArtisanRoutes from "./ArtisanRoutes";
-import ManufacturerRoutes from "./ManufacturerRoutes";
-import { AdminRoutes } from "./AdminRoutes";
+
+// Lazy load route modules
+const CRMRoutes = lazy(() => import("./CRMRoutes"));
+const CreatorRoutes = lazy(() => import("./CreatorRoutes"));
+const ArtisanRoutes = lazy(() => import("./ArtisanRoutes"));
+const ManufacturerRoutes = lazy(() => import("./ManufacturerRoutes"));
+const AdminRoutes = lazy(() => import("./AdminRoutes").then(module => ({ default: module.AdminRoutes })));
 
 const CreatorProfile = lazy(() => import("@/pages/CreatorProfile"));
 const ImageDetail = lazy(() => import("@/pages/ImageDetail"));
