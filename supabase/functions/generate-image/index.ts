@@ -142,6 +142,17 @@ function sanitizePrompt(prompt: string): string | null {
 }
 
 function createEnhancedPrompt(prompt: string, itemType: string): string {
+  // Import clothing items to check for detailed prompts
+  // Note: In a real implementation, you'd want to import this properly
+  // For now, we'll implement a lookup mechanism
+  
+  // Check if we have a detailed prompt for this specific item
+  const detailedPrompt = getDetailedPromptForItem(itemType);
+  if (detailedPrompt) {
+    return detailedPrompt;
+  }
+  
+  // Fallback to category-based enhancement
   const itemTypePrompts = {
     'tops': 'fashion clothing top, shirt, blouse, or sweater',
     'bottoms': 'fashion clothing bottom, pants, jeans, or skirt',
@@ -150,7 +161,9 @@ function createEnhancedPrompt(prompt: string, itemType: string): string {
     'accessories': 'fashion accessory item',
     'shoes': 'footwear, shoes, boots, or sandals',
     'suits': 'formal suit or business attire',
-    'activewear': 'athletic wear or sportswear'
+    'activewear': 'athletic wear or sportswear',
+    'nigerian': 'Nigerian traditional or contemporary fashion',
+    'styles': 'fashion style or outfit'
   };
 
   const baseType = itemTypePrompts[itemType] || 'clothing item';
@@ -158,6 +171,27 @@ function createEnhancedPrompt(prompt: string, itemType: string): string {
   return `Create a professional, high-quality studio photograph of a ${baseType}: ${prompt}. 
 Studio lighting, clean white background, detailed fabric texture, commercial product photography style, 
 professional fashion photography, crisp details, high resolution, appropriate for e-commerce.`;
+}
+
+function getDetailedPromptForItem(itemType: string): string | null {
+  // Define detailed prompts for common items
+  // This is a simplified version - in production, you'd query the clothing items database
+  const detailedPrompts: Record<string, string> = {
+    'basic-t-shirt-crew-neck': "White cotton crew neck t-shirt, worn by a young Nigerian woman as a model, photo realistic, studio lighting, white background, detailed fabric texture, 8K",
+    'v-neck-t-shirt': "Heather grey v-neck t-shirt, worn by a young Nigerian woman as a model, photo realistic, studio lighting, white background, soft cotton texture, 8K",
+    'long-sleeve-t-shirt': "Navy blue long-sleeve t-shirt, worn by a young Nigerian woman as a model, photo realistic, studio lighting, white background, ribbed cuffs, 8K",
+    'tank-top': "Black ribbed tank top, worn by a young Nigerian woman with an athletic build, photo realistic, studio lighting, white background, form-fitting, 8K",
+    'crop-top': "Yellow knit crop top, worn by a young Nigerian woman as a model, photo realistic, studio lighting, white background, textured knit, 8K",
+    'blouse-silk': "Emerald green silk blouse, worn by a young Nigerian woman as a model, photo realistic, studio lighting, white background, lustrous sheen, delicate drape, 8K",
+    'button-down-shirt-oxford': "Classic white Oxford button-down shirt, worn by a young Nigerian woman, casually styled, photo realistic, studio lighting, white background, crisp cotton, 8K",
+    'skinny-jeans': "Dark wash denim skinny jeans, worn by a young Nigerian woman as a model, full body shot, photo realistic, studio lighting, white background, slight distressing, 8K",
+    'little-black-dress-lbd': "Classic sleeveless little black dress in a sheath silhouette, worn by a young Nigerian woman, photo realistic, studio lighting, white background, elegant fabric, 8K",
+    'trench-coat-classic-beige': "Classic beige double-breasted trench coat with belt, worn by a young Nigerian woman, photo realistic, studio lighting, white background, water-resistant gabardine, 8K",
+    'ankara-print-jumpsuit': "A stylish women's Ankara print jumpsuit with a bold, vibrant pattern, worn by a young Nigerian woman, photo-realistic, studio lighting, plain white background, 8K.",
+    'mens-senator-wear-kaftan': "A modern men's navy blue two-piece Senator-style kaftan with subtle embroidery, worn by a young Nigerian man, photo-realistic, studio lighting, plain white background, 8K."
+  };
+  
+  return detailedPrompts[itemType] || null;
 }
 
 function getDimensionsFromAspectRatio(aspectRatio: string): string {
