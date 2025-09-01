@@ -4,13 +4,24 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { generateRandomPrice } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { useImagePermissions } from "../image-preview/useImagePermissions";
+import { useImageDeletion } from "../image-preview/useImageDeletion";
 
-export const useImageCard = (image, onView) => {
+export const useImageCard = (image, onView, onImageDeleted?: (id: number) => void) => {
   const [currentPrice, setCurrentPrice] = useState(image.price || generateRandomPrice(image.id));
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // Permission and deletion hooks
+  const { canDelete } = useImagePermissions(image.user_id);
+  const { isDeleting, handleDelete: performDelete } = useImageDeletion(() => {
+    // Close any open dialogs and refresh parent component
+    if (onImageDeleted) {
+      onImageDeleted(image.id);
+    }
+  });
   
   useEffect(() => {
     const checkUser = async () => {
@@ -86,6 +97,16 @@ export const useImageCard = (image, onView) => {
     }
   };
 
+  const handleDeleteClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!window.confirm('Are you sure you want to delete this image? This action cannot be undone.')) {
+      return;
+    }
+    
+    await performDelete(image.id, image.user_id, canDelete);
+  };
+
   return {
     currentPrice,
     currentUser,
@@ -95,6 +116,9 @@ export const useImageCard = (image, onView) => {
     handleZoomOut,
     zoomLevel,
     handleMakeSelection,
-    handlePriceChange
+    handlePriceChange,
+    canDelete,
+    handleDeleteClick,
+    isDeleting
   };
 };

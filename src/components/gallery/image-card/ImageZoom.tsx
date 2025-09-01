@@ -8,13 +8,19 @@ interface ImageZoomProps {
   alt: string;
   onImageClick: () => void;
   onDoubleClick: (e: React.MouseEvent) => void;
+  canDelete?: boolean;
+  onDelete?: (e: React.MouseEvent) => void;
+  isDeleting?: boolean;
 }
 
 export const ImageZoom = ({
   imageUrl,
   alt,
   onImageClick,
-  onDoubleClick
+  onDoubleClick,
+  canDelete = false,
+  onDelete,
+  isDeleting = false
 }: ImageZoomProps) => {
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomFactor, setZoomFactor] = useState(1);
@@ -141,6 +147,9 @@ export const ImageZoom = ({
         onZoomIn={increaseZoom}
         onZoomOut={decreaseZoom}
         onExpandClick={onImageClick}
+        canDelete={canDelete}
+        onDelete={onDelete}
+        isDeleting={isDeleting}
       />
     </div>
   );

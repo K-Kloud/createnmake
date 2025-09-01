@@ -42,6 +42,7 @@ interface ImageCardProps {
   onAddComment: (imageId: number, comment: string) => void;
   onAddReply: (imageId: number, commentId: number, reply: string) => void;
   onFullImageClick?: () => void;
+  onImageDeleted?: (id: number) => void;
 }
 
 export const ImageCard = ({ 
@@ -50,7 +51,8 @@ export const ImageCard = ({
   onView, 
   onAddComment, 
   onAddReply,
-  onFullImageClick 
+  onFullImageClick,
+  onImageDeleted
 }: ImageCardProps) => {
   const [showComments, setShowComments] = useState(false);
   const [imageOpen, setImageOpen] = useState(false);
@@ -66,8 +68,11 @@ export const ImageCard = ({
     handleZoomOut,
     zoomLevel,
     handleMakeSelection,
-    handlePriceChange
-  } = useImageCard(image, onView);
+    handlePriceChange,
+    canDelete,
+    handleDeleteClick,
+    isDeleting
+  } = useImageCard(image, onView, onImageDeleted);
 
   const openImagePreview = () => {
     if (onFullImageClick) {
@@ -93,6 +98,9 @@ export const ImageCard = ({
             alt={image.prompt}
             onImageClick={openImagePreview}
             onDoubleClick={handleDoubleClick}
+            canDelete={canDelete}
+            onDelete={handleDeleteClick}
+            isDeleting={isDeleting}
           />
           
           <div className="p-4 space-y-3">
