@@ -12,6 +12,8 @@ import { ItemTypePreviews } from "./form/ItemTypePreviews";
 
 import { EnhancedKeywordSuggestions } from "./EnhancedKeywordSuggestions";
 import { ProviderSelect } from "./ProviderSelect";
+import { ProviderRecommendation } from "./ProviderRecommendation";
+import { ProviderComparison } from "./ProviderComparison";
 
 interface GenerationFormProps {
   prompt: string;
@@ -123,11 +125,29 @@ export const GenerationForm = ({
             <CardTitle className="text-sm">Advanced Options</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Provider Recommendation */}
+            <ProviderRecommendation
+              selectedItem={selectedItem}
+              selectedRatio={selectedRatio}
+              currentProvider={provider}
+              onProviderChange={onProviderChange || (() => {})}
+            />
+
+            {/* Provider Selection */}
             <ProviderSelect
               value={provider}
               onChange={onProviderChange || (() => {})}
               disabled={isGenerating}
             />
+            
+            {/* Advanced Provider Comparison */}
+            <ProviderComparison
+              selectedProvider={provider}
+              onProviderChange={onProviderChange || (() => {})}
+              selectedItem={selectedItem}
+              selectedRatio={selectedRatio}
+            />
+            
             {showItemPreviews && selectedItem && (
               <ItemTypePreviews selectedItem={selectedItem} />
             )}

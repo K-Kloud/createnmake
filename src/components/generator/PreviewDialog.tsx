@@ -11,6 +11,8 @@ import { EmptyPreview } from "./preview/EmptyPreview";
 import { ImagePreview } from "./preview/ImagePreview";
 import { useEffect, useState } from "react";
 import { PreviewActions } from "./preview/PreviewActions";
+import { ImageProviderInfo } from "./ImageProviderInfo";
+import { ImageRating } from "./ImageRating";
 
 interface PreviewDialogProps {
   open: boolean;
@@ -20,6 +22,7 @@ interface PreviewDialogProps {
   generatedImageUrl: string | undefined;
   generatedImageId?: number;
   prompt: string;
+  provider?: string;
   onLike?: (imageId: number) => void;
 }
 
@@ -31,6 +34,7 @@ export const PreviewDialog = ({
   generatedImageUrl,
   generatedImageId,
   prompt,
+  provider,
   onLike
 }: PreviewDialogProps) => {
   const [currentImageUrl, setCurrentImageUrl] = useState<string | undefined>(generatedImageUrl);
@@ -86,13 +90,35 @@ export const PreviewDialog = ({
           </div>
 
           {currentImageUrl && (
-            <PreviewActions
-              imageUrl={currentImageUrl}
-              imageId={currentImageId}
-              prompt={prompt}
-              onLike={onLike}
-              onImageEdited={handleImageEdited}
-            />
+            <>
+              <PreviewActions
+                imageUrl={currentImageUrl}
+                imageId={currentImageId}
+                prompt={prompt}
+                onLike={onLike}
+                onImageEdited={handleImageEdited}
+              />
+              
+              {/* Provider Information and Rating */}
+              <div className="flex flex-col space-y-3 pt-2 border-t border-border/20">
+                {provider && (
+                  <div className="flex justify-center">
+                    <ImageProviderInfo
+                      provider={provider}
+                      className="text-sm"
+                    />
+                  </div>
+                )}
+                
+                {currentImageId && provider && (
+                  <ImageRating
+                    imageId={currentImageId}
+                    provider={provider}
+                    className="max-w-sm mx-auto"
+                  />
+                )}
+              </div>
+            </>
           )}
         </div>
       </DialogContent>

@@ -8,10 +8,12 @@ import { useCreateImageWithXAI } from "@/services/xaiImageGeneration";
 import { useAuthDialog } from "@/hooks/useAuthDialog";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
+import { useProviderMetrics } from "@/hooks/useProviderMetrics";
 
 export const useImageGeneration = () => {
   const { toast } = useToast();
   const { session } = useAuth();
+  const { recordGenerationTime } = useProviderMetrics();
   
   // State management
   const [prompt, setPrompt] = useState("");
@@ -63,6 +65,8 @@ export const useImageGeneration = () => {
 
   // Main generation handler
   const handleGenerate = useCallback(async () => {
+    const startTime = Date.now();
+    
     console.log("🎯 handleGenerate called with:", {
       prompt,
       selectedItem,
@@ -153,9 +157,25 @@ export const useImageGeneration = () => {
       
       // Refresh subscription status
       refetchStatus();
+
+      // Record generation metrics on completion
+      const recordMetrics = () => {
+        const endTime = Date.now();
+        const isSuccessful = provider === "gemini" ? isSuccessGemini : 
+                            provider === "xai" ? isSuccessXAI : isSuccessOpenAI;
+        recordGenerationTime(provider, startTime, endTime, isSuccessful);
+      };
+
+      // Set timeout to record metrics after generation attempt
+      setTimeout(recordMetrics, 1000);
       
     } catch (error) {
       console.error("💥 Error in handleGenerate:", error);
+      
+      // Record failed generation
+      const endTime = Date.now();
+      recordGenerationTime(provider, startTime, endTime, false);
+      
       toast({
         variant: "destructive",
         title: "Generation Failed",
