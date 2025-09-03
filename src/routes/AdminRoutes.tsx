@@ -11,12 +11,14 @@ const AdminAnalytics = lazy(() => import('@/pages/AdminAnalytics'));
 const RealtimeDashboard = lazy(() => import('@/pages/RealtimeDashboard'));
 const AdvancedAI = lazy(() => import('@/pages/AdvancedAI'));
 const SystemManagement = lazy(() => import('@/components/admin/SystemManagement').then(module => ({ default: module.SystemManagement })));
+const AdminDashboard = lazy(() => import('@/components/admin/AdminDashboard').then(module => ({ default: module.AdminDashboard })));
 
 export const AdminRoutes: React.FC = () => {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
         <Route path="/" element={<AdminPage />} />
+        <Route path="/providers" element={<AdminDashboard />} />
         <Route path="/scheduled-jobs" element={<AdminScheduledJobsPage />} />
         <Route path="/ai-agents" element={<AdminAIAgentsPage />} />
         <Route path="/analytics" element={<AdminAnalytics />} />
