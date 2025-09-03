@@ -1,408 +1,83 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import React from 'react';
+import { useUserSettings } from '@/hooks/useUserSettings';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
-import { Bell, Eye, Zap, Palette, Shield } from 'lucide-react';
-
-interface EnhancedUserPreferencesData {
-  id: string;
-  user_id: string;
-  notification_settings: {
-    push: boolean;
-    email: boolean;
-    in_app: boolean;
-  };
-  ui_preferences: {
-    theme: 'light' | 'dark' | 'system';
-    language: string;
-    reduced_motion: boolean;
-  };
-  privacy_settings: {
-    profile_visibility: 'public' | 'private';
-    activity_visibility: 'public' | 'followers' | 'private';
-  };
-  performance_settings: {
-    image_quality: 'high' | 'medium' | 'low';
-    auto_play_videos: boolean;
-    preload_images: boolean;
-  };
-}
-
-// Using a different table name to avoid conflicts
-const PREFERENCES_TABLE = 'enhanced_user_preferences';
+import { Bell, Settings } from 'lucide-react';
 
 export const EnhancedUserPreferences: React.FC = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [hasChanges, setHasChanges] = useState(false);
-
-  const { data: preferences, isLoading } = useQuery({
-    queryKey: ['enhanced-user-preferences', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-
-      // Try to get from the new user_preferences table first
-      const { data, error } = await supabase
-        .from('user_preferences')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching preferences:', error);
-      }
-      
-      // Return default preferences structure
-      const defaultPrefs: EnhancedUserPreferencesData = {
-        id: data?.id || '',
-        user_id: user.id,
-        notification_settings: {
-          push: data?.notification_settings?.push ?? true,
-          email: data?.notification_settings?.email ?? true,
-          in_app: data?.notification_settings?.in_app ?? true
-        },
-        ui_preferences: {
-          theme: (data?.ui_preferences?.theme as 'light' | 'dark' | 'system') ?? 'system',
-          language: data?.ui_preferences?.language ?? 'en',
-          reduced_motion: data?.ui_preferences?.reduced_motion ?? false
-        },
-        privacy_settings: {
-          profile_visibility: (data?.privacy_settings?.profile_visibility as 'public' | 'private') ?? 'public',
-          activity_visibility: (data?.privacy_settings?.activity_visibility as 'public' | 'followers' | 'private') ?? 'public'
-        },
-        performance_settings: {
-          image_quality: (data?.performance_settings?.image_quality as 'high' | 'medium' | 'low') ?? 'high',
-          auto_play_videos: data?.performance_settings?.auto_play_videos ?? true,
-          preload_images: data?.performance_settings?.preload_images ?? true
-        }
-      };
-
-      return defaultPrefs;
-    },
-    enabled: !!user?.id,
-  });
-
-  const updatePreferencesMutation = useMutation({
-    mutationFn: async (newPreferences: Partial<EnhancedUserPreferencesData>) => {
-      if (!user?.id) throw new Error('User not authenticated');
-
-      const { data, error } = await supabase
-        .from('user_preferences')
-        .upsert({
-          user_id: user.id,
-          notification_settings: newPreferences.notification_settings,
-          ui_preferences: newPreferences.ui_preferences,
-          privacy_settings: newPreferences.privacy_settings,
-          performance_settings: newPreferences.performance_settings
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['enhanced-user-preferences', user?.id] });
-      toast({
-        title: "Preferences Updated",
-        description: "Your preferences have been saved successfully.",
-      });
-      setHasChanges(false);
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to update preferences. Please try again.",
-        variant: "destructive",
-      });
-      console.error('Error updating preferences:', error);
-    },
-  });
-
-  const updatePreferences = (updates: Partial<EnhancedUserPreferencesData>) => {
-    if (!preferences) return;
-    
-    const newPreferences = { ...preferences, ...updates };
-    updatePreferencesMutation.mutate(newPreferences);
-  };
-
-  const updateNotificationSetting = (key: keyof EnhancedUserPreferencesData['notification_settings'], value: boolean) => {
-    if (!preferences) return;
-    setHasChanges(true);
-    updatePreferences({
-      notification_settings: {
-        ...preferences.notification_settings,
-        [key]: value
-      }
-    });
-  };
-
-  const updateUISetting = (key: keyof EnhancedUserPreferencesData['ui_preferences'], value: any) => {
-    if (!preferences) return;
-    setHasChanges(true);
-    updatePreferences({
-      ui_preferences: {
-        ...preferences.ui_preferences,
-        [key]: value
-      }
-    });
-  };
-
-  const updatePrivacySetting = (key: keyof EnhancedUserPreferencesData['privacy_settings'], value: any) => {
-    if (!preferences) return;
-    setHasChanges(true);
-    updatePreferences({
-      privacy_settings: {
-        ...preferences.privacy_settings,
-        [key]: value
-      }
-    });
-  };
-
-  const updatePerformanceSetting = (key: keyof EnhancedUserPreferencesData['performance_settings'], value: any) => {
-    if (!preferences) return;
-    setHasChanges(true);
-    updatePreferences({
-      performance_settings: {
-        ...preferences.performance_settings,
-        [key]: value
-      }
-    });
-  };
+  const {
+    preferences,
+    handlePreferenceChange,
+    handlePreferencesSubmit,
+    isUpdatingPreferences
+  } = useUserSettings(user?.id);
 
   if (!user) return null;
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i} className="animate-pulse">
-            <CardHeader>
-              <div className="h-6 bg-muted rounded w-1/4" />
-              <div className="h-4 bg-muted rounded w-1/2" />
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {Array.from({ length: 3 }).map((_, j) => (
-                  <div key={j} className="flex items-center justify-between">
-                    <div className="h-4 bg-muted rounded w-1/3" />
-                    <div className="h-6 bg-muted rounded w-12" />
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
-  }
-
-  if (!preferences) return null;
 
   return (
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-foreground">Enhanced Preferences</h2>
-        {hasChanges && (
-          <div className="text-sm text-muted-foreground">
-            Changes are saved automatically
-          </div>
-        )}
+        <h2 className="text-2xl font-bold text-foreground">Preferences</h2>
       </div>
 
-      {/* Notifications */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="w-5 h-5" />
-            Notifications
-          </CardTitle>
-          <CardDescription>
-            Choose how you want to be notified about activity
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="push-notifications">Push Notifications</Label>
-            <Switch
-              id="push-notifications"
-              checked={preferences.notification_settings.push}
-              onCheckedChange={(checked) => updateNotificationSetting('push', checked)}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="email-notifications">Email Notifications</Label>
-            <Switch
-              id="email-notifications"
-              checked={preferences.notification_settings.email}
-              onCheckedChange={(checked) => updateNotificationSetting('email', checked)}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="in-app-notifications">In-App Notifications</Label>
-            <Switch
-              id="in-app-notifications"
-              checked={preferences.notification_settings.in_app}
-              onCheckedChange={(checked) => updateNotificationSetting('in_app', checked)}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <form onSubmit={handlePreferencesSubmit}>
+        {/* Email Notifications */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Bell className="w-5 h-5" />
+              Email Notifications
+            </CardTitle>
+            <CardDescription>
+              Choose how you want to be notified via email
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="email-orders">Order Updates</Label>
+              <Switch
+                id="email-orders"
+                checked={preferences.email_orders}
+                onCheckedChange={(checked) => handlePreferenceChange('email_orders', checked)}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="email-marketing">Marketing & Promotions</Label>
+              <Switch
+                id="email-marketing"
+                checked={preferences.email_marketing}
+                onCheckedChange={(checked) => handlePreferenceChange('email_marketing', checked)}
+              />
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* UI Preferences */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Palette className="w-5 h-5" />
-            Appearance & Accessibility
-          </CardTitle>
-          <CardDescription>
-            Customize the look and feel of the application
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="theme-select">Theme</Label>
-            <Select
-              value={preferences.ui_preferences.theme}
-              onValueChange={(value: 'light' | 'dark' | 'system') => updateUISetting('theme', value)}
-            >
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="language-select">Language</Label>
-            <Select
-              value={preferences.ui_preferences.language}
-              onValueChange={(value) => updateUISetting('language', value)}
-            >
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="es">Español</SelectItem>
-                <SelectItem value="fr">Français</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="reduced-motion">Reduced Motion</Label>
-            <Switch
-              id="reduced-motion"
-              checked={preferences.ui_preferences.reduced_motion}
-              onCheckedChange={(checked) => updateUISetting('reduced_motion', checked)}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Privacy */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="w-5 h-5" />
-            Privacy
-          </CardTitle>
-          <CardDescription>
-            Control who can see your profile and activity
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="profile-visibility">Profile Visibility</Label>
-            <Select
-              value={preferences.privacy_settings.profile_visibility}
-              onValueChange={(value: 'public' | 'private') => updatePrivacySetting('profile_visibility', value)}
-            >
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="public">Public</SelectItem>
-                <SelectItem value="private">Private</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="activity-visibility">Activity Visibility</Label>
-            <Select
-              value={preferences.privacy_settings.activity_visibility}
-              onValueChange={(value: 'public' | 'followers' | 'private') => updatePrivacySetting('activity_visibility', value)}
-            >
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="public">Public</SelectItem>
-                <SelectItem value="followers">Followers</SelectItem>
-                <SelectItem value="private">Private</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Performance */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Zap className="w-5 h-5" />
-            Performance
-          </CardTitle>
-          <CardDescription>
-            Optimize the app for your device and connection
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="image-quality">Image Quality</Label>
-            <Select
-              value={preferences.performance_settings.image_quality}
-              onValueChange={(value: 'high' | 'medium' | 'low') => updatePerformanceSetting('image_quality', value)}
-            >
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="auto-play-videos">Auto-play Videos</Label>
-            <Switch
-              id="auto-play-videos"
-              checked={preferences.performance_settings.auto_play_videos}
-              onCheckedChange={(checked) => updatePerformanceSetting('auto_play_videos', checked)}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="preload-images">Preload Images</Label>
-            <Switch
-              id="preload-images"
-              checked={preferences.performance_settings.preload_images}
-              onCheckedChange={(checked) => updatePerformanceSetting('preload_images', checked)}
-            />
-          </div>
-        </CardContent>
-      </Card>
+        {/* Browser Notifications */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="w-5 h-5" />
+              Browser Settings
+            </CardTitle>
+            <CardDescription>
+              Configure browser-based notifications
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="browser-notifications">Browser Notifications</Label>
+              <Switch
+                id="browser-notifications"
+                checked={preferences.browser_notifications}
+                onCheckedChange={(checked) => handlePreferenceChange('browser_notifications', checked)}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </form>
     </div>
   );
 };

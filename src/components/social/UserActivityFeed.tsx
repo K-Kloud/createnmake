@@ -47,7 +47,10 @@ export const UserActivityFeed: React.FC = () => {
         .limit(20);
 
       if (error) throw error;
-      return data as ActivityFeedItem[];
+      return (data || []).map(item => ({
+        ...item,
+        target_user: Array.isArray(item.target_user) ? item.target_user[0] : item.target_user
+      })) as ActivityFeedItem[];
     },
     enabled: !!user?.id,
   });
