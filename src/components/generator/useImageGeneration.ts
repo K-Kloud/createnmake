@@ -5,6 +5,7 @@ import { useReferenceImageUpload } from "@/hooks/useReferenceImageUpload";
 import { useImageGenerationAPI } from "@/hooks/useImageGenerationAPI";
 import { useCreateImageWithGemini } from "@/services/geminiImageGeneration";
 import { useCreateImageWithXAI } from "@/services/xaiImageGeneration";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuthDialog } from "@/hooks/useAuthDialog";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
@@ -128,46 +129,100 @@ export const useImageGeneration = () => {
 
       console.log(`🎨 Starting image generation with ${provider}...`);
       
-      // Generate image based on selected provider
-      if (provider === "gemini") {
-        createImageGemini({
-          prompt,
-          itemType: selectedItem,
-          aspectRatio: selectedRatio,
-          referenceImageUrl,
-        });
-      } else if (provider === "xai") {
-        createImageXAI({
-          prompt,
-          itemType: selectedItem,
-          aspectRatio: selectedRatio,
-          referenceImageUrl,
-        });
-      } else {
-        createImageOpenAI({
-          prompt,
-          itemType: selectedItem,
-          aspectRatio: selectedRatio,
-          referenceImageUrl,
-        });
-      }
-
-      // Open preview dialog
-      setPreviewOpen(true);
+      // Try providers with fallback logic
+      const providers = [provider, 'openai', 'gemini', 'xai', 'huggingface'].filter((p, i, arr) => arr.indexOf(p) === i);
       
-      // Refresh subscription status
-      refetchStatus();
+      let lastError = null;
+      let result = null;
+      
+      for (const currentProvider of providers) {
+        try {
+          console.log(`🔄 Attempting generation with provider: ${currentProvider}`);
+          
+          const params = {
+            prompt,
+            itemType: selectedItem,
+            aspectRatio: selectedRatio,
+            referenceImageUrl,
+          };
+          
+          if (currentProvider === 'gemini') {
+            createImageGemini(params);
+            // Wait for result
+            await new Promise(resolve => setTimeout(resolve, 100));
+            if (geminiResult?.success) {
+              result = { imageUrl: geminiResult.imageUrl, imageId: geminiResult.imageId };
+            }
+          } else if (currentProvider === 'xai') {
+            createImageXAI(params);
+            // Wait for result  
+            await new Promise(resolve => setTimeout(resolve, 100));
+            if (xaiResult?.imageUrl) {
+              result = { imageUrl: xaiResult.imageUrl, imageId: xaiResult.imageId };
+            }
+          } else if (currentProvider === 'huggingface') {
+            // Call Hugging Face API directly
+            try {
+              const { data, error } = await supabase.functions.invoke('generate-image-huggingface', {
+                body: params,
+              });
+              
+              if (data?.success) {
+                result = { imageUrl: data.imageUrl, imageId: data.imageId };
+              } else {
+                throw new Error(data?.error || 'Hugging Face generation failed');
+              }
+            } catch (hfError) {
+              console.error(`❌ Hugging Face error:`, hfError);
+              throw hfError;
+            }
+          } else {
+            // Default to OpenAI
+            createImageOpenAI(params);
+            // Wait for result
+            await new Promise(resolve => setTimeout(resolve, 100));
+            if (generatedImageUrlOpenAI) {
+              result = { imageUrl: generatedImageUrlOpenAI, imageId: generatedImageIdOpenAI };
+            }
+          }
 
-      // Record generation metrics on completion
-      const recordMetrics = () => {
-        const endTime = Date.now();
-        const isSuccessful = provider === "gemini" ? isSuccessGemini : 
-                            provider === "xai" ? isSuccessXAI : isSuccessOpenAI;
-        recordGenerationTime(provider, startTime, endTime, isSuccessful);
-      };
-
-      // Set timeout to record metrics after generation attempt
-      setTimeout(recordMetrics, 1000);
+          // If successful, break out of loop
+          if (result?.imageUrl) {
+            console.log(`✅ Generation successful with provider: ${currentProvider}`);
+            
+            // Record metrics
+            const endTime = Date.now();
+            recordGenerationTime(currentProvider, startTime, endTime, true);
+            
+            toast({
+              title: "Success!",
+              description: `Image generated successfully with ${currentProvider}`,
+            });
+            
+            // Open preview dialog
+            setPreviewOpen(true);
+            
+            // Refresh subscription status
+            refetchStatus();
+            
+            return; // Success, exit function
+          }
+          
+        } catch (error) {
+          console.error(`❌ Provider ${currentProvider} failed:`, error);
+          lastError = error;
+          
+          // Record failed generation
+          const endTime = Date.now();
+          recordGenerationTime(currentProvider, startTime, endTime, false);
+          
+          // Continue to next provider
+          continue;
+        }
+      }
+      
+      // If we get here, all providers failed
+      throw lastError || new Error('All image generation providers failed');
       
     } catch (error) {
       console.error("💥 Error in handleGenerate:", error);
@@ -179,7 +234,8 @@ export const useImageGeneration = () => {
       toast({
         variant: "destructive",
         title: "Generation Failed",
-        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        description: error instanceof Error ? error.message : "All providers failed. Please try again later.",
+        duration: 8000,
       });
     }
   }, [
@@ -197,8 +253,14 @@ export const useImageGeneration = () => {
     uploadReferenceImage,
     createImageOpenAI,
     createImageGemini,
+    createImageXAI,
+    geminiResult,
+    xaiResult,
+    generatedImageUrlOpenAI,
+    generatedImageIdOpenAI,
     setPreviewOpen,
-    refetchStatus
+    refetchStatus,
+    recordGenerationTime
   ]);
 
   // Combine results from all providers

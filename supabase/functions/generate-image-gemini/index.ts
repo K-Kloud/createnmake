@@ -86,6 +86,64 @@ Original Prompt Enhancement: ${prompt}
 Final Result: Ultra high resolution 8K quality image, photo-realistic rendering, detailed fabric texture, professional commercial photography standard, suitable for high-end fashion e-commerce and editorial use.`;
 }
 
+// Retry logic for Gemini API calls
+async function callGeminiWithRetry(apiKey: string, requestBody: any, maxRetries = 3): Promise<Response> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      console.log(`🔄 Gemini API attempt ${attempt + 1}/${maxRetries}`);
+      
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      // If successful, return immediately
+      if (response.ok) {
+        console.log(`✅ Gemini API call successful on attempt ${attempt + 1}`);
+        return response;
+      }
+      
+      // For quota errors (429), wait longer before retrying
+      if (response.status === 429) {
+        const waitTime = Math.min(1000 * Math.pow(2, attempt), 30000); // Exponential backoff, max 30s
+        console.log(`⏱️ Rate limited, waiting ${waitTime}ms before retry ${attempt + 1}...`);
+        
+        if (attempt < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+          continue;
+        }
+      }
+      
+      // For other errors, shorter retry delay
+      if (attempt < maxRetries - 1) {
+        const waitTime = 1000 * (attempt + 1); // Linear backoff for other errors
+        console.log(`⏱️ API error ${response.status}, waiting ${waitTime}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        continue;
+      }
+      
+      return response;
+      
+    } catch (error) {
+      console.error(`❌ Gemini API attempt ${attempt + 1} failed:`, error);
+      
+      if (attempt < maxRetries - 1) {
+        const waitTime = 1000 * (attempt + 1);
+        console.log(`⏱️ Network error, waiting ${waitTime}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        continue;
+      }
+      
+      throw error;
+    }
+  }
+  
+  throw new Error('Failed to call Gemini API after all retries');
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -361,9 +419,14 @@ REFERENCE IMAGE: Use the provided reference image as inspiration for style, comp
     }
     if (errorMessage.includes('quota') || errorMessage.includes('limit')) {
       suggestions.push('Check your Google AI API usage limits and billing');
+      suggestions.push('Try again later or upgrade your Google AI plan');
     }
     if (errorMessage.includes('safety') || errorMessage.includes('blocked')) {
       suggestions.push('Try rephrasing your prompt to avoid content policy issues');
+      suggestions.push('Use more general, family-friendly descriptions');
+    }
+    if (errorMessage.includes('timeout')) {
+      suggestions.push('The request timed out, please try again');
     }
     
     return new Response(JSON.stringify({
