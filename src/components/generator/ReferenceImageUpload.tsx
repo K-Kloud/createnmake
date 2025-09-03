@@ -8,12 +8,14 @@ interface ReferenceImageUploadProps {
   onUpload: (file: File | null) => void;
   file: File | null;
   disabled?: boolean;
+  uploading?: boolean;
 }
 
 export const ReferenceImageUpload = ({ 
   onUpload, 
   file, 
-  disabled = false 
+  disabled = false,
+  uploading = false
 }: ReferenceImageUploadProps) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
@@ -94,7 +96,7 @@ export const ReferenceImageUpload = ({
               size="icon"
               className="absolute top-2 right-2 h-6 w-6"
               onClick={handleClearFile}
-              disabled={disabled}
+              disabled={disabled || uploading}
             >
               <X className="h-3 w-3" />
             </Button>

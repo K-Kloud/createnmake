@@ -30,6 +30,7 @@ export const ImageGenerator = () => {
     subscriptionStatus,
     canGenerateImage,
     remainingImages,
+    uploadingReference,
   } = useImageGeneration();
 
   // Add function to handle liking images if needed
@@ -61,6 +62,7 @@ export const ImageGenerator = () => {
           remainingImages={remainingImages}
           showItemPreviews={true}
           provider={provider}
+          uploadingReference={uploadingReference}
           onProviderChange={setProvider}
         />
 

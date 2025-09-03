@@ -139,13 +139,109 @@ serve(async (req) => {
 
     const dimensions = dimensionMap[aspectRatio] || { width: 1024, height: 1024 };
 
-    // Call Google Gemini API
-    const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${googleApiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    // Prepare the request body for Gemini
+    let requestBody;
+    
+    if (referenceImageUrl) {
+      console.log('🖼️ Using reference image with Gemini:', referenceImageUrl);
+      
+      try {
+        // Download the reference image to include in the request
+        const referenceResponse = await fetch(referenceImageUrl);
+        if (!referenceResponse.ok) {
+          throw new Error('Failed to fetch reference image');
+        }
+        const referenceBlob = await referenceResponse.blob();
+        const referenceBuffer = await referenceBlob.arrayBuffer();
+        const referenceBase64 = btoa(String.fromCharCode(...new Uint8Array(referenceBuffer)));
+        
+        // Enhanced prompt that incorporates the reference image
+        const enhancedWithReference = `${enhancedPrompt}
+
+REFERENCE IMAGE: Use the provided reference image as inspiration for style, composition, color palette, and overall aesthetic. Maintain the same quality and professional appearance while incorporating the unique elements from the reference.`;
+
+        requestBody = {
+          contents: [{
+            role: 'user',
+            parts: [
+              {
+                text: enhancedWithReference
+              },
+              {
+                inlineData: {
+                  mimeType: referenceBlob.type,
+                  data: referenceBase64
+                }
+              }
+            ]
+          }],
+          generationConfig: {
+            maxOutputTokens: 8192,
+            temperature: 0.7,
+            topP: 0.95,
+          },
+          safetySettings: [
+            {
+              category: 'HARM_CATEGORY_HARASSMENT',
+              threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+            },
+            {
+              category: 'HARM_CATEGORY_HATE_SPEECH',
+              threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+            },
+            {
+              category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+              threshold: 'BLOCK_MEDIUM_AND_ABOVE'  
+            },
+            {
+              category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+              threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+            }
+          ]
+        };
+        
+        console.log('✨ Enhanced prompt with reference image created');
+      } catch (referenceError) {
+        console.error('❌ Error processing reference image for Gemini:', referenceError);
+        
+        // Fall back to regular generation without reference
+        requestBody = {
+          contents: [{
+            role: 'user',
+            parts: [{
+              text: enhancedPrompt
+            }]
+          }],
+          generationConfig: {
+            maxOutputTokens: 8192,
+            temperature: 0.7,
+            topP: 0.95,
+          },
+          safetySettings: [
+            {
+              category: 'HARM_CATEGORY_HARASSMENT',
+              threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+            },
+            {
+              category: 'HARM_CATEGORY_HATE_SPEECH',
+              threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+            },
+            {
+              category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+              threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+            },
+            {
+              category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+              threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+            }
+          ]
+        };
+        
+        console.log('🔄 Falling back to regular generation without reference image');
+      }
+    } else {
+      // Regular generation without reference image
+      requestBody = {
         contents: [{
           role: 'user',
           parts: [{
@@ -175,7 +271,16 @@ serve(async (req) => {
             threshold: 'BLOCK_MEDIUM_AND_ABOVE'
           }
         ]
-      })
+      };
+    }
+
+    // Call Google Gemini API
+    const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${googleApiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody)
     });
 
     if (!geminiResponse.ok) {

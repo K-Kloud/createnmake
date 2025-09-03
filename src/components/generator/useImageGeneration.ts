@@ -38,7 +38,7 @@ export const useImageGeneration = () => {
   } = useCreateImageWithGemini();
 
   // Reference image upload hook
-  const { uploadReferenceImage } = useReferenceImageUpload();
+  const { uploadReferenceImage, uploading: uploadingReference } = useReferenceImageUpload();
 
   // Auth dialog hook
   const { authDialogOpen, setAuthDialogOpen } = useAuthDialog();
@@ -192,5 +192,6 @@ export const useImageGeneration = () => {
     subscriptionStatus,
     canGenerateImage,
     remainingImages,
+    uploadingReference
   };
 };

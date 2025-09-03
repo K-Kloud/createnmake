@@ -28,6 +28,7 @@ interface GenerationFormProps {
   remainingImages?: number;
   showItemPreviews?: boolean;
   provider?: string;
+  uploadingReference?: boolean;
   onProviderChange?: (provider: string) => void;
 }
 
@@ -46,6 +47,7 @@ export const GenerationForm = ({
   remainingImages,
   showItemPreviews = false,
   provider = "openai",
+  uploadingReference = false,
   onProviderChange,
 }: GenerationFormProps) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -81,6 +83,7 @@ export const GenerationForm = ({
             onUpload={onReferenceImageUpload}
             file={referenceImage}
             disabled={isGenerating}
+            uploading={uploadingReference}
           />
         </div>
       </div>

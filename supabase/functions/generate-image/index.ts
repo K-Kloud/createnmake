@@ -64,9 +64,48 @@ serve(async (req) => {
     const size = getDimensionsFromAspectRatio(aspectRatio);
     console.log('📐 Image size determined:', size)
 
-    // Call OpenAI API with retry logic
-    console.log('🎨 Calling OpenAI API...')
-    const response = await callOpenAIWithRetry(OPENAI_API_KEY, enhancedPrompt, size);
+    let apiCall;
+    if (referenceImageUrl) {
+      console.log('🖼️ Using reference image for variation:', referenceImageUrl);
+      
+      // For reference images, use the variations endpoint
+      try {
+        // Download the reference image
+        const imageResponse = await fetch(referenceImageUrl);
+        if (!imageResponse.ok) {
+          throw new Error('Failed to fetch reference image');
+        }
+        const imageBlob = await imageResponse.blob();
+        
+        // Create form data for the variations API
+        const formData = new FormData();
+        formData.append('image', imageBlob, 'reference.png');
+        formData.append('n', '1');
+        formData.append('size', size);
+        formData.append('response_format', 'url');
+
+        apiCall = fetch('https://api.openai.com/v1/images/variations', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          },
+          body: formData,
+        });
+        
+        console.log('🎨 Calling OpenAI Variations API with reference image...');
+      } catch (referenceError) {
+        console.error('❌ Error processing reference image:', referenceError);
+        // Fall back to regular generation without reference
+        apiCall = callOpenAIWithRetry(OPENAI_API_KEY, enhancedPrompt, size);
+        console.log('🔄 Falling back to regular generation without reference image');
+      }
+    } else {
+      // Regular image generation without reference
+      console.log('🎨 Calling OpenAI API without reference image...')
+      apiCall = callOpenAIWithRetry(OPENAI_API_KEY, enhancedPrompt, size);
+    }
+    
+    const response = await apiCall;
 
     if (!response.ok) {
       const errorData = await response.json();
