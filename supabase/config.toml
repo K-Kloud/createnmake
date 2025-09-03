@@ -230,3 +230,9 @@ verify_jwt = true
 
 [functions.generate-image-xai]
 verify_jwt = true
+
+[functions.realtime-analytics-processor]
+verify_jwt = false
+
+[functions.ai-agent-monitor]
+verify_jwt = false

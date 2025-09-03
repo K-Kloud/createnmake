@@ -1,308 +1,274 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface AlertData {
-  type: string;
-  data: any;
-  timestamp: number;
+interface AnalyticsEvent {
+  event_type: string;
+  provider: string;
+  user_id?: string;
+  metadata: Record<string, any>;
+  timestamp: string;
 }
 
-interface PerformanceAlert {
-  metricName: string;
-  actualValue: number;
-  threshold: number;
-  userId?: string;
-  sessionId: string;
-  severity: 'warning' | 'critical';
-}
-
-interface ErrorAlert {
-  errorMessage: string;
-  errorType: string;
-  userId?: string;
-  sessionId: string;
-  timestamp: number;
-}
-
-interface SystemAlert {
-  alertType: string;
-  errorRate?: number;
-  threshold?: number;
-  timestamp: number;
+interface ProcessedMetrics {
+  provider: string;
+  metric_type: string;
+  metric_value: number;
+  recorded_at: string;
+  metadata?: Record<string, any>;
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { type, data }: AlertData = await req.json();
-    console.log(`[REALTIME-ANALYTICS] Processing alert type: ${type}`);
+    console.log('🔄 Starting real-time analytics processing...');
 
-    switch (type) {
-      case 'performance_alert':
-        await handlePerformanceAlert(supabase, data as PerformanceAlert);
-        break;
-      case 'error_alert':
-        await handleErrorAlert(supabase, data as ErrorAlert);
-        break;
-      case 'system_alert':
-        await handleSystemAlert(supabase, data as SystemAlert);
-        break;
-      case 'batch_process':
-        await handleBatchProcessing(supabase, data);
-        break;
-      default:
-        console.log(`Unknown alert type: ${type}`);
+    // Process different types of analytics events
+    const { data: recentEvents, error: eventsError } = await supabase
+      .from('activity_metrics')
+      .select('*')
+      .gte('recorded_at', new Date(Date.now() - 5 * 60 * 1000).toISOString()) // Last 5 minutes
+      .order('recorded_at', { ascending: false });
+
+    if (eventsError) {
+      console.error('Error fetching recent events:', eventsError);
+      throw eventsError;
     }
 
-    return new Response(
-      JSON.stringify({ success: true, type, processed_at: new Date().toISOString() }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
+    console.log(`📊 Processing ${recentEvents?.length || 0} recent events`);
+
+    // Group events by provider for processing
+    const providerMetrics = new Map<string, any[]>();
+    
+    recentEvents?.forEach(event => {
+      if (event.metric_type === 'generation_time' || event.metric_type === 'success_rate') {
+        const provider = event.user_id; // Assuming user_id maps to provider context
+        if (!providerMetrics.has(provider)) {
+          providerMetrics.set(provider, []);
+        }
+        providerMetrics.get(provider)!.push(event);
       }
-    );
+    });
+
+    // Calculate real-time metrics for each provider
+    const processedMetrics: ProcessedMetrics[] = [];
+    
+    for (const [provider, events] of providerMetrics) {
+      // Calculate average generation time
+      const generationTimes = events
+        .filter(e => e.metric_type === 'generation_time')
+        .map(e => e.metric_value);
+      
+      if (generationTimes.length > 0) {
+        const avgTime = generationTimes.reduce((a, b) => a + b, 0) / generationTimes.length;
+        processedMetrics.push({
+          provider: provider || 'unknown',
+          metric_type: 'avg_generation_time_5min',
+          metric_value: avgTime,
+          recorded_at: new Date().toISOString(),
+          metadata: { 
+            sample_size: generationTimes.length,
+            processing_window: '5min'
+          }
+        });
+      }
+
+      // Calculate success rate
+      const successEvents = events.filter(e => e.metric_type === 'success_rate');
+      if (successEvents.length > 0) {
+        const successRate = (successEvents.filter(e => e.metric_value === 1).length / successEvents.length) * 100;
+        processedMetrics.push({
+          provider: provider || 'unknown',
+          metric_type: 'success_rate_5min',
+          metric_value: successRate,
+          recorded_at: new Date().toISOString(),
+          metadata: { 
+            sample_size: successEvents.length,
+            processing_window: '5min'
+          }
+        });
+      }
+    }
+
+    // Store processed metrics
+    if (processedMetrics.length > 0) {
+      const { error: insertError } = await supabase
+        .from('provider_metrics')
+        .insert(processedMetrics);
+
+      if (insertError) {
+        console.error('Error inserting processed metrics:', insertError);
+      } else {
+        console.log(`✅ Stored ${processedMetrics.length} processed metrics`);
+      }
+    }
+
+    // Check for anomalies and generate insights
+    const insights = await generateInsights(processedMetrics, supabase);
+    
+    if (insights.length > 0) {
+      console.log(`🧠 Generated ${insights.length} new insights`);
+      
+      const { error: insightsError } = await supabase
+        .from('analytics_insights')
+        .insert(insights);
+
+      if (insightsError) {
+        console.error('Error storing insights:', insightsError);
+      }
+    }
+
+    // Trigger alerts if needed
+    await checkAndTriggerAlerts(processedMetrics, supabase);
+
+    const response = {
+      success: true,
+      processed_events: recentEvents?.length || 0,
+      generated_metrics: processedMetrics.length,
+      generated_insights: insights.length,
+      timestamp: new Date().toISOString()
+    };
+
+    console.log('📈 Real-time processing complete:', response);
+
+    return new Response(JSON.stringify(response), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
 
   } catch (error) {
-    console.error('[REALTIME-ANALYTICS] Error:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500 
-      }
-    );
+    console.error('💥 Error in realtime analytics processor:', error);
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      timestamp: new Date().toISOString()
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });
 
-async function handlePerformanceAlert(supabase: any, alertData: PerformanceAlert) {
-  console.log(`[PERFORMANCE-ALERT] ${alertData.metricName}: ${alertData.actualValue}ms (threshold: ${alertData.threshold}ms)`);
-
-  // Insert performance alert record
-  const { error: insertError } = await supabase
-    .from('analytics_insights')
-    .insert({
-      title: `Performance Alert: ${alertData.metricName}`,
-      description: `${alertData.metricName} exceeded threshold of ${alertData.threshold}ms with value ${alertData.actualValue}ms`,
-      insight_type: 'performance_alert',
-      data_source: 'realtime_monitoring',
-      time_period_start: new Date(Date.now() - 300000).toISOString(), // 5 minutes ago
-      time_period_end: new Date().toISOString(),
-      confidence_score: alertData.severity === 'critical' ? 0.95 : 0.75,
-      metadata: {
-        metric_name: alertData.metricName,
-        actual_value: alertData.actualValue,
-        threshold: alertData.threshold,
-        severity: alertData.severity,
-        session_id: alertData.sessionId,
-        user_id: alertData.userId
-      },
-      action_items: [
-        {
-          action: 'investigate_performance_issue',
-          priority: alertData.severity,
-          description: `Investigate ${alertData.metricName} performance degradation`
-        },
-        {
-          action: 'check_server_resources',
-          priority: 'medium',
-          description: 'Monitor server CPU and memory usage'
-        }
-      ]
-    });
-
-  if (insertError) {
-    console.error('[PERFORMANCE-ALERT] Insert error:', insertError);
-  }
-
-  // Trigger immediate actions for critical alerts
-  if (alertData.severity === 'critical') {
-    await triggerCriticalPerformanceActions(supabase, alertData);
-  }
-}
-
-async function handleErrorAlert(supabase: any, alertData: ErrorAlert) {
-  console.log(`[ERROR-ALERT] ${alertData.errorType}: ${alertData.errorMessage}`);
-
-  // Insert error insight
-  const { error: insertError } = await supabase
-    .from('analytics_insights')
-    .insert({
-      title: `Error Alert: ${alertData.errorType}`,
-      description: `New error occurred: ${alertData.errorMessage}`,
-      insight_type: 'error_alert',
-      data_source: 'error_monitoring',
-      time_period_start: new Date(alertData.timestamp).toISOString(),
-      time_period_end: new Date().toISOString(),
-      confidence_score: 0.9,
-      metadata: {
-        error_type: alertData.errorType,
-        error_message: alertData.errorMessage,
-        session_id: alertData.sessionId,
-        user_id: alertData.userId,
-        timestamp: alertData.timestamp
-      },
-      action_items: [
-        {
-          action: 'investigate_error',
-          priority: 'high',
-          description: `Investigate ${alertData.errorType} error`
-        },
-        {
-          action: 'check_error_patterns',
-          priority: 'medium',
-          description: 'Analyze error patterns and frequency'
-        }
-      ]
-    });
-
-  if (insertError) {
-    console.error('[ERROR-ALERT] Insert error:', insertError);
-  }
-
-  // Check for error patterns
-  await analyzeErrorPatterns(supabase, alertData);
-}
-
-async function handleSystemAlert(supabase: any, alertData: SystemAlert) {
-  console.log(`[SYSTEM-ALERT] ${alertData.alertType}`);
-
-  const { error: insertError } = await supabase
-    .from('analytics_insights')
-    .insert({
-      title: `System Alert: ${alertData.alertType}`,
-      description: `System-wide alert triggered: ${alertData.alertType}`,
-      insight_type: 'system_alert',
-      data_source: 'system_monitoring',
-      time_period_start: new Date(Date.now() - 600000).toISOString(), // 10 minutes ago
-      time_period_end: new Date().toISOString(),
-      confidence_score: 0.85,
-      metadata: alertData,
-      action_items: [
-        {
-          action: 'investigate_system_issue',
-          priority: 'critical',
-          description: `Investigate ${alertData.alertType} system alert`
-        },
-        {
-          action: 'check_system_health',
-          priority: 'high',
-          description: 'Perform comprehensive system health check'
-        }
-      ]
-    });
-
-  if (insertError) {
-    console.error('[SYSTEM-ALERT] Insert error:', insertError);
-  }
-}
-
-async function handleBatchProcessing(supabase: any, data: any) {
-  console.log('[BATCH-PROCESS] Processing batch analytics data');
+async function generateInsights(metrics: ProcessedMetrics[], supabase: any) {
+  const insights = [];
   
-  // Process analytics insights from accumulated data
-  const insights = await generateInsights(supabase, data);
-  
-  for (const insight of insights) {
-    const { error } = await supabase
-      .from('analytics_insights')
-      .insert(insight);
+  for (const metric of metrics) {
+    // Check for performance degradation
+    if (metric.metric_type === 'success_rate_5min' && metric.metric_value < 80) {
+      insights.push({
+        insight_type: 'performance_degradation',
+        title: `${metric.provider} Performance Alert`,
+        description: `Success rate dropped to ${metric.metric_value.toFixed(1)}% in the last 5 minutes`,
+        confidence_score: 0.9,
+        data_source: 'realtime_processor',
+        time_period_start: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+        time_period_end: new Date().toISOString(),
+        metadata: {
+          provider: metric.provider,
+          metric_type: metric.metric_type,
+          metric_value: metric.metric_value,
+          alert_threshold: 80
+        },
+        action_items: [
+          'Check provider API status',
+          'Review recent configuration changes',
+          'Consider switching traffic to alternative providers'
+        ],
+        is_acknowledged: false
+      });
+    }
+
+    // Check for slow response times
+    if (metric.metric_type === 'avg_generation_time_5min' && metric.metric_value > 15) {
+      insights.push({
+        insight_type: 'slow_response_time',
+        title: `${metric.provider} Slow Response Alert`,
+        description: `Average generation time increased to ${metric.metric_value.toFixed(1)}s in the last 5 minutes`,
+        confidence_score: 0.85,
+        data_source: 'realtime_processor',
+        time_period_start: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+        time_period_end: new Date().toISOString(),
+        metadata: {
+          provider: metric.provider,
+          metric_type: metric.metric_type,
+          metric_value: metric.metric_value,
+          alert_threshold: 15
+        },
+        action_items: [
+          'Monitor provider load balancing',
+          'Check network connectivity',
+          'Consider scaling provider infrastructure'
+        ],
+        is_acknowledged: false
+      });
+    }
+  }
+
+  return insights;
+}
+
+async function checkAndTriggerAlerts(metrics: ProcessedMetrics[], supabase: any) {
+  // Get active alert configurations
+  const { data: alertConfigs } = await supabase
+    .from('ai_alert_config')
+    .select('*')
+    .eq('is_active', true);
+
+  if (!alertConfigs?.length) return;
+
+  for (const config of alertConfigs) {
+    for (const metric of metrics) {
+      const shouldAlert = evaluateAlertCondition(metric, config);
       
-    if (error) {
-      console.error('[BATCH-PROCESS] Error inserting insight:', error);
+      if (shouldAlert) {
+        console.log(`🚨 Triggering alert: ${config.alert_type} for ${metric.provider}`);
+        
+        // Here you could implement actual alerting (email, Slack, etc.)
+        // For now, we'll just log it
+        await supabase
+          .from('audit_logs')
+          .insert({
+            action: 'realtime_alert_triggered',
+            action_details: {
+              alert_config_id: config.id,
+              metric: metric,
+              alert_type: config.alert_type,
+              threshold_value: config.threshold_value,
+              actual_value: metric.metric_value
+            }
+          });
+      }
     }
   }
 }
 
-async function triggerCriticalPerformanceActions(supabase: any, alertData: PerformanceAlert) {
-  // Log critical performance issue
-  console.log(`[CRITICAL-PERFORMANCE] Taking immediate action for ${alertData.metricName}`);
+function evaluateAlertCondition(metric: ProcessedMetrics, config: any): boolean {
+  const value = metric.metric_value;
+  const threshold = config.threshold_value;
   
-  // You could trigger additional actions here such as:
-  // - Scaling server resources
-  // - Sending notifications to admin team
-  // - Activating performance optimization protocols
-  
-  // For now, we'll just log the critical issue
-  await supabase
-    .from('audit_logs')
-    .insert({
-      action: 'critical_performance_alert',
-      action_details: {
-        metric: alertData.metricName,
-        value: alertData.actualValue,
-        threshold: alertData.threshold,
-        session_id: alertData.sessionId,
-        timestamp: new Date().toISOString()
-      }
-    });
-}
-
-async function analyzeErrorPatterns(supabase: any, alertData: ErrorAlert) {
-  // Check for similar errors in the last hour
-  const { data: recentErrors } = await supabase
-    .from('error_logs')
-    .select('*')
-    .eq('error_type', alertData.errorType)
-    .gte('occurred_at', new Date(Date.now() - 3600000).toISOString());
-
-  if (recentErrors && recentErrors.length > 5) {
-    // Pattern detected - create insight
-    await supabase
-      .from('analytics_insights')
-      .insert({
-        title: 'Error Pattern Detected',
-        description: `Recurring ${alertData.errorType} errors detected (${recentErrors.length} occurrences in last hour)`,
-        insight_type: 'error_pattern',
-        data_source: 'error_analysis',
-        time_period_start: new Date(Date.now() - 3600000).toISOString(),
-        time_period_end: new Date().toISOString(),
-        confidence_score: 0.8,
-        metadata: {
-          error_type: alertData.errorType,
-          frequency: recentErrors.length,
-          pattern_detected: true
-        },
-        action_items: [
-          {
-            action: 'fix_recurring_error',
-            priority: 'critical',
-            description: `Address recurring ${alertData.errorType} error pattern`
-          }
-        ]
-      });
+  switch (config.threshold_operator) {
+    case 'greater_than':
+      return value > threshold;
+    case 'less_than':
+      return value < threshold;
+    case 'equals':
+      return Math.abs(value - threshold) < 0.01;
+    case 'greater_than_or_equal':
+      return value >= threshold;
+    case 'less_than_or_equal':
+      return value <= threshold;
+    default:
+      return false;
   }
-}
-
-async function generateInsights(supabase: any, data: any): Promise<any[]> {
-  const insights = [];
-  
-  // Generate performance insights
-  if (data.performance) {
-    insights.push({
-      title: 'Performance Analysis',
-      description: 'Automated performance analysis from batch processing',
-      insight_type: 'performance_analysis',
-      data_source: 'batch_processing',
-      time_period_start: new Date(Date.now() - 3600000).toISOString(),
-      time_period_end: new Date().toISOString(),
-      confidence_score: 0.7,
-      metadata: data.performance
-    });
-  }
-  
-  return insights;
 }
