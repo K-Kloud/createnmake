@@ -18,6 +18,7 @@ interface PreviewDialogProps {
   isGenerating: boolean;
   selectedRatio: string;
   generatedImageUrl: string | undefined;
+  generatedImageId?: number;
   prompt: string;
   onLike?: (imageId: number) => void;
 }
@@ -28,23 +29,18 @@ export const PreviewDialog = ({
   isGenerating,
   selectedRatio,
   generatedImageUrl,
+  generatedImageId,
   prompt,
   onLike
 }: PreviewDialogProps) => {
   const [currentImageUrl, setCurrentImageUrl] = useState<string | undefined>(generatedImageUrl);
-  const [currentImageId, setCurrentImageId] = useState<number | undefined>();
+  const [currentImageId, setCurrentImageId] = useState<number | undefined>(generatedImageId);
 
   // Update current image when generated image changes
   useEffect(() => {
     setCurrentImageUrl(generatedImageUrl);
-    // You might want to extract image ID from the URL or pass it as a prop
-    // For now, we'll use a placeholder
-    if (generatedImageUrl) {
-      // Extract image ID from URL or get it from context
-      // This is a simplified approach - you might need to pass the ID directly
-      setCurrentImageId(Date.now()); // Placeholder
-    }
-  }, [generatedImageUrl]);
+    setCurrentImageId(generatedImageId);
+  }, [generatedImageUrl, generatedImageId]);
 
   const handleImageEdited = (newImageUrl: string, newImageId: number) => {
     setCurrentImageUrl(newImageUrl);

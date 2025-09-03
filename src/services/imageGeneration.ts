@@ -13,6 +13,7 @@ interface ImageGenerationParams {
 interface ImageGenerationResult {
   success: boolean;
   imageUrl?: string;
+  imageId?: number;
   error?: string;
   suggestions?: string[];
 }
@@ -85,31 +86,14 @@ const generateImage = async (params: {
     }
 
     console.log("🖼️ Image URL received:", data.url);
+    console.log("🆔 Image ID received:", data.imageId);
 
-    // Save the generated image details to Supabase
-    console.log("💾 Saving image details to database...");
-    const { error: dbError } = await supabase
-      .from("generated_images")
-      .insert([
-        {
-          user_id: params.userId,
-          prompt: params.prompt,
-          image_url: data.url,
-          item_type: params.itemType,
-          aspect_ratio: params.aspectRatio,
-          reference_image_url: params.referenceImageUrl,
-          status: 'completed'
-        },
-      ]);
-
-    if (dbError) {
-      console.error("❌ Database error when saving image:", dbError);
-      // We still return success even if DB save fails, as the image was generated
-      return { success: true, imageUrl: data.url };
-    }
-
-    console.log("✅ Image saved to database successfully");
-    return { success: true, imageUrl: data.url };
+    // Return success with both URL and ID
+    return { 
+      success: true, 
+      imageUrl: data.url,
+      imageId: data.imageId
+    };
   } catch (error: any) {
     console.error("💥 Image generation error:", error);
     
@@ -138,10 +122,10 @@ const generateImage = async (params: {
   }
 };
 
-export const useCreateImage = (options?: UseMutationOptions<string, Error, ImageGenerationParams>) => {
+export const useCreateImage = (options?: UseMutationOptions<ImageGenerationResult, Error, ImageGenerationParams>) => {
   const { session } = useAuth();
 
-  return useMutation<string, Error, ImageGenerationParams>({
+  return useMutation<ImageGenerationResult, Error, ImageGenerationParams>({
     mutationFn: async (params) => {
       console.log("🎯 useCreateImage mutation called with params:", params);
       
@@ -171,8 +155,8 @@ export const useCreateImage = (options?: UseMutationOptions<string, Error, Image
         throw error;
       }
 
-      console.log("✅ Returning image URL:", result.imageUrl);
-      return result.imageUrl;
+      console.log("✅ Returning image result:", result);
+      return result;
     },
     ...options,
   });

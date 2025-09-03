@@ -25,6 +25,7 @@ export const ImageGenerator = () => {
     authDialogOpen,
     setAuthDialogOpen,
     generatedImageUrl,
+    generatedImageId,
     session,
     handleGenerate,
     subscriptionStatus,
@@ -72,6 +73,7 @@ export const ImageGenerator = () => {
           isGenerating={isGenerating}
           selectedRatio={selectedRatio}
           generatedImageUrl={generatedImageUrl}
+          generatedImageId={generatedImageId}
           prompt={prompt}
           onLike={handleLikeImage}
         />

@@ -129,8 +129,73 @@ serve(async (req) => {
     const publicUrl = await processAndStoreImage(imageUrl);
     console.log('✅ Image stored with public URL:', publicUrl)
 
+    // Get user from Authorization header
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('❌ Supabase configuration missing for database save')
+      throw new Error('Supabase configuration is missing');
+    }
+
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+    // Get user ID from auth header
+    const authHeader = req.headers.get('Authorization');
+    let userId = null;
+    
+    if (authHeader) {
+      try {
+        const { data: { user }, error: userError } = await supabaseClient.auth.getUser(
+          authHeader.replace('Bearer ', '')
+        );
+        if (!userError && user) {
+          userId = user.id;
+        }
+      } catch (error) {
+        console.log('⚠️ Could not get user from auth header, continuing without user ID');
+      }
+    }
+
+    // Save to database and get image ID
+    console.log('💾 Saving image details to database...');
+    const { data: imageRecord, error: dbError } = await supabaseClient
+      .from('generated_images')
+      .insert({
+        user_id: userId,
+        prompt: prompt,
+        item_type: itemType,
+        aspect_ratio: aspectRatio,
+        image_url: publicUrl,
+        reference_image_url: referenceImageUrl,
+        status: 'completed',
+        provider: 'openai'
+      })
+      .select()
+      .single();
+
+    if (dbError) {
+      console.error('❌ Database error when saving image:', dbError);
+      // Still return success with URL even if DB save fails
+      return new Response(
+        JSON.stringify({ url: publicUrl, prompt: enhancedPrompt }),
+        { 
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+    }
+
+    console.log('✅ Image saved to database successfully with ID:', imageRecord.id);
+
     return new Response(
-      JSON.stringify({ url: publicUrl, prompt: enhancedPrompt }),
+      JSON.stringify({ 
+        url: publicUrl, 
+        imageId: imageRecord.id,
+        prompt: enhancedPrompt 
+      }),
       { 
         headers: {
           ...corsHeaders,

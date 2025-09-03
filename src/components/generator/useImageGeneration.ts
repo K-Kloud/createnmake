@@ -25,6 +25,7 @@ export const useImageGeneration = () => {
     createImage: createImageOpenAI,
     isGenerating: isGeneratingOpenAI,
     generatedImageUrl: generatedImageUrlOpenAI,
+    generatedImageId: generatedImageIdOpenAI,
     error: errorOpenAI,
     isSuccess: isSuccessOpenAI
   } = useImageGenerationAPI();
@@ -167,6 +168,7 @@ export const useImageGeneration = () => {
   // Combine results from both providers
   const isGenerating = provider === "gemini" ? isGeneratingGemini : isGeneratingOpenAI;
   const generatedImageUrl = provider === "gemini" ? geminiResult?.imageUrl : generatedImageUrlOpenAI;
+  const generatedImageId = provider === "gemini" ? geminiResult?.imageId : generatedImageIdOpenAI;
   const isSuccess = provider === "gemini" ? isSuccessGemini : isSuccessOpenAI;
   const currentError = provider === "gemini" ? errorGemini : errorOpenAI;
 
@@ -187,6 +189,7 @@ export const useImageGeneration = () => {
     authDialogOpen,
     setAuthDialogOpen,
     generatedImageUrl,
+    generatedImageId,
     session,
     handleGenerate,
     subscriptionStatus,
