@@ -3332,6 +3332,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_activity_feed: {
+        Row: {
+          activity_data: Json
+          activity_type: string
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          target_content_id: string | null
+          target_user_id: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_data?: Json
+          activity_type: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          target_content_id?: string | null
+          target_user_id?: string | null
+          user_id: string
+        }
+        Update: {
+          activity_data?: Json
+          activity_type?: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          target_content_id?: string | null
+          target_user_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_follows: {
         Row: {
           created_at: string | null
@@ -3350,6 +3383,39 @@ export type Database = {
           follower_id?: string
           following_id?: string
           id?: string
+        }
+        Relationships: []
+      }
+      user_interactions: {
+        Row: {
+          created_at: string | null
+          id: string
+          interaction_data: Json | null
+          interaction_type: string
+          session_id: string | null
+          target_content_id: number | null
+          target_user_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          interaction_data?: Json | null
+          interaction_type: string
+          session_id?: string | null
+          target_content_id?: number | null
+          target_user_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          interaction_data?: Json | null
+          interaction_type?: string
+          session_id?: string | null
+          target_content_id?: number | null
+          target_user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
