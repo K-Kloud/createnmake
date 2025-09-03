@@ -324,37 +324,80 @@ function getDimensionsFromAspectRatio(aspectRatio: string): string {
 }
 
 async function callOpenAIWithRetry(apiKey: string, prompt: string, size: string, retries = 2): Promise<Response> {
-  for (let i = 0; i <= retries; i++) {
-    try {
-      console.log(`🔄 OpenAI API attempt ${i + 1}/${retries + 1}`)
-      const response = await fetch('https://api.openai.com/v1/images/generations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-image-1",
+  // Try models in priority order: gpt-image-1 -> dall-e-3 -> dall-e-2
+  const models = [
+    { 
+      name: "gpt-image-1", 
+      params: { quality: "high", background: "auto", output_format: "png", moderation: "auto" }
+    },
+    { 
+      name: "dall-e-3", 
+      params: { quality: "hd" }
+    },
+    { 
+      name: "dall-e-2", 
+      params: {}
+    }
+  ];
+
+  for (const model of models) {
+    for (let i = 0; i <= retries; i++) {
+      try {
+        console.log(`🔄 OpenAI API attempt ${i + 1}/${retries + 1} with model: ${model.name}`)
+        
+        const requestBody: any = {
+          model: model.name,
           prompt: prompt,
           n: 1,
           size: size,
-          quality: "high",
-          background: "auto",
-          output_format: "png",
-          moderation: "auto"
-        }),
-      });
+          ...model.params
+        };
 
-      console.log(`📡 OpenAI API response status: ${response.status}`)
-      return response;
-    } catch (error) {
-      console.error(`❌ OpenAI API attempt ${i + 1} failed:`, error);
-      if (i === retries) throw error;
-      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))); // Exponential backoff
+        const response = await fetch('https://api.openai.com/v1/images/generations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        console.log(`📡 OpenAI API response status: ${response.status} for model: ${model.name}`)
+        
+        // If successful, return immediately
+        if (response.ok) {
+          return response;
+        }
+        
+        // Check if it's an organization verification error (403) for gpt-image-1
+        if (response.status === 403 && model.name === "gpt-image-1") {
+          console.log(`⚠️ Organization verification required for ${model.name}, trying next model...`);
+          break; // Try next model
+        }
+        
+        // For other errors, retry with same model first
+        if (i < retries) {
+          console.log(`⏱️ Retrying ${model.name} in ${1000 * (i + 1)}ms...`);
+          await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+          continue;
+        }
+        
+        // If all retries failed for this model, try next model
+        console.log(`❌ All retries failed for ${model.name}, trying next model...`);
+        break;
+        
+      } catch (error) {
+        console.error(`❌ OpenAI API attempt ${i + 1} failed for ${model.name}:`, error);
+        if (i === retries) {
+          console.log(`❌ All retries failed for ${model.name}, trying next model...`);
+          break; // Try next model
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))); // Exponential backoff
+      }
     }
   }
   
-  throw new Error('Failed to call OpenAI API after retries');
+  throw new Error('Failed to call OpenAI API with all available models');
 }
 
 function handleOpenAIError(errorData: any): Response {

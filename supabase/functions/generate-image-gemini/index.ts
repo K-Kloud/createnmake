@@ -274,19 +274,19 @@ REFERENCE IMAGE: Use the provided reference image as inspiration for style, comp
       };
     }
 
-    // Call Google Gemini API
-    const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${googleApiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody)
-    });
+    // Call Google Gemini API with retry logic
+    const geminiResponse = await callGeminiWithRetry(googleApiKey, requestBody);
 
     if (!geminiResponse.ok) {
-      const errorData = await geminiResponse.text();
-      console.error('❌ Gemini API error:', errorData);
-      throw new Error(`Gemini API error: ${geminiResponse.status} - ${errorData}`);
+      const errorText = await geminiResponse.text();
+      console.error('❌ Gemini API error:', errorText);
+      
+      // Handle quota errors specifically
+      if (geminiResponse.status === 429) {
+        throw new Error(`Gemini API quota exceeded. Please try again later or upgrade your plan.`);
+      }
+      
+      throw new Error(`Gemini API error: ${geminiResponse.status} - ${errorText}`);
     }
 
     const geminiData = await geminiResponse.json();
