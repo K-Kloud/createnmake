@@ -37,7 +37,10 @@ export const ImageOverlay = ({
           <Button
             variant="destructive"
             size="sm"
-            onClick={onDelete}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete?.(e);
+            }}
             disabled={isDeleting}
             className="bg-red-500/90 backdrop-blur-sm hover:bg-red-600/90 text-white border-none"
           >
