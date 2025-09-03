@@ -11,6 +11,7 @@ import { UsageInfo } from "./form/UsageInfo";
 import { ItemTypePreviews } from "./form/ItemTypePreviews";
 
 import { EnhancedKeywordSuggestions } from "./EnhancedKeywordSuggestions";
+import { ProviderSelect } from "./ProviderSelect";
 
 interface GenerationFormProps {
   prompt: string;
@@ -119,6 +120,11 @@ export const GenerationForm = ({
             <CardTitle className="text-sm">Advanced Options</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            <ProviderSelect
+              value={provider}
+              onChange={onProviderChange || (() => {})}
+              disabled={isGenerating}
+            />
             {showItemPreviews && selectedItem && (
               <ItemTypePreviews selectedItem={selectedItem} />
             )}
