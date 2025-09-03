@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useReferenceImageUpload } from "@/hooks/useReferenceImageUpload";
 import { useImageGenerationAPI } from "@/hooks/useImageGenerationAPI";
 import { useCreateImageWithGemini } from "@/services/geminiImageGeneration";
+import { useCreateImageWithXAI } from "@/services/xaiImageGeneration";
 import { useAuthDialog } from "@/hooks/useAuthDialog";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
@@ -37,6 +38,14 @@ export const useImageGeneration = () => {
     error: errorGemini,
     isSuccess: isSuccessGemini
   } = useCreateImageWithGemini();
+
+  const {
+    mutate: createImageXAI,
+    isPending: isGeneratingXAI,
+    data: xaiResult,
+    error: errorXAI,
+    isSuccess: isSuccessXAI
+  } = useCreateImageWithXAI();
 
   // Reference image upload hook
   const { uploadReferenceImage, uploading: uploadingReference } = useReferenceImageUpload();
@@ -123,6 +132,13 @@ export const useImageGeneration = () => {
           aspectRatio: selectedRatio,
           referenceImageUrl,
         });
+      } else if (provider === "xai") {
+        createImageXAI({
+          prompt,
+          itemType: selectedItem,
+          aspectRatio: selectedRatio,
+          referenceImageUrl,
+        });
       } else {
         createImageOpenAI({
           prompt,
@@ -165,12 +181,36 @@ export const useImageGeneration = () => {
     refetchStatus
   ]);
 
-  // Combine results from both providers
-  const isGenerating = provider === "gemini" ? isGeneratingGemini : isGeneratingOpenAI;
-  const generatedImageUrl = provider === "gemini" ? geminiResult?.imageUrl : generatedImageUrlOpenAI;
-  const generatedImageId = provider === "gemini" ? geminiResult?.imageId : generatedImageIdOpenAI;
-  const isSuccess = provider === "gemini" ? isSuccessGemini : isSuccessOpenAI;
-  const currentError = provider === "gemini" ? errorGemini : errorOpenAI;
+  // Combine results from all providers
+  const isGenerating = provider === "gemini" 
+    ? isGeneratingGemini 
+    : provider === "xai" 
+      ? isGeneratingXAI 
+      : isGeneratingOpenAI;
+      
+  const generatedImageUrl = provider === "gemini" 
+    ? geminiResult?.imageUrl 
+    : provider === "xai" 
+      ? xaiResult?.imageUrl 
+      : generatedImageUrlOpenAI;
+      
+  const generatedImageId = provider === "gemini" 
+    ? geminiResult?.imageId 
+    : provider === "xai" 
+      ? xaiResult?.imageId 
+      : generatedImageIdOpenAI;
+      
+  const isSuccess = provider === "gemini" 
+    ? isSuccessGemini 
+    : provider === "xai" 
+      ? isSuccessXAI 
+      : isSuccessOpenAI;
+      
+  const currentError = provider === "gemini" 
+    ? errorGemini 
+    : provider === "xai" 
+      ? errorXAI 
+      : errorOpenAI;
 
   return {
     prompt,

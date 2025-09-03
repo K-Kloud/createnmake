@@ -1750,6 +1750,7 @@ export type Database = {
           created_at: string | null
           edit_prompt: string | null
           edit_version: number | null
+          generation_settings: Json | null
           id: number
           image_url: string | null
           is_edited: boolean | null
@@ -1760,6 +1761,8 @@ export type Database = {
           original_image_id: number | null
           price: string | null
           prompt: string
+          provider: string | null
+          provider_version: string | null
           reference_image_url: string | null
           status: string
           tags: string[] | null
@@ -1775,6 +1778,7 @@ export type Database = {
           created_at?: string | null
           edit_prompt?: string | null
           edit_version?: number | null
+          generation_settings?: Json | null
           id?: never
           image_url?: string | null
           is_edited?: boolean | null
@@ -1785,6 +1789,8 @@ export type Database = {
           original_image_id?: number | null
           price?: string | null
           prompt: string
+          provider?: string | null
+          provider_version?: string | null
           reference_image_url?: string | null
           status?: string
           tags?: string[] | null
@@ -1800,6 +1806,7 @@ export type Database = {
           created_at?: string | null
           edit_prompt?: string | null
           edit_version?: number | null
+          generation_settings?: Json | null
           id?: never
           image_url?: string | null
           is_edited?: boolean | null
@@ -1810,6 +1817,8 @@ export type Database = {
           original_image_id?: number | null
           price?: string | null
           prompt?: string
+          provider?: string | null
+          provider_version?: string | null
           reference_image_url?: string | null
           status?: string
           tags?: string[] | null
@@ -2667,6 +2676,36 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_metrics: {
+        Row: {
+          id: string
+          metadata: Json | null
+          metric_type: string
+          metric_value: number
+          provider: string
+          provider_version: string | null
+          recorded_at: string | null
+        }
+        Insert: {
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          metric_value: number
+          provider: string
+          provider_version?: string | null
+          recorded_at?: string | null
+        }
+        Update: {
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          metric_value?: number
+          provider?: string
+          provider_version?: string | null
+          recorded_at?: string | null
+        }
+        Relationships: []
+      }
       quote_requests: {
         Row: {
           admin_notes: string | null
@@ -3387,6 +3426,51 @@ export type Database = {
           created_at?: string | null
           id?: never
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      video_generations: {
+        Row: {
+          created_at: string | null
+          duration_seconds: number | null
+          generation_settings: Json | null
+          id: number
+          prompt: string
+          provider: string | null
+          provider_version: string | null
+          status: string | null
+          thumbnail_url: string | null
+          updated_at: string | null
+          user_id: string | null
+          video_url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          duration_seconds?: number | null
+          generation_settings?: Json | null
+          id?: number
+          prompt: string
+          provider?: string | null
+          provider_version?: string | null
+          status?: string | null
+          thumbnail_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          video_url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          duration_seconds?: number | null
+          generation_settings?: Json | null
+          id?: number
+          prompt?: string
+          provider?: string | null
+          provider_version?: string | null
+          status?: string | null
+          thumbnail_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          video_url?: string | null
         }
         Relationships: []
       }

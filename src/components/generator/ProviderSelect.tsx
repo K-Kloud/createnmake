@@ -24,10 +24,10 @@ export const ProviderSelect = ({ value, onChange, disabled }: ProviderSelectProp
               <RadioGroupItem value="openai" id="openai" />
               <div className="flex-1">
                 <Label htmlFor="openai" className="text-sm font-medium cursor-pointer">
-                  OpenAI DALL-E 3
+                  OpenAI GPT-Image-1
                 </Label>
                 <p className="text-xs text-white/60 mt-1">
-                  High-quality, detailed images with artistic style
+                  Latest model with advanced controls and high quality
                 </p>
               </div>
             </div>
@@ -44,6 +44,22 @@ export const ProviderSelect = ({ value, onChange, disabled }: ProviderSelectProp
                 </Label>
                 <p className="text-xs text-white/60 mt-1">
                   Fast generation with enhanced prompts and context awareness
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-black/20 border-white/10 hover:border-white/20 transition-colors">
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-3">
+              <RadioGroupItem value="xai" id="xai" />
+              <div className="flex-1">
+                <Label htmlFor="xai" className="text-sm font-medium cursor-pointer">
+                  xAI Grok 4
+                </Label>
+                <p className="text-xs text-white/60 mt-1">
+                  Cutting-edge model with unique style and capabilities
                 </p>
               </div>
             </div>

@@ -227,3 +227,6 @@ verify_jwt = true
 
 [functions.generate-image-gemini]
 verify_jwt = true
+
+[functions.generate-image-xai]
+verify_jwt = true

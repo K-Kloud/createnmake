@@ -11,6 +11,7 @@ import { MakerSelectionDialog } from "./MakerSelectionDialog";
 import { useImageCard } from "./hooks/useImageCard";
 import { ImageZoom } from "./image-card/ImageZoom";
 import { ImagePrompt } from "./image-card/ImagePrompt";
+import { ImageProviderInfo } from "../generator/ImageProviderInfo";
 
 interface ImageCardProps {
   image: {
@@ -36,6 +37,9 @@ interface ImageCardProps {
     };
     user_id: string;
     price?: string;
+    provider?: string;
+    provider_version?: string;
+    generation_settings?: Record<string, any>;
   };
   onLike: (imageId: number) => void;
   onView: (imageId: number) => void;
@@ -118,6 +122,15 @@ export const ImageCard = ({
               prompt={image.prompt}
               initialShowPrompt={showPrompt}
             />
+            
+            {image.provider && (
+              <ImageProviderInfo
+                provider={image.provider}
+                provider_version={image.provider_version}
+                generation_settings={image.generation_settings}
+                className="text-xs"
+              />
+            )}
             
             <ImageActions
               metrics={image.metrics || { like: 0, comment: 0, view: 0 }}

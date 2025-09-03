@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 
@@ -16,7 +15,7 @@ serve(async (req) => {
   try {
     const { prompt, itemType, aspectRatio, referenceImageUrl } = await req.json()
     
-    console.log('🚀 Starting image generation with params:', {
+    console.log('🚀 Starting xAI Grok image generation with params:', {
       prompt,
       itemType,
       aspectRatio,
@@ -54,75 +53,35 @@ serve(async (req) => {
     const enhancedPrompt = createEnhancedPrompt(sanitizedPrompt, itemType);
     console.log('📝 Enhanced prompt created:', enhancedPrompt)
 
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-    if (!OPENAI_API_KEY) {
-      console.error('❌ OPENAI_API_KEY not configured')
-      throw new Error('OPENAI_API_KEY is not configured');
+    const XAI_API_KEY = Deno.env.get('XAI_API_KEY');
+    if (!XAI_API_KEY) {
+      console.error('❌ XAI_API_KEY not configured')
+      throw new Error('XAI_API_KEY is not configured');
     }
 
     // Get dimensions from aspect ratio
-    const size = getDimensionsFromAspectRatio(aspectRatio);
-    console.log('📐 Image size determined:', size)
+    const dimensions = getDimensionsFromAspectRatio(aspectRatio);
+    console.log('📐 Image dimensions determined:', dimensions)
 
-    let apiCall;
-    if (referenceImageUrl) {
-      console.log('🖼️ Using reference image for variation:', referenceImageUrl);
-      
-      // For reference images, use the variations endpoint
-      try {
-        // Download the reference image
-        const imageResponse = await fetch(referenceImageUrl);
-        if (!imageResponse.ok) {
-          throw new Error('Failed to fetch reference image');
-        }
-        const imageBlob = await imageResponse.blob();
-        
-        // Create form data for the variations API
-        const formData = new FormData();
-        formData.append('image', imageBlob, 'reference.png');
-        formData.append('n', '1');
-        formData.append('size', size);
-        formData.append('response_format', 'url');
-
-        apiCall = fetch('https://api.openai.com/v1/images/variations', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${OPENAI_API_KEY}`,
-          },
-          body: formData,
-        });
-        
-        console.log('🎨 Calling OpenAI Variations API with reference image...');
-      } catch (referenceError) {
-        console.error('❌ Error processing reference image:', referenceError);
-        // Fall back to regular generation without reference
-        apiCall = callOpenAIWithRetry(OPENAI_API_KEY, enhancedPrompt, size);
-        console.log('🔄 Falling back to regular generation without reference image');
-      }
-    } else {
-      // Regular image generation without reference
-      console.log('🎨 Calling OpenAI API without reference image...')
-      apiCall = callOpenAIWithRetry(OPENAI_API_KEY, enhancedPrompt, size);
-    }
-    
-    const response = await apiCall;
+    console.log('🎨 Calling xAI Grok API...')
+    const response = await callXAIWithRetry(XAI_API_KEY, enhancedPrompt, dimensions);
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('❌ OpenAI API error:', errorData);
-      return handleOpenAIError(errorData);
+      console.error('❌ xAI API error:', errorData);
+      return handleXAIError(errorData);
     }
 
     const data = await response.json();
-    console.log('✅ OpenAI response received:', { hasData: !!data, hasUrl: !!data?.data?.[0]?.url })
+    console.log('✅ xAI response received:', { hasData: !!data, hasImages: !!data?.images?.length })
 
-    if (!data?.data?.[0]?.url) {
-      console.error('❌ No image URL in OpenAI response')
-      throw new Error('No image URL returned from the API');
+    if (!data?.images?.[0]?.url) {
+      console.error('❌ No image URL in xAI response')
+      throw new Error('No image URL returned from the xAI API');
     }
 
-    const imageUrl = data.data[0].url;
-    console.log('🖼️ Image URL received from OpenAI:', imageUrl)
+    const imageUrl = data.images[0].url;
+    console.log('🖼️ Image URL received from xAI:', imageUrl)
 
     // Process and store the image
     console.log('💾 Processing and storing image...')
@@ -169,13 +128,12 @@ serve(async (req) => {
         image_url: publicUrl,
         reference_image_url: referenceImageUrl,
         status: 'completed',
-        provider: 'openai',
-        provider_version: 'gpt-image-1',
+        provider: 'xai',
+        provider_version: 'grok-4',
         generation_settings: {
-          quality: 'high',
-          background: 'auto',
-          output_format: 'png',
-          moderation: 'auto'
+          model: 'grok-image',
+          enhanced_prompt: enhancedPrompt,
+          dimensions: dimensions
         }
       })
       .select()
@@ -211,7 +169,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error('💥 Error in generate-image function:', error);
+    console.error('💥 Error in generate-image-xai function:', error);
     
     return new Response(
       JSON.stringify({ 
@@ -253,10 +211,6 @@ function sanitizePrompt(prompt: string): string | null {
 }
 
 function createEnhancedPrompt(prompt: string, itemType: string): string {
-  // Import clothing items to check for detailed prompts
-  // Note: In a real implementation, you'd want to import this properly
-  // For now, we'll implement a lookup mechanism
-  
   // Check if we have a detailed prompt for this specific item
   const detailedPrompt = getDetailedPromptForItem(itemType);
   if (detailedPrompt) {
@@ -281,12 +235,11 @@ function createEnhancedPrompt(prompt: string, itemType: string): string {
   
   return `Create a professional, high-quality studio photograph of a ${baseType}: ${prompt}. 
 Studio lighting, clean white background, detailed fabric texture, commercial product photography style, 
-professional fashion photography, crisp details, high resolution, appropriate for e-commerce.`;
+professional fashion photography, crisp details, high resolution, appropriate for e-commerce. Ultra realistic, 8K quality.`;
 }
 
 function getDetailedPromptForItem(itemType: string): string | null {
   // Define detailed prompts for common items
-  // This is a simplified version - in production, you'd query the clothing items database
   const detailedPrompts: Record<string, string> = {
     'basic-t-shirt-crew-neck': "White cotton crew neck t-shirt, worn by a young Nigerian woman as a model, photo realistic, studio lighting, white background, detailed fabric texture, 8K",
     'v-neck-t-shirt': "Heather grey v-neck t-shirt, worn by a young Nigerian woman as a model, photo realistic, studio lighting, white background, soft cotton texture, 8K",
@@ -305,68 +258,68 @@ function getDetailedPromptForItem(itemType: string): string | null {
   return detailedPrompts[itemType] || null;
 }
 
-function getDimensionsFromAspectRatio(aspectRatio: string): string {
+function getDimensionsFromAspectRatio(aspectRatio: string): { width: number, height: number } {
   switch (aspectRatio) {
     case 'portrait':
-      return "1024x1792";
+      return { width: 1024, height: 1792 };
     case 'landscape':
     case 'youtube':
-      return "1792x1024";
+      return { width: 1792, height: 1024 };
     case 'story':
-      return "1024x1792";
+      return { width: 1024, height: 1792 };
     case 'facebook':
     case 'linkedin':
     case 'twitter':
-      return "1024x1024";
+      return { width: 1024, height: 1024 };
     default:
-      return "1024x1024";
+      return { width: 1024, height: 1024 };
   }
 }
 
-async function callOpenAIWithRetry(apiKey: string, prompt: string, size: string, retries = 2): Promise<Response> {
+async function callXAIWithRetry(apiKey: string, prompt: string, dimensions: { width: number, height: number }, retries = 2): Promise<Response> {
   for (let i = 0; i <= retries; i++) {
     try {
-      console.log(`🔄 OpenAI API attempt ${i + 1}/${retries + 1}`)
-      const response = await fetch('https://api.openai.com/v1/images/generations', {
+      console.log(`🔄 xAI API attempt ${i + 1}/${retries + 1}`)
+      const response = await fetch('https://api.x.ai/v1/images/generations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: "gpt-image-1",
           prompt: prompt,
-          n: 1,
-          size: size,
-          quality: "high",
-          background: "auto",
-          output_format: "png",
-          moderation: "auto"
+          width: dimensions.width,
+          height: dimensions.height,
+          steps: 4,
+          guidance_scale: 7.5,
+          seed: Math.floor(Math.random() * 1000000),
+          num_images: 1,
+          response_format: "url"
         }),
       });
 
-      console.log(`📡 OpenAI API response status: ${response.status}`)
+      console.log(`📡 xAI API response status: ${response.status}`)
       return response;
     } catch (error) {
-      console.error(`❌ OpenAI API attempt ${i + 1} failed:`, error);
+      console.error(`❌ xAI API attempt ${i + 1} failed:`, error);
       if (i === retries) throw error;
       await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))); // Exponential backoff
     }
   }
   
-  throw new Error('Failed to call OpenAI API after retries');
+  throw new Error('Failed to call xAI API after retries');
 }
 
-function handleOpenAIError(errorData: any): Response {
+function handleXAIError(errorData: any): Response {
   let errorMessage = "Failed to generate image";
   let statusCode = 500;
 
-  console.error('🔍 Analyzing OpenAI error:', errorData)
+  console.error('🔍 Analyzing xAI error:', errorData)
 
   if (errorData.error) {
     const error = errorData.error;
     
-    if (error.type === 'image_generation_user_error' || 
+    if (error.type === 'content_policy_violation' || 
         error.message?.includes('safety') || 
         error.message?.includes('policy')) {
       errorMessage = "Your prompt was flagged by our safety system. Please try rephrasing it with different, more appropriate terms.";
@@ -385,7 +338,7 @@ function handleOpenAIError(errorData: any): Response {
       details: errorData.error,
       suggestions: [
         "Try using more specific, descriptive terms",
-        "Avoid potentially sensitive content",
+        "Avoid potentially sensitive content", 
         "Focus on clothing, style, and fashion elements",
         "Use professional fashion terminology"
       ]
@@ -398,7 +351,7 @@ function handleOpenAIError(errorData: any): Response {
 }
 
 async function processAndStoreImage(imageUrl: string): Promise<string> {
-  console.log('📥 Fetching generated image from OpenAI...')
+  console.log('📥 Fetching generated image from xAI...')
   
   // Fetch the generated image
   const imageResponse = await fetch(imageUrl);
@@ -426,7 +379,7 @@ async function processAndStoreImage(imageUrl: string): Promise<string> {
   await ensureBucketExists(supabaseClient);
 
   // Upload to Supabase Storage
-  const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
+  const fileName = `xai_${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
   console.log('📤 Uploading to storage with filename:', fileName)
   
   const { data: uploadData, error: uploadError } = await supabaseClient.storage
@@ -480,7 +433,7 @@ async function ensureBucketExists(supabaseClient: any) {
       console.log('✅ Bucket already exists');
     }
   } catch (bucketError) {
-    console.error('❌ Error in bucket operations:', bucketError);
-    // Continue anyway, the upload will fail if the bucket truly doesn't exist
+    console.error('❌ Bucket operation error:', bucketError);
+    // Continue without throwing - bucket might already exist from another process
   }
 }

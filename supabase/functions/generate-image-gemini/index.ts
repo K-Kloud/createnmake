@@ -322,7 +322,13 @@ REFERENCE IMAGE: Use the provided reference image as inspiration for style, comp
         image_url: `data:${mimeType};base64,${imageBase64}`,
         reference_image_url: referenceImageUrl,
         status: 'completed',
-        provider: 'google-gemini'
+        provider: 'google-gemini',
+        provider_version: 'gemini-2.5-flash-image-preview',
+        generation_settings: {
+          model: 'gemini-2.5-flash-image-preview',
+          enhanced_prompt: enhancedPrompt,
+          has_reference_image: !!referenceImageUrl
+        }
       })
       .select()
       .single();
