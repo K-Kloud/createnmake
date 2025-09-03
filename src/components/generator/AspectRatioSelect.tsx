@@ -28,7 +28,7 @@ interface AspectRatioSelectProps {
 }
 
 export const AspectRatioSelect = ({ value, onChange, disabled = false }: AspectRatioSelectProps) => {
-  const selectedRatio = aspectRatios[value];
+  const selectedRatio = aspectRatios[value] || aspectRatios.square;
   
   return (
     <div>

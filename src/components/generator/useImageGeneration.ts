@@ -15,7 +15,7 @@ export const useImageGeneration = () => {
   // State management
   const [prompt, setPrompt] = useState("");
   const [selectedItem, setSelectedItem] = useState("");
-  const [selectedRatio, setSelectedRatio] = useState("1:1");
+  const [selectedRatio, setSelectedRatio] = useState("square");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
   const [provider, setProvider] = useState<string>("openai");
