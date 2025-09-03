@@ -224,3 +224,6 @@ enabled = true
 # Edge Functions configuration
 [functions.user-notifications]
 verify_jwt = true
+
+[functions.generate-image-gemini]
+verify_jwt = true

@@ -19,6 +19,8 @@ export const ImageGenerator = () => {
     setPreviewOpen,
     referenceImage,
     setReferenceImage,
+    provider,
+    setProvider,
     isGenerating,
     authDialogOpen,
     setAuthDialogOpen,
@@ -58,6 +60,8 @@ export const ImageGenerator = () => {
           isSignedIn={!!session?.user}
           remainingImages={remainingImages}
           showItemPreviews={true}
+          provider={provider}
+          onProviderChange={setProvider}
         />
 
         <PreviewDialog

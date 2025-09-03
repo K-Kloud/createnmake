@@ -26,6 +26,8 @@ interface GenerationFormProps {
   isSignedIn: boolean;
   remainingImages?: number;
   showItemPreviews?: boolean;
+  provider?: string;
+  onProviderChange?: (provider: string) => void;
 }
 
 export const GenerationForm = ({
@@ -42,6 +44,8 @@ export const GenerationForm = ({
   isSignedIn,
   remainingImages,
   showItemPreviews = false,
+  provider = "openai",
+  onProviderChange,
 }: GenerationFormProps) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
 

@@ -1,114 +1,174 @@
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useReferenceImageUpload } from "@/hooks/useReferenceImageUpload";
 import { useImageGenerationAPI } from "@/hooks/useImageGenerationAPI";
+import { useCreateImageWithGemini } from "@/services/geminiImageGeneration";
 import { useAuthDialog } from "@/hooks/useAuthDialog";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useAuth } from "@/hooks/useAuth";
 
 export const useImageGeneration = () => {
-  const [prompt, setPrompt] = useState("");
-  const [selectedItem, setSelectedItem] = useState("tops"); // Changed from "product" to "tops"
-  const [selectedRatio, setSelectedRatio] = useState("square");
-  const [previewOpen, setPreviewOpen] = useState(false);
   const { toast } = useToast();
+  const { session } = useAuth();
   
-  // Use our new smaller hooks
-  const { referenceImage, setReferenceImage, uploadReferenceImage } = useReferenceImageUpload();
-  const { createImage, isGenerating, generatedImageUrl } = useImageGenerationAPI();
-  const { authDialogOpen, setAuthDialogOpen, isSignedIn, session } = useAuthDialog();
-  const { 
-    subscriptionStatus, 
-    canGenerateImage, 
+  // State management
+  const [prompt, setPrompt] = useState("");
+  const [selectedItem, setSelectedItem] = useState("");
+  const [selectedRatio, setSelectedRatio] = useState("1:1");
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [referenceImage, setReferenceImage] = useState<File | null>(null);
+  const [provider, setProvider] = useState<string>("openai");
+
+  // Image generation API hooks
+  const {
+    createImage: createImageOpenAI,
+    isGenerating: isGeneratingOpenAI,
+    generatedImageUrl: generatedImageUrlOpenAI,
+    error: errorOpenAI,
+    isSuccess: isSuccessOpenAI
+  } = useImageGenerationAPI();
+
+  const {
+    mutate: createImageGemini,
+    isPending: isGeneratingGemini,
+    data: geminiResult,
+    error: errorGemini,
+    isSuccess: isSuccessGemini
+  } = useCreateImageWithGemini();
+
+  // Reference image upload hook
+  const { uploadReferenceImage } = useReferenceImageUpload();
+
+  // Auth dialog hook
+  const { authDialogOpen, setAuthDialogOpen } = useAuthDialog();
+
+  // Subscription and limits
+  const {
+    subscriptionStatus,
+    canGenerateImage,
     remainingImages,
     refetchStatus
   } = useSubscription();
 
-  console.log("🎨 useImageGeneration state:", {
-    prompt,
-    selectedItem,
-    selectedRatio,
-    previewOpen,
-    isGenerating,
-    hasGeneratedImageUrl: !!generatedImageUrl,
-    isSignedIn,
-    canGenerateImage
-  });
+  // Main generation handler
+  const handleGenerate = useCallback(async () => {
+    console.log("🎯 handleGenerate called with:", {
+      prompt,
+      selectedItem,
+      selectedRatio,
+      hasReferenceImage: !!referenceImage,
+      isAuthenticated: !!session?.user,
+      canGenerate: canGenerateImage,
+      remainingImages,
+      provider
+    });
 
-  // Handle generate button click
-  const handleGenerate = async () => {
-    console.log("🎯 handleGenerate called");
-    
-    if (!isSignedIn) {
-      console.log("❌ User not signed in, opening auth dialog");
+    // Check authentication
+    if (!session?.user) {
+      console.log("❌ User not authenticated, opening auth dialog");
       setAuthDialogOpen(true);
       return;
     }
 
+    // Validate required fields
     if (!prompt.trim()) {
-      console.log("❌ Empty prompt");
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Please enter a prompt",
+        title: "Missing Prompt",
+        description: "Please describe what you want to create.",
       });
       return;
     }
 
-    // Check subscription limits
+    if (!selectedItem) {
+      toast({
+        variant: "destructive", 
+        title: "Missing Item Type",
+        description: "Please select a clothing item type.",
+      });
+      return;
+    }
+
+    // Check generation limits
     if (!canGenerateImage) {
       console.log("❌ Generation limit reached");
-      // Prompt for upgrade
       toast({
         variant: "destructive",
-        title: "Image Limit Reached",
-        description: `You've reached your ${subscriptionStatus?.monthly_image_limit || 5} image limit for this month. Please upgrade your subscription to generate more images.`,
+        title: "Generation Limit Reached",
+        description: `You've reached your monthly limit of ${subscriptionStatus?.monthly_image_limit} images. Upgrade your plan to generate more.`,
+        duration: 5000,
       });
       return;
     }
 
     try {
-      console.log("🖼️ Starting image generation process...");
+      console.log("📁 Uploading reference image if provided...");
       
       // Upload reference image if provided
-      let referenceImageUrl = null;
+      let referenceImageUrl: string | undefined;
       if (referenceImage) {
-        console.log("📎 Uploading reference image...");
         referenceImageUrl = await uploadReferenceImage(referenceImage);
-        if (!referenceImageUrl) {
-          console.log("❌ Reference image upload failed");
-          return; // Upload failed
-        }
         console.log("✅ Reference image uploaded:", referenceImageUrl);
       }
 
-      const generateParams = {
-        prompt,
-        itemType: selectedItem,
-        aspectRatio: selectedRatio,
-        referenceImageUrl,
-      };
-
-      console.log("🚀 Calling createImage with params:", generateParams);
-
-      // Call the generate image function with all parameters
-      createImage(generateParams);
+      console.log(`🎨 Starting image generation with ${provider}...`);
       
-      // Open preview dialog when generation starts
-      console.log("🎬 Opening preview dialog");
+      // Generate image based on selected provider
+      if (provider === "gemini") {
+        createImageGemini({
+          prompt,
+          itemType: selectedItem,
+          aspectRatio: selectedRatio,
+          referenceImageUrl,
+        });
+      } else {
+        createImageOpenAI({
+          prompt,
+          itemType: selectedItem,
+          aspectRatio: selectedRatio,
+          referenceImageUrl,
+        });
+      }
+
+      // Open preview dialog
       setPreviewOpen(true);
       
-      // Refresh subscription status after generating an image
+      // Refresh subscription status
       refetchStatus();
-    } catch (error: any) {
-      console.error("💥 Generation preparation error:", error);
+      
+    } catch (error) {
+      console.error("💥 Error in handleGenerate:", error);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: error.message || "Failed to prepare for image generation",
+        title: "Generation Failed",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
       });
     }
-  };
+  }, [
+    prompt,
+    selectedItem,
+    selectedRatio,
+    referenceImage,
+    session?.user,
+    canGenerateImage,
+    remainingImages,
+    subscriptionStatus?.monthly_image_limit,
+    provider,
+    setAuthDialogOpen,
+    toast,
+    uploadReferenceImage,
+    createImageOpenAI,
+    createImageGemini,
+    setPreviewOpen,
+    refetchStatus
+  ]);
+
+  // Combine results from both providers
+  const isGenerating = provider === "gemini" ? isGeneratingGemini : isGeneratingOpenAI;
+  const generatedImageUrl = provider === "gemini" ? geminiResult?.imageUrl : generatedImageUrlOpenAI;
+  const isSuccess = provider === "gemini" ? isSuccessGemini : isSuccessOpenAI;
+  const currentError = provider === "gemini" ? errorGemini : errorOpenAI;
 
   return {
     prompt,
@@ -121,6 +181,8 @@ export const useImageGeneration = () => {
     setPreviewOpen,
     referenceImage,
     setReferenceImage,
+    provider,
+    setProvider,
     isGenerating,
     authDialogOpen,
     setAuthDialogOpen,
