@@ -4,12 +4,13 @@ interface UseIntersectionObserverOptions {
   threshold?: number | number[];
   rootMargin?: string;
   root?: Element | null;
+  onIntersect?: () => void;
 }
 
 export const useIntersectionObserver = (options: UseIntersectionObserverOptions = {}) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [entry, setEntry] = useState<IntersectionObserverEntry | null>(null);
-  const elementRef = useRef<HTMLElement | null>(null);
+  const elementRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const element = elementRef.current;
@@ -19,6 +20,10 @@ export const useIntersectionObserver = (options: UseIntersectionObserverOptions 
       ([entry]) => {
         setIsIntersecting(entry.isIntersecting);
         setEntry(entry);
+        
+        if (entry.isIntersecting && options.onIntersect) {
+          options.onIntersect();
+        }
       },
       {
         threshold: options.threshold || 0,
@@ -32,7 +37,7 @@ export const useIntersectionObserver = (options: UseIntersectionObserverOptions 
     return () => {
       observer.disconnect();
     };
-  }, [options.threshold, options.rootMargin, options.root]);
+  }, [options.threshold, options.rootMargin, options.root, options.onIntersect]);
 
   return {
     ref: elementRef,
