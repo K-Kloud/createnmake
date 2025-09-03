@@ -933,6 +933,42 @@ export type Database = {
         }
         Relationships: []
       }
+      collection_images: {
+        Row: {
+          added_at: string
+          collection_id: string
+          id: string
+          image_id: number
+        }
+        Insert: {
+          added_at?: string
+          collection_id: string
+          id?: string
+          image_id: number
+        }
+        Update: {
+          added_at?: string
+          collection_id?: string
+          id?: string
+          image_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_images_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "image_collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_images_image_id_fkey"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "generated_images"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comment_replies: {
         Row: {
           comment_id: number | null
@@ -1935,6 +1971,65 @@ export type Database = {
           y_coordinate?: number
         }
         Relationships: []
+      }
+      image_collections: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_public: boolean | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      image_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          image_id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_id: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "image_favorites_image_id_fkey"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "generated_images"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       image_likes: {
         Row: {
