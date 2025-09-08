@@ -138,6 +138,7 @@ export const GenerationForm = ({
               value={provider}
               onChange={onProviderChange || (() => {})}
               disabled={isGenerating}
+              hasReferenceImage={!!referenceImage}
             />
             
             {/* Advanced Provider Comparison */}

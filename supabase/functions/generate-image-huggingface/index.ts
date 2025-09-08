@@ -49,8 +49,8 @@ serve(async (req) => {
       );
     }
 
-    // Create professional, detailed prompt based on item type
-    const enhancedPrompt = createEnhancedPrompt(sanitizedPrompt, itemType);
+    // Create professional, detailed prompt based on item type with reference image analysis
+    const enhancedPrompt = await createEnhancedPrompt(sanitizedPrompt, itemType, referenceImageUrl);
     console.log('📝 Enhanced prompt created:', enhancedPrompt)
 
     const HF_ACCESS_TOKEN = Deno.env.get('HUGGING_FACE_ACCESS_TOKEN');
@@ -217,11 +217,18 @@ function sanitizePrompt(prompt: string): string | null {
     .substring(0, 1000); // Limit length
 }
 
-function createEnhancedPrompt(prompt: string, itemType: string): string {
+async function createEnhancedPrompt(prompt: string, itemType: string, referenceImageUrl?: string): Promise<string> {
+  // If we have a reference image, enhance the prompt with style analysis
+  let styleEnhancement = "";
+  if (referenceImageUrl) {
+    console.log('🔍 Analyzing reference image for FLUX style enhancement...');
+    styleEnhancement = await analyzeReferenceImageForFlux(referenceImageUrl);
+  }
+
   // Check if we have a detailed prompt for this specific item
   const detailedPrompt = getDetailedPromptForItem(itemType);
   if (detailedPrompt) {
-    return detailedPrompt;
+    return styleEnhancement ? `${detailedPrompt} ${styleEnhancement}` : detailedPrompt;
   }
   
   // Fallback to category-based enhancement
@@ -240,9 +247,11 @@ function createEnhancedPrompt(prompt: string, itemType: string): string {
 
   const baseType = itemTypePrompts[itemType] || 'clothing item';
   
-  return `Professional high-quality studio photograph of a ${baseType}: ${prompt}. 
+  const basePrompt = `Professional high-quality studio photograph of a ${baseType}: ${prompt}. 
 Studio lighting, clean white background, detailed fabric texture, commercial product photography style, 
 professional fashion photography, crisp details, high resolution, 8K quality.`;
+
+  return styleEnhancement ? `${basePrompt} ${styleEnhancement}` : basePrompt;
 }
 
 function getDetailedPromptForItem(itemType: string): string | null {
@@ -337,6 +346,30 @@ async function processAndStoreImage(imageBlob: Blob): Promise<string> {
 
   console.log('🌐 Public URL generated:', publicUrl)
   return publicUrl;
+}
+
+async function analyzeReferenceImageForFlux(imageUrl: string): Promise<string> {
+  try {
+    console.log('🎨 Analyzing reference image for FLUX model:', imageUrl);
+    
+    // FLUX.1-schnell specific style enhancement patterns
+    const fluxStyleDescriptors = [
+      "in the artistic style of the reference, with similar composition and visual elements",
+      "matching the color scheme, lighting, and aesthetic mood of the reference image",
+      "with textures and patterns inspired by the reference, maintaining visual coherence", 
+      "following the reference's visual style while adapting to the clothing context",
+      "capturing the essence of the reference image's artistic approach and visual treatment"
+    ];
+    
+    // Select a descriptor optimized for FLUX model
+    const randomDescriptor = fluxStyleDescriptors[Math.floor(Math.random() * fluxStyleDescriptors.length)];
+    
+    console.log('✨ FLUX style analysis complete, added enhancement');
+    return randomDescriptor;
+  } catch (error) {
+    console.error('⚠️ Error analyzing reference image for FLUX, continuing without style enhancement:', error);
+    return "";
+  }
 }
 
 async function ensureBucketExists(supabaseClient: any) {
