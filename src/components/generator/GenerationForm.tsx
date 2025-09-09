@@ -5,6 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SearchableItemSelect } from "./SearchableItemSelect";
 import { AspectRatioSelect } from "./AspectRatioSelect";
 import { ReferenceImageUpload } from "./ReferenceImageUpload";
+import { ReferenceProcessingOptionsComponent, ReferenceProcessingOptions } from "./ReferenceProcessingOptions";
+import { useReferenceImageAnalysis } from "@/hooks/useReferenceImageAnalysis";
+import { useSmartProviderFallback } from "@/hooks/useSmartProviderFallback";
+import { generateEnhancedPromptFromAnalysis } from "@/services/imageAnalysis";
 import { PromptInput } from "./form/PromptInput";
 import { GenerateButton } from "./form/GenerateButton";
 import { UsageInfo } from "./form/UsageInfo";
@@ -53,6 +57,16 @@ export const GenerationForm = ({
   onProviderChange,
 }: GenerationFormProps) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [processingOptions, setProcessingOptions] = useState<ReferenceProcessingOptions>({
+    extractColors: true,
+    analyzeStyle: true,
+    detectObjects: true,
+    analyzeComposition: true,
+    extractTexture: true
+  });
+
+  const { analyzing, analysis, analyzeImage } = useReferenceImageAnalysis();
+  const { getRecommendedProvider } = useSmartProviderFallback(provider, !!referenceImage);
 
   const handleKeywordClick = (keyword: string) => {
     const currentPrompt = prompt.trim();
@@ -86,6 +100,13 @@ export const GenerationForm = ({
             file={referenceImage}
             disabled={isGenerating}
             uploading={uploadingReference}
+          />
+          
+          {/* Reference Processing Options */}
+          <ReferenceProcessingOptionsComponent
+            options={processingOptions}
+            onOptionsChange={setProcessingOptions}
+            hasReferenceImage={!!referenceImage}
           />
         </div>
       </div>
@@ -148,6 +169,26 @@ export const GenerationForm = ({
               selectedItem={selectedItem}
               selectedRatio={selectedRatio}
             />
+            
+            {/* Reference Image Processing Analysis */}
+            {referenceImage && analysis && (
+              <Card className="border-border/50 bg-card/50">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-xs text-muted-foreground">Analysis Results</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="text-xs">
+                    <span className="font-medium">Style:</span> {analysis.style}
+                  </div>
+                  <div className="text-xs">
+                    <span className="font-medium">Colors:</span> {analysis.dominantColors.slice(0, 3).join(", ")}
+                  </div>
+                  <div className="text-xs">
+                    <span className="font-medium">Objects:</span> {analysis.objects.join(", ")}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
             
             {showItemPreviews && selectedItem && (
               <ItemTypePreviews selectedItem={selectedItem} />

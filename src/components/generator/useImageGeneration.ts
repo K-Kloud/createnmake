@@ -10,6 +10,8 @@ import { useAuthDialog } from "@/hooks/useAuthDialog";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { useProviderMetrics } from "@/hooks/useProviderMetrics";
+import { useSmartProviderFallback } from "@/hooks/useSmartProviderFallback";
+import { analyzeReferenceImage, generateEnhancedPromptFromAnalysis } from "@/services/imageAnalysis";
 
 export const useImageGeneration = () => {
   const { toast } = useToast();
@@ -23,6 +25,9 @@ export const useImageGeneration = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
   const [provider, setProvider] = useState<string>("openai");
+
+  // Smart provider fallback hook
+  const { providerOrder } = useSmartProviderFallback(provider, !!referenceImage);
 
   // Image generation API hooks
   const {
@@ -129,8 +134,8 @@ export const useImageGeneration = () => {
 
       console.log(`🎨 Starting image generation with ${provider}...`);
       
-      // Try providers with fallback logic
-      const providers = [provider, 'openai', 'gemini', 'xai', 'huggingface'].filter((p, i, arr) => arr.indexOf(p) === i);
+      // Try providers with smart fallback logic
+      const providers = providerOrder;
       
       let lastError = null;
       let result = null;

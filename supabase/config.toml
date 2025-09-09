@@ -236,3 +236,6 @@ verify_jwt = false
 
 [functions.ai-agent-monitor]
 verify_jwt = false
+
+[functions.analyze-reference-image]
+verify_jwt = true
