@@ -28,6 +28,7 @@ export const useImageGeneration = () => {
   const [referenceImages, setReferenceImages] = useState<File[]>([]);
   const [referenceType, setReferenceType] = useState<ReferenceType>('style');
   const [provider, setProvider] = useState<string>("openai");
+  const [startTime, setStartTime] = useState<number | undefined>();
 
   // Smart provider fallback hook
   const hasAnyReference = !!(referenceImage || referenceImages.length > 0);
@@ -75,6 +76,8 @@ export const useImageGeneration = () => {
 
   // Main generation handler
   const handleGenerate = useCallback(async () => {
+    const generationStartTime = Date.now();
+    setStartTime(generationStartTime);
     const startTime = Date.now();
     
     console.log("🎯 handleGenerate called with:", {
