@@ -1,128 +1,160 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Sparkles, TrendingUp, Clock, CheckCircle } from "lucide-react";
-import { useProviderRecommendation } from "@/hooks/useProviderRecommendation";
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useSmartProviderFallback } from '@/hooks/useSmartProviderFallback';
+import { Lightbulb, ArrowRight } from 'lucide-react';
 
 interface ProviderRecommendationProps {
   selectedItem: string;
   selectedRatio: string;
   currentProvider: string;
   onProviderChange: (provider: string) => void;
+  hasReferenceImage?: boolean;
 }
 
-export const ProviderRecommendation = ({
+const getItemRecommendations = (item: string): { provider: string; reason: string }[] => {
+  const itemLower = item.toLowerCase();
+  
+  if (itemLower.includes('fashion') || itemLower.includes('clothing') || itemLower.includes('outfit')) {
+    return [
+      { provider: 'openai', reason: 'Excellent for fashion detail and fabric textures' },
+      { provider: 'gemini', reason: 'Great color accuracy for clothing items' }
+    ];
+  }
+  
+  if (itemLower.includes('portrait') || itemLower.includes('face') || itemLower.includes('person')) {
+    return [
+      { provider: 'openai', reason: 'Superior facial feature rendering' },
+      { provider: 'gemini', reason: 'Natural skin tones and expressions' }
+    ];
+  }
+  
+  if (itemLower.includes('landscape') || itemLower.includes('nature') || itemLower.includes('outdoor')) {
+    return [
+      { provider: 'gemini', reason: 'Excellent landscape and nature scenes' },
+      { provider: 'huggingface', reason: 'Great for artistic landscape styles' }
+    ];
+  }
+  
+  if (itemLower.includes('art') || itemLower.includes('painting') || itemLower.includes('drawing')) {
+    return [
+      { provider: 'huggingface', reason: 'Best for artistic and creative styles' },
+      { provider: 'xai', reason: 'Good for experimental art styles' }
+    ];
+  }
+  
+  return [];
+};
+
+const getRatioRecommendations = (ratio: string): { provider: string; reason: string }[] => {
+  if (ratio === '1:1') {
+    return [
+      { provider: 'openai', reason: 'Optimized for square formats' }
+    ];
+  }
+  
+  if (ratio === '16:9' || ratio === '21:9') {
+    return [
+      { provider: 'gemini', reason: 'Excellent wide-format composition' }
+    ];
+  }
+  
+  if (ratio === '9:16' || ratio === '3:4') {
+    return [
+      { provider: 'openai', reason: 'Great for portrait orientations' }
+    ];
+  }
+  
+  return [];
+};
+
+export const ProviderRecommendation: React.FC<ProviderRecommendationProps> = ({
   selectedItem,
   selectedRatio,
   currentProvider,
-  onProviderChange
-}: ProviderRecommendationProps) => {
-  const { recommendation, allMetrics, loading } = useProviderRecommendation(selectedItem, selectedRatio);
-
-  if (loading || !recommendation) {
-    return (
-      <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20">
-        <CardContent className="p-4">
-          <div className="flex items-center space-x-2">
-            <Sparkles className="h-4 w-4 animate-pulse text-primary" />
-            <span className="text-sm text-muted-foreground">Analyzing best provider...</span>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const isRecommended = recommendation.provider === currentProvider;
+  onProviderChange,
+  hasReferenceImage = false,
+}) => {
+  const { getRecommendedProvider, getProviderCapabilities } = useSmartProviderFallback(currentProvider, hasReferenceImage);
   
-  const getProviderName = (provider: string) => {
-    switch (provider) {
-      case 'openai': return 'GPT-Image-1';
-      case 'gemini': return 'Gemini 2.5 Flash';
-      case 'xai': return 'Grok 4';
-      default: return provider;
-    }
-  };
-
-  const getProviderEmoji = (provider: string) => {
-    switch (provider) {
-      case 'openai': return '🤖';
-      case 'gemini': return '✨';
-      case 'xai': return '🚀';
-      default: return '🎨';
-    }
-  };
-
+  const itemRecommendations = getItemRecommendations(selectedItem);
+  const ratioRecommendations = getRatioRecommendations(selectedRatio);
+  const smartRecommendedProvider = getRecommendedProvider(hasReferenceImage);
+  
+  // Combine all recommendations and filter for current context
+  const allRecommendations = [...itemRecommendations, ...ratioRecommendations];
+  const topRecommendation = allRecommendations.find(rec => rec.provider !== currentProvider);
+  
+  // Show smart recommendation for reference images
+  const showReferenceRecommendation = hasReferenceImage && smartRecommendedProvider !== currentProvider;
+  
+  if (!topRecommendation && !showReferenceRecommendation) {
+    return null;
+  }
+  
   return (
-    <Card className={`transition-all duration-200 ${
-      isRecommended 
-        ? 'bg-gradient-to-r from-primary/10 to-accent/10 border-primary/30 shadow-sm' 
-        : 'bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20 hover:border-primary/30'
-    }`}>
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between">
-          <div className="flex-1 space-y-2">
-            <div className="flex items-center space-x-2">
-              <Sparkles className={`h-4 w-4 ${isRecommended ? 'text-primary' : 'text-muted-foreground'}`} />
-              <span className="text-sm font-medium">
-                {isRecommended ? 'Using recommended provider' : 'Recommended provider'}
-              </span>
-              {isRecommended && <CheckCircle className="h-4 w-4 text-green-500" />}
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <span className="text-lg">{getProviderEmoji(recommendation.provider)}</span>
-              <div className="flex-1">
-                <div className="flex items-center space-x-2">
-                  <span className="font-medium text-foreground">
-                    {getProviderName(recommendation.provider)}
-                  </span>
-                  <Badge variant="outline" className="text-xs">
-                    {recommendation.score}% match
+    <Card className="border-primary/20 bg-primary/5">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <Lightbulb className="h-4 w-4 text-primary" />
+          Provider Recommendation
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {showReferenceRecommendation && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <div className="text-sm font-medium flex items-center gap-2">
+                  {smartRecommendedProvider.toUpperCase()}
+                  <Badge variant="secondary" className="text-xs">
+                    {getProviderCapabilities(smartRecommendedProvider).referenceImageType.replace('_', ' ')}
                   </Badge>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {recommendation.reason}
-                </p>
+                <div className="text-xs text-muted-foreground">
+                  Recommended for reference image processing
+                </div>
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onProviderChange(smartRecommendedProvider)}
+                className="gap-1"
+              >
+                Switch
+                <ArrowRight className="h-3 w-3" />
+              </Button>
             </div>
-
-            {recommendation.metrics && (
-              <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center space-x-1">
-                        <TrendingUp className="h-3 w-3" />
-                        <span>{Math.round(recommendation.metrics.success_rate * 100)}%</span>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>Success rate</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center space-x-1">
-                        <Clock className="h-3 w-3" />
-                        <span>{recommendation.metrics.avg_generation_time.toFixed(1)}s</span>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>Average generation time</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-            )}
           </div>
-
-          {!isRecommended && (
-            <button
-              onClick={() => onProviderChange(recommendation.provider)}
-              className="px-3 py-1 text-xs font-medium bg-primary/10 hover:bg-primary/20 text-primary rounded-md transition-colors"
-            >
-              Use This
-            </button>
-          )}
+        )}
+        
+        {topRecommendation && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <div className="text-sm font-medium">
+                  {topRecommendation.provider.toUpperCase()}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {topRecommendation.reason}
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onProviderChange(topRecommendation.provider)}
+                className="gap-1"
+              >
+                Switch
+                <ArrowRight className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+        )}
+        
+        <div className="text-xs text-muted-foreground bg-muted/30 p-2 rounded">
+          These recommendations are based on your selected item type, aspect ratio, and reference image usage.
         </div>
       </CardContent>
     </Card>

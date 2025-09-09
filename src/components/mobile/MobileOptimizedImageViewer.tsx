@@ -107,7 +107,7 @@ export const MobileOptimizedImageViewer: React.FC<MobileOptimizedImageViewerProp
   }, [isOpen, scale, position, startPosition, isDragging]);
 
   // Optimize image source for mobile
-  const optimizedSrc = getOptimizedImageSrc(src, window.innerWidth, settings.imageQuality === 'high' ? 85 : 70);
+  const optimizedSrc = getOptimizedImageSrc(src, window.innerWidth, settings.imageQuality || 70);
 
   if (!isOpen) return null;
 

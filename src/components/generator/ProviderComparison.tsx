@@ -1,286 +1,155 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { 
-  TrendingUp, 
-  Clock, 
-  Star, 
-  Zap, 
-  Eye, 
-  Info,
-  BarChart3,
-  CheckCircle2,
-  AlertCircle
-} from "lucide-react";
-import { useProviderRecommendation } from "@/hooks/useProviderRecommendation";
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useSmartProviderFallback } from '@/hooks/useSmartProviderFallback';
+import { ChevronDown, ChevronUp, Zap, Eye, Palette, Clock } from 'lucide-react';
 
 interface ProviderComparisonProps {
   selectedProvider: string;
   onProviderChange: (provider: string) => void;
-  selectedItem?: string;
-  selectedRatio?: string;
+  selectedItem: string;
+  selectedRatio: string;
 }
 
-export const ProviderComparison = ({
+const providerDetails = {
+  openai: {
+    name: 'OpenAI DALL-E',
+    strengths: ['High detail', 'Realistic textures', 'Fashion items', 'Portraits'],
+    speed: 'Medium',
+    quality: 'Excellent',
+    specialty: 'Photorealism',
+    icon: Eye,
+    color: 'text-green-400'
+  },
+  gemini: {
+    name: 'Google Gemini',
+    strengths: ['Natural colors', 'Landscapes', 'Wide formats', 'Consistency'],
+    speed: 'Fast',
+    quality: 'Very Good',
+    specialty: 'Natural scenes',
+    icon: Palette,
+    color: 'text-blue-400'
+  },
+  xai: {
+    name: 'xAI Grok',
+    strengths: ['Creative styles', 'Experimental', 'Artistic freedom', 'Unique aesthetics'],
+    speed: 'Fast',
+    quality: 'Good',
+    specialty: 'Creativity',
+    icon: Zap,
+    color: 'text-purple-400'
+  },
+  huggingface: {
+    name: 'Hugging Face',
+    strengths: ['Open source', 'Art styles', 'Customizable', 'Community models'],
+    speed: 'Variable',
+    quality: 'Good',
+    specialty: 'Art & Style',
+    icon: Clock,
+    color: 'text-orange-400'
+  },
+};
+
+export const ProviderComparison: React.FC<ProviderComparisonProps> = ({
   selectedProvider,
   onProviderChange,
   selectedItem,
-  selectedRatio
-}: ProviderComparisonProps) => {
-  const { allMetrics, loading } = useProviderRecommendation(selectedItem, selectedRatio);
-  const [activeTab, setActiveTab] = useState("overview");
-
-  const providers = [
-    {
-      id: 'openai',
-      name: 'GPT-Image-1',
-      version: 'gpt-image-1',
-      description: 'Latest OpenAI model with advanced controls',
-      strengths: ['High detail', 'Fabric textures', 'Fashion photography'],
-      color: 'emerald',
-      emoji: '🤖'
-    },
-    {
-      id: 'gemini',
-      name: 'Gemini 2.5 Flash',
-      version: 'gemini-2.5-flash-image-preview',
-      description: 'Fast generation with cultural context',
-      strengths: ['Speed', 'Cultural patterns', 'Traditional wear'],
-      color: 'blue',
-      emoji: '✨'
-    },
-    {
-      id: 'xai',
-      name: 'Grok 4',
-      version: 'grok-4',
-      description: 'Cutting-edge with unique perspectives',
-      strengths: ['Creativity', 'Innovation', 'Unique styles'],
-      color: 'purple',
-      emoji: '🚀'
-    }
-  ];
-
-  const getProviderMetrics = (providerId: string) => {
-    return allMetrics.find(m => m.provider === providerId) || {
-      success_rate: 0.85,
-      avg_generation_time: Math.random() * 10 + 5,
-      quality_score: Math.random() * 0.3 + 0.7,
-      total_generations: Math.floor(Math.random() * 1000) + 100
-    };
-  };
-
-  const getColorClass = (color: string, variant: 'bg' | 'text' | 'border' = 'bg') => {
-    const colorMap = {
-      emerald: { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/30' },
-      blue: { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30' },
-      purple: { bg: 'bg-purple-500/20', text: 'text-purple-400', border: 'border-purple-500/30' }
-    };
-    return colorMap[color as keyof typeof colorMap]?.[variant] || colorMap.emerald[variant];
-  };
-
-  if (loading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <BarChart3 className="h-5 w-5" />
-            <span>Provider Comparison</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-muted rounded-full animate-pulse" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-muted rounded animate-pulse" />
-                  <div className="h-3 bg-muted/60 rounded animate-pulse w-2/3" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
+  selectedRatio,
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const { capabilities } = useSmartProviderFallback(selectedProvider, false);
+  
+  const providers = Object.keys(providerDetails);
+  
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <BarChart3 className="h-5 w-5" />
-          <span>Provider Comparison</span>
+    <Card className="border-border/50 bg-card/50">
+      <CardHeader 
+        className="pb-3 cursor-pointer"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <CardTitle className="text-sm font-medium flex items-center justify-between">
+          Provider Comparison
+          {isExpanded ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="performance">Performance</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview" className="space-y-4 mt-4">
-            {providers.map(provider => {
-              const isSelected = selectedProvider === provider.id;
-              const metrics = getProviderMetrics(provider.id);
+      
+      {isExpanded && (
+        <CardContent className="space-y-3">
+          <div className="grid gap-3">
+            {providers.map((provider) => {
+              const details = providerDetails[provider as keyof typeof providerDetails];
+              const caps = capabilities[provider];
+              const Icon = details.icon;
+              const isSelected = provider === selectedProvider;
               
               return (
-                <Card 
-                  key={provider.id}
-                  className={`transition-all cursor-pointer ${
+                <div
+                  key={provider}
+                  className={`p-3 rounded-lg border transition-all cursor-pointer ${
                     isSelected 
-                      ? `ring-2 ring-${provider.color}-500/30 ${getColorClass(provider.color, 'bg')}` 
-                      : 'hover:bg-accent/50'
+                      ? 'border-primary bg-primary/10' 
+                      : 'border-border/50 hover:border-border bg-card/50'
                   }`}
-                  onClick={() => onProviderChange(provider.id)}
+                  onClick={() => onProviderChange(provider)}
                 >
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3 flex-1">
-                        <span className="text-2xl">{provider.emoji}</span>
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2">
-                            <h3 className="font-medium">{provider.name}</h3>
-                            {isSelected && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-                            <Badge 
-                              variant="outline" 
-                              className={`${getColorClass(provider.color, 'bg')} ${getColorClass(provider.color, 'text')} ${getColorClass(provider.color, 'border')}`}
-                            >
-                              v{provider.version}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {provider.description}
-                          </p>
-                          
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {provider.strengths.map(strength => (
-                              <Badge key={strength} variant="secondary" className="text-xs">
-                                {strength}
-                              </Badge>
-                            ))}
-                          </div>
-                          
-                          <div className="flex items-center space-x-4 mt-3 text-xs text-muted-foreground">
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div className="flex items-center space-x-1">
-                                    <TrendingUp className="h-3 w-3" />
-                                    <span>{Math.round(metrics.success_rate * 100)}%</span>
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent>Success rate</TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                            
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div className="flex items-center space-x-1">
-                                    <Clock className="h-3 w-3" />
-                                    <span>{metrics.avg_generation_time.toFixed(1)}s</span>
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent>Average generation time</TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                            
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div className="flex items-center space-x-1">
-                                    <Star className="h-3 w-3" />
-                                    <span>{(metrics.quality_score * 100).toFixed(0)}</span>
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent>Quality score</TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                        </div>
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Icon className={`h-4 w-4 ${details.color}`} />
+                      <div className="text-sm font-medium">
+                        {details.name}
                       </div>
-                      
-                      {!isSelected && (
-                        <Button variant="outline" size="sm" className="ml-3">
-                          Select
-                        </Button>
+                      {isSelected && (
+                        <Badge variant="default" className="text-xs">
+                          Active
+                        </Badge>
                       )}
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </TabsContent>
-
-          <TabsContent value="performance" className="space-y-4 mt-4">
-            {providers.map(provider => {
-              const metrics = getProviderMetrics(provider.id);
-              
-              return (
-                <Card key={provider.id}>
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-3 mb-4">
-                      <span className="text-xl">{provider.emoji}</span>
-                      <h3 className="font-medium">{provider.name}</h3>
+                    <div className="text-xs text-muted-foreground">
+                      {details.speed}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-xs">
+                        {details.specialty}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Quality: {details.quality}
+                      </Badge>
+                      {caps?.supportsReferenceImages && (
+                        <Badge variant="secondary" className="text-xs">
+                          Ref Images
+                        </Badge>
+                      )}
                     </div>
                     
-                    <div className="space-y-3">
-                      <div>
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm font-medium">Success Rate</span>
-                          <span className="text-sm text-muted-foreground">
-                            {Math.round(metrics.success_rate * 100)}%
-                          </span>
-                        </div>
-                        <Progress value={metrics.success_rate * 100} className="h-2" />
-                      </div>
-                      
-                      <div>
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm font-medium">Quality Score</span>
-                          <span className="text-sm text-muted-foreground">
-                            {(metrics.quality_score * 100).toFixed(0)}/100
-                          </span>
-                        </div>
-                        <Progress value={metrics.quality_score * 100} className="h-2" />
-                      </div>
-                      
-                      <div>
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm font-medium">Speed</span>
-                          <span className="text-sm text-muted-foreground">
-                            {metrics.avg_generation_time.toFixed(1)}s avg
-                          </span>
-                        </div>
-                        <Progress 
-                          value={Math.max(0, 100 - (metrics.avg_generation_time * 5))} 
-                          className="h-2" 
-                        />
-                      </div>
-                      
-                      <div className="pt-2 border-t">
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>Total generations: {metrics.total_generations}</span>
-                          {selectedProvider === provider.id && (
-                            <Badge variant="outline" className="text-xs">
-                              Currently selected
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
+                    <div className="text-xs text-muted-foreground">
+                      <span className="font-medium">Best for:</span>{' '}
+                      {details.strengths.join(', ')}
                     </div>
-                  </CardContent>
-                </Card>
+                    
+                    {caps?.supportsReferenceImages && (
+                      <div className="text-xs text-primary">
+                        Reference type: {caps.referenceImageType.replace('_', ' ')}
+                      </div>
+                    )}
+                  </div>
+                </div>
               );
             })}
-          </TabsContent>
-        </Tabs>
-      </CardContent>
+          </div>
+          
+          <div className="text-xs text-muted-foreground bg-muted/30 p-2 rounded">
+            Each provider has different strengths. Choose based on your content type and style preferences.
+          </div>
+        </CardContent>
+      )}
     </Card>
   );
 };

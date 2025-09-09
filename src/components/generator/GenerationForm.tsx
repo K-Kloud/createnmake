@@ -21,6 +21,8 @@ import { EnhancedKeywordSuggestions } from "./EnhancedKeywordSuggestions";
 import { ProviderSelect } from "./ProviderSelect";
 import { ProviderRecommendation } from "./ProviderRecommendation";
 import { ProviderComparison } from "./ProviderComparison";
+import { LoadingProgress } from "./LoadingProgress";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 interface GenerationFormProps {
   prompt: string;
@@ -88,8 +90,26 @@ export const GenerationForm = ({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Main Generation Controls */}
+    <ErrorBoundary>
+      <div className="space-y-6">
+        {/* Loading Progress */}
+        {(isGenerating || analyzing || uploadingReference) && (
+          <LoadingProgress
+            stage={
+              uploadingReference ? 'uploading' :
+              analyzing ? 'analyzing' :
+              isGenerating ? 'generating' : 'processing'
+            }
+            progress={
+              uploadingReference ? 25 :
+              analyzing ? 50 :
+              isGenerating ? 75 : 100
+            }
+            showStages={hasAnyReference}
+          />
+        )}
+        
+        {/* Main Generation Controls */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <SearchableItemSelect
@@ -182,6 +202,7 @@ export const GenerationForm = ({
               selectedRatio={selectedRatio}
               currentProvider={provider}
               onProviderChange={onProviderChange || (() => {})}
+              hasReferenceImage={hasAnyReference}
             />
 
             {/* Provider Selection */}
@@ -247,6 +268,7 @@ export const GenerationForm = ({
         disabled={!selectedItem || !prompt.trim()}
         remainingImages={remainingImages}
       />
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 };
