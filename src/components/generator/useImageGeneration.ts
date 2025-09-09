@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProviderMetrics } from "@/hooks/useProviderMetrics";
 import { useSmartProviderFallback } from "@/hooks/useSmartProviderFallback";
 import { analyzeReferenceImage, generateEnhancedPromptFromAnalysis } from "@/services/imageAnalysis";
+import { ReferenceType } from "@/components/generator/ReferenceTypeSelector";
 
 export const useImageGeneration = () => {
   const { toast } = useToast();
@@ -24,10 +25,13 @@ export const useImageGeneration = () => {
   const [selectedRatio, setSelectedRatio] = useState("square");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
+  const [referenceImages, setReferenceImages] = useState<File[]>([]);
+  const [referenceType, setReferenceType] = useState<ReferenceType>('style');
   const [provider, setProvider] = useState<string>("openai");
 
   // Smart provider fallback hook
-  const { providerOrder } = useSmartProviderFallback(provider, !!referenceImage);
+  const hasAnyReference = !!(referenceImage || referenceImages.length > 0);
+  const { providerOrder } = useSmartProviderFallback(provider, hasAnyReference);
 
   // Image generation API hooks
   const {
@@ -77,7 +81,9 @@ export const useImageGeneration = () => {
       prompt,
       selectedItem,
       selectedRatio,
-      hasReferenceImage: !!referenceImage,
+      hasReferenceImage: hasAnyReference,
+      referenceType,
+      multipleReferences: referenceImages.length,
       isAuthenticated: !!session?.user,
       canGenerate: canGenerateImage,
       remainingImages,
@@ -123,13 +129,34 @@ export const useImageGeneration = () => {
     }
 
     try {
-      console.log("📁 Uploading reference image if provided...");
+      console.log("📁 Uploading reference images if provided...");
       
-      // Upload reference image if provided
+      // Upload reference images if provided
       let referenceImageUrl: string | undefined;
+      const referenceImageUrls: string[] = [];
+      
+      // Handle single reference image
       if (referenceImage) {
         referenceImageUrl = await uploadReferenceImage(referenceImage);
-        console.log("✅ Reference image uploaded:", referenceImageUrl);
+        console.log("✅ Single reference image uploaded:", referenceImageUrl);
+      }
+      
+      // Handle multiple reference images
+      if (referenceImages.length > 0) {
+        for (const img of referenceImages) {
+          try {
+            const url = await uploadReferenceImage(img);
+            referenceImageUrls.push(url);
+            console.log("✅ Multiple reference image uploaded:", url);
+          } catch (error) {
+            console.warn("⚠️ Failed to upload reference image:", error);
+          }
+        }
+        
+        // Use first image as primary reference for legacy compatibility
+        if (referenceImageUrls.length > 0 && !referenceImageUrl) {
+          referenceImageUrl = referenceImageUrls[0];
+        }
       }
 
       console.log(`🎨 Starting image generation with ${provider}...`);
@@ -149,6 +176,9 @@ export const useImageGeneration = () => {
             itemType: selectedItem,
             aspectRatio: selectedRatio,
             referenceImageUrl,
+            referenceImageUrls,
+            referenceType,
+            multipleReferences: referenceImages.length > 0,
           };
           
           if (currentProvider === 'gemini') {
@@ -248,6 +278,8 @@ export const useImageGeneration = () => {
     selectedItem,
     selectedRatio,
     referenceImage,
+    referenceImages,
+    referenceType,
     session?.user,
     canGenerateImage,
     remainingImages,
@@ -310,6 +342,10 @@ export const useImageGeneration = () => {
     setPreviewOpen,
     referenceImage,
     setReferenceImage,
+    referenceImages,
+    setReferenceImages,
+    referenceType,
+    setReferenceType,
     provider,
     setProvider,
     isGenerating,

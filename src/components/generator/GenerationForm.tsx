@@ -5,7 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SearchableItemSelect } from "./SearchableItemSelect";
 import { AspectRatioSelect } from "./AspectRatioSelect";
 import { ReferenceImageUpload } from "./ReferenceImageUpload";
+import { MultipleReferenceUpload } from "./MultipleReferenceUpload";
+import { ReferenceTypeSelector, ReferenceType } from "./ReferenceTypeSelector";
 import { ReferenceProcessingOptionsComponent, ReferenceProcessingOptions } from "./ReferenceProcessingOptions";
+import { AdvancedFeaturesInfo } from "./AdvancedFeaturesInfo";
 import { useReferenceImageAnalysis } from "@/hooks/useReferenceImageAnalysis";
 import { useSmartProviderFallback } from "@/hooks/useSmartProviderFallback";
 import { generateEnhancedPromptFromAnalysis } from "@/services/imageAnalysis";
@@ -28,6 +31,8 @@ interface GenerationFormProps {
   onRatioChange: (ratio: string) => void;
   referenceImage: File | null;
   onReferenceImageUpload: (file: File | null) => void;
+  referenceImages?: File[];
+  onReferenceImagesChange?: (files: File[]) => void;
   onGenerate: () => void;
   isGenerating: boolean;
   isSignedIn: boolean;
@@ -36,6 +41,7 @@ interface GenerationFormProps {
   provider?: string;
   uploadingReference?: boolean;
   onProviderChange?: (provider: string) => void;
+  useMultipleReferences?: boolean;
 }
 
 export const GenerationForm = ({
@@ -47,6 +53,8 @@ export const GenerationForm = ({
   onRatioChange,
   referenceImage,
   onReferenceImageUpload,
+  referenceImages = [],
+  onReferenceImagesChange,
   onGenerate,
   isGenerating,
   isSignedIn,
@@ -55,8 +63,10 @@ export const GenerationForm = ({
   provider = "openai",
   uploadingReference = false,
   onProviderChange,
+  useMultipleReferences = false,
 }: GenerationFormProps) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [referenceType, setReferenceType] = useState<ReferenceType>('style');
   const [processingOptions, setProcessingOptions] = useState<ReferenceProcessingOptions>({
     extractColors: true,
     analyzeStyle: true,
@@ -66,7 +76,8 @@ export const GenerationForm = ({
   });
 
   const { analyzing, analysis, analyzeImage } = useReferenceImageAnalysis();
-  const { getRecommendedProvider } = useSmartProviderFallback(provider, !!referenceImage);
+  const hasAnyReference = !!(referenceImage || referenceImages.length > 0);
+  const { getRecommendedProvider } = useSmartProviderFallback(provider, hasAnyReference);
 
   const handleKeywordClick = (keyword: string) => {
     const currentPrompt = prompt.trim();
@@ -95,18 +106,37 @@ export const GenerationForm = ({
         </div>
 
         <div className="space-y-4">
-          <ReferenceImageUpload
-            onUpload={onReferenceImageUpload}
-            file={referenceImage}
-            disabled={isGenerating}
-            uploading={uploadingReference}
+          {useMultipleReferences ? (
+            <MultipleReferenceUpload
+              files={referenceImages}
+              onFilesChange={onReferenceImagesChange || (() => {})}
+              disabled={isGenerating}
+              maxFiles={3}
+            />
+          ) : (
+            <ReferenceImageUpload
+              onUpload={onReferenceImageUpload}
+              file={referenceImage}
+              disabled={isGenerating}
+              uploading={uploadingReference}
+            />
+          )}
+          
+          {/* Reference Type Selection */}
+          <ReferenceTypeSelector
+            selectedType={referenceType}
+            onTypeChange={setReferenceType}
+            hasReferenceImages={hasAnyReference}
           />
+          
+          {/* Advanced Features Info */}
+          <AdvancedFeaturesInfo isMultiMode={useMultipleReferences} />
           
           {/* Reference Processing Options */}
           <ReferenceProcessingOptionsComponent
             options={processingOptions}
             onOptionsChange={setProcessingOptions}
-            hasReferenceImage={!!referenceImage}
+            hasReferenceImage={hasAnyReference}
           />
         </div>
       </div>
@@ -159,7 +189,7 @@ export const GenerationForm = ({
               value={provider}
               onChange={onProviderChange || (() => {})}
               disabled={isGenerating}
-              hasReferenceImage={!!referenceImage}
+              hasReferenceImage={hasAnyReference}
             />
             
             {/* Advanced Provider Comparison */}
@@ -171,10 +201,12 @@ export const GenerationForm = ({
             />
             
             {/* Reference Image Processing Analysis */}
-            {referenceImage && analysis && (
+            {hasAnyReference && analysis && (
               <Card className="border-border/50 bg-card/50">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-xs text-muted-foreground">Analysis Results</CardTitle>
+                  <CardTitle className="text-xs text-muted-foreground">
+                    Analysis Results ({referenceType})
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="text-xs">
@@ -186,6 +218,11 @@ export const GenerationForm = ({
                   <div className="text-xs">
                     <span className="font-medium">Objects:</span> {analysis.objects.join(", ")}
                   </div>
+                  {useMultipleReferences && referenceImages.length > 1 && (
+                    <div className="text-xs">
+                      <span className="font-medium">References:</span> {referenceImages.length} images
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
