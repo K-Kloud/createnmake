@@ -29,6 +29,10 @@ import { GenerationAnalytics } from './GenerationAnalytics';
 import { PromptEnhancer } from './PromptEnhancer';
 import { UserStyleLearning } from './UserStyleLearning';
 import { BatchProcessing } from './BatchProcessing';
+import { GenerationHistory } from './GenerationHistory';
+import { SavedPrompts } from './SavedPrompts';
+import { GenerationStats } from './GenerationStats';
+import { ExportShare } from './ExportShare';
 
 interface GenerationFormProps {
   prompt: string;
@@ -261,38 +265,50 @@ export const GenerationForm = ({
         </Card>
       )}
 
-        <div className="space-y-4">
-          <PromptEnhancer
-            prompt={prompt}
-            itemType={selectedItem}
-            onPromptChange={onPromptChange}
-            className="mb-4"
-          />
-          <UserStyleLearning className="mb-4" />
-          <BatchProcessing 
-            className="mb-4"
-            onBatchGenerate={async (items) => {
-              for (const item of items) {
-                // This would integrate with the actual generation logic
-                console.log('Generating:', item);
-              }
-            }}
-          />
-          <GenerationAnalytics 
-            providers={['flux.schnell', 'flux.dev']}
-            className="mb-4"
-          />
-          <RealTimePerformance 
-            currentProvider={provider}
-            isGenerating={isGenerating}
-            className="mb-4" 
-          />
-          <QuickActions 
-            onRandomPrompt={() => onPromptChange("A stylish contemporary outfit")}
-            onCopyPrompt={() => navigator.clipboard.writeText(prompt)}
-            hasGeneratedImage={false}
-            className="mb-4"
-          />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="space-y-4">
+            <PromptEnhancer
+              prompt={prompt}
+              itemType={selectedItem}
+              onPromptChange={onPromptChange}
+            />
+            
+            <SavedPrompts
+              onPromptSelect={onPromptChange}
+            />
+            
+            <UserStyleLearning />
+            
+            <BatchProcessing 
+              onBatchGenerate={async (items) => {
+                for (const item of items) {
+                  // This would integrate with the actual generation logic
+                  console.log('Generating:', item);
+                }
+              }}
+            />
+          </div>
+          
+          <div className="space-y-4">
+            <GenerationStats />
+            
+            <GenerationHistory />
+            
+            <GenerationAnalytics 
+              providers={['flux.schnell', 'flux.dev']}
+            />
+            
+            <RealTimePerformance 
+              currentProvider={provider}
+              isGenerating={isGenerating}
+            />
+            
+            <QuickActions 
+              onRandomPrompt={() => onPromptChange("A stylish contemporary outfit")}
+              onCopyPrompt={() => navigator.clipboard.writeText(prompt)}
+              hasGeneratedImage={false}
+            />
+          </div>
         </div>
 
       {/* Usage Info */}

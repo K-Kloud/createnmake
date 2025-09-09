@@ -11,6 +11,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { useProviderMetrics } from "@/hooks/useProviderMetrics";
 import { useUserPreferences } from '@/hooks/useUserPreferences';
+import { useGenerationHistory } from '@/hooks/useGenerationHistory';
 import { useSmartProviderFallback } from "@/hooks/useSmartProviderFallback";
 import { analyzeReferenceImage, generateEnhancedPromptFromAnalysis } from "@/services/imageAnalysis";
 import { ReferenceType } from "@/components/generator/ReferenceTypeSelector";
@@ -20,6 +21,7 @@ export const useImageGeneration = () => {
   const { session } = useAuth();
   const { recordGenerationTime } = useProviderMetrics();
   const { learnFromGeneration } = useUserPreferences();
+  const { addGeneration } = useGenerationHistory();
   
   // State management
   const [prompt, setPrompt] = useState("");
@@ -236,6 +238,28 @@ export const useImageGeneration = () => {
             
             // Learn from successful generation
             learnFromGeneration(prompt, selectedItem, true, 5); // Assume high rating for successful generations
+            
+            // Add to generation history
+            addGeneration({
+              prompt: prompt,
+              itemType: selectedItem,
+              imageUrl: result.imageUrl,
+              referenceImageUrl: referenceImage ? URL.createObjectURL(referenceImage) : undefined,
+              provider: currentProvider,
+              settings: {
+                aspectRatio: selectedRatio,
+                model: currentProvider,
+                quality: 'high'
+              },
+              metadata: {
+                processingTime: endTime - startTime,
+                enhancedPrompt: prompt, // Could be enhanced version if available
+                confidence: 0.9, // Could be calculated based on provider response
+                tags: [selectedItem]
+              },
+              rating: 5,
+              isFavorite: false
+            });
             
             toast({
               title: "Success!",
