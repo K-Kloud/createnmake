@@ -10,6 +10,7 @@ import { useAuthDialog } from "@/hooks/useAuthDialog";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { useProviderMetrics } from "@/hooks/useProviderMetrics";
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { useSmartProviderFallback } from "@/hooks/useSmartProviderFallback";
 import { analyzeReferenceImage, generateEnhancedPromptFromAnalysis } from "@/services/imageAnalysis";
 import { ReferenceType } from "@/components/generator/ReferenceTypeSelector";
@@ -18,6 +19,7 @@ export const useImageGeneration = () => {
   const { toast } = useToast();
   const { session } = useAuth();
   const { recordGenerationTime } = useProviderMetrics();
+  const { learnFromGeneration } = useUserPreferences();
   
   // State management
   const [prompt, setPrompt] = useState("");
@@ -232,6 +234,9 @@ export const useImageGeneration = () => {
             const endTime = Date.now();
             recordGenerationTime(currentProvider, startTime, endTime, true);
             
+            // Learn from successful generation
+            learnFromGeneration(prompt, selectedItem, true, 5); // Assume high rating for successful generations
+            
             toast({
               title: "Success!",
               description: `Image generated successfully with ${currentProvider}`,
@@ -253,6 +258,9 @@ export const useImageGeneration = () => {
           // Record failed generation
           const endTime = Date.now();
           recordGenerationTime(currentProvider, startTime, endTime, false);
+          
+          // Learn from failed generation
+          learnFromGeneration(prompt, selectedItem, false, 1);
           
           // Continue to next provider
           continue;

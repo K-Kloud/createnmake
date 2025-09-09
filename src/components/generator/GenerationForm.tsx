@@ -23,6 +23,12 @@ import { ProviderRecommendation } from "./ProviderRecommendation";
 import { ProviderComparison } from "./ProviderComparison";
 import { LoadingProgress } from "./LoadingProgress";
 import { ErrorBoundary } from "./ErrorBoundary";
+import { QuickActions } from './QuickActions';
+import { RealTimePerformance } from './RealTimePerformance';
+import { GenerationAnalytics } from './GenerationAnalytics';
+import { PromptEnhancer } from './PromptEnhancer';
+import { UserStyleLearning } from './UserStyleLearning';
+import { BatchProcessing } from './BatchProcessing';
 
 interface GenerationFormProps {
   prompt: string;
@@ -254,6 +260,40 @@ export const GenerationForm = ({
           </CardContent>
         </Card>
       )}
+
+        <div className="space-y-4">
+          <PromptEnhancer
+            prompt={prompt}
+            itemType={selectedItem}
+            onPromptChange={onPromptChange}
+            className="mb-4"
+          />
+          <UserStyleLearning className="mb-4" />
+          <BatchProcessing 
+            className="mb-4"
+            onBatchGenerate={async (items) => {
+              for (const item of items) {
+                // This would integrate with the actual generation logic
+                console.log('Generating:', item);
+              }
+            }}
+          />
+          <GenerationAnalytics 
+            providers={['flux.schnell', 'flux.dev']}
+            className="mb-4"
+          />
+          <RealTimePerformance 
+            currentProvider={provider}
+            isGenerating={isGenerating}
+            className="mb-4" 
+          />
+          <QuickActions 
+            onRandomPrompt={() => onPromptChange("A stylish contemporary outfit")}
+            onCopyPrompt={() => navigator.clipboard.writeText(prompt)}
+            hasGeneratedImage={false}
+            className="mb-4"
+          />
+        </div>
 
       {/* Usage Info */}
       <UsageInfo 
