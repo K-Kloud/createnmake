@@ -253,7 +253,7 @@ export const ProductDetail = ({
                   </div>
                 </div>
                 <Badge variant="secondary" className="text-lg">
-                  £{product.price}
+                  {product.price}
                 </Badge>
               </div>
             </div>
