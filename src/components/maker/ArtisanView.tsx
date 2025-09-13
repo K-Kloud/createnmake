@@ -107,28 +107,53 @@ export const ArtisanView = ({ artisan }: ArtisanViewProps) => {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-3">
-                        {productDetails.description && (
+                      <div className="space-y-4">
+                        {/* Product Image */}
+                        {productDetails.url && (
                           <div>
-                            <p className="text-sm font-medium">Description:</p>
-                            <p className="text-sm text-muted-foreground">{productDetails.description}</p>
+                            <p className="text-sm font-medium mb-2">Product Design:</p>
+                            <div className="relative w-full h-48 rounded-lg overflow-hidden border">
+                              <img 
+                                src={productDetails.url} 
+                                alt={productDetails.title || 'Product design'}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
                           </div>
                         )}
                         
-                        {productDetails.price && (
-                          <div>
-                            <p className="text-sm font-medium">Original Price:</p>
-                            <p className="text-sm text-muted-foreground">£{productDetails.price}</p>
-                          </div>
-                        )}
+                        {/* Product Details Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {productDetails.description && (
+                            <div>
+                              <p className="text-sm font-medium">Description:</p>
+                              <p className="text-sm text-muted-foreground">{productDetails.description}</p>
+                            </div>
+                          )}
+                          
+                          {productDetails.price && (
+                            <div>
+                              <p className="text-sm font-medium">Original Price:</p>
+                              <p className="text-sm text-muted-foreground">£{productDetails.price}</p>
+                            </div>
+                          )}
+                          
+                          {productDetails.category && (
+                            <div>
+                              <p className="text-sm font-medium">Category:</p>
+                              <Badge variant="outline">{productDetails.category}</Badge>
+                            </div>
+                          )}
+                          
+                          {productDetails.prompt && (
+                            <div>
+                              <p className="text-sm font-medium">Design Prompt:</p>
+                              <p className="text-sm text-muted-foreground">{productDetails.prompt}</p>
+                            </div>
+                          )}
+                        </div>
                         
-                        {productDetails.category && (
-                          <div>
-                            <p className="text-sm font-medium">Category:</p>
-                            <Badge variant="outline">{productDetails.category}</Badge>
-                          </div>
-                        )}
-                        
+                        {/* Tags */}
                         {productDetails.tags && productDetails.tags.length > 0 && (
                           <div>
                             <p className="text-sm font-medium mb-2">Tags:</p>
@@ -141,6 +166,22 @@ export const ArtisanView = ({ artisan }: ArtisanViewProps) => {
                             </div>
                           </div>
                         )}
+                        
+                        {/* Additional Details */}
+                        <div className="grid grid-cols-2 gap-4 text-xs">
+                          {productDetails.likes && (
+                            <div>
+                              <p className="font-medium">Likes:</p>
+                              <p className="text-muted-foreground">{productDetails.likes}</p>
+                            </div>
+                          )}
+                          {productDetails.views && (
+                            <div>
+                              <p className="font-medium">Views:</p>
+                              <p className="text-muted-foreground">{productDetails.views}</p>
+                            </div>
+                          )}
+                        </div>
                         
                         <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2 border-t">
                           <CalendarDays className="h-3 w-3" />
