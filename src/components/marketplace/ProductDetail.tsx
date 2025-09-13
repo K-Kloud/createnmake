@@ -177,7 +177,7 @@ export const ProductDetail = ({
           product_details: {
             likes: product.likes,
             views: product.views,
-            created_at: product.createdAt,
+            created_at: product.createdAt.toISOString(),
             categories: ['Fashion', 'Handmade', 'Modern'] // Example categories
           }
         });

@@ -2060,6 +2060,57 @@ export type Database = {
           },
         ]
       }
+      make_requests: {
+        Row: {
+          admin_notes: string | null
+          assigned_artisan_id: string | null
+          assigned_manufacturer_id: string | null
+          created_at: string
+          creator_id: string
+          creator_name: string
+          id: string
+          product_details: Json | null
+          product_image_url: string
+          product_price: string | null
+          product_prompt: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          assigned_artisan_id?: string | null
+          assigned_manufacturer_id?: string | null
+          created_at?: string
+          creator_id: string
+          creator_name: string
+          id?: string
+          product_details?: Json | null
+          product_image_url: string
+          product_price?: string | null
+          product_prompt: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          assigned_artisan_id?: string | null
+          assigned_manufacturer_id?: string | null
+          created_at?: string
+          creator_id?: string
+          creator_name?: string
+          id?: string
+          product_details?: Json | null
+          product_image_url?: string
+          product_price?: string | null
+          product_prompt?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       manufacturer_notifications: {
         Row: {
           created_at: string
@@ -3813,7 +3864,7 @@ export type Database = {
         Returns: Json
       }
       validate_admin_operation: {
-        Args: { operation_type: string }
+        Args: Record<PropertyKey, never> | { operation_type: string }
         Returns: boolean
       }
       validate_password_strength: {
