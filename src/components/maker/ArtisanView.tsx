@@ -2,12 +2,18 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Artisan } from "@/types/maker";
+import { useMakeRequests } from "@/hooks/useMakeRequests";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CalendarDays, User, Package } from "lucide-react";
 
 interface ArtisanViewProps {
   artisan: Artisan;
 }
 
 export const ArtisanView = ({ artisan }: ArtisanViewProps) => {
+  const { data: makeRequests = [], isLoading } = useMakeRequests(artisan.id);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
@@ -52,6 +58,99 @@ export const ArtisanView = ({ artisan }: ArtisanViewProps) => {
             <div className="mb-4">
               <h3 className="font-medium mb-2">Bio</h3>
               <p>{artisan.bio}</p>
+            </div>
+          )}
+        </div>
+        
+        {/* Make Requests Section */}
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <Package className="h-5 w-5" />
+            Make Requests ({makeRequests.length})
+          </h2>
+          
+          {isLoading ? (
+            <div className="text-center py-8">Loading requests...</div>
+          ) : makeRequests.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-muted-foreground text-center">No make requests yet.</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {makeRequests.map((request: any) => {
+                const productDetails = typeof request.product_details === 'string' 
+                  ? JSON.parse(request.product_details) 
+                  : request.product_details;
+                
+                return (
+                  <Card key={request.id}>
+                    <CardHeader>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle className="text-lg">
+                            {productDetails.title || 'Custom Design Request'}
+                          </CardTitle>
+                          <CardDescription className="flex items-center gap-2 mt-1">
+                            <User className="h-4 w-4" />
+                            Request from {request.profiles?.display_name || request.profiles?.username || 'Unknown User'}
+                          </CardDescription>
+                        </div>
+                        <Badge variant={
+                          request.status === 'pending' ? 'secondary' :
+                          request.status === 'in_progress' ? 'default' :
+                          request.status === 'completed' ? 'default' : 'destructive'
+                        }>
+                          {request.status}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {productDetails.description && (
+                          <div>
+                            <p className="text-sm font-medium">Description:</p>
+                            <p className="text-sm text-muted-foreground">{productDetails.description}</p>
+                          </div>
+                        )}
+                        
+                        {productDetails.price && (
+                          <div>
+                            <p className="text-sm font-medium">Original Price:</p>
+                            <p className="text-sm text-muted-foreground">£{productDetails.price}</p>
+                          </div>
+                        )}
+                        
+                        {productDetails.category && (
+                          <div>
+                            <p className="text-sm font-medium">Category:</p>
+                            <Badge variant="outline">{productDetails.category}</Badge>
+                          </div>
+                        )}
+                        
+                        {productDetails.tags && productDetails.tags.length > 0 && (
+                          <div>
+                            <p className="text-sm font-medium mb-2">Tags:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {productDetails.tags.map((tag: string, index: number) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2 border-t">
+                          <CalendarDays className="h-3 w-3" />
+                          Requested on {new Date(request.created_at).toLocaleDateString()}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           )}
         </div>
