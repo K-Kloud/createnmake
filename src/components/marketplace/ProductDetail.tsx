@@ -15,6 +15,7 @@ import { useCart } from "@/providers/CartProvider";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { parsePrice } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProductDetailProps {
   isOpen: boolean;
@@ -148,6 +149,52 @@ export const ProductDetail = ({
       toast({
         title: "Error",
         description: "Failed to proceed to checkout. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleMakeRequest = async () => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to request custom manufacturing",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('make_requests')
+        .insert({
+          user_id: user.id,
+          product_image_url: product.url,
+          product_prompt: product.prompt,
+          product_price: product.price,
+          creator_id: product.user_id,
+          creator_name: product.creator.name,
+          product_details: {
+            likes: product.likes,
+            views: product.views,
+            created_at: product.createdAt,
+            categories: ['Fashion', 'Handmade', 'Modern'] // Example categories
+          }
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Make Request Submitted!",
+        description: "Your request has been sent to our artisans and manufacturers. You'll receive email updates on progress."
+      });
+
+      onClose();
+    } catch (error) {
+      console.error('Error submitting make request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit make request. Please try again.",
         variant: "destructive"
       });
     }
@@ -450,6 +497,22 @@ export const ProductDetail = ({
                 <Button className="w-full" onClick={handleBuyNow}>
                   Buy Now
                 </Button>
+              </div>
+              
+              <div className="mt-4">
+                <Button 
+                  variant="secondary" 
+                  className="w-full" 
+                  onClick={handleMakeRequest}
+                  disabled={!user}
+                >
+                  Make This Design
+                </Button>
+                {!user && (
+                  <p className="text-xs text-muted-foreground mt-2 text-center">
+                    Sign in to request custom manufacturing
+                  </p>
+                )}
               </div>
             </div>
           </div>
