@@ -31,7 +31,7 @@ export const useImageGeneration = () => {
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
   const [referenceImages, setReferenceImages] = useState<File[]>([]);
   const [referenceType, setReferenceType] = useState<ReferenceType>('style');
-  const [provider, setProvider] = useState<string>("openai");
+  const [provider, setProvider] = useState<string>("gemini");
   const [startTime, setStartTime] = useState<number | undefined>();
 
   // Smart provider fallback hook
