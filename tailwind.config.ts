@@ -65,26 +65,22 @@ export default {
         glass: "hsl(var(--card))", // Using card background for glass
       },
       fontFamily: {
-        // Futuristic typography
-        'orbitron': ['Orbitron', 'monospace'], // Headings
-        'rajdhani': ['Rajdhani', 'sans-serif'], // Subheadings
-        'inter': ['Inter', 'sans-serif'], // Body text
-        'monoton': ['Monoton', 'cursive'], // Accent/Hero text
-        'audiowide': ['Audiowide', 'cursive'], // Alternative accent
+        // Professional typography
+        'inter': ['Inter', 'sans-serif'], // Primary font
+        'roboto': ['Roboto', 'sans-serif'], // Headings
         sans: ['Inter', 'system-ui', 'sans-serif'], // Default
       },
       fontSize: {
-        'hero': ['4rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
-        'display': ['3rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
+        'hero': ['3.5rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+        'display': ['2.5rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
       },
       boxShadow: {
-        'neon': '0 0 20px rgba(0, 255, 255, 0.5)',
-        'neon-green': '0 0 20px rgba(0, 230, 160, 0.5)',
-        'neon-purple': '0 0 20px rgba(157, 0, 255, 0.5)',
-        'glass': '0 8px 32px rgba(31, 38, 135, 0.37)',
+        'sm': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+        'md': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+        'lg': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
       },
       backdropBlur: {
-        'glass': '16px',
+        'sm': '4px',
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -100,50 +96,15 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        float: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
-        },
-        glow: {
-          "0%, 100%": { boxShadow: "0 0 5px #00FFFF, 0 0 10px #00FFFF" },
-          "50%": { boxShadow: "0 0 20px #00FFFF, 0 0 30px #00FFFF" },
-        },
-        'neon-pulse': {
-          '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0.7' },
-        },
-        'slide-up': {
-          '0%': { transform: 'translateY(100px)', opacity: '0' },
+        'fade-in': {
+          '0%': { transform: 'translateY(8px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        'bounce-slow': {
-          '0%, 100%': { 
-            transform: 'translateY(-25%)',
-            animationTimingFunction: 'cubic-bezier(0.8, 0, 1, 1)' 
-          },
-          '50%': { 
-            transform: 'none',
-            animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)' 
-          },
-        },
-        'button-glow': {
-          '0%, 100%': { 
-            boxShadow: '0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary))' 
-          },
-          '50%': { 
-            boxShadow: '0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary))' 
-          },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        float: "float 6s ease-in-out infinite",
-        glow: "glow 3s ease-in-out infinite",
-        'neon-pulse': 'neon-pulse 2s ease-in-out infinite',
-        'slide-up': 'slide-up 0.6s ease-out',
-        'bounce-slow': 'bounce-slow 2s ease-in-out infinite',
-        'button-glow': 'button-glow 2s ease-in-out infinite',
+        'fade-in': 'fade-in 0.3s ease-out',
       },
     },
   },

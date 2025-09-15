@@ -60,8 +60,8 @@ export const ImageGenerator = () => {
   };
 
   return (
-    <ResponsiveContainer padding="md" className="space-y-6 sm:space-y-8 animate-float">
-      <Card className="bg-black/50 border border-white/10 backdrop-blur-md p-4 sm:p-6 rounded-xl space-y-4 sm:space-y-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,157,0.3)] hover:border-primary/40">
+    <ResponsiveContainer padding="md" className="space-y-6 sm:space-y-8">
+      <Card className="bg-card border border-border shadow-sm p-4 sm:p-6 rounded-lg space-y-4 sm:space-y-6 transition-all duration-200 hover:shadow-md">
         
         {/* Mode Toggle */}
         <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg border border-border/30">

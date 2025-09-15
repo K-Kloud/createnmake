@@ -87,12 +87,12 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
           <button 
-            className="bg-transparent text-primary border border-primary px-4 py-2 text-xl font-bold rounded-md hover:bg-primary/10 transition-all duration-200 hover:shadow-sm hover:shadow-primary/20 active:scale-95" 
+            className="bg-transparent text-primary border border-primary px-4 py-2 text-lg font-semibold rounded-lg hover:bg-primary hover:text-primary-foreground transition-all duration-200 shadow-sm active:scale-95" 
             onClick={handleLogoClick}
           >
             openteknologies
