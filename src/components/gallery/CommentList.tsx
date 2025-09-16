@@ -10,6 +10,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { getInitials } from "@/lib/utils";
+import { useCreatorProfile } from "@/hooks/useCreatorProfile";
+import { ProfileName } from "./ProfileName";
 
 interface Reply {
   id: number;
@@ -142,9 +144,10 @@ export const CommentList = ({ comments, onAddReply }: CommentListProps) => {
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <span className="font-bold text-white text-sm">
-                      {comment.user.name}
-                    </span>
+                    <ProfileName 
+                      userId={comment.user.id}
+                      fallbackName={comment.user.name}
+                    />
                     <span className="text-xs text-gray-400">
                       {formatDate(comment.createdAt)}
                     </span>
