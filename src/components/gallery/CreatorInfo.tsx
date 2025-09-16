@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { usePriceEditing } from "./hooks/usePriceEditing";
+import { useCreatorProfile } from "@/hooks/useCreatorProfile";
 import { getFallbackUsername } from "@/utils/usernameUtils";
 
 interface CreatorInfoProps {
@@ -12,6 +13,7 @@ interface CreatorInfoProps {
   price?: string; 
   isCreator?: boolean;
   onPriceChange?: (newPrice: string) => void;
+  userId?: string; // Add userId to fetch profile data
 }
 
 export const CreatorInfo = ({ 
@@ -19,13 +21,23 @@ export const CreatorInfo = ({
   timeAgo, 
   price, 
   isCreator = false,
-  onPriceChange 
+  onPriceChange,
+  userId
 }: CreatorInfoProps) => {
-  // Use a default avatar if none is provided
-  const avatarSrc = creator?.avatar || '/placeholder.svg';
+  // Fetch creator profile data
+  const { data: profile } = useCreatorProfile(userId);
   
-  // Use the improved username fallback logic
-  const displayName = creator?.name || 'User';
+  // Use a default avatar if none is provided
+  const avatarSrc = profile?.avatar_url || creator?.avatar || '/placeholder.svg';
+  
+  // Use profile display name with fallback logic
+  const displayName = profile?.display_name || creator?.name || getFallbackUsername(
+    undefined, // email
+    userId,    // userId
+    undefined, // displayName
+    undefined, // firstName
+    undefined  // lastName
+  ) || 'User';
   
   const { 
     isEditing,

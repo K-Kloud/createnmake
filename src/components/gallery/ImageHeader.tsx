@@ -13,6 +13,7 @@ interface ImageHeaderProps {
   price?: string;
   isCreator?: boolean; // Add isCreator prop
   onPriceChange?: (newPrice: string) => void; // Add callback for price changes
+  userId?: string; // Add userId to pass to CreatorInfo
 }
 
 export const ImageHeader = ({ 
@@ -22,7 +23,8 @@ export const ImageHeader = ({
   imageId, 
   price,
   isCreator,
-  onPriceChange
+  onPriceChange,
+  userId
 }: ImageHeaderProps) => {
   return (
     <div className="flex items-center justify-between mb-2">
@@ -32,6 +34,7 @@ export const ImageHeader = ({
         price={price} 
         isCreator={isCreator}
         onPriceChange={onPriceChange}
+        userId={userId}
       />
       <ShareButton creator={creator} imageUrl={imageUrl} imageId={imageId} />
     </div>
