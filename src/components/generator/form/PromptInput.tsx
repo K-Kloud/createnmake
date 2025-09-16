@@ -1,7 +1,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Mic, Send } from "lucide-react";
+import { Loader2, Mic, Send, Plus } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface PromptInputProps {
@@ -10,6 +10,8 @@ interface PromptInputProps {
   onGenerate: () => void;
   isGenerating: boolean;
   disabled?: boolean;
+  onReferenceImageUpload?: (file: File | null) => void;
+  referenceImage?: File | null;
 }
 
 export const PromptInput = ({
@@ -17,7 +19,9 @@ export const PromptInput = ({
   onPromptChange,
   onGenerate,
   isGenerating,
-  disabled = false
+  disabled = false,
+  onReferenceImageUpload,
+  referenceImage
 }: PromptInputProps) => {
 
   // Handle Enter key press to submit
@@ -26,6 +30,12 @@ export const PromptInput = ({
       e.preventDefault();
       onGenerate();
     }
+  };
+
+  // Handle file upload
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0] || null;
+    onReferenceImageUpload?.(selectedFile);
   };
 
   return (
@@ -42,6 +52,41 @@ export const PromptInput = ({
         />
         <div className="absolute right-2 flex items-center space-x-1">
           
+          {onReferenceImageUpload && (
+            <>
+              <input
+                id="reference-image-upload-inline"
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                className="sr-only"
+                onChange={handleFileChange}
+                disabled={disabled || isGenerating}
+              />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <label htmlFor="reference-image-upload-inline">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className={`h-6 w-6 rounded-full text-muted-foreground hover:bg-primary/20 hover:text-primary cursor-pointer ${referenceImage ? 'bg-primary/10 text-primary' : ''}`}
+                        disabled={isGenerating || disabled}
+                        asChild
+                      >
+                        <span>
+                          <Plus className="h-3 w-3" />
+                        </span>
+                      </Button>
+                    </label>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p>{referenceImage ? 'Change reference image' : 'Add reference image'}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </>
+          )}
+
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>

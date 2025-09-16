@@ -195,6 +195,8 @@ export const GenerationForm = ({
           onGenerate={onGenerate}
           isGenerating={isGenerating}
           disabled={isGenerating}
+          onReferenceImageUpload={onReferenceImageUpload}
+          referenceImage={referenceImage}
         />
 
         {/* Enhanced Keyword Suggestions */}
