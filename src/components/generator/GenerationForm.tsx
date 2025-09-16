@@ -5,6 +5,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronDown } from "lucide-react";
 import { SearchableItemSelect } from "./SearchableItemSelect";
 import { AspectRatioSelect } from "./AspectRatioSelect";
+import { OutputSizeSelect } from "./OutputSizeSelect";
 import { ReferenceImageUpload } from "./ReferenceImageUpload";
 import { MultipleReferenceUpload } from "./MultipleReferenceUpload";
 import { ReferenceTypeSelector, ReferenceType } from "./ReferenceTypeSelector";
@@ -40,6 +41,8 @@ interface GenerationFormProps {
   onItemChange: (item: string) => void;
   selectedRatio: string;
   onRatioChange: (ratio: string) => void;
+  outputSize: string;
+  onOutputSizeChange: (size: string) => void;
   referenceImage: File | null;
   onReferenceImageUpload: (file: File | null) => void;
   referenceImages?: File[];
@@ -61,6 +64,8 @@ export const GenerationForm = ({
   onItemChange,
   selectedRatio,
   onRatioChange,
+  outputSize,
+  onOutputSizeChange,
   referenceImage,
   onReferenceImageUpload,
   referenceImages = [],
@@ -123,10 +128,12 @@ export const GenerationForm = ({
           <div className="space-y-4">
             <SearchableItemSelect value={selectedItem} onChange={onItemChange} disabled={isGenerating} />
             
+            <OutputSizeSelect value={outputSize} onChange={onOutputSizeChange} disabled={isGenerating} />
+          </div>
+          
+          <div className="space-y-4">
             <AspectRatioSelect value={selectedRatio} onChange={onRatioChange} disabled={isGenerating} />
           </div>
-
-          
         </div>
 
         {/* Enhanced Keyword Suggestions */}

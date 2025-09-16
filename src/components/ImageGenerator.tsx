@@ -43,6 +43,7 @@ export const ImageGenerator = () => {
 
   // State for UI mode switching
   const [useMultipleReferences, setUseMultipleReferences] = useState(false);
+  const [outputSize, setOutputSize] = useState("512x512");
 
   // Add function to handle liking images if needed
   const handleLikeImage = (imageId: number) => {
@@ -87,6 +88,8 @@ export const ImageGenerator = () => {
           onItemChange={setSelectedItem}
           selectedRatio={selectedRatio}
           onRatioChange={setSelectedRatio}
+          outputSize={outputSize}
+          onOutputSizeChange={setOutputSize}
           referenceImage={referenceImage}
           onReferenceImageUpload={handleReferenceImageUpload}
           referenceImages={referenceImages}
