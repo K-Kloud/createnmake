@@ -82,7 +82,6 @@ export const GenerationForm = ({
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(true);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
-  const [isToolsOpen, setIsToolsOpen] = useState(false);
   const [referenceType, setReferenceType] = useState<ReferenceType>('style');
   const [processingOptions, setProcessingOptions] = useState<ReferenceProcessingOptions>({
     extractColors: true,
@@ -288,42 +287,26 @@ export const GenerationForm = ({
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsToolsOpen(!isToolsOpen)}
-                className="text-white/60 hover:text-white"
-              >
-                {isToolsOpen ? "Hide" : "Show"} AI Tools
-                <ChevronDown className={`ml-2 h-4 w-4 transition-transform ${isToolsOpen ? 'rotate-180' : ''}`} />
-              </Button>
-            </div>
+            <PromptEnhancer
+              prompt={prompt}
+              itemType={selectedItem}
+              onPromptChange={onPromptChange}
+            />
             
-            <Collapsible open={isToolsOpen} onOpenChange={setIsToolsOpen}>
-              <CollapsibleContent className="space-y-4">
-                <PromptEnhancer
-                  prompt={prompt}
-                  itemType={selectedItem}
-                  onPromptChange={onPromptChange}
-                />
-                
-                <SavedPrompts
-                  onPromptSelect={onPromptChange}
-                />
-                
-                <UserStyleLearning />
-                
-                <BatchProcessing 
-                  onBatchGenerate={async (items) => {
-                    for (const item of items) {
-                      // This would integrate with the actual generation logic
-                      console.log('Generating:', item);
-                    }
-                  }}
-                />
-              </CollapsibleContent>
-            </Collapsible>
+            <SavedPrompts
+              onPromptSelect={onPromptChange}
+            />
+            
+            <UserStyleLearning />
+            
+            <BatchProcessing 
+              onBatchGenerate={async (items) => {
+                for (const item of items) {
+                  // This would integrate with the actual generation logic
+                  console.log('Generating:', item);
+                }
+              }}
+            />
           </div>
           
           <div className="space-y-4">
