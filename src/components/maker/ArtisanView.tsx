@@ -3,9 +3,11 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Artisan } from "@/types/maker";
 import { useMakeRequests } from "@/hooks/useMakeRequests";
+import { useArtisanPortfolio } from "@/hooks/useArtisanPortfolio";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarDays, User, Package } from "lucide-react";
+import { CalendarDays, User, Package, Image, Star } from "lucide-react";
+import { ArtisanPortfolioSection } from "./ArtisanPortfolioSection";
 
 interface ArtisanViewProps {
   artisan: Artisan;
@@ -62,12 +64,23 @@ export const ArtisanView = ({ artisan }: ArtisanViewProps) => {
           )}
         </div>
         
-        {/* Make Requests Section */}
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <Package className="h-5 w-5" />
-            Make Requests ({makeRequests.length})
-          </h2>
+        {/* Portfolio and Requests Sections */}
+        <div className="mt-8 space-y-8">
+          {/* Portfolio Section */}
+          <div>
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <Package className="h-5 w-5" />
+              Portfolio & Made Items
+            </h2>
+            <ArtisanPortfolioSection artisanId={artisan.id} />
+          </div>
+
+          {/* Make Requests Section */}
+          <div>
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <Package className="h-5 w-5" />
+              Make Requests ({makeRequests.length})
+            </h2>
           
           {isLoading ? (
             <div className="text-center py-8">Loading requests...</div>
@@ -194,6 +207,7 @@ export const ArtisanView = ({ artisan }: ArtisanViewProps) => {
               })}
             </div>
           )}
+          </div>
         </div>
       </main>
       <Footer />

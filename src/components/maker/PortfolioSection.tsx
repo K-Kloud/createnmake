@@ -1,44 +1,65 @@
-
-interface PortfolioItem {
-  id: number;
-  generatedImage: string;
-  productImage: string;
-  description: string;
-}
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CalendarDays, Image as ImageIcon } from "lucide-react";
 
 interface PortfolioSectionProps {
-  portfolioItems?: PortfolioItem[];
+  portfolioItems?: any[];
 }
 
 export const PortfolioSection = ({ portfolioItems }: PortfolioSectionProps) => {
   if (!portfolioItems || portfolioItems.length === 0) {
-    return null;
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Portfolio</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground text-center">No portfolio items available.</p>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
-    <div className="mb-8">
-      <h2 className="text-xl font-semibold mb-4">Portfolio</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {portfolioItems.map(item => (
-          <div key={item.id} className="rounded-lg overflow-hidden border">
-            <div className="grid grid-cols-2 gap-2 p-2">
-              <img
-                src={item.generatedImage}
-                alt="Design"
-                className="w-full h-32 object-cover rounded"
-              />
-              <img
-                src={item.productImage}
-                alt="Product"
-                className="w-full h-32 object-cover rounded"
-              />
-            </div>
-            <div className="p-4">
-              <p className="text-sm text-center">{item.description}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Portfolio</CardTitle>
+        <CardDescription>Recent work and projects</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4 md:grid-cols-2">
+          {portfolioItems.map((item: any) => (
+            <Card key={item.id}>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  {/* Portfolio Image */}
+                  {(item.productimage || item.generatedImage) && (
+                    <div className="relative w-full h-48 rounded-lg overflow-hidden border">
+                      <img 
+                        src={item.productimage || item.generatedImage} 
+                        alt={item.description || 'Portfolio item'}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Description */}
+                  {item.description && (
+                    <div>
+                      <p className="text-sm text-muted-foreground">{item.description}</p>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2 border-t">
+                    <CalendarDays className="h-3 w-3" />
+                    Portfolio item
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
