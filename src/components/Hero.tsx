@@ -1,16 +1,14 @@
-
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Zap } from "lucide-react";
 import { ResponsiveContainer } from "@/components/ui/responsive-container";
 import { Typography } from "@/components/ui/responsive-text";
 import { ResponsiveGrid } from "@/components/ui/responsive-grid";
-
 export const Hero = () => {
-  const { t } = useTranslation('common');
-  
-  return (
-    <section className="relative min-h-[60vh] sm:min-h-[80vh] flex items-center justify-center overflow-hidden">
+  const {
+    t
+  } = useTranslation('common');
+  return <section className="relative min-h-[60vh] sm:min-h-[80vh] flex items-center justify-center overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-20 left-10 w-2 h-2 bg-neon-cyan rounded-full animate-neon-pulse"></div>
@@ -36,44 +34,18 @@ export const Hero = () => {
         </Typography>
 
         {/* Subtitle */}
-        <Typography 
-          variant="body-large" 
-          color="muted"
-          className="font-rajdhani font-light max-w-3xl mx-auto mb-6 sm:mb-8 animate-slide-up delay-300"
-        >
+        <Typography variant="body-large" color="muted" className="font-rajdhani font-light max-w-3xl mx-auto mb-6 sm:mb-8 animate-slide-up delay-300">
           Transform your ideas into stunning visuals with our AI-powered design generator. 
           Connect with skilled artisans and bring your creations to life.
         </Typography>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center animate-slide-up delay-500 px-4 sm:px-0">
-          <Button 
-            size="lg" 
-            className="neon-button glow-effect group w-full sm:w-auto mobile-touch-target"
-            onClick={() => document.querySelector(".image-generator")?.scrollIntoView({
-              behavior: "smooth"
-            })}
-          >
-            Start Creating Now
-            <Zap className="ml-2 group-hover:animate-neon-pulse" />
-          </Button>
-          
-          <Button 
-            size="lg" 
-            variant="outline" 
-            className="glass-card font-rajdhani font-semibold border-white/20 hover:border-accent group w-full sm:w-auto mobile-touch-target"
-          >
-            Explore Gallery
-            <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" />
-          </Button>
-        </div>
+        
 
         {/* Stats */}
-        <ResponsiveGrid 
-          cols={{ default: 3 }} 
-          gap="sm" 
-          className="mt-12 sm:mt-16 max-w-2xl mx-auto animate-slide-up delay-700"
-        >
+        <ResponsiveGrid cols={{
+        default: 3
+      }} gap="sm" className="mt-12 sm:mt-16 max-w-2xl mx-auto animate-slide-up delay-700">
           <div className="text-center">
             <Typography variant="h3" color="gradient" className="mb-1 sm:mb-2">
               10K+
@@ -103,6 +75,5 @@ export const Hero = () => {
 
       {/* Bottom Gradient */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-5"></div>
-    </section>
-  );
+    </section>;
 };

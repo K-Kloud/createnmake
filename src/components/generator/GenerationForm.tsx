@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,7 +17,6 @@ import { PromptInput } from "./form/PromptInput";
 import { GenerateButton } from "./form/GenerateButton";
 import { UsageInfo } from "./form/UsageInfo";
 import { ItemTypePreviews } from "./form/ItemTypePreviews";
-
 import { EnhancedKeywordSuggestions } from "./EnhancedKeywordSuggestions";
 import { ProviderSelect } from "./ProviderSelect";
 import { ProviderRecommendation } from "./ProviderRecommendation";
@@ -35,7 +33,6 @@ import { GenerationHistory } from './GenerationHistory';
 import { SavedPrompts } from './SavedPrompts';
 import { GenerationStats } from './GenerationStats';
 import { ExportShare } from './ExportShare';
-
 interface GenerationFormProps {
   prompt: string;
   onPromptChange: (prompt: string) => void;
@@ -57,7 +54,6 @@ interface GenerationFormProps {
   onProviderChange?: (provider: string) => void;
   useMultipleReferences?: boolean;
 }
-
 export const GenerationForm = ({
   prompt,
   onPromptChange,
@@ -77,7 +73,7 @@ export const GenerationForm = ({
   provider = "openai",
   uploadingReference = false,
   onProviderChange,
-  useMultipleReferences = false,
+  useMultipleReferences = false
 }: GenerationFormProps) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(true);
@@ -90,46 +86,29 @@ export const GenerationForm = ({
     analyzeComposition: true,
     extractTexture: true
   });
-
-  const { analyzing, analysis, analyzeImage } = useReferenceImageAnalysis();
+  const {
+    analyzing,
+    analysis,
+    analyzeImage
+  } = useReferenceImageAnalysis();
   const hasAnyReference = !!(referenceImage || referenceImages.length > 0);
-  const { getRecommendedProvider } = useSmartProviderFallback(provider, hasAnyReference);
-
+  const {
+    getRecommendedProvider
+  } = useSmartProviderFallback(provider, hasAnyReference);
   const handleKeywordClick = (keyword: string) => {
     const currentPrompt = prompt.trim();
-    const newPrompt = currentPrompt 
-      ? `${currentPrompt}, ${keyword}` 
-      : keyword;
+    const newPrompt = currentPrompt ? `${currentPrompt}, ${keyword}` : keyword;
     onPromptChange(newPrompt);
   };
-
-  return (
-    <ErrorBoundary>
+  return <ErrorBoundary>
       <div className="space-y-6">
       {/* Loading Progress */}
-      {(isGenerating || analyzing || uploadingReference) && (
-        <LoadingProgress
-          stage={
-            uploadingReference ? 'uploading' :
-            analyzing ? 'analyzing' :
-            isGenerating ? 'generating' : 'processing'
-          }
-          progress={
-            uploadingReference ? 25 :
-            analyzing ? 50 :
-            isGenerating ? 75 : 100
-          }
-          showStages={hasAnyReference}
-        />
-      )}
+      {(isGenerating || analyzing || uploadingReference) && <LoadingProgress stage={uploadingReference ? 'uploading' : analyzing ? 'analyzing' : isGenerating ? 'generating' : 'processing'} progress={uploadingReference ? 25 : analyzing ? 50 : isGenerating ? 75 : 100} showStages={hasAnyReference} />}
       
       {/* Form Collapsible Trigger */}
       <Collapsible open={isFormOpen} onOpenChange={setIsFormOpen}>
         <CollapsibleTrigger asChild>
-          <Button 
-            variant="outline" 
-            className="w-full flex items-center justify-between"
-          >
+          <Button variant="outline" className="w-full flex items-center justify-between">
             <span>Generation Controls</span>
             <ChevronDown className={`h-4 w-4 transition-transform ${isFormOpen ? 'rotate-180' : ''}`} />
           </Button>
@@ -139,123 +118,47 @@ export const GenerationForm = ({
           {/* Main Generation Controls */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
-            <SearchableItemSelect
-              value={selectedItem}
-              onChange={onItemChange}
-              disabled={isGenerating}
-            />
+            <SearchableItemSelect value={selectedItem} onChange={onItemChange} disabled={isGenerating} />
             
-            <AspectRatioSelect
-              value={selectedRatio}
-              onChange={onRatioChange}
-              disabled={isGenerating}
-            />
+            <AspectRatioSelect value={selectedRatio} onChange={onRatioChange} disabled={isGenerating} />
           </div>
 
-          <div className="space-y-4">
-            {useMultipleReferences ? (
-              <MultipleReferenceUpload
-                files={referenceImages}
-                onFilesChange={onReferenceImagesChange || (() => {})}
-                disabled={isGenerating}
-                maxFiles={3}
-              />
-            ) : (
-              <ReferenceImageUpload
-                onUpload={onReferenceImageUpload}
-                file={referenceImage}
-                disabled={isGenerating}
-                uploading={uploadingReference}
-              />
-            )}
-            
-            {/* Reference Type Selection */}
-            <ReferenceTypeSelector
-              selectedType={referenceType}
-              onTypeChange={setReferenceType}
-              hasReferenceImages={hasAnyReference}
-            />
-            
-            {/* Advanced Features Info */}
-            <AdvancedFeaturesInfo isMultiMode={useMultipleReferences} />
-            
-            {/* Reference Processing Options */}
-            <ReferenceProcessingOptionsComponent
-              options={processingOptions}
-              onOptionsChange={setProcessingOptions}
-              hasReferenceImage={hasAnyReference}
-            />
-          </div>
+          
         </div>
 
         {/* Prompt Input */}
-        <PromptInput
-          prompt={prompt}
-          onPromptChange={onPromptChange}
-          onGenerate={onGenerate}
-          isGenerating={isGenerating}
-          disabled={isGenerating}
-          onReferenceImageUpload={onReferenceImageUpload}
-          referenceImage={referenceImage}
-        />
+        <PromptInput prompt={prompt} onPromptChange={onPromptChange} onGenerate={onGenerate} isGenerating={isGenerating} disabled={isGenerating} onReferenceImageUpload={onReferenceImageUpload} referenceImage={referenceImage} />
 
         {/* Enhanced Keyword Suggestions */}
-        <EnhancedKeywordSuggestions
-          selectedItem={selectedItem}
-          onKeywordClick={handleKeywordClick}
-          disabled={isGenerating}
-        />
+        <EnhancedKeywordSuggestions selectedItem={selectedItem} onKeywordClick={handleKeywordClick} disabled={isGenerating} />
         
         </CollapsibleContent>
       </Collapsible>
 
       {/* Advanced Options Toggle */}
       <div className="flex justify-center">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setShowAdvanced(!showAdvanced)}
-          className="text-white/60 hover:text-white"
-        >
+        <Button variant="ghost" size="sm" onClick={() => setShowAdvanced(!showAdvanced)} className="text-white/60 hover:text-white">
           {showAdvanced ? "Hide" : "Show"} Advanced Options
         </Button>
       </div>
 
       {/* Advanced Options */}
-      {showAdvanced && (
-        <Card className="bg-black/30 border-white/10">
+      {showAdvanced && <Card className="bg-black/30 border-white/10">
           <CardHeader>
             <CardTitle className="text-sm">Advanced Options</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Provider Recommendation */}
-            <ProviderRecommendation
-              selectedItem={selectedItem}
-              selectedRatio={selectedRatio}
-              currentProvider={provider}
-              onProviderChange={onProviderChange || (() => {})}
-              hasReferenceImage={hasAnyReference}
-            />
+            <ProviderRecommendation selectedItem={selectedItem} selectedRatio={selectedRatio} currentProvider={provider} onProviderChange={onProviderChange || (() => {})} hasReferenceImage={hasAnyReference} />
 
             {/* Provider Selection */}
-            <ProviderSelect
-              value={provider}
-              onChange={onProviderChange || (() => {})}
-              disabled={isGenerating}
-              hasReferenceImage={hasAnyReference}
-            />
+            <ProviderSelect value={provider} onChange={onProviderChange || (() => {})} disabled={isGenerating} hasReferenceImage={hasAnyReference} />
             
             {/* Advanced Provider Comparison */}
-            <ProviderComparison
-              selectedProvider={provider}
-              onProviderChange={onProviderChange || (() => {})}
-              selectedItem={selectedItem}
-              selectedRatio={selectedRatio}
-            />
+            <ProviderComparison selectedProvider={provider} onProviderChange={onProviderChange || (() => {})} selectedItem={selectedItem} selectedRatio={selectedRatio} />
             
             {/* Reference Image Processing Analysis */}
-            {hasAnyReference && analysis && (
-              <Card className="border-border/50 bg-card/50">
+            {hasAnyReference && analysis && <Card className="border-border/50 bg-card/50">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-xs text-muted-foreground">
                     Analysis Results ({referenceType})
@@ -271,54 +174,35 @@ export const GenerationForm = ({
                   <div className="text-xs">
                     <span className="font-medium">Objects:</span> {analysis.objects.join(", ")}
                   </div>
-                  {useMultipleReferences && referenceImages.length > 1 && (
-                    <div className="text-xs">
+                  {useMultipleReferences && referenceImages.length > 1 && <div className="text-xs">
                       <span className="font-medium">References:</span> {referenceImages.length} images
-                    </div>
-                  )}
+                    </div>}
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
             
-            {showItemPreviews && selectedItem && (
-              <ItemTypePreviews selectedItem={selectedItem} />
-            )}
+            {showItemPreviews && selectedItem && <ItemTypePreviews selectedItem={selectedItem} />}
           </CardContent>
-        </Card>
-      )}
+        </Card>}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="space-y-4">
-            <PromptEnhancer
-              prompt={prompt}
-              itemType={selectedItem}
-              onPromptChange={onPromptChange}
-            />
+            <PromptEnhancer prompt={prompt} itemType={selectedItem} onPromptChange={onPromptChange} />
             
-            <SavedPrompts
-              onPromptSelect={onPromptChange}
-            />
+            <SavedPrompts onPromptSelect={onPromptChange} />
             
             <UserStyleLearning />
             
-            <BatchProcessing 
-              onBatchGenerate={async (items) => {
-                for (const item of items) {
-                  // This would integrate with the actual generation logic
-                  console.log('Generating:', item);
-                }
-              }}
-            />
+            <BatchProcessing onBatchGenerate={async items => {
+            for (const item of items) {
+              // This would integrate with the actual generation logic
+              console.log('Generating:', item);
+            }
+          }} />
           </div>
           
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsStatsOpen(!isStatsOpen)}
-                className="text-white/60 hover:text-white"
-              >
+              <Button variant="ghost" size="sm" onClick={() => setIsStatsOpen(!isStatsOpen)} className="text-white/60 hover:text-white">
                 {isStatsOpen ? "Hide" : "Show"} Stats & Analytics
                 <ChevronDown className={`ml-2 h-4 w-4 transition-transform ${isStatsOpen ? 'rotate-180' : ''}`} />
               </Button>
@@ -330,39 +214,21 @@ export const GenerationForm = ({
                 
                 <GenerationHistory />
                 
-                <GenerationAnalytics 
-                  providers={['flux.schnell', 'flux.dev']}
-                />
+                <GenerationAnalytics providers={['flux.schnell', 'flux.dev']} />
                 
-                <RealTimePerformance 
-                  currentProvider={provider}
-                  isGenerating={isGenerating}
-                />
+                <RealTimePerformance currentProvider={provider} isGenerating={isGenerating} />
                 
-                <QuickActions 
-                  onRandomPrompt={() => onPromptChange("A stylish contemporary outfit")}
-                  onCopyPrompt={() => navigator.clipboard.writeText(prompt)}
-                  hasGeneratedImage={false}
-                />
+                <QuickActions onRandomPrompt={() => onPromptChange("A stylish contemporary outfit")} onCopyPrompt={() => navigator.clipboard.writeText(prompt)} hasGeneratedImage={false} />
               </CollapsibleContent>
             </Collapsible>
           </div>
         </div>
 
       {/* Usage Info */}
-      <UsageInfo 
-        isSignedIn={isSignedIn} 
-        remainingImages={remainingImages} 
-      />
+      <UsageInfo isSignedIn={isSignedIn} remainingImages={remainingImages} />
 
       {/* Generate Button */}
-      <GenerateButton
-        onClick={onGenerate}
-        isGenerating={isGenerating}
-        disabled={!selectedItem || !prompt.trim()}
-        remainingImages={remainingImages}
-      />
+      <GenerateButton onClick={onGenerate} isGenerating={isGenerating} disabled={!selectedItem || !prompt.trim()} remainingImages={remainingImages} />
       </div>
-    </ErrorBoundary>
-  );
+    </ErrorBoundary>;
 };
