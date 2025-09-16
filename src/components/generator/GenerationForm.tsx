@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
 import { SearchableItemSelect } from "./SearchableItemSelect";
 import { AspectRatioSelect } from "./AspectRatioSelect";
 import { ReferenceImageUpload } from "./ReferenceImageUpload";
@@ -78,6 +80,7 @@ export const GenerationForm = ({
   useMultipleReferences = false,
 }: GenerationFormProps) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(true);
   const [referenceType, setReferenceType] = useState<ReferenceType>('style');
   const [processingOptions, setProcessingOptions] = useState<ReferenceProcessingOptions>({
     extractColors: true,
@@ -102,90 +105,106 @@ export const GenerationForm = ({
   return (
     <ErrorBoundary>
       <div className="space-y-6">
-        {/* Loading Progress */}
-        {(isGenerating || analyzing || uploadingReference) && (
-          <LoadingProgress
-            stage={
-              uploadingReference ? 'uploading' :
-              analyzing ? 'analyzing' :
-              isGenerating ? 'generating' : 'processing'
-            }
-            progress={
-              uploadingReference ? 25 :
-              analyzing ? 50 :
-              isGenerating ? 75 : 100
-            }
-            showStages={hasAnyReference}
-          />
-        )}
+      {/* Loading Progress */}
+      {(isGenerating || analyzing || uploadingReference) && (
+        <LoadingProgress
+          stage={
+            uploadingReference ? 'uploading' :
+            analyzing ? 'analyzing' :
+            isGenerating ? 'generating' : 'processing'
+          }
+          progress={
+            uploadingReference ? 25 :
+            analyzing ? 50 :
+            isGenerating ? 75 : 100
+          }
+          showStages={hasAnyReference}
+        />
+      )}
+      
+      {/* Form Collapsible Trigger */}
+      <Collapsible open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <CollapsibleTrigger asChild>
+          <Button 
+            variant="outline" 
+            className="w-full flex items-center justify-between"
+          >
+            <span>Generation Controls</span>
+            <ChevronDown className={`h-4 w-4 transition-transform ${isFormOpen ? 'rotate-180' : ''}`} />
+          </Button>
+        </CollapsibleTrigger>
         
-        {/* Main Generation Controls */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <SearchableItemSelect
-            value={selectedItem}
-            onChange={onItemChange}
-            disabled={isGenerating}
-          />
-          
-          <AspectRatioSelect
-            value={selectedRatio}
-            onChange={onRatioChange}
-            disabled={isGenerating}
-          />
+        <CollapsibleContent className="space-y-6 mt-6">
+          {/* Main Generation Controls */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <SearchableItemSelect
+              value={selectedItem}
+              onChange={onItemChange}
+              disabled={isGenerating}
+            />
+            
+            <AspectRatioSelect
+              value={selectedRatio}
+              onChange={onRatioChange}
+              disabled={isGenerating}
+            />
+          </div>
+
+          <div className="space-y-4">
+            {useMultipleReferences ? (
+              <MultipleReferenceUpload
+                files={referenceImages}
+                onFilesChange={onReferenceImagesChange || (() => {})}
+                disabled={isGenerating}
+                maxFiles={3}
+              />
+            ) : (
+              <ReferenceImageUpload
+                onUpload={onReferenceImageUpload}
+                file={referenceImage}
+                disabled={isGenerating}
+                uploading={uploadingReference}
+              />
+            )}
+            
+            {/* Reference Type Selection */}
+            <ReferenceTypeSelector
+              selectedType={referenceType}
+              onTypeChange={setReferenceType}
+              hasReferenceImages={hasAnyReference}
+            />
+            
+            {/* Advanced Features Info */}
+            <AdvancedFeaturesInfo isMultiMode={useMultipleReferences} />
+            
+            {/* Reference Processing Options */}
+            <ReferenceProcessingOptionsComponent
+              options={processingOptions}
+              onOptionsChange={setProcessingOptions}
+              hasReferenceImage={hasAnyReference}
+            />
+          </div>
         </div>
 
-        <div className="space-y-4">
-          {useMultipleReferences ? (
-            <MultipleReferenceUpload
-              files={referenceImages}
-              onFilesChange={onReferenceImagesChange || (() => {})}
-              disabled={isGenerating}
-              maxFiles={3}
-            />
-          ) : (
-            <ReferenceImageUpload
-              onUpload={onReferenceImageUpload}
-              file={referenceImage}
-              disabled={isGenerating}
-              uploading={uploadingReference}
-            />
-          )}
-          
-          {/* Reference Type Selection */}
-          <ReferenceTypeSelector
-            selectedType={referenceType}
-            onTypeChange={setReferenceType}
-            hasReferenceImages={hasAnyReference}
-          />
-          
-          {/* Advanced Features Info */}
-          <AdvancedFeaturesInfo isMultiMode={useMultipleReferences} />
-          
-          {/* Reference Processing Options */}
-          <ReferenceProcessingOptionsComponent
-            options={processingOptions}
-            onOptionsChange={setProcessingOptions}
-            hasReferenceImage={hasAnyReference}
-          />
-        </div>
-      </div>
+        {/* Prompt Input */}
+        <PromptInput
+          prompt={prompt}
+          onPromptChange={onPromptChange}
+          onGenerate={onGenerate}
+          isGenerating={isGenerating}
+          disabled={isGenerating}
+        />
 
-      {/* Prompt Input */}
-      <PromptInput
-        prompt={prompt}
-        onPromptChange={onPromptChange}
-        onGenerate={onGenerate}
-        isGenerating={isGenerating}
-        disabled={isGenerating}
-      />
-
-      {/* Enhanced Keyword Suggestions */}
-      <EnhancedKeywordSuggestions
-        selectedItem={selectedItem}
-        onKeywordClick={handleKeywordClick}
-        disabled={isGenerating}
-      />
+        {/* Enhanced Keyword Suggestions */}
+        <EnhancedKeywordSuggestions
+          selectedItem={selectedItem}
+          onKeywordClick={handleKeywordClick}
+          disabled={isGenerating}
+        />
+        
+        </CollapsibleContent>
+      </Collapsible>
 
       {/* Advanced Options Toggle */}
       <div className="flex justify-center">
