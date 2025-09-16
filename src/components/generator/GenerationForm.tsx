@@ -105,6 +105,9 @@ export const GenerationForm = ({
       {/* Loading Progress */}
       {(isGenerating || analyzing || uploadingReference) && <LoadingProgress stage={uploadingReference ? 'uploading' : analyzing ? 'analyzing' : isGenerating ? 'generating' : 'processing'} progress={uploadingReference ? 25 : analyzing ? 50 : isGenerating ? 75 : 100} showStages={hasAnyReference} />}
       
+      {/* Prompt Input */}
+      <PromptInput prompt={prompt} onPromptChange={onPromptChange} onGenerate={onGenerate} isGenerating={isGenerating} disabled={isGenerating} onReferenceImageUpload={onReferenceImageUpload} referenceImage={referenceImage} />
+
       {/* Form Collapsible Trigger */}
       <Collapsible open={isFormOpen} onOpenChange={setIsFormOpen}>
         <CollapsibleTrigger asChild>
@@ -125,9 +128,6 @@ export const GenerationForm = ({
 
           
         </div>
-
-        {/* Prompt Input */}
-        <PromptInput prompt={prompt} onPromptChange={onPromptChange} onGenerate={onGenerate} isGenerating={isGenerating} disabled={isGenerating} onReferenceImageUpload={onReferenceImageUpload} referenceImage={referenceImage} />
 
         {/* Enhanced Keyword Suggestions */}
         <EnhancedKeywordSuggestions selectedItem={selectedItem} onKeywordClick={handleKeywordClick} disabled={isGenerating} />
