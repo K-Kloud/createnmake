@@ -83,6 +83,7 @@ export const GenerationForm = ({
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(true);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
+  const [showAITools, setShowAITools] = useState(false);
   const [referenceType, setReferenceType] = useState<ReferenceType>('style');
   const [processingOptions, setProcessingOptions] = useState<ReferenceProcessingOptions>({
     extractColors: true,
@@ -189,45 +190,57 @@ export const GenerationForm = ({
           </CardContent>
         </Card>}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="space-y-4">
-            <PromptEnhancer prompt={prompt} itemType={selectedItem} onPromptChange={onPromptChange} />
-            
-            <SavedPrompts onPromptSelect={onPromptChange} />
-            
-            <UserStyleLearning />
-            
-            <BatchProcessing onBatchGenerate={async items => {
-            for (const item of items) {
-              // This would integrate with the actual generation logic
-              console.log('Generating:', item);
-            }
-          }} />
-          </div>
-          
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <Button variant="ghost" size="sm" onClick={() => setIsStatsOpen(!isStatsOpen)} className="text-white/60 hover:text-white">
-                {isStatsOpen ? "Hide" : "Show"} Stats & Analytics
-                <ChevronDown className={`ml-2 h-4 w-4 transition-transform ${isStatsOpen ? 'rotate-180' : ''}`} />
-              </Button>
-            </div>
-            
-            <Collapsible open={isStatsOpen} onOpenChange={setIsStatsOpen}>
-              <CollapsibleContent className="space-y-4">
-                <GenerationStats />
-                
-                <GenerationHistory />
-                
-                <GenerationAnalytics providers={['flux.schnell', 'flux.dev']} />
-                
-                <RealTimePerformance currentProvider={provider} isGenerating={isGenerating} />
-                
-                <QuickActions onRandomPrompt={() => onPromptChange("A stylish contemporary outfit")} onCopyPrompt={() => navigator.clipboard.writeText(prompt)} hasGeneratedImage={false} />
-              </CollapsibleContent>
-            </Collapsible>
-          </div>
+        {/* AI Tools Toggle */}
+        <div className="flex justify-center">
+          <Button variant="ghost" size="sm" onClick={() => setShowAITools(!showAITools)} className="text-white/60 hover:text-white">
+            {showAITools ? "Hide" : "Show"} AI Tools
+            <ChevronDown className={`ml-2 h-4 w-4 transition-transform ${showAITools ? 'rotate-180' : ''}`} />
+          </Button>
         </div>
+
+        <Collapsible open={showAITools} onOpenChange={setShowAITools}>
+          <CollapsibleContent>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="space-y-4">
+                <PromptEnhancer prompt={prompt} itemType={selectedItem} onPromptChange={onPromptChange} />
+                
+                <SavedPrompts onPromptSelect={onPromptChange} />
+                
+                <UserStyleLearning />
+                
+                <BatchProcessing onBatchGenerate={async items => {
+                for (const item of items) {
+                  // This would integrate with the actual generation logic
+                  console.log('Generating:', item);
+                }
+              }} />
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <Button variant="ghost" size="sm" onClick={() => setIsStatsOpen(!isStatsOpen)} className="text-white/60 hover:text-white">
+                    {isStatsOpen ? "Hide" : "Show"} Stats & Analytics
+                    <ChevronDown className={`ml-2 h-4 w-4 transition-transform ${isStatsOpen ? 'rotate-180' : ''}`} />
+                  </Button>
+                </div>
+                
+                <Collapsible open={isStatsOpen} onOpenChange={setIsStatsOpen}>
+                  <CollapsibleContent className="space-y-4">
+                    <GenerationStats />
+                    
+                    <GenerationHistory />
+                    
+                    <GenerationAnalytics providers={['flux.schnell', 'flux.dev']} />
+                    
+                    <RealTimePerformance currentProvider={provider} isGenerating={isGenerating} />
+                    
+                    <QuickActions onRandomPrompt={() => onPromptChange("A stylish contemporary outfit")} onCopyPrompt={() => navigator.clipboard.writeText(prompt)} hasGeneratedImage={false} />
+                  </CollapsibleContent>
+                </Collapsible>
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
 
       {/* Usage Info */}
       <UsageInfo isSignedIn={isSignedIn} remainingImages={remainingImages} />
