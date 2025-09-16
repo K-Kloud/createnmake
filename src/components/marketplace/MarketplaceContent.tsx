@@ -147,23 +147,7 @@ export const MarketplaceContent = ({
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex space-x-2">
-          <button 
-            onClick={() => handleViewModeChange("paginated")}
-            className={`px-3 py-1 rounded-md ${viewMode === "paginated" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
-            aria-label="Switch to paginated view"
-          >
-            {t('marketplace.viewMode.paginated')}
-          </button>
-          <button 
-            onClick={() => handleViewModeChange("infinite")}
-            className={`px-3 py-1 rounded-md ${viewMode === "infinite" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
-            aria-label="Switch to infinite scroll view"
-          >
-            {t('marketplace.viewMode.infiniteScroll')}
-          </button>
-        </div>
+      <div className="flex justify-end mb-4">
         <Wishlist onProductClick={handleImageClick} />
       </div>
       
