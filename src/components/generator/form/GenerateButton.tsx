@@ -29,8 +29,6 @@ export const GenerateButton = ({
               className="w-full neon-button glow-effect group relative overflow-hidden"
               size="lg"
             >
-              {/* Background animation */}
-              <div className="absolute inset-0 bg-gradient-to-r from-neon-cyan/20 to-neon-purple/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               
               {isGenerating ? (
                 <>
