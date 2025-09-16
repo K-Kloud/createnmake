@@ -19,12 +19,7 @@ export const Hero = () => {
 
       <ResponsiveContainer className="relative z-10 text-center">
         {/* Hero Badge */}
-        <div className="inline-flex items-center gap-2 glass-card px-3 py-2 sm:px-4 sm:py-2 mb-6 sm:mb-8 animate-slide-up">
-          <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-accent" />
-          <Typography variant="body-small" color="muted" className="font-rajdhani font-medium" as="span">
-            Powered by Advanced AI Technology
-          </Typography>
-        </div>
+        
 
         {/* Main Headline */}
         <Typography variant="display" color="gradient" className="mb-4 sm:mb-6 animate-slide-up delay-200">
