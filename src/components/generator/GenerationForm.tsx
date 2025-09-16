@@ -125,9 +125,8 @@ export const GenerationForm = ({
         <CollapsibleContent className="space-y-6 mt-6">
           {/* Main Generation Controls */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <SearchableItemSelect value={selectedItem} onChange={onItemChange} disabled={isGenerating} />
-            
             <OutputSizeSelect value={outputSize} onChange={onOutputSizeChange} disabled={isGenerating} />
           </div>
           
