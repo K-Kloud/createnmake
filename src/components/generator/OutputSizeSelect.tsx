@@ -39,5 +39,24 @@ export const OutputSizeSelect = ({
   onChange,
   disabled
 }: OutputSizeSelectProps) => {
-  return;
+  return (
+    <div className="space-y-2">
+      <Label htmlFor="output-size">Output Size</Label>
+      <Select value={value} onValueChange={onChange} disabled={disabled}>
+        <SelectTrigger>
+          <SelectValue placeholder="Select output size" />
+        </SelectTrigger>
+        <SelectContent>
+          {outputSizes.map((size) => (
+            <SelectItem key={size.value} value={size.value}>
+              <div className="flex flex-col">
+                <span className="font-medium">{size.label}</span>
+                <span className="text-xs text-muted-foreground">{size.description}</span>
+              </div>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
 };
