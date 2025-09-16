@@ -81,6 +81,7 @@ export const GenerationForm = ({
 }: GenerationFormProps) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(true);
+  const [isStatsOpen, setIsStatsOpen] = useState(false);
   const [referenceType, setReferenceType] = useState<ReferenceType>('style');
   const [processingOptions, setProcessingOptions] = useState<ReferenceProcessingOptions>({
     extractColors: true,
@@ -309,24 +310,40 @@ export const GenerationForm = ({
           </div>
           
           <div className="space-y-4">
-            <GenerationStats />
+            <div className="flex justify-between items-center">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsStatsOpen(!isStatsOpen)}
+                className="text-white/60 hover:text-white"
+              >
+                {isStatsOpen ? "Hide" : "Show"} Stats & Analytics
+                <ChevronDown className={`ml-2 h-4 w-4 transition-transform ${isStatsOpen ? 'rotate-180' : ''}`} />
+              </Button>
+            </div>
             
-            <GenerationHistory />
-            
-            <GenerationAnalytics 
-              providers={['flux.schnell', 'flux.dev']}
-            />
-            
-            <RealTimePerformance 
-              currentProvider={provider}
-              isGenerating={isGenerating}
-            />
-            
-            <QuickActions 
-              onRandomPrompt={() => onPromptChange("A stylish contemporary outfit")}
-              onCopyPrompt={() => navigator.clipboard.writeText(prompt)}
-              hasGeneratedImage={false}
-            />
+            <Collapsible open={isStatsOpen} onOpenChange={setIsStatsOpen}>
+              <CollapsibleContent className="space-y-4">
+                <GenerationStats />
+                
+                <GenerationHistory />
+                
+                <GenerationAnalytics 
+                  providers={['flux.schnell', 'flux.dev']}
+                />
+                
+                <RealTimePerformance 
+                  currentProvider={provider}
+                  isGenerating={isGenerating}
+                />
+                
+                <QuickActions 
+                  onRandomPrompt={() => onPromptChange("A stylish contemporary outfit")}
+                  onCopyPrompt={() => navigator.clipboard.writeText(prompt)}
+                  hasGeneratedImage={false}
+                />
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         </div>
 
