@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ export const OrderManagement: React.FC = () => {
   const { user } = useAuth();
   const { handleError } = useErrorHandler();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   // Set up real-time updates for orders
   useOrderRealtime({
@@ -136,7 +138,7 @@ export const OrderManagement: React.FC = () => {
             {orders && orders.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">No orders found.</p>
-                <Button className="mt-4" onClick={() => window.location.href = '/marketplace'}>
+                <Button className="mt-4" onClick={() => navigate('/marketplace')}>
                   Browse Marketplace
                 </Button>
               </div>

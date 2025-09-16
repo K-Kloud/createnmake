@@ -1,8 +1,10 @@
 import { Helmet } from "react-helmet";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { 
   Target, 
   Heart, 
@@ -16,6 +18,7 @@ import {
 
 const About = () => {
   const { t } = useTranslation('common');
+  const navigate = useNavigate();
 
   const values = [
     {
@@ -215,18 +218,19 @@ const About = () => {
               Start your creative journey today and become part of a growing community of AI-powered creators
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button 
-                className="btn btn-primary btn-lg"
-                onClick={() => window.location.href = '/'}
+              <Button 
+                size="lg"
+                onClick={() => navigate('/')}
               >
                 Get Started
-              </button>
-              <button 
-                className="btn btn-outline btn-lg"
-                onClick={() => window.location.href = '/contact'}
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                onClick={() => navigate('/contact')}
               >
                 Contact Us
-              </button>
+              </Button>
             </div>
           </div>
         </section>

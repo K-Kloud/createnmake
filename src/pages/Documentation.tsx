@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet";
 import { MainLayout } from "@/components/layouts/MainLayout";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import {
 } from "lucide-react";
 
 const Documentation = () => {
+  const navigate = useNavigate();
   const sections = [
     {
       icon: <Zap className="h-8 w-8" />,
@@ -287,10 +289,10 @@ const Documentation = () => {
               Can't find what you're looking for? Our support team is here to help
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" onClick={() => window.location.href = '/contact'}>
+              <Button size="lg" onClick={() => navigate('/contact')}>
                 Contact Support
               </Button>
-              <Button size="lg" variant="outline" onClick={() => window.location.href = '/support'}>
+              <Button size="lg" variant="outline" onClick={() => navigate('/support')}>
                 Visit Support Center
               </Button>
             </div>

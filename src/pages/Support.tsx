@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import { 
   MessageSquare, 
   Book, 
@@ -14,34 +16,40 @@ import {
 } from "lucide-react";
 
 const Support = () => {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
   const supportOptions = [
     {
       icon: <MessageSquare className="h-8 w-8" />,
       title: "Live Chat",
       description: "Get instant help from our support team",
       action: "Start Chat",
-      available: "24/7"
+      available: "24/7",
+      onClick: () => window.open('https://wa.me/447438306305', '_blank')
     },
     {
       icon: <Book className="h-8 w-8" />,
       title: "Documentation",
       description: "Comprehensive guides and tutorials",
       action: "Browse Docs",
-      available: "Always"
+      available: "Always",
+      onClick: () => navigate('/documentation')
     },
     {
       icon: <Video className="h-8 w-8" />,
       title: "Video Tutorials",
       description: "Step-by-step video guides",
       action: "Watch Videos",
-      available: "On-demand"
+      available: "On-demand",
+      onClick: () => navigate('/tutorials')
     },
     {
       icon: <Mail className="h-8 w-8" />,
       title: "Email Support",
       description: "Detailed support via email",
       action: "Send Email",
-      available: "4-hour response"
+      available: "4-hour response",
+      onClick: () => navigate('/contact')
     }
   ];
 
@@ -123,8 +131,24 @@ const Support = () => {
               <input
                 type="text"
                 placeholder="Search for help articles, tutorials, or guides..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && searchQuery.trim()) {
+                    navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                  }
+                }}
                 className="w-full pl-12 pr-4 py-4 rounded-lg border border-border bg-background text-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
+              {searchQuery.trim() && (
+                <Button 
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                  size="sm"
+                  onClick={() => navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)}
+                >
+                  Search
+                </Button>
+              )}
             </div>
           </div>
         </section>
@@ -145,7 +169,7 @@ const Support = () => {
                   <CardContent>
                     <p className="text-muted-foreground mb-4">{option.description}</p>
                     <p className="text-sm text-primary mb-4">{option.available}</p>
-                    <Button className="w-full">{option.action}</Button>
+                    <Button className="w-full" onClick={option.onClick}>{option.action}</Button>
                   </CardContent>
                 </Card>
               ))}
@@ -159,7 +183,13 @@ const Support = () => {
             <h2 className="text-3xl font-bold text-center mb-12">Popular Help Articles</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {resources.map((resource, index) => (
-                <Card key={index} className="h-full hover:shadow-lg transition-shadow cursor-pointer">
+                <Card key={index} className="h-full hover:shadow-lg transition-shadow cursor-pointer" onClick={() => {
+                  // Navigate based on resource type
+                  if (resource.title === "Getting Started Guide") navigate('/documentation');
+                  else if (resource.title === "Video Tutorials") navigate('/tutorials');
+                  else if (resource.title === "API Documentation") navigate('/documentation');
+                  else if (resource.title === "FAQ Database") navigate('/support#faq');
+                }}>
                   <CardHeader>
                     <div className="flex items-center space-x-3">
                       <div className="p-2 bg-primary/10 rounded-lg text-primary">
@@ -209,11 +239,11 @@ const Support = () => {
               Our support team is standing by to help you with any questions or issues
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" onClick={() => window.location.href = '/contact'}>
+              <Button size="lg" onClick={() => navigate('/contact')}>
                 <Mail className="h-5 w-5 mr-2" />
                 Contact Support
               </Button>
-              <Button size="lg" variant="outline">
+              <Button size="lg" variant="outline" onClick={() => window.open('https://wa.me/447438306305', '_blank')}>
                 <MessageSquare className="h-5 w-5 mr-2" />
                 Start Live Chat
               </Button>

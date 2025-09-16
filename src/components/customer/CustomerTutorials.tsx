@@ -1,10 +1,13 @@
 
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export const CustomerTutorials = () => {
+  const navigate = useNavigate();
   // Sample tutorials data - would normally be fetched from an API
   const platformTutorials = [
     {
@@ -88,12 +91,13 @@ export const CustomerTutorials = () => {
                   <CardDescription>{tutorial.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <a 
-                    href="#"
-                    className="text-primary hover:underline font-medium"
+                  <Button 
+                    variant="link" 
+                    className="p-0 h-auto text-primary hover:underline font-medium"
+                    onClick={() => navigate(`/tutorials/${tutorial.id}`)}
                   >
                     Watch Tutorial →
-                  </a>
+                  </Button>
                 </CardContent>
               </Card>
             ))}
@@ -119,12 +123,13 @@ export const CustomerTutorials = () => {
                   <CardDescription>{tutorial.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <a 
-                    href="#"
-                    className="text-primary hover:underline font-medium"
+                  <Button 
+                    variant="link" 
+                    className="p-0 h-auto text-primary hover:underline font-medium"
+                    onClick={() => navigate(`/tutorials/${tutorial.id}`)}
                   >
                     Watch Tutorial →
-                  </a>
+                  </Button>
                 </CardContent>
               </Card>
             ))}
@@ -143,7 +148,7 @@ export const CustomerTutorials = () => {
               If you have specific questions or need personalized assistance,
               don't hesitate to reach out to our customer support team.
             </p>
-            <Button variant="outline" className="w-full sm:w-auto">
+            <Button variant="outline" className="w-full sm:w-auto" onClick={() => navigate('/support')}>
               Contact Support
             </Button>
           </div>

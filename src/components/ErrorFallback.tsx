@@ -1,4 +1,5 @@
 
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -8,6 +9,8 @@ interface ErrorFallbackProps {
 }
 
 export const ErrorFallback = ({ error, resetErrorBoundary }: ErrorFallbackProps) => {
+  const navigate = useNavigate();
+  
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -23,7 +26,7 @@ export const ErrorFallback = ({ error, resetErrorBoundary }: ErrorFallbackProps)
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button variant="outline" onClick={() => window.location.href = '/'}>
+          <Button variant="outline" onClick={() => navigate('/')}>
             Go to Home
           </Button>
           <Button onClick={resetErrorBoundary}>Try Again</Button>
