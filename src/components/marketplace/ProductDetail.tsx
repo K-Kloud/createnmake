@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { parsePrice } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { ProductDescription } from "./ProductDescription";
 
 interface ProductDetailProps {
   isOpen: boolean;
@@ -315,7 +316,12 @@ export const ProductDetail = ({
               <TabsContent value="details" className="space-y-4">
                 <div className="space-y-2">
                   <h3 className="font-medium">Description</h3>
-                  <p className="font-thin text-sm">{product.prompt}</p>
+                  <ProductDescription 
+                    prompt={product.prompt}
+                    productType="Custom Design"
+                    price={product.price}
+                    creator={product.creator.name}
+                  />
                 </div>
                 
                 <div className="space-y-2">
