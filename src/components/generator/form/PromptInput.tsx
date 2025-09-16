@@ -40,20 +40,37 @@ export const PromptInput = ({
         <div className="absolute right-2 flex items-center space-x-1">
           
           {onReferenceImageUpload && <>
-              <input id="reference-image-upload-inline" type="file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" className="sr-only" onChange={handleFileChange} disabled={disabled || isGenerating} />
+              <input 
+                id="reference-image-upload-inline" 
+                type="file" 
+                accept="image/*,.jpeg,.jpg,.png,.gif,.webp" 
+                className="sr-only" 
+                onChange={handleFileChange} 
+                disabled={disabled || isGenerating} 
+              />
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <label htmlFor="reference-image-upload-inline">
-                      <Button variant="ghost" size="icon" className={`h-6 w-6 rounded-full text-muted-foreground hover:bg-primary/20 hover:text-primary cursor-pointer ${referenceImage ? 'bg-primary/10 text-primary' : ''}`} disabled={isGenerating || disabled} asChild>
-                        <span>
-                          <Plus className="h-3 w-3" />
+                    <label htmlFor="reference-image-upload-inline" className="cursor-pointer">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className={`h-8 w-8 rounded-full transition-all duration-200 ${
+                          referenceImage 
+                            ? 'bg-primary/20 text-primary hover:bg-primary/30' 
+                            : 'text-muted-foreground hover:bg-primary/10 hover:text-primary'
+                        }`} 
+                        disabled={isGenerating || disabled} 
+                        asChild
+                      >
+                        <span className="flex items-center justify-center">
+                          <Plus className="h-4 w-4" />
                         </span>
                       </Button>
                     </label>
                   </TooltipTrigger>
                   <TooltipContent side="top">
-                    <p>{referenceImage ? 'Change reference image' : 'Add reference image'}</p>
+                    <p>{referenceImage ? 'Change reference image' : 'Attach reference image'}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
