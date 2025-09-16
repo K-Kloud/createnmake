@@ -121,6 +121,7 @@ export const ImageCard = ({
             <ImagePrompt 
               prompt={image.prompt}
               initialShowPrompt={showPrompt}
+              isCreator={isCreator}
             />
             
             {image.provider && (

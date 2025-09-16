@@ -8,19 +8,26 @@ interface ImagePromptProps {
   initialShowPrompt?: boolean;
   maxLength?: number;
   className?: string;
+  isCreator?: boolean;
 }
 
 export const ImagePrompt = ({ 
   prompt, 
   initialShowPrompt = true,
   maxLength = 100,
-  className = ""
+  className = "",
+  isCreator = false
 }: ImagePromptProps) => {
   const [showPrompt, setShowPrompt] = useState(initialShowPrompt);
   
   // Truncate prompt if it's too long
   const displayPrompt = prompt.length > maxLength ? 
     `${prompt.substring(0, maxLength)}...` : prompt;
+
+  // Only show prompt if user is the creator
+  if (!isCreator) {
+    return null;
+  }
 
   return (
     <div className={`flex items-center justify-between ${className}`}>
