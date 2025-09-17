@@ -87,10 +87,11 @@ export const ComponentRegistry: React.FC<ComponentRegistryProps> = ({
   config = {},
   className = ''
 }) => {
+  console.log('ComponentRegistry - Loading component:', componentName);
   const Component = componentMap[componentName as keyof typeof componentMap];
 
   if (!Component) {
-    console.error(`Component "${componentName}" not found in registry`);
+    console.error(`Component "${componentName}" not found in registry. Available components:`, Object.keys(componentMap));
     return (
       <EnhancedErrorBoundary>
         <div className="flex items-center justify-center min-h-[400px]">
@@ -98,6 +99,9 @@ export const ComponentRegistry: React.FC<ComponentRegistryProps> = ({
             <h2 className="text-2xl font-bold text-destructive">Component Not Found</h2>
             <p className="text-muted-foreground mt-2">
               Component "{componentName}" is not registered in the component registry.
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Available components: {Object.keys(componentMap).join(', ')}
             </p>
           </div>
         </div>

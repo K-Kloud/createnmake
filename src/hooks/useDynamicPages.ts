@@ -21,18 +21,30 @@ export const useDynamicPages = () => {
   const queryClient = useQueryClient();
 
   // Get all dynamic pages
-  const { data: pages, isLoading } = useQuery({
+  const { data: pages, isLoading, error } = useQuery({
     queryKey: ['dynamic-pages'],
     queryFn: async (): Promise<DynamicPage[]> => {
+      console.log('useDynamicPages - Fetching pages from database...');
       const { data, error } = await supabase
         .from('dynamic_pages')
         .select('*')
         .order('route_path');
 
-      if (error) throw error;
+      if (error) {
+        console.error('useDynamicPages - Database error:', error);
+        throw error;
+      }
+      
+      console.log('useDynamicPages - Fetched pages:', data);
       return data;
     },
+    retry: 3,
+    retryDelay: 1000,
   });
+
+  if (error) {
+    console.error('useDynamicPages - Query error:', error);
+  }
 
   // Create page
   const createPage = useMutation({

@@ -28,8 +28,37 @@ export const DynamicRouter = () => {
   const { user } = useAuth();
   const { data: profile } = useProfile();
 
+  // Debug logging
+  console.log('DynamicRouter - Pages:', pages);
+  console.log('DynamicRouter - isLoading:', isLoading);
+
   if (isLoading) {
     return <LoadingSpinner />;
+  }
+
+  if (!pages) {
+    console.warn('DynamicRouter - No pages loaded, falling back to static route');
+    return (
+      <EnhancedErrorBoundary>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
+            <Route path="/" element={<IndexPage />} />
+            {staticRoutes.map(({ path, component: Component }) => (
+              <Route 
+                key={path} 
+                path={path} 
+                element={
+                  <EnhancedErrorBoundary>
+                    <Component />
+                  </EnhancedErrorBoundary>
+                } 
+              />
+            ))}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </EnhancedErrorBoundary>
+    );
   }
 
   const hasAccess = (page: any) => {
@@ -70,15 +99,20 @@ export const DynamicRouter = () => {
           
           {/* Dynamic routes from database (excluding nested routes) */}
           {pages?.filter(page => page.is_active && !excludedPaths.some(excluded => page.route_path.startsWith(excluded))).map((page) => {
+            console.log('DynamicRouter - Processing page:', page.route_path, page.component_name);
+            
             // Special handling for home route to avoid dynamic loading issues
             if (page.route_path === '/') {
+              console.log('DynamicRouter - Rendering home page with IndexPage component');
               return (
                 <Route
                   key={page.id}
                   path={page.route_path}
                   element={
                     <EnhancedErrorBoundary>
-                      <IndexPage />
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <IndexPage />
+                      </Suspense>
                     </EnhancedErrorBoundary>
                   }
                 />
