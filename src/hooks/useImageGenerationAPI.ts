@@ -8,6 +8,7 @@ export const useImageGenerationAPI = () => {
   // Create image mutation
   const { 
     mutate: createImage, 
+    mutateAsync: createImageAsync,
     isPending: isGenerating, 
     data: generatedImageResult,
     error,
@@ -52,6 +53,7 @@ export const useImageGenerationAPI = () => {
 
   return {
     createImage,
+    createImageAsync,
     isGenerating,
     generatedImageUrl: generatedImageResult?.imageUrl,
     generatedImageId: generatedImageResult?.imageId,
