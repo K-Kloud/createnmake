@@ -78,7 +78,7 @@ export class WorkflowEngine {
     }
 
     const { data, error } = await supabase
-      .from('workflow_executions')
+      .from('workflow_executions' as any)
       .insert({
         user_id: userId,
         workflow_type: workflowType,
@@ -97,7 +97,7 @@ export class WorkflowEngine {
 
   async getWorkflow(workflowId: string): Promise<WorkflowExecution | null> {
     const { data, error } = await supabase
-      .from('workflow_executions')
+      .from('workflow_executions' as any)
       .select('*')
       .eq('id', workflowId)
       .single();
@@ -172,7 +172,7 @@ export class WorkflowEngine {
       }
 
       const { data, error } = await supabase
-        .from('workflow_executions')
+        .from('workflow_executions' as any)
         .update(updateData)
         .eq('id', workflowId)
         .select()
@@ -201,7 +201,7 @@ export class WorkflowEngine {
 
   private async saveStepOutput(workflowId: string, stepName: WorkflowStep, outputData: any) {
     const { error } = await supabase
-      .from('workflow_step_outputs')
+      .from('workflow_step_outputs' as any)
       .insert({
         workflow_id: workflowId,
         step_name: stepName,
@@ -214,7 +214,7 @@ export class WorkflowEngine {
 
   private async markWorkflowFailed(workflowId: string, error: Error) {
     await supabase
-      .from('workflow_executions')
+      .from('workflow_executions' as any)
       .update({
         status: 'failed',
         updated_at: new Date().toISOString()

@@ -3686,6 +3686,83 @@ export type Database = {
         }
         Relationships: []
       }
+      workflow_executions: {
+        Row: {
+          created_at: string
+          current_step: string
+          id: string
+          input_data: Json
+          metadata: Json | null
+          status: string
+          step_history: Json
+          updated_at: string
+          user_id: string
+          workflow_type: string
+        }
+        Insert: {
+          created_at?: string
+          current_step: string
+          id?: string
+          input_data?: Json
+          metadata?: Json | null
+          status?: string
+          step_history?: Json
+          updated_at?: string
+          user_id: string
+          workflow_type: string
+        }
+        Update: {
+          created_at?: string
+          current_step?: string
+          id?: string
+          input_data?: Json
+          metadata?: Json | null
+          status?: string
+          step_history?: Json
+          updated_at?: string
+          user_id?: string
+          workflow_type?: string
+        }
+        Relationships: []
+      }
+      workflow_step_outputs: {
+        Row: {
+          created_at: string
+          id: string
+          output_data: Json
+          processing_time_ms: number | null
+          quality_score: number | null
+          step_name: string
+          workflow_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          output_data?: Json
+          processing_time_ms?: number | null
+          quality_score?: number | null
+          step_name: string
+          workflow_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          output_data?: Json
+          processing_time_ms?: number | null
+          quality_score?: number | null
+          step_name?: string
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_step_outputs_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_executions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
