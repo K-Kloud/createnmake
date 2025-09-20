@@ -262,7 +262,30 @@ export class WorkflowEngine {
   }
 
   private async generateQuote(data: any) {
-    return { quote: { amount: 150, currency: 'USD' } };
+    // Generate intelligent quote using quote engine
+    console.log('Generating quote:', data);
+    try {
+      const { quoteEngine } = await import('./quoteEngine');
+      const quoteRequest = {
+        materials: data.materials || ['cotton'],
+        dimensions: data.dimensions || { width: 12, height: 16 },
+        quantity: data.quantity || 1,
+        timeline: data.timeline || 14,
+        qualityLevel: data.qualityLevel || 'premium',
+        customizations: data.customizations || []
+      };
+      const quoteResult = await quoteEngine.generateQuote(quoteRequest);
+      return { 
+        quote: { amount: quoteResult.finalPrice, currency: 'USD' },
+        breakdown: quoteResult.breakdown,
+        timeline: quoteResult.timeline,
+        confidence: quoteResult.confidence,
+        alternatives: quoteResult.alternatives
+      };
+    } catch (error) {
+      console.warn('Quote generation service unavailable, using fallback');
+      return { quote: { amount: 150, currency: 'USD' } };
+    }
   }
 
   private async executeProduction(data: any) {
