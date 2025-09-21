@@ -147,11 +147,6 @@ export const useImageGeneration = () => {
     }
 
     try {
-      // Check if generation was cancelled
-      if (currentGenerationId !== generationId) {
-        console.log("🚫 Generation cancelled due to new request");
-        return;
-      }
 
       console.log("📁 Uploading reference images if provided...");
       
