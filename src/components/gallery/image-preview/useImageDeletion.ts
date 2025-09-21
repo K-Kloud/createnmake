@@ -69,7 +69,7 @@ export const useImageDeletion = (onClose: () => void) => {
         throw likesError;
       }
 
-      // Next, delete related metrics
+      // Next, delete related metrics (with verification)
       const { error: metricsError } = await supabase
         .from('marketplace_metrics')
         .delete()
@@ -80,14 +80,31 @@ export const useImageDeletion = (onClose: () => void) => {
         throw metricsError;
       }
 
-      // Finally delete the image
+      // Verify metrics are deleted before proceeding
+      const { data: remainingMetrics } = await supabase
+        .from('marketplace_metrics')
+        .select('id')
+        .eq('image_id', imageId);
+
+      if (remainingMetrics && remainingMetrics.length > 0) {
+        throw new Error('Failed to delete all marketplace metrics. Please try again.');
+      }
+
+      // Finally delete the image (with better error handling)
       const { error: imageError } = await supabase
         .from('generated_images')
         .delete()
         .eq('id', imageId)
         .eq('user_id', userId);
 
-      if (imageError) throw imageError;
+      if (imageError) {
+        console.error('Error deleting image:', imageError);
+        // Provide more specific error message
+        if (imageError.code === '23503') {
+          throw new Error('Cannot delete image due to remaining database references. Please contact support.');
+        }
+        throw imageError;
+      }
 
       toast({
         title: "Success",
