@@ -19,6 +19,7 @@ export const clothingCategories = {
   activewear: "Activewear",
   shoes: "Shoes",
   accessories: "Accessories",
+  furniture: "Furniture & Home Decor",
   traditional: "Traditional Clothing",
   nigerian: "Nigerian Contemporary Fashion",
   underwear: "Underwear & Loungewear",
@@ -1304,6 +1305,264 @@ export const clothingItems: ClothingItem[] = [
   { value: "hanbok", label: "Hanbok", category: "traditional", subcategory: "korean", keywords: ["traditional", "colorful", "ceremonial"] },
   { value: "dirndl", label: "Dirndl", category: "traditional", subcategory: "german", keywords: ["traditional", "folk", "festival"] },
   { value: "kilt", label: "Kilt", category: "traditional", subcategory: "scottish", keywords: ["plaid", "traditional", "ceremonial"] },
+
+  // Shoes
+  { 
+    value: "sneakers", 
+    label: "Sneakers", 
+    category: "shoes", 
+    subcategory: "athletic", 
+    keywords: ["athletic", "casual", "comfortable", "sports"],
+    description: "Comfortable athletic sneakers",
+    detailedPrompt: "White athletic sneakers with mesh and synthetic materials, worn by a young Nigerian model, photo realistic, studio lighting, white background, detailed texture, 8K"
+  },
+  { 
+    value: "running-shoes", 
+    label: "Running Shoes", 
+    category: "shoes", 
+    subcategory: "athletic", 
+    keywords: ["running", "athletic", "performance", "lightweight"],
+    description: "Performance running shoes",
+    detailedPrompt: "Black and neon running shoes with breathable mesh, worn by a young Nigerian athlete, photo realistic, studio lighting, white background, 8K"
+  },
+  { 
+    value: "dress-shoes-oxfords", 
+    label: "Dress Shoes (Oxfords)", 
+    category: "shoes", 
+    subcategory: "formal", 
+    keywords: ["formal", "leather", "business", "oxfords"],
+    description: "Classic oxford dress shoes",
+    detailedPrompt: "Black leather oxford dress shoes with laces, worn by a young Nigerian professional, photo realistic, studio lighting, white background, polished finish, 8K"
+  },
+  { 
+    value: "high-heels", 
+    label: "High Heels", 
+    category: "shoes", 
+    subcategory: "formal", 
+    keywords: ["heels", "formal", "elegant", "pumps"],
+    description: "Classic high heel pumps",
+    detailedPrompt: "Black patent leather high heel pumps, worn by a young Nigerian woman, photo realistic, studio lighting, white background, elegant silhouette, 8K"
+  },
+  { 
+    value: "boots-ankle", 
+    label: "Ankle Boots", 
+    category: "shoes", 
+    subcategory: "boots", 
+    keywords: ["boots", "ankle", "leather", "casual"],
+    description: "Versatile ankle boots",
+    detailedPrompt: "Brown leather ankle boots with side zipper, worn by a young Nigerian woman, photo realistic, studio lighting, white background, textured leather, 8K"
+  },
+  { 
+    value: "sandals", 
+    label: "Sandals", 
+    category: "shoes", 
+    subcategory: "casual", 
+    keywords: ["sandals", "summer", "open-toe", "casual"],
+    description: "Comfortable summer sandals",
+    detailedPrompt: "Tan leather strappy sandals, worn by a young Nigerian woman, photo realistic, studio lighting, white background, summer style, 8K"
+  },
+  { 
+    value: "ballet-flats", 
+    label: "Ballet Flats", 
+    category: "shoes", 
+    subcategory: "casual", 
+    keywords: ["flats", "ballet", "comfortable", "casual"],
+    description: "Classic ballet flat shoes",
+    detailedPrompt: "Nude ballet flat shoes with bow detail, worn by a young Nigerian woman, photo realistic, studio lighting, white background, soft leather, 8K"
+  },
+  { 
+    value: "loafers", 
+    label: "Loafers", 
+    category: "shoes", 
+    subcategory: "casual", 
+    keywords: ["loafers", "slip-on", "leather", "smart-casual"],
+    description: "Comfortable slip-on loafers",
+    detailedPrompt: "Brown leather penny loafers, worn by a young Nigerian model, photo realistic, studio lighting, white background, classic style, 8K"
+  },
+
+  // Accessories
+  { 
+    value: "necklace", 
+    label: "Necklace", 
+    category: "accessories", 
+    subcategory: "jewelry", 
+    keywords: ["jewelry", "necklace", "pendant", "chain"],
+    description: "Elegant necklace jewelry",
+    detailedPrompt: "Gold chain necklace with pendant, worn by a young Nigerian woman, photo realistic, studio lighting, white background, elegant jewelry, 8K"
+  },
+  { 
+    value: "earrings", 
+    label: "Earrings", 
+    category: "accessories", 
+    subcategory: "jewelry", 
+    keywords: ["jewelry", "earrings", "studs", "hoops"],
+    description: "Fashion earrings",
+    detailedPrompt: "Gold hoop earrings, worn by a young Nigerian woman, photo realistic, studio lighting, white background, elegant jewelry detail, 8K"
+  },
+  { 
+    value: "bracelet", 
+    label: "Bracelet", 
+    category: "accessories", 
+    subcategory: "jewelry", 
+    keywords: ["jewelry", "bracelet", "wrist", "chain"],
+    description: "Stylish bracelet jewelry",
+    detailedPrompt: "Silver chain bracelet with charms, worn on the wrist of a young Nigerian woman, photo realistic, studio lighting, white background, 8K"
+  },
+  { 
+    value: "watch", 
+    label: "Watch", 
+    category: "accessories", 
+    subcategory: "jewelry", 
+    keywords: ["watch", "timepiece", "wrist", "accessories"],
+    description: "Classic wristwatch",
+    detailedPrompt: "Classic stainless steel watch with leather band, worn by a young Nigerian model, photo realistic, studio lighting, white background, detailed face, 8K"
+  },
+  { 
+    value: "handbag", 
+    label: "Handbag", 
+    category: "accessories", 
+    subcategory: "bags", 
+    keywords: ["bag", "handbag", "purse", "leather"],
+    description: "Stylish handbag",
+    detailedPrompt: "Black leather handbag with gold hardware, carried by a young Nigerian woman, photo realistic, studio lighting, white background, luxury finish, 8K"
+  },
+  { 
+    value: "backpack", 
+    label: "Backpack", 
+    category: "accessories", 
+    subcategory: "bags", 
+    keywords: ["backpack", "bag", "casual", "travel"],
+    description: "Functional backpack",
+    detailedPrompt: "Navy blue canvas backpack with leather straps, worn by a young Nigerian model, photo realistic, studio lighting, white background, casual style, 8K"
+  },
+  { 
+    value: "wallet", 
+    label: "Wallet", 
+    category: "accessories", 
+    subcategory: "bags", 
+    keywords: ["wallet", "leather", "accessories", "money"],
+    description: "Leather wallet",
+    detailedPrompt: "Brown leather bifold wallet, held by a young Nigerian model, photo realistic, studio lighting, white background, quality craftsmanship, 8K"
+  },
+  { 
+    value: "sunglasses", 
+    label: "Sunglasses", 
+    category: "accessories", 
+    subcategory: "eyewear", 
+    keywords: ["sunglasses", "eyewear", "shades", "UV protection"],
+    description: "Stylish sunglasses",
+    detailedPrompt: "Black aviator sunglasses with gold frames, worn by a young Nigerian model, photo realistic, studio lighting, white background, reflective lenses, 8K"
+  },
+  { 
+    value: "eyeglasses", 
+    label: "Eyeglasses", 
+    category: "accessories", 
+    subcategory: "eyewear", 
+    keywords: ["glasses", "eyewear", "prescription", "frames"],
+    description: "Prescription eyeglasses",
+    detailedPrompt: "Black frame prescription glasses, worn by a young Nigerian professional, photo realistic, studio lighting, white background, clear lenses, 8K"
+  },
+
+  // Furniture & Home Decor
+  { 
+    value: "dining-table", 
+    label: "Dining Table", 
+    category: "furniture", 
+    subcategory: "dining", 
+    keywords: ["table", "dining", "wood", "furniture"],
+    description: "Elegant dining table",
+    detailedPrompt: "Solid wood rectangular dining table with natural finish, photo realistic, studio lighting, white background, detailed wood grain, 8K"
+  },
+  { 
+    value: "dining-chair", 
+    label: "Dining Chair", 
+    category: "furniture", 
+    subcategory: "dining", 
+    keywords: ["chair", "dining", "seating", "furniture"],
+    description: "Comfortable dining chair",
+    detailedPrompt: "Upholstered dining chair with wooden legs and grey fabric, photo realistic, studio lighting, white background, ergonomic design, 8K"
+  },
+  { 
+    value: "bed-frame", 
+    label: "Bed Frame", 
+    category: "furniture", 
+    subcategory: "bedroom", 
+    keywords: ["bed", "frame", "bedroom", "sleep"],
+    description: "Modern bed frame",
+    detailedPrompt: "King size wooden bed frame with headboard, natural oak finish, photo realistic, studio lighting, white background, modern design, 8K"
+  },
+  { 
+    value: "sofa", 
+    label: "Sofa", 
+    category: "furniture", 
+    subcategory: "living", 
+    keywords: ["sofa", "couch", "seating", "living room"],
+    description: "Comfortable living room sofa",
+    detailedPrompt: "Three-seat grey fabric sofa with throw pillows, photo realistic, studio lighting, white background, modern comfort, 8K"
+  },
+  { 
+    value: "coffee-table", 
+    label: "Coffee Table", 
+    category: "furniture", 
+    subcategory: "living", 
+    keywords: ["table", "coffee", "living room", "center"],
+    description: "Stylish coffee table",
+    detailedPrompt: "Glass top coffee table with wooden base, photo realistic, studio lighting, white background, contemporary design, 8K"
+  },
+  { 
+    value: "dresser", 
+    label: "Dresser", 
+    category: "furniture", 
+    subcategory: "bedroom", 
+    keywords: ["dresser", "storage", "bedroom", "drawers"],
+    description: "Bedroom dresser with drawers",
+    detailedPrompt: "White wooden dresser with six drawers and brass handles, photo realistic, studio lighting, white background, clean lines, 8K"
+  },
+  { 
+    value: "nightstand", 
+    label: "Nightstand", 
+    category: "furniture", 
+    subcategory: "bedroom", 
+    keywords: ["nightstand", "bedside", "table", "bedroom"],
+    description: "Bedside nightstand",
+    detailedPrompt: "Two-drawer wooden nightstand with lamp, photo realistic, studio lighting, white background, functional design, 8K"
+  },
+  { 
+    value: "bookcase", 
+    label: "Bookcase", 
+    category: "furniture", 
+    subcategory: "office", 
+    keywords: ["bookcase", "shelves", "storage", "books"],
+    description: "Tall bookcase for storage",
+    detailedPrompt: "Five-shelf wooden bookcase filled with books, photo realistic, studio lighting, white background, organized display, 8K"
+  },
+  { 
+    value: "desk", 
+    label: "Desk", 
+    category: "furniture", 
+    subcategory: "office", 
+    keywords: ["desk", "office", "work", "computer"],
+    description: "Professional work desk",
+    detailedPrompt: "Modern white desk with drawers and computer setup, photo realistic, studio lighting, white background, clean workspace, 8K"
+  },
+  { 
+    value: "office-chair", 
+    label: "Office Chair", 
+    category: "furniture", 
+    subcategory: "office", 
+    keywords: ["chair", "office", "ergonomic", "work"],
+    description: "Ergonomic office chair",
+    detailedPrompt: "Black ergonomic office chair with adjustable height and lumbar support, photo realistic, studio lighting, white background, professional design, 8K"
+  },
+  { 
+    value: "wardrobe", 
+    label: "Wardrobe", 
+    category: "furniture", 
+    subcategory: "bedroom", 
+    keywords: ["wardrobe", "closet", "storage", "clothes"],
+    description: "Large bedroom wardrobe",
+    detailedPrompt: "Three-door wooden wardrobe with hanging space and shelves, photo realistic, studio lighting, white background, spacious storage, 8K"
+  },
 ];
 
 // Utility functions
