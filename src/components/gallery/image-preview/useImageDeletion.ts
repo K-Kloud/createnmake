@@ -69,6 +69,17 @@ export const useImageDeletion = (onClose: () => void) => {
         throw likesError;
       }
 
+      // Delete from collections
+      const { error: collectionsError } = await supabase
+        .from('collection_images')
+        .delete()
+        .eq('image_id', imageId);
+
+      if (collectionsError) {
+        console.error('Error deleting from collections:', collectionsError);
+        throw collectionsError;
+      }
+
       // Next, delete related metrics (with verification)
       const { error: metricsError } = await supabase
         .from('marketplace_metrics')
