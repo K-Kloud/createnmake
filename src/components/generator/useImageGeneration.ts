@@ -1,5 +1,5 @@
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useReferenceImageUpload } from "@/hooks/useReferenceImageUpload";
 import { useImageGenerationAPI } from "@/hooks/useImageGenerationAPI";
@@ -33,7 +33,6 @@ export const useImageGeneration = () => {
   const [referenceType, setReferenceType] = useState<ReferenceType>('style');
   const [provider, setProvider] = useState<string>("gemini");
   const [startTime, setStartTime] = useState<number | undefined>();
-  const [currentGenerationId, setCurrentGenerationId] = useState<string | null>(null);
 
   // Smart provider fallback hook
   const hasAnyReference = !!(referenceImage || referenceImages.length > 0);
@@ -42,7 +41,6 @@ export const useImageGeneration = () => {
   // Image generation API hooks
   const {
     createImage: createImageOpenAI,
-    createImageAsync: createImageOpenAIAsync,
     isGenerating: isGeneratingOpenAI,
     generatedImageUrl: generatedImageUrlOpenAI,
     generatedImageId: generatedImageIdOpenAI,
@@ -52,7 +50,6 @@ export const useImageGeneration = () => {
 
   const {
     mutate: createImageGemini,
-    mutateAsync: createImageGeminiAsync,
     isPending: isGeneratingGemini,
     data: geminiResult,
     error: errorGemini,
@@ -61,7 +58,6 @@ export const useImageGeneration = () => {
 
   const {
     mutate: createImageXAI,
-    mutateAsync: createImageXAIAsync,
     isPending: isGeneratingXAI,
     data: xaiResult,
     error: errorXAI,
@@ -84,14 +80,11 @@ export const useImageGeneration = () => {
 
   // Main generation handler
   const handleGenerate = useCallback(async () => {
-    const generationId = Math.random().toString(36);
-    setCurrentGenerationId(generationId);
-    
     const generationStartTime = Date.now();
     setStartTime(generationStartTime);
+    const startTime = Date.now();
     
     console.log("🎯 handleGenerate called with:", {
-      generationId,
       prompt,
       selectedItem,
       selectedRatio,
@@ -108,7 +101,6 @@ export const useImageGeneration = () => {
     if (!session?.user) {
       console.log("❌ User not authenticated, opening auth dialog");
       setAuthDialogOpen(true);
-      setCurrentGenerationId(null);
       return;
     }
 
@@ -119,7 +111,6 @@ export const useImageGeneration = () => {
         title: "Missing Prompt",
         description: "Please describe what you want to create.",
       });
-      setCurrentGenerationId(null);
       return;
     }
 
@@ -129,7 +120,6 @@ export const useImageGeneration = () => {
         title: "Missing Item Type",
         description: "Please select a clothing item type.",
       });
-      setCurrentGenerationId(null);
       return;
     }
 
@@ -142,12 +132,10 @@ export const useImageGeneration = () => {
         description: `You've reached your monthly limit of ${subscriptionStatus?.monthly_image_limit} images. Upgrade your plan to generate more.`,
         duration: 5000,
       });
-      setCurrentGenerationId(null);
       return;
     }
 
     try {
-
       console.log("📁 Uploading reference images if provided...");
       
       // Upload reference images if provided
@@ -178,24 +166,15 @@ export const useImageGeneration = () => {
         }
       }
 
-      // Check if generation was cancelled during upload
-      if (currentGenerationId !== generationId) {
-        console.log("🚫 Generation cancelled during upload");
-        return;
-      }
-
-      console.log(`🎨 Starting image generation with providers in order: ${providerOrder.join(', ')}`);
+      console.log(`🎨 Starting image generation with ${provider}...`);
       
-      // Try providers sequentially with proper async waiting
+      // Try providers with smart fallback logic
       const providers = providerOrder;
       
+      let lastError = null;
+      let result = null;
+      
       for (const currentProvider of providers) {
-        // Check if generation was cancelled
-        if (currentGenerationId !== generationId) {
-          console.log("🚫 Generation cancelled during provider iteration");
-          return;
-        }
-
         try {
           console.log(`🔄 Attempting generation with provider: ${currentProvider}`);
           
@@ -209,53 +188,56 @@ export const useImageGeneration = () => {
             multipleReferences: referenceImages.length > 0,
           };
           
-          let result = null;
-          
           if (currentProvider === 'gemini') {
-            result = await createImageGeminiAsync(params);
-            if (result?.success) {
-              result = { imageUrl: result.imageUrl, imageId: result.imageId };
+            createImageGemini(params);
+            // Wait for result
+            await new Promise(resolve => setTimeout(resolve, 100));
+            if (geminiResult?.success) {
+              result = { imageUrl: geminiResult.imageUrl, imageId: geminiResult.imageId };
             }
           } else if (currentProvider === 'xai') {
-            result = await createImageXAIAsync(params);
-            if (result?.imageUrl) {
-              result = { imageUrl: result.imageUrl, imageId: result.imageId };
+            createImageXAI(params);
+            // Wait for result  
+            await new Promise(resolve => setTimeout(resolve, 100));
+            if (xaiResult?.imageUrl) {
+              result = { imageUrl: xaiResult.imageUrl, imageId: xaiResult.imageId };
             }
           } else if (currentProvider === 'huggingface') {
             // Call Hugging Face API directly
-            const { data, error } = await supabase.functions.invoke('generate-image-huggingface', {
-              body: params,
-            });
-            
-            if (data?.success) {
-              result = { imageUrl: data.imageUrl, imageId: data.imageId };
-            } else {
-              throw new Error(data?.error || 'Hugging Face generation failed');
+            try {
+              const { data, error } = await supabase.functions.invoke('generate-image-huggingface', {
+                body: params,
+              });
+              
+              if (data?.success) {
+                result = { imageUrl: data.imageUrl, imageId: data.imageId };
+              } else {
+                throw new Error(data?.error || 'Hugging Face generation failed');
+              }
+            } catch (hfError) {
+              console.error(`❌ Hugging Face error:`, hfError);
+              throw hfError;
             }
           } else {
             // Default to OpenAI
-            result = await createImageOpenAIAsync(params);
-            if (result?.imageUrl) {
-              result = { imageUrl: result.imageUrl, imageId: result.imageId };
+            createImageOpenAI(params);
+            // Wait for result
+            await new Promise(resolve => setTimeout(resolve, 100));
+            if (generatedImageUrlOpenAI) {
+              result = { imageUrl: generatedImageUrlOpenAI, imageId: generatedImageIdOpenAI };
             }
           }
 
-          // Check if generation was cancelled during API call
-          if (currentGenerationId !== generationId) {
-            console.log("🚫 Generation cancelled during API call");
-            return;
-          }
-
-          // If successful, process result
+          // If successful, break out of loop
           if (result?.imageUrl) {
             console.log(`✅ Generation successful with provider: ${currentProvider}`);
             
             // Record metrics
             const endTime = Date.now();
-            recordGenerationTime(currentProvider, generationStartTime, endTime, true);
+            recordGenerationTime(currentProvider, startTime, endTime, true);
             
             // Learn from successful generation
-            learnFromGeneration(prompt, selectedItem, true, 5);
+            learnFromGeneration(prompt, selectedItem, true, 5); // Assume high rating for successful generations
             
             // Add to generation history
             addGeneration({
@@ -270,9 +252,9 @@ export const useImageGeneration = () => {
                 quality: 'high'
               },
               metadata: {
-                processingTime: endTime - generationStartTime,
-                enhancedPrompt: prompt,
-                confidence: 0.9,
+                processingTime: endTime - startTime,
+                enhancedPrompt: prompt, // Could be enhanced version if available
+                confidence: 0.9, // Could be calculated based on provider response
                 tags: [selectedItem]
               },
               rating: 5,
@@ -290,42 +272,34 @@ export const useImageGeneration = () => {
             // Refresh subscription status
             refetchStatus();
             
-            // Clear generation ID
-            setCurrentGenerationId(null);
-            
             return; // Success, exit function
           }
           
         } catch (error) {
           console.error(`❌ Provider ${currentProvider} failed:`, error);
+          lastError = error;
           
           // Record failed generation
           const endTime = Date.now();
-          recordGenerationTime(currentProvider, generationStartTime, endTime, false);
+          recordGenerationTime(currentProvider, startTime, endTime, false);
           
           // Learn from failed generation
           learnFromGeneration(prompt, selectedItem, false, 1);
           
-          // Continue to next provider only if this wasn't the last one
-          if (currentProvider !== providers[providers.length - 1]) {
-            console.log(`🔄 Trying next provider...`);
-            continue;
-          } else {
-            // This was the last provider, throw the error
-            throw error;
-          }
+          // Continue to next provider
+          continue;
         }
       }
       
       // If we get here, all providers failed
-      throw new Error('All image generation providers failed');
+      throw lastError || new Error('All image generation providers failed');
       
     } catch (error) {
       console.error("💥 Error in handleGenerate:", error);
       
       // Record failed generation
       const endTime = Date.now();
-      recordGenerationTime(provider, generationStartTime, endTime, false);
+      recordGenerationTime(provider, startTime, endTime, false);
       
       toast({
         variant: "destructive",
@@ -333,9 +307,6 @@ export const useImageGeneration = () => {
         description: error instanceof Error ? error.message : "All providers failed. Please try again later.",
         duration: 8000,
       });
-      
-      // Clear generation ID
-      setCurrentGenerationId(null);
     }
   }, [
     prompt,
@@ -349,31 +320,20 @@ export const useImageGeneration = () => {
     remainingImages,
     subscriptionStatus?.monthly_image_limit,
     provider,
-    providerOrder,
-    currentGenerationId,
     setAuthDialogOpen,
     toast,
     uploadReferenceImage,
     createImageOpenAI,
     createImageGemini,
     createImageXAI,
+    geminiResult,
+    xaiResult,
+    generatedImageUrlOpenAI,
+    generatedImageIdOpenAI,
     setPreviewOpen,
     refetchStatus,
-    recordGenerationTime,
-    learnFromGeneration,
-    addGeneration
+    recordGenerationTime
   ]);
-
-  // Cancel generation on unmount or when starting a new one
-  useEffect(() => {
-    return () => {
-      // Cleanup on unmount
-      if (currentGenerationId) {
-        console.log("🧹 Cleaning up generation on unmount:", currentGenerationId);
-        setCurrentGenerationId(null);
-      }
-    };
-  }, []);
 
   // Combine results from all providers
   const isGenerating = provider === "gemini" 
