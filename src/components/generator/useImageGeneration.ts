@@ -87,11 +87,6 @@ export const useImageGeneration = () => {
     const generationId = Math.random().toString(36);
     setCurrentGenerationId(generationId);
     
-    // Use local variable for immediate checks to avoid race conditions
-    const isGenerationActive = () => {
-      return currentGenerationId === generationId || currentGenerationId === null;
-    };
-    
     const generationStartTime = Date.now();
     setStartTime(generationStartTime);
     
@@ -251,7 +246,7 @@ export const useImageGeneration = () => {
           }
 
           // Check if generation was cancelled during API call
-          if (!isGenerationActive()) {
+          if (currentGenerationId !== generationId) {
             console.log("🚫 Generation cancelled during API call");
             return;
           }
