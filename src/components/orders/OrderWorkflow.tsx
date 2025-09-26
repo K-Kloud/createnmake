@@ -31,7 +31,15 @@ const statusConfig = {
   completed: { icon: CheckCircle, color: 'bg-green-500', label: 'Completed', next: ['shipped'] },
   cancelled: { icon: XCircle, color: 'bg-red-500', label: 'Cancelled', next: [] },
   shipped: { icon: Truck, color: 'bg-indigo-500', label: 'Shipped', next: ['delivered'] },
-  delivered: { icon: Package, color: 'bg-green-600', label: 'Delivered', next: [] }
+  delivered: { icon: Package, color: 'bg-green-600', label: 'Delivered', next: [] },
+  // Add common database status values as fallbacks
+  in_progress: { icon: AlertCircle, color: 'bg-purple-500', label: 'In Progress', next: ['completed', 'cancelled'] },
+  unpaid: { icon: Clock, color: 'bg-yellow-500', label: 'Payment Pending', next: ['review', 'cancelled'] }
+};
+
+// Helper function to get safe status config
+const getStatusConfig = (status: string) => {
+  return statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
 };
 
 const statusFlow: OrderStatus[] = ['pending', 'review', 'completed', 'shipped', 'delivered'];
@@ -94,7 +102,7 @@ export const OrderWorkflow: React.FC<OrderWorkflowProps> = ({
 
       toast({
         title: "Status updated",
-        description: `Order status changed to ${statusConfig[newStatus].label}`,
+        description: `Order status changed to ${getStatusConfig(newStatus).label}`,
         variant: "default"
       });
 
@@ -132,7 +140,8 @@ export const OrderWorkflow: React.FC<OrderWorkflowProps> = ({
           <h4 className="font-medium">Progress Timeline</h4>
           <div className="flex items-center justify-between relative">
             {statusFlow.filter(s => s !== 'cancelled').map((step, index) => {
-              const StatusIcon = statusConfig[step].icon;
+              const config = getStatusConfig(step);
+              const StatusIcon = config.icon;
               const stepStatus = getStepStatus(step, index);
               
               return (
@@ -140,7 +149,7 @@ export const OrderWorkflow: React.FC<OrderWorkflowProps> = ({
                   <div className={`
                     flex items-center justify-center w-10 h-10 rounded-full
                     ${stepStatus === 'completed' ? 'bg-green-500 text-white' : 
-                      stepStatus === 'current' ? statusConfig[step].color + ' text-white' : 
+                      stepStatus === 'current' ? config.color + ' text-white' : 
                       'bg-muted text-muted-foreground'}
                   `}>
                     <StatusIcon className="h-5 w-5" />
@@ -149,7 +158,7 @@ export const OrderWorkflow: React.FC<OrderWorkflowProps> = ({
                     variant={stepStatus === 'current' ? 'default' : stepStatus === 'completed' ? 'secondary' : 'outline'}
                     className="text-xs"
                   >
-                    {statusConfig[step].label}
+                    {config.label}
                   </Badge>
                 </div>
               );
@@ -177,11 +186,11 @@ export const OrderWorkflow: React.FC<OrderWorkflowProps> = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={currentStatus}>
-                    {statusConfig[currentStatus].label} (Current)
+                    {getStatusConfig(currentStatus).label} (Current)
                   </SelectItem>
-                  {statusConfig[currentStatus].next.map((status) => (
+                  {getStatusConfig(currentStatus).next.map((status) => (
                     <SelectItem key={status} value={status}>
-                      {statusConfig[status].label}
+                      {getStatusConfig(status).label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -204,22 +213,22 @@ export const OrderWorkflow: React.FC<OrderWorkflowProps> = ({
             disabled={isUpdating || newStatus === currentStatus}
             className="w-full"
           >
-            {isUpdating ? 'Updating...' : `Update to ${statusConfig[newStatus].label}`}
+            {isUpdating ? 'Updating...' : `Update to ${getStatusConfig(newStatus).label}`}
           </Button>
         </div>
 
         {/* Current Status Display */}
         <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
           <div className="flex items-center gap-3">
-            {React.createElement(statusConfig[currentStatus].icon, { 
+            {React.createElement(getStatusConfig(currentStatus).icon, { 
               className: "h-5 w-5" 
             })}
             <div>
               <p className="font-medium">Current Status</p>
-              <p className="text-sm text-muted-foreground">{statusConfig[currentStatus].label}</p>
+              <p className="text-sm text-muted-foreground">{getStatusConfig(currentStatus).label}</p>
             </div>
           </div>
-          <Badge className={`text-white ${statusConfig[currentStatus].color}`}>
+          <Badge className={`text-white ${getStatusConfig(currentStatus).color}`}>
             {currentStatus.toUpperCase()}
           </Badge>
         </div>
