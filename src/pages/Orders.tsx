@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { OrderManagement } from "@/components/orders/OrderManagement";
 import { PaymentHistory } from "@/components/orders/PaymentHistory";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { EnhancedErrorBoundary } from "@/components/ui/enhanced-error-boundary";
 
 const Orders = () => {
   const { user } = useAuth();
@@ -26,11 +27,15 @@ const Orders = () => {
             </TabsList>
             
             <TabsContent value="orders">
-              <OrderManagement />
+              <EnhancedErrorBoundary>
+                <OrderManagement />
+              </EnhancedErrorBoundary>
             </TabsContent>
             
             <TabsContent value="payments">
-              <PaymentHistory />
+              <EnhancedErrorBoundary>
+                <PaymentHistory />
+              </EnhancedErrorBoundary>
             </TabsContent>
           </Tabs>
         </div>

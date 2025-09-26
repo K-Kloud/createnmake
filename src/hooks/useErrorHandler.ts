@@ -51,7 +51,9 @@ export const useErrorHandler = () => {
         .insert({
           error_message: error.message,
           error_type: context || 'app_error',
-          error_details: errorDetails
+          error_details: errorDetails,
+          occurred_at: new Date().toISOString(),
+          user_id: (await supabase.auth.getUser()).data.user?.id || null
         });
         
       if (logError) {
