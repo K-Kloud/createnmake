@@ -1,0 +1,45 @@
+{
+  "name": "opentech-realtime-service",
+  "version": "1.0.0",
+  "description": "Real-time service for OpenTech with WebSocket, WebRTC, and live features",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "lint": "eslint src/",
+    "build": "echo 'No build step needed for Node.js'"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.4",
+    "ws": "^8.14.2",
+    "redis": "^4.6.10",
+    "ioredis": "^5.3.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "express-rate-limit": "^7.1.5",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^9.0.1",
+    "prom-client": "^15.0.0",
+    "winston": "^3.11.0",
+    "joi": "^17.11.0",
+    "dotenv": "^16.3.1",
+    "simple-peer": "^9.11.1",
+    "mediasoup": "^3.12.16",
+    "@supabase/supabase-js": "^2.38.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0",
+    "eslint": "^8.55.0",
+    "@types/node": "^20.9.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["realtime", "websocket", "webrtc", "nodejs", "socket.io"],
+  "author": "OpenTech Team",
+  "license": "MIT"
+}
