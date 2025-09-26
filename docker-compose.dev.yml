@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # Development services with hot reload
+  webapp-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_SUPABASE_URL=${SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+    networks:
+      - dev-network
+
+  # Python ML Service (development)
+  python-ml-dev:
+    build:
+      context: ./services/python-ml
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./services/python-ml:/app
+    environment:
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+    networks:
+      - dev-network
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+
+  # Go Performance Service (development)
+  go-performance-dev:
+    build:
+      context: ./services/go-services
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./services/go-services:/app
+    environment:
+      - GIN_MODE=debug
+    networks:
+      - dev-network
+
+  # Node.js Real-time Service (development)
+  node-realtime-dev:
+    build:
+      context: ./services/node-realtime
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./services/node-realtime:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+    networks:
+      - dev-network
+    command: ["npm", "run", "dev"]
+
+  # Redis for development
+  redis-dev:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+    driver: bridge

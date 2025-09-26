@@ -239,3 +239,12 @@ verify_jwt = false
 
 [functions.analyze-reference-image]
 verify_jwt = true
+
+[functions.ml-gateway]
+verify_jwt = false
+
+[functions.performance-gateway]
+verify_jwt = false
+
+[functions.analytics-gateway]
+verify_jwt = true
