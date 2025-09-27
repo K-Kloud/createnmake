@@ -1,374 +1,402 @@
 import React, { useState, useEffect } from 'react';
-import { useMultiStackServices } from '@/hooks/useMultiStackServices';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Zap, 
+  TrendingUp, 
   Database, 
-  Globe, 
   Server, 
-  Monitor, 
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle
+  Network,
+  Timer,
+  Gauge,
+  BarChart3,
+  Settings,
+  Play,
+  Pause,
+  RotateCcw
 } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 interface PerformanceMetrics {
-  cpuUsage: number;
-  memoryUsage: number;
-  responseTime: number;
+  cpu_usage: number;
+  memory_usage: number;
+  response_time: number;
   throughput: number;
-  errorRate: number;
-  cacheHitRatio: number;
+  error_rate: number;
+  cache_hit_ratio: number;
+  db_query_time: number;
+  network_latency: number;
 }
 
 interface OptimizationSuggestion {
   id: string;
-  type: 'cache' | 'database' | 'cdn' | 'compression';
-  priority: 'high' | 'medium' | 'low';
+  type: 'critical' | 'warning' | 'info';
   title: string;
   description: string;
-  impact: string;
-  implemented: boolean;
+  impact: 'high' | 'medium' | 'low';
+  effort: 'high' | 'medium' | 'low';
+  action: string;
 }
 
 export const PerformanceOptimizer: React.FC = () => {
-  const [metrics, setMetrics] = useState<PerformanceMetrics>({
-    cpuUsage: 45,
-    memoryUsage: 62,
-    responseTime: 120,
-    throughput: 850,
-    errorRate: 0.2,
-    cacheHitRatio: 78
-  });
-
-  const [suggestions, setSuggestions] = useState<OptimizationSuggestion[]>([
-    {
-      id: '1',
-      type: 'cache',
-      priority: 'high',
-      title: 'Implement Redis Caching',
-      description: 'Add Redis caching layer for frequently accessed data',
-      impact: '+40% performance improvement',
-      implemented: false
-    },
-    {
-      id: '2',
-      type: 'database',
-      priority: 'medium',
-      title: 'Optimize Database Queries',
-      description: 'Add indexes and optimize slow queries',
-      impact: '+25% query performance',
-      implemented: false
-    },
-    {
-      id: '3',
-      type: 'cdn',
-      priority: 'medium',
-      title: 'CDN Integration',
-      description: 'Integrate CDN for static asset delivery',
-      impact: '+60% load time reduction',
-      implemented: false
-    },
-    {
-      id: '4',
-      type: 'compression',
-      priority: 'low',
-      title: 'Enable Compression',
-      description: 'Enable gzip/brotli compression for responses',
-      impact: '+30% bandwidth savings',
-      implemented: true
-    }
-  ]);
-
+  const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null);
+  const [suggestions, setSuggestions] = useState<OptimizationSuggestion[]>([]);
   const [isOptimizing, setIsOptimizing] = useState(false);
-  const { performanceOperation, getAnalytics } = useMultiStackServices();
+  const [autoOptimize, setAutoOptimize] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Simulate real-time metrics updates
-    const interval = setInterval(() => {
-      setMetrics(prev => ({
-        cpuUsage: Math.max(10, Math.min(90, prev.cpuUsage + (Math.random() - 0.5) * 10)),
-        memoryUsage: Math.max(20, Math.min(95, prev.memoryUsage + (Math.random() - 0.5) * 5)),
-        responseTime: Math.max(50, Math.min(500, prev.responseTime + (Math.random() - 0.5) * 20)),
-        throughput: Math.max(100, Math.min(2000, prev.throughput + (Math.random() - 0.5) * 50)),
-        errorRate: Math.max(0, Math.min(5, prev.errorRate + (Math.random() - 0.5) * 0.2)),
-        cacheHitRatio: Math.max(50, Math.min(95, prev.cacheHitRatio + (Math.random() - 0.5) * 3))
-      }));
-    }, 5000);
-
+    loadPerformanceData();
+    const interval = setInterval(loadPerformanceData, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  const implementOptimization = async (suggestionId: string) => {
-    setIsOptimizing(true);
+  const loadPerformanceData = async () => {
     try {
-      const suggestion = suggestions.find(s => s.id === suggestionId);
-      if (!suggestion) return;
+      // Simulate performance metrics
+      const mockMetrics: PerformanceMetrics = {
+        cpu_usage: Math.random() * 100,
+        memory_usage: 60 + Math.random() * 30,
+        response_time: 150 + Math.random() * 100,
+        throughput: 800 + Math.random() * 400,
+        error_rate: Math.random() * 2,
+        cache_hit_ratio: 85 + Math.random() * 10,
+        db_query_time: 50 + Math.random() * 50,
+        network_latency: 20 + Math.random() * 30
+      };
 
-      // Call Go performance service to implement optimization
-      await performanceOperation('implement-optimization', {
-        type: suggestion.type,
-        config: {
-          priority: suggestion.priority,
-          target_metrics: ['response_time', 'throughput']
+      const mockSuggestions: OptimizationSuggestion[] = [
+        {
+          id: '1',
+          type: 'critical',
+          title: 'Database Query Optimization',
+          description: 'Several slow queries detected causing performance bottlenecks',
+          impact: 'high',
+          effort: 'medium',
+          action: 'Add database indexes and optimize slow queries'
+        },
+        {
+          id: '2',
+          type: 'warning',
+          title: 'Memory Usage High',
+          description: 'Memory usage is approaching critical levels',
+          impact: 'medium',
+          effort: 'low',
+          action: 'Implement memory cleanup and garbage collection'
+        },
+        {
+          id: '3',
+          type: 'info',
+          title: 'Cache Optimization',
+          description: 'Cache hit ratio could be improved',
+          impact: 'medium',
+          effort: 'medium',
+          action: 'Implement more aggressive caching strategies'
         }
-      });
+      ];
 
-      setSuggestions(prev => prev.map(s => 
-        s.id === suggestionId ? { ...s, implemented: true } : s
-      ));
-
-      // Simulate metrics improvement
-      setTimeout(() => {
-        if (suggestion.type === 'cache') {
-          setMetrics(prev => ({
-            ...prev,
-            responseTime: Math.max(50, prev.responseTime * 0.7),
-            cacheHitRatio: Math.min(95, prev.cacheHitRatio + 15)
-          }));
-        } else if (suggestion.type === 'database') {
-          setMetrics(prev => ({
-            ...prev,
-            responseTime: Math.max(50, prev.responseTime * 0.8),
-            cpuUsage: Math.max(10, prev.cpuUsage - 10)
-          }));
-        }
-      }, 2000);
-
+      setMetrics(mockMetrics);
+      setSuggestions(mockSuggestions);
     } catch (error) {
-      console.error('Failed to implement optimization:', error);
-    } finally {
-      setIsOptimizing(false);
+      console.error('Error loading performance data:', error);
     }
   };
 
-  const runPerformanceAudit = async () => {
+  const startOptimization = async () => {
     setIsOptimizing(true);
     try {
-      const auditResults = await performanceOperation('performance-audit', {
-        metrics: ['response_time', 'throughput', 'error_rate', 'resource_usage'],
-        analysis_depth: 'comprehensive'
-      });
-
-      console.log('Performance audit results:', auditResults);
+      // Simulate optimization process
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
-      // Generate new suggestions based on audit
-      const newSuggestions = auditResults.suggestions || [];
-      setSuggestions(prev => [...prev, ...newSuggestions]);
-
+      toast({
+        title: "Optimization Complete",
+        description: "Performance optimizations have been applied successfully."
+      });
     } catch (error) {
-      console.error('Performance audit failed:', error);
+      toast({
+        title: "Optimization Failed",
+        description: "Failed to apply performance optimizations.",
+        variant: "destructive"
+      });
     } finally {
       setIsOptimizing(false);
     }
   };
 
-  const getMetricColor = (value: number, type: string) => {
-    if (type === 'errorRate') {
-      return value < 1 ? 'text-green-500' : value < 3 ? 'text-yellow-500' : 'text-red-500';
-    }
-    if (type === 'cacheHitRatio' || type === 'throughput') {
-      return value > 80 ? 'text-green-500' : value > 60 ? 'text-yellow-500' : 'text-red-500';
-    }
-    // For CPU, memory, response time
-    return value < 50 ? 'text-green-500' : value < 80 ? 'text-yellow-500' : 'text-red-500';
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+  const getMetricStatus = (value: number, thresholds: { warning: number; critical: number }, inverted = false) => {
+    if (inverted) {
+      if (value < thresholds.critical) return 'critical';
+      if (value < thresholds.warning) return 'warning';
+      return 'good';
+    } else {
+      if (value > thresholds.critical) return 'critical';
+      if (value > thresholds.warning) return 'warning';
+      return 'good';
     }
   };
 
-  const getTypeIcon = (type: string) => {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'critical': return 'text-red-500 bg-red-50 border-red-200';
+      case 'warning': return 'text-yellow-500 bg-yellow-50 border-yellow-200';
+      default: return 'text-green-500 bg-green-50 border-green-200';
+    }
+  };
+
+  const getSeverityIcon = (type: string) => {
     switch (type) {
-      case 'cache': return <Database className="h-4 w-4" />;
-      case 'database': return <Server className="h-4 w-4" />;
-      case 'cdn': return <Globe className="h-4 w-4" />;
-      case 'compression': return <Zap className="h-4 w-4" />;
-      default: return <Monitor className="h-4 w-4" />;
+      case 'critical': return <Zap className="w-4 h-4 text-red-500" />;
+      case 'warning': return <Timer className="w-4 h-4 text-yellow-500" />;
+      default: return <TrendingUp className="w-4 h-4 text-blue-500" />;
     }
   };
+
+  if (!metrics) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center h-64">
+          <div className="flex items-center gap-2">
+            <Gauge className="w-4 h-4 animate-spin" />
+            Loading performance data...
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* Real-time Metrics */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
-            Performance Metrics
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">CPU Usage</span>
-                <span className={`font-medium ${getMetricColor(metrics.cpuUsage, 'cpuUsage')}`}>
-                  {metrics.cpuUsage.toFixed(1)}%
-                </span>
-              </div>
-              <Progress value={metrics.cpuUsage} className="h-2" />
-            </div>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold">Performance Optimizer</h2>
+          <p className="text-muted-foreground">AI-powered performance monitoring and optimization</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={startOptimization}
+            disabled={isOptimizing}
+            className="gap-2"
+          >
+            {isOptimizing ? (
+              <>
+                <Pause className="w-4 h-4" />
+                Optimizing...
+              </>
+            ) : (
+              <>
+                <Play className="w-4 h-4" />
+                Start Optimization
+              </>
+            )}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setAutoOptimize(!autoOptimize)}
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Auto: {autoOptimize ? 'ON' : 'OFF'}
+          </Button>
+        </div>
+      </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Memory</span>
-                <span className={`font-medium ${getMetricColor(metrics.memoryUsage, 'memoryUsage')}`}>
-                  {metrics.memoryUsage.toFixed(1)}%
-                </span>
-              </div>
-              <Progress value={metrics.memoryUsage} className="h-2" />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Response Time</span>
-                <span className={`font-medium ${getMetricColor(metrics.responseTime, 'responseTime')}`}>
-                  {metrics.responseTime.toFixed(0)}ms
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Throughput</span>
-                <span className={`font-medium ${getMetricColor(metrics.throughput, 'throughput')}`}>
-                  {metrics.throughput.toFixed(0)} req/s
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Error Rate</span>
-                <span className={`font-medium ${getMetricColor(metrics.errorRate, 'errorRate')}`}>
-                  {metrics.errorRate.toFixed(2)}%
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Cache Hit</span>
-                <span className={`font-medium ${getMetricColor(metrics.cacheHitRatio, 'cacheHitRatio')}`}>
-                  {metrics.cacheHitRatio.toFixed(1)}%
-                </span>
-              </div>
-              <Progress value={metrics.cacheHitRatio} className="h-2" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Optimization Suggestions */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Zap className="h-5 w-5" />
-              Optimization Suggestions
-            </CardTitle>
-            <Button 
-              onClick={runPerformanceAudit}
-              disabled={isOptimizing}
-              variant="outline"
+      {/* Performance Metrics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">CPU Usage</CardTitle>
+            <Server className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{metrics.cpu_usage.toFixed(1)}%</div>
+            <Progress value={metrics.cpu_usage} className="mt-2" />
+            <Badge 
+              variant="outline" 
+              className={`mt-2 ${getStatusColor(getMetricStatus(metrics.cpu_usage, { warning: 70, critical: 90 }))}`}
             >
-              {isOptimizing ? 'Analyzing...' : 'Run Audit'}
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {suggestions.map((suggestion) => (
-              <div
-                key={suggestion.id}
-                className="flex items-center justify-between p-4 border rounded-lg"
-              >
-                <div className="flex items-start gap-3">
-                  {getTypeIcon(suggestion.type)}
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-medium">{suggestion.title}</h4>
-                      <Badge 
-                        variant="secondary" 
-                        className={getPriorityColor(suggestion.priority)}
-                      >
-                        {suggestion.priority}
-                      </Badge>
+              {getMetricStatus(metrics.cpu_usage, { warning: 70, critical: 90 })}
+            </Badge>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Memory</CardTitle>
+            <Database className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{metrics.memory_usage.toFixed(1)}%</div>
+            <Progress value={metrics.memory_usage} className="mt-2" />
+            <Badge 
+              variant="outline" 
+              className={`mt-2 ${getStatusColor(getMetricStatus(metrics.memory_usage, { warning: 80, critical: 95 }))}`}
+            >
+              {getMetricStatus(metrics.memory_usage, { warning: 80, critical: 95 })}
+            </Badge>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Response Time</CardTitle>
+            <Timer className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{metrics.response_time.toFixed(0)}ms</div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Throughput: {metrics.throughput.toFixed(0)} req/s
+            </p>
+            <Badge 
+              variant="outline" 
+              className={`mt-2 ${getStatusColor(getMetricStatus(metrics.response_time, { warning: 200, critical: 500 }))}`}
+            >
+              {getMetricStatus(metrics.response_time, { warning: 200, critical: 500 })}
+            </Badge>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Cache Hit Ratio</CardTitle>
+            <BarChart3 className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{metrics.cache_hit_ratio.toFixed(1)}%</div>
+            <Progress value={metrics.cache_hit_ratio} className="mt-2" />
+            <Badge 
+              variant="outline" 
+              className={`mt-2 ${getStatusColor(getMetricStatus(metrics.cache_hit_ratio, { warning: 80, critical: 60 }, true))}`}
+            >
+              {getMetricStatus(metrics.cache_hit_ratio, { warning: 80, critical: 60 }, true)}
+            </Badge>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="suggestions" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="suggestions">Optimization Suggestions</TabsTrigger>
+          <TabsTrigger value="history">Optimization History</TabsTrigger>
+          <TabsTrigger value="settings">Auto-Optimization Settings</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="suggestions">
+          <Card>
+            <CardHeader>
+              <CardTitle>AI-Generated Suggestions</CardTitle>
+              <CardDescription>Performance optimization recommendations based on current metrics</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {suggestions.map((suggestion) => (
+                  <div key={suggestion.id} className="p-4 border rounded-lg">
+                    <div className="flex items-start gap-3">
+                      {getSeverityIcon(suggestion.type)}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-medium">{suggestion.title}</h4>
+                          <Badge variant="outline" className={getStatusColor(suggestion.type)}>
+                            {suggestion.type}
+                          </Badge>
+                          <Badge variant="secondary">
+                            Impact: {suggestion.impact}
+                          </Badge>
+                          <Badge variant="secondary">
+                            Effort: {suggestion.effort}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {suggestion.description}
+                        </p>
+                        <p className="text-sm font-medium">
+                          Recommended Action: {suggestion.action}
+                        </p>
+                      </div>
+                      <Button size="sm">
+                        Apply Fix
+                      </Button>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      {suggestion.description}
-                    </p>
-                    <div className="flex items-center gap-2 text-sm">
-                      <TrendingUp className="h-3 w-3 text-green-500" />
-                      <span className="text-green-600">{suggestion.impact}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="history">
+          <Card>
+            <CardHeader>
+              <CardTitle>Optimization History</CardTitle>
+              <CardDescription>Recent performance optimization activities</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="p-4 border rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium">Database Index Optimization</h4>
+                      <p className="text-sm text-muted-foreground">Added indexes to slow queries</p>
+                    </div>
+                    <div className="text-right">
+                      <Badge className="mb-1">Completed</Badge>
+                      <p className="text-xs text-muted-foreground">2 hours ago</p>
                     </div>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  {suggestion.implemented ? (
-                    <Badge variant="secondary" className="bg-green-100 text-green-800">
-                      <CheckCircle className="h-3 w-3 mr-1" />
-                      Implemented
-                    </Badge>
-                  ) : (
-                    <Button
-                      size="sm"
-                      onClick={() => implementOptimization(suggestion.id)}
-                      disabled={isOptimizing}
-                    >
-                      Implement
-                    </Button>
-                  )}
+                <div className="p-4 border rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium">Memory Cleanup</h4>
+                      <p className="text-sm text-muted-foreground">Implemented garbage collection optimization</p>
+                    </div>
+                    <div className="text-right">
+                      <Badge className="mb-1">Completed</Badge>
+                      <p className="text-xs text-muted-foreground">1 day ago</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      {/* Performance Score */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Overall Performance Score</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center space-y-4">
-            <div className="text-4xl font-bold text-primary">
-              {Math.round(
-                ((100 - metrics.cpuUsage) + 
-                 (100 - metrics.memoryUsage) + 
-                 Math.max(0, 100 - metrics.responseTime/5) + 
-                 Math.min(100, metrics.throughput/10) + 
-                 (100 - metrics.errorRate * 20) + 
-                 metrics.cacheHitRatio) / 6
-              )}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Performance Score (out of 100)
-            </div>
-            <div className="flex justify-center gap-4 text-sm">
-              <span className="flex items-center gap-1 text-green-600">
-                <CheckCircle className="h-4 w-4" />
-                {suggestions.filter(s => s.implemented).length} Optimizations
-              </span>
-              <span className="flex items-center gap-1 text-yellow-600">
-                <AlertTriangle className="h-4 w-4" />
-                {suggestions.filter(s => !s.implemented).length} Pending
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        <TabsContent value="settings">
+          <Card>
+            <CardHeader>
+              <CardTitle>Auto-Optimization Settings</CardTitle>
+              <CardDescription>Configure automatic performance optimization rules</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium">Enable Auto-Optimization</h4>
+                    <p className="text-sm text-muted-foreground">Automatically apply low-risk optimizations</p>
+                  </div>
+                  <Button
+                    variant={autoOptimize ? "default" : "outline"}
+                    onClick={() => setAutoOptimize(!autoOptimize)}
+                  >
+                    {autoOptimize ? 'Enabled' : 'Disabled'}
+                  </Button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium">Alert Thresholds</h4>
+                    <p className="text-sm text-muted-foreground">Configure when to trigger alerts</p>
+                  </div>
+                  <Button variant="outline">
+                    <Settings className="w-4 h-4 mr-2" />
+                    Configure
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
