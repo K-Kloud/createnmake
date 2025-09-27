@@ -71,52 +71,60 @@ export const useEnterpriseAuth = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Fetch SSO providers - mock data since tables don't exist yet
+  // Fetch SSO providers
   const { data: ssoProviders, isLoading: providersLoading } = useQuery({
     queryKey: ['sso-providers'],
     queryFn: async (): Promise<SSOProvider[]> => {
-      // Mock data until tables are created
-      return [
-        {
-          id: '1',
-          name: 'Corporate AD',
-          type: 'ldap',
-          status: 'active',
-          users: 1247,
-          lastSync: new Date(Date.now() - 30 * 60 * 1000),
-          config: { domain: 'corp.company.com' }
-        },
-        {
-          id: '2',
-          name: 'Google Workspace',
-          type: 'oidc',
-          status: 'active',
-          users: 892,
-          lastSync: new Date(Date.now() - 15 * 60 * 1000),
-          config: { domain: 'company.com' }
-        }
-      ];
+      const { data, error } = await supabase
+        .from('sso_providers')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      return data?.map(provider => ({
+        id: provider.id,
+        name: provider.name,
+        type: provider.type as SSOProvider['type'],
+        status: provider.status as SSOProvider['status'],
+        users: provider.user_count || 0,
+        lastSync: new Date(provider.last_sync_at || provider.created_at),
+        config: provider.config || {}
+      })) || [];
     }
   });
 
-  // Fetch user sessions - mock data
+  // Fetch user sessions
   const { data: userSessions, isLoading: sessionsLoading } = useQuery({
     queryKey: ['user-sessions'],
     queryFn: async (): Promise<UserSession[]> => {
-      // Mock data until tables are created
-      return [
-        {
-          id: '1',
-          userId: 'user1',
-          email: 'john.doe@company.com',
-          provider: 'Corporate AD',
-          loginTime: new Date(Date.now() - 2 * 60 * 60 * 1000),
-          lastActivity: new Date(Date.now() - 5 * 60 * 1000),
-          ipAddress: '192.168.1.100',
-          userAgent: 'Chrome/91.0.4472.124',
-          mfaEnabled: true
-        }
-      ];
+      const { data, error } = await supabase
+        .from('user_sessions')
+        .select(`
+          *,
+          profiles:user_id (
+            username
+          )
+        `)
+        .eq('is_active', true)
+        .order('last_activity', { ascending: false })
+        .limit(100);
+
+      if (error) throw error;
+
+      return data?.map(session => ({
+        id: session.session_id,
+        userId: session.user_id,
+        email: session.profiles?.[0]?.username || 'unknown',
+        provider: session.provider || 'email',
+        loginTime: new Date(session.start_time),
+        lastActivity: new Date(session.last_activity),
+        ipAddress: session.ip_address?.toString() || 'unknown',
+        userAgent: session.browser || 'unknown',
+        mfaEnabled: session.mfa_enabled || false,
+        deviceId: session.device_id,
+        location: session.location
+      })) || [];
     }
   });
 
@@ -166,12 +174,22 @@ export const useEnterpriseAuth = () => {
     }
   });
 
-  // Create SSO provider mutation - mock for now
+  // Create SSO provider mutation
   const createSSOProvider = useMutation({
     mutationFn: async (providerData: Omit<SSOProvider, 'id' | 'users' | 'lastSync'>) => {
-      // Mock implementation until sso_providers table is created
-      console.log('Creating SSO provider:', providerData);
-      return { id: Date.now().toString(), ...providerData };
+      const { data, error } = await supabase
+        .from('sso_providers')
+        .insert({
+          name: providerData.name,
+          type: providerData.type,
+          status: providerData.status,
+          config: providerData.config
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       toast({
@@ -189,12 +207,22 @@ export const useEnterpriseAuth = () => {
     }
   });
 
-  // Update SSO provider mutation - mock for now
+  // Update SSO provider mutation
   const updateSSOProvider = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<SSOProvider> & { id: string }) => {
-      // Mock implementation until sso_providers table is created
-      console.log('Updating SSO provider:', id, updates);
-      return { id, ...updates };
+      const { data, error } = await supabase
+        .from('sso_providers')
+        .update({
+          name: updates.name,
+          status: updates.status,
+          config: updates.config
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       toast({
@@ -284,12 +312,16 @@ export const useEnterpriseAuth = () => {
     }
   });
 
-  // Terminate user session mutation - mock for now
+  // Terminate user session mutation
   const terminateSession = useMutation({
     mutationFn: async (sessionId: string) => {
-      // Mock implementation until user_sessions table is updated
-      console.log('Terminating session:', sessionId);
-      return { sessionId, terminated: true };
+      const { data, error } = await supabase
+        .from('user_sessions')
+        .update({ is_active: false, ended_at: new Date().toISOString() })
+        .eq('session_id', sessionId);
+
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       toast({

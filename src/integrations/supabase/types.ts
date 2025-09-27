@@ -97,6 +97,7 @@ export type Database = {
       }
       admin_settings: {
         Row: {
+          category: string | null
           created_at: string | null
           id: string
           setting_key: string
@@ -104,6 +105,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          category?: string | null
           created_at?: string | null
           id?: string
           setting_key: string
@@ -111,6 +113,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          category?: string | null
           created_at?: string | null
           id?: string
           setting_key?: string
@@ -1043,6 +1046,101 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compliance_frameworks: {
+        Row: {
+          certification_status: string | null
+          created_at: string
+          description: string | null
+          id: string
+          last_assessment_at: string | null
+          name: string
+          next_assessment_at: string | null
+          score: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          certification_status?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          last_assessment_at?: string | null
+          name: string
+          next_assessment_at?: string | null
+          score?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          certification_status?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          last_assessment_at?: string | null
+          name?: string
+          next_assessment_at?: string | null
+          score?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      compliance_requirements: {
+        Row: {
+          assigned_to: string | null
+          category: string
+          created_at: string
+          description: string | null
+          due_date: string | null
+          evidence: string[] | null
+          framework_id: string
+          id: string
+          last_review_at: string | null
+          priority: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          category: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          evidence?: string[] | null
+          framework_id: string
+          id?: string
+          last_review_at?: string | null
+          priority?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          evidence?: string[] | null
+          framework_id?: string
+          id?: string
+          last_review_at?: string | null
+          priority?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_requirements_framework_id_fkey"
+            columns: ["framework_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_frameworks"
             referencedColumns: ["id"]
           },
         ]
@@ -3091,38 +3189,53 @@ export type Database = {
       }
       security_events: {
         Row: {
+          affected_systems: string[] | null
           created_at: string | null
+          description: string
           details: Json | null
           event_type: string
           id: string
           ip_address: string | null
+          metadata: Json | null
           resolved: boolean | null
           severity: string | null
+          status: string | null
           timestamp: string
+          title: string
           user_agent: string | null
           user_id: string | null
         }
         Insert: {
+          affected_systems?: string[] | null
           created_at?: string | null
+          description: string
           details?: Json | null
           event_type: string
           id?: string
           ip_address?: string | null
+          metadata?: Json | null
           resolved?: boolean | null
           severity?: string | null
+          status?: string | null
           timestamp?: string
+          title: string
           user_agent?: string | null
           user_id?: string | null
         }
         Update: {
+          affected_systems?: string[] | null
           created_at?: string | null
+          description?: string
           details?: Json | null
           event_type?: string
           id?: string
           ip_address?: string | null
+          metadata?: Json | null
           resolved?: boolean | null
           severity?: string | null
+          status?: string | null
           timestamp?: string
+          title?: string
           user_agent?: string | null
           user_id?: string | null
         }
@@ -3167,6 +3280,42 @@ export type Database = {
           success_rate?: number | null
           trigger_conditions?: Json
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      sso_providers: {
+        Row: {
+          config: Json
+          created_at: string
+          id: string
+          last_sync_at: string | null
+          name: string
+          status: string
+          type: string
+          updated_at: string
+          user_count: number | null
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          id?: string
+          last_sync_at?: string | null
+          name: string
+          status?: string
+          type: string
+          updated_at?: string
+          user_count?: number | null
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          id?: string
+          last_sync_at?: string | null
+          name?: string
+          status?: string
+          type?: string
+          updated_at?: string
+          user_count?: number | null
         }
         Relationships: []
       }
@@ -3569,14 +3718,20 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string | null
+          device_id: string | null
           device_type: string | null
           duration_seconds: number | null
           end_time: string | null
+          ended_at: string | null
           id: string
           interactions_count: number | null
           ip_address: unknown | null
+          is_active: boolean | null
           last_activity: string | null
+          location: string | null
+          mfa_enabled: boolean | null
           pages_visited: number | null
+          provider: string | null
           session_id: string
           start_time: string
           user_id: string
@@ -3586,14 +3741,20 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string | null
+          device_id?: string | null
           device_type?: string | null
           duration_seconds?: number | null
           end_time?: string | null
+          ended_at?: string | null
           id?: string
           interactions_count?: number | null
           ip_address?: unknown | null
+          is_active?: boolean | null
           last_activity?: string | null
+          location?: string | null
+          mfa_enabled?: boolean | null
           pages_visited?: number | null
+          provider?: string | null
           session_id: string
           start_time?: string
           user_id: string
@@ -3603,14 +3764,20 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string | null
+          device_id?: string | null
           device_type?: string | null
           duration_seconds?: number | null
           end_time?: string | null
+          ended_at?: string | null
           id?: string
           interactions_count?: number | null
           ip_address?: unknown | null
+          is_active?: boolean | null
           last_activity?: string | null
+          location?: string | null
+          mfa_enabled?: boolean | null
           pages_visited?: number | null
+          provider?: string | null
           session_id?: string
           start_time?: string
           user_id?: string

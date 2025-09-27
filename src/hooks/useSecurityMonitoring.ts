@@ -40,23 +40,29 @@ export const useSecurityMonitoring = () => {
   const queryClient = useQueryClient();
   const [realTimeAlerts, setRealTimeAlerts] = useState<SecurityAlert[]>([]);
 
-  // Fetch security alerts - mock data
+  // Fetch security alerts
   const { data: alerts, isLoading: alertsLoading } = useQuery({
     queryKey: ['security-alerts'],
     queryFn: async (): Promise<SecurityAlert[]> => {
-      // Mock data until tables are created
-      return [
-        {
-          id: '1',
-          type: 'threat',
-          severity: 'high',
-          title: 'Suspicious Login Activity',
-          description: 'Multiple failed login attempts detected',
-          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-          status: 'investigating',
-          affectedSystems: ['Authentication']
-        }
-      ];
+      const { data, error } = await supabase
+        .from('security_events')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+
+      return data?.map(event => ({
+        id: event.id,
+        type: event.event_type as SecurityAlert['type'],
+        severity: event.severity as SecurityAlert['severity'],
+        title: event.title,
+        description: event.description,
+        timestamp: new Date(event.created_at),
+        status: event.status as SecurityAlert['status'],
+        affectedSystems: event.affected_systems || [],
+        metadata: event.metadata
+      })) || [];
     },
     refetchInterval: 30000
   });
@@ -167,12 +173,16 @@ export const useSecurityMonitoring = () => {
     }
   });
 
-  // Acknowledge alert mutation - mock for now
+  // Acknowledge alert mutation
   const acknowledgeAlert = useMutation({
     mutationFn: async ({ alertId, status }: { alertId: string; status: string }) => {
-      // Mock implementation until security_events table is created
-      console.log('Acknowledging alert:', alertId, status);
-      return { alertId, status };
+      const { data, error } = await supabase
+        .from('security_events')
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq('id', alertId);
+
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       toast({
