@@ -59,7 +59,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('AI Content Generation error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
@@ -320,7 +320,7 @@ async function generateEmailTemplates(prompt: string, parameters: any, apiKey: s
     
     // Parse the content to extract subject and body
     const lines = content.split('\n');
-    const subjectLine = lines.find(line => line.toLowerCase().includes('subject:'))?.replace(/subject:/i, '').trim() || 'Welcome!';
+    const subjectLine = lines.find((line: string) => line.toLowerCase().includes('subject:'))?.replace(/subject:/i, '').trim() || 'Welcome!';
     const bodyContent = content;
 
     templates[emailType] = {

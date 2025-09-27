@@ -86,7 +86,7 @@ serve(async (req) => {
             error_count: 1,
             last_check_at: new Date().toISOString(),
             metadata: { 
-              error: error.message,
+              error: error instanceof Error ? error.message : String(error),
               check_failed: true,
               last_error_at: new Date().toISOString()
             }
@@ -145,7 +145,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('💥 Error in AI agent monitoring:', error);
     return new Response(JSON.stringify({ 
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
       timestamp: new Date().toISOString()
     }), {
       status: 500,
@@ -173,8 +173,8 @@ async function checkAgentHealth(agent: AIAgent, supabase: any): Promise<HealthCh
   let errorCount = 0;
   
   if (recentTasks && recentTasks.length > 0) {
-    const completedTasks = recentTasks.filter(t => t.status === 'completed').length;
-    const failedTasks = recentTasks.filter(t => t.status === 'failed').length;
+    const completedTasks = recentTasks.filter((t: any) => t.status === 'completed').length;
+    const failedTasks = recentTasks.filter((t: any) => t.status === 'failed').length;
     
     successRate = (completedTasks / recentTasks.length) * 100;
     errorCount = failedTasks;

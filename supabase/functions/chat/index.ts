@@ -112,12 +112,12 @@ Always be helpful, specific about platform features, and guide users step-by-ste
       });
     } catch (error) {
       console.error('OpenAI API request error:', error);
-      throw new Error(`Error communicating with OpenAI API: ${error.message}`);
+      throw new Error(`Error communicating with OpenAI API: ${error instanceof Error ? error.message : String(error)}`);
     }
   } catch (error) {
     console.error('Error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
