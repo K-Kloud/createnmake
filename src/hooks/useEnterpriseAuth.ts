@@ -89,7 +89,7 @@ export const useEnterpriseAuth = () => {
         status: provider.status as SSOProvider['status'],
         users: provider.user_count || 0,
         lastSync: new Date(provider.last_sync_at || provider.created_at),
-        config: provider.config || {}
+        config: (provider.config as SSOProvider['config']) || {}
       })) || [];
     }
   });
@@ -101,10 +101,18 @@ export const useEnterpriseAuth = () => {
       const { data, error } = await supabase
         .from('user_sessions')
         .select(`
-          *,
-          profiles:user_id (
-            username
-          )
+          session_id,
+          user_id,
+          start_time,
+          last_activity,
+          device_type,
+          browser,
+          ip_address,
+          is_active,
+          provider,
+          mfa_enabled,
+          device_id,
+          location
         `)
         .eq('is_active', true)
         .order('last_activity', { ascending: false })
@@ -115,7 +123,7 @@ export const useEnterpriseAuth = () => {
       return data?.map(session => ({
         id: session.session_id,
         userId: session.user_id,
-        email: session.profiles?.[0]?.username || 'unknown',
+        email: session.user_id || 'unknown',
         provider: session.provider || 'email',
         loginTime: new Date(session.start_time),
         lastActivity: new Date(session.last_activity),

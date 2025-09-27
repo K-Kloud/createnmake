@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Brain, TrendingUp, Users, Eye, Zap, Target, BarChart3, PieChart } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar } from 'recharts';
+import { AIInsightsCenter } from './AIInsightsCenter';
+import { PredictiveInsights } from './PredictiveInsights';
 
 const mockEngagementData = [
   { date: '2024-01', views: 12500, likes: 892, comments: 234, shares: 145 },
@@ -71,7 +73,7 @@ export const AdvancedAnalyticsPanel: React.FC = () => {
       </div>
 
       <Tabs value={selectedMetric} onValueChange={setSelectedMetric} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="engagement" className="flex items-center gap-2">
             <Eye className="h-4 w-4" />
             Engagement
@@ -87,6 +89,10 @@ export const AdvancedAnalyticsPanel: React.FC = () => {
           <TabsTrigger value="predictions" className="flex items-center gap-2">
             <Target className="h-4 w-4" />
             Predictions
+          </TabsTrigger>
+          <TabsTrigger value="ai-center" className="flex items-center gap-2">
+            <Brain className="h-4 w-4" />
+            AI Center
           </TabsTrigger>
         </TabsList>
 
@@ -258,6 +264,10 @@ export const AdvancedAnalyticsPanel: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="ai-center" className="space-y-4">
+          <AIInsightsCenter />
         </TabsContent>
       </Tabs>
     </div>

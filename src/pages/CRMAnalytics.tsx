@@ -1,7 +1,7 @@
 
 import { CRMLayout } from "@/components/crm/CRMLayout";
 import { Helmet } from "react-helmet";
-import { EnhancedAnalyticsDashboard } from "@/components/analytics/EnhancedAnalyticsDashboard";
+import { AdvancedAnalyticsPanel } from "@/components/analytics/AdvancedAnalyticsPanel";
 
 const CRMAnalytics = () => {
   return (
@@ -15,7 +15,7 @@ const CRMAnalytics = () => {
             <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
           </div>
           
-          <EnhancedAnalyticsDashboard />
+          <AdvancedAnalyticsPanel />
         </div>
       </CRMLayout>
     </>

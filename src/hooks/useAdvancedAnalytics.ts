@@ -155,6 +155,37 @@ export const useAdvancedAnalytics = (timeRange: string = '30d') => {
 
   const analytics = processAnalytics();
   
+  // Additional methods for advanced analytics features
+  const createABTest = async (testName: string, variants: string[]) => {
+    // Placeholder for AB test creation
+    console.log('Creating AB test:', testName, variants);
+  };
+
+  const trackABTestEvent = async (testName: string, variant: string, eventType: string) => {
+    // Placeholder for AB test event tracking
+    console.log('Tracking AB test event:', testName, variant, eventType);
+  };
+
+  const useFunnelAnalysis = (funnelName: string) => {
+    // Placeholder for funnel analysis
+    return { funnelData: [], conversionRates: [] };
+  };
+
+  const useHeatmapData = (pageUrl: string) => {
+    // Placeholder for heatmap data
+    return { heatmapData: [], isLoading: false };
+  };
+
+  const trackHeatmapInteraction = (element: string, action: string) => {
+    // Placeholder for heatmap interaction tracking
+    console.log('Tracking heatmap interaction:', element, action);
+  };
+
+  const useAnalyticsInsights = () => {
+    // Placeholder for analytics insights
+    return { insights: [], isLoading: false };
+  };
+
   return {
     analytics,
     aiInsights,
@@ -163,6 +194,13 @@ export const useAdvancedAnalytics = (timeRange: string = '30d') => {
       performanceMetrics,
       pageAnalytics,
       generatedImages
-    }
+    },
+    // Extended functionality for Phase 10
+    createABTest,
+    trackABTestEvent,
+    useFunnelAnalysis,
+    useHeatmapData,
+    trackHeatmapInteraction,
+    useAnalyticsInsights
   };
 };

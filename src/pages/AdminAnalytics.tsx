@@ -1,6 +1,6 @@
 import React from 'react';
 import { MainLayout } from '@/components/layouts/MainLayout';
-import { EnhancedAnalyticsDashboard } from '@/components/analytics/EnhancedAnalyticsDashboard';
+import { AdvancedAnalyticsPanel } from '@/components/analytics/AdvancedAnalyticsPanel';
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
@@ -46,7 +46,7 @@ const AdminAnalytics = () => {
           </p>
         </div>
         
-        <EnhancedAnalyticsDashboard />
+        <AdvancedAnalyticsPanel />
       </div>
     </MainLayout>
   );

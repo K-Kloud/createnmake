@@ -467,6 +467,57 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_insights: {
+        Row: {
+          confidence_score: number | null
+          content: string
+          created_at: string | null
+          data_sources: Json | null
+          generated_by: string | null
+          id: number
+          impact_level: string | null
+          insight_type: string
+          is_active: boolean | null
+          metadata: Json | null
+          recommendations: Json | null
+          time_range: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          content: string
+          created_at?: string | null
+          data_sources?: Json | null
+          generated_by?: string | null
+          id?: number
+          impact_level?: string | null
+          insight_type?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          recommendations?: Json | null
+          time_range?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          content?: string
+          created_at?: string | null
+          data_sources?: Json | null
+          generated_by?: string | null
+          id?: number
+          impact_level?: string | null
+          insight_type?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          recommendations?: Json | null
+          time_range?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       ai_model_configs: {
         Row: {
           configuration: Json
@@ -664,6 +715,45 @@ export type Database = {
           time_period_end?: string
           time_period_start?: string
           title?: string
+        }
+        Relationships: []
+      }
+      analytics_metrics: {
+        Row: {
+          aggregation_type: string | null
+          created_at: string | null
+          dimensions: Json | null
+          id: number
+          metadata: Json | null
+          metric_category: string
+          metric_name: string
+          metric_value: number
+          time_period: string
+          user_segment: string | null
+        }
+        Insert: {
+          aggregation_type?: string | null
+          created_at?: string | null
+          dimensions?: Json | null
+          id?: number
+          metadata?: Json | null
+          metric_category: string
+          metric_name: string
+          metric_value: number
+          time_period: string
+          user_segment?: string | null
+        }
+        Update: {
+          aggregation_type?: string | null
+          created_at?: string | null
+          dimensions?: Json | null
+          id?: number
+          metadata?: Json | null
+          metric_category?: string
+          metric_name?: string
+          metric_value?: number
+          time_period?: string
+          user_segment?: string | null
         }
         Relationships: []
       }
@@ -2812,6 +2902,51 @@ export type Database = {
         }
         Relationships: []
       }
+      predictive_analytics: {
+        Row: {
+          accuracy_score: number | null
+          actual_value: number | null
+          confidence_interval: Json | null
+          created_at: string | null
+          id: number
+          input_features: Json | null
+          model_used: string | null
+          predicted_value: number
+          prediction_date: string
+          prediction_horizon: string
+          prediction_type: string
+          target_metric: string
+        }
+        Insert: {
+          accuracy_score?: number | null
+          actual_value?: number | null
+          confidence_interval?: Json | null
+          created_at?: string | null
+          id?: number
+          input_features?: Json | null
+          model_used?: string | null
+          predicted_value: number
+          prediction_date: string
+          prediction_horizon: string
+          prediction_type: string
+          target_metric: string
+        }
+        Update: {
+          accuracy_score?: number | null
+          actual_value?: number | null
+          confidence_interval?: Json | null
+          created_at?: string | null
+          id?: number
+          input_features?: Json | null
+          model_used?: string | null
+          predicted_value?: number
+          prediction_date?: string
+          prediction_horizon?: string
+          prediction_type?: string
+          target_metric?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -3565,6 +3700,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_behavior_patterns: {
+        Row: {
+          confidence_score: number | null
+          discovered_at: string | null
+          id: number
+          is_active: boolean | null
+          last_updated: string | null
+          pattern_data: Json
+          pattern_type: string
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          discovered_at?: string | null
+          id?: number
+          is_active?: boolean | null
+          last_updated?: string | null
+          pattern_data: Json
+          pattern_type: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          discovered_at?: string | null
+          id?: number
+          is_active?: boolean | null
+          last_updated?: string | null
+          pattern_data?: Json
+          pattern_type?: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_follows: {
         Row: {
           created_at: string | null
@@ -3969,6 +4140,10 @@ export type Database = {
       enable_leaked_password_protection: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      get_analytics_summary: {
+        Args: { time_range_param?: string }
+        Returns: Json
       }
       get_conversion_funnel_stats: {
         Args: {

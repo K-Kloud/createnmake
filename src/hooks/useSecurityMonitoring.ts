@@ -61,7 +61,7 @@ export const useSecurityMonitoring = () => {
         timestamp: new Date(event.created_at),
         status: event.status as SecurityAlert['status'],
         affectedSystems: event.affected_systems || [],
-        metadata: event.metadata
+        metadata: (event.metadata as Record<string, any>) || {}
       })) || [];
     },
     refetchInterval: 30000

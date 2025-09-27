@@ -277,7 +277,7 @@ function createEnhancedPrompt(prompt: string, itemType: string): string {
     'styles': 'fashion style or outfit'
   };
 
-  const baseType = itemTypePrompts[itemType] || 'clothing item';
+  const baseType = (itemTypePrompts as Record<string, string>)[itemType] || 'clothing item';
   
   return `Create a professional, high-quality studio photograph of a ${baseType}: ${prompt}. 
 Studio lighting, clean white background, detailed fabric texture, commercial product photography style, 
