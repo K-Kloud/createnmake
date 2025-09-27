@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface DatePickerWithRangeProps {
   value?: DateRange;
@@ -18,7 +19,13 @@ export const DatePickerWithRange: React.FC<DatePickerWithRangeProps> = ({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="w-full justify-start text-left font-normal">
+        <Button 
+          variant="outline" 
+          className={cn(
+            "w-full justify-start text-left font-normal",
+            !value?.from && "text-muted-foreground"
+          )}
+        >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {value?.from ? (
             value.to ? (
@@ -42,6 +49,7 @@ export const DatePickerWithRange: React.FC<DatePickerWithRangeProps> = ({
           selected={value}
           onSelect={onChange}
           numberOfMonths={2}
+          className={cn("p-3 pointer-events-auto")}
         />
       </PopoverContent>
     </Popover>

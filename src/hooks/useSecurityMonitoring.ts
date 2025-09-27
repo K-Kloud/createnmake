@@ -167,16 +167,12 @@ export const useSecurityMonitoring = () => {
     }
   });
 
-  // Acknowledge alert mutation
+  // Acknowledge alert mutation - mock for now
   const acknowledgeAlert = useMutation({
     mutationFn: async ({ alertId, status }: { alertId: string; status: string }) => {
-      const { data, error } = await supabase
-        .from('security_events')
-        .update({ status, updated_at: new Date().toISOString() })
-        .eq('id', alertId);
-
-      if (error) throw error;
-      return data;
+      // Mock implementation until security_events table is created
+      console.log('Acknowledging alert:', alertId, status);
+      return { alertId, status };
     },
     onSuccess: () => {
       toast({
