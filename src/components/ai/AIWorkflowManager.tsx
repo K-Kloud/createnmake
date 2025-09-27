@@ -182,8 +182,9 @@ export const AIWorkflowManager: React.FC = () => {
       switch (agent.type) {
         case 'content':
           result = await processWithML({
-            data: input,
-            options: { 
+            image_data: input.image_data || '',
+            task_type: 'generation',
+            parameters: { 
               model: 'advanced',
               creativity: input.creativity || 0.7,
               language: input.language || 'en'
@@ -193,8 +194,9 @@ export const AIWorkflowManager: React.FC = () => {
 
         case 'design':
           result = await processWithML({
-            data: input,
-            options: { 
+            image_data: input.image_data || '',
+            task_type: 'enhancement',
+            parameters: { 
               optimize_for: input.optimize_for || 'manufacturing',
               quality_threshold: input.quality_threshold || 0.8
             }
@@ -210,8 +212,9 @@ export const AIWorkflowManager: React.FC = () => {
 
         case 'recommendation':
           result = await processWithML({
-            data: input,
-            options: { 
+            image_data: input.image_data || '',
+            task_type: 'classification',
+            parameters: { 
               algorithm: 'hybrid',
               count: input.count || 10
             }

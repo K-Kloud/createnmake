@@ -6,6 +6,7 @@ export interface CollaborativeUser {
   cursor?: { x: number; y: number };
   isActive: boolean;
   lastSeen: string;
+  presence?: string;
 }
 
 export interface SharedState {
@@ -19,6 +20,9 @@ export interface RealtimeMessage {
   timestamp: string;
   message_type: 'text' | 'cursor' | 'state_update';
   metadata?: any;
+  type?: string;
+  userName?: string;
+  content?: string;
 }
 
 export type ConflictResolutionStrategy = 'last_write_wins' | 'merge' | 'manual';

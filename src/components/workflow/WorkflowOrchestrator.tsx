@@ -124,15 +124,17 @@ export const WorkflowOrchestrator: React.FC<WorkflowOrchestratorProps> = ({
       switch (step) {
         case 'input_processing':
           result = await processWithML({
-            data: stepData,
-            options: { validate: true, enhance: true }
+            image_data: stepData.image_data || '',
+            task_type: 'enhancement',
+            parameters: { validate: true, enhance: true }
           });
           break;
 
         case 'design_generation':
           result = await processWithML({
-            data: stepData,
-            options: { model: 'advanced', quality: 'high' }
+            image_data: stepData.image_data || '',
+            task_type: 'generation',
+            parameters: { model: 'advanced', quality: 'high' }
           });
           break;
 
@@ -142,8 +144,9 @@ export const WorkflowOrchestrator: React.FC<WorkflowOrchestratorProps> = ({
 
         case 'design_optimization':
           result = await processWithML({
-            data: stepData,
-            options: { optimize_for: 'manufacturing' }
+            image_data: stepData.image_data || '',
+            task_type: 'enhancement',
+            parameters: { optimize_for: 'manufacturing' }
           });
           break;
 
