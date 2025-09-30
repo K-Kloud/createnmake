@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export interface CreatorProfile {
   id: string;
+  username: string | null;
   display_name: string | null;
   bio: string | null;
   avatar_url: string | null;
@@ -23,6 +24,7 @@ export const useCreatorProfile = (userId: string | undefined) => {
         .from('profiles')
         .select(`
           id,
+          username,
           display_name,
           bio,
           avatar_url,

@@ -30,14 +30,17 @@ export const CreatorInfo = ({
   // Use a default avatar if none is provided
   const avatarSrc = profile?.avatar_url || creator?.avatar || '/placeholder.svg';
   
-  // Use profile display name with fallback logic - prioritize creator name for public display
-  const displayName = profile?.display_name || creator?.name || getFallbackUsername(
-    undefined, // email
-    userId,    // userId  
-    undefined, // displayName
-    undefined, // firstName
-    undefined  // lastName
-  ) || 'Creator';
+  // Use profile display name with fallback logic - prioritize display name, then username, then creator name
+  const displayName = profile?.display_name || 
+    profile?.username || 
+    creator?.name || 
+    getFallbackUsername(
+      undefined, // email
+      userId,    // userId  
+      profile?.display_name, // displayName
+      undefined, // firstName
+      undefined  // lastName
+    ) || 'Creator';
   
   const { 
     isEditing,
