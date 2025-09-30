@@ -83,8 +83,8 @@ export const Footer = () => {
         </div>
         
         <div className="border-t mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center">
-          <Typography variant="body-small" color="muted">
-            © 2024 openteknologies. All rights reserved.
+          <Typography variant="body-small">
+            © 2025 Openteknologies Ltd. All rights reserved.
           </Typography>
           <div className="flex space-x-4 mt-4 sm:mt-0">
             <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
