@@ -5,6 +5,7 @@ import { Artisan } from "@/types/maker";
 import { useMakeRequests } from "@/hooks/useMakeRequests";
 import { useArtisanPortfolio } from "@/hooks/useArtisanPortfolio";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, User, Package, Image, Star } from "lucide-react";
 import { ArtisanPortfolioSection } from "./ArtisanPortfolioSection";
@@ -86,8 +87,25 @@ export const ArtisanView = ({ artisan }: ArtisanViewProps) => {
             <div className="text-center py-8">Loading requests...</div>
           ) : makeRequests.length === 0 ? (
             <Card>
-              <CardContent className="pt-6">
-                <p className="text-muted-foreground text-center">No make requests yet.</p>
+              <CardContent className="pt-8 pb-8">
+                <div className="flex flex-col items-center justify-center text-center space-y-4">
+                  <div className="rounded-full bg-muted p-4">
+                    <Package className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-lg">No Make Requests Yet</h3>
+                    <p className="text-muted-foreground max-w-md">
+                      This artisan hasn't received any custom make requests. Be the first to 
+                      commission a unique, handcrafted piece tailored to your specifications!
+                    </p>
+                  </div>
+                  <Button 
+                    className="mt-4"
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  >
+                    Request Custom Work
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ) : (

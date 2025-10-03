@@ -17,8 +17,22 @@ export const ArtisanPortfolioSection = ({ artisanId }: ArtisanPortfolioSectionPr
   if (portfolioItems.length === 0) {
     return (
       <Card>
-        <CardContent className="pt-6">
-          <p className="text-muted-foreground text-center">No portfolio items yet.</p>
+        <CardContent className="pt-8 pb-8">
+          <div className="flex flex-col items-center justify-center text-center space-y-4">
+            <div className="rounded-full bg-muted p-4">
+              <ImageIcon className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-semibold text-lg">No Portfolio Items Yet</h3>
+              <p className="text-muted-foreground max-w-md">
+                This artisan hasn't added any portfolio items to showcase their work. 
+                Portfolio items help potential clients see the quality and style of completed projects.
+              </p>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Check back soon to see their latest creations!
+            </p>
+          </div>
         </CardContent>
       </Card>
     );
