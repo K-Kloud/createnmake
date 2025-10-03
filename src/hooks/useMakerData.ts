@@ -21,13 +21,30 @@ export const useMakerData = () => {
       
       console.log('Fetching maker:', { id, makerType });
       
-      const tableName = makerType === 'manufacturer' ? 'manufacturers' : 'profiles';
-      const query = supabase
-        .from(tableName)
-        .select('*')
-        .eq('id', id);
+      // For security: only select safe, non-sensitive fields for public viewing
+      // Handle manufacturers and profiles separately due to different schemas
+      let data: any;
+      let error: any;
       
-      const { data, error } = await query.maybeSingle();
+      if (makerType === 'manufacturer') {
+        // Excludes sensitive fields: contact_email, phone, address
+        const result = await supabase
+          .from('manufacturers')
+          .select('id,business_name,business_type,specialties,is_verified,created_at,updated_at,website,description')
+          .eq('id', id)
+          .maybeSingle();
+        data = result.data;
+        error = result.error;
+      } else {
+        // Excludes sensitive fields: phone, address, first_name, last_name, hourly_rate
+        const result = await supabase
+          .from('profiles')
+          .select('id,username,display_name,bio,avatar_url,website,location,social_links,created_at,updated_at,business_name,business_type,specialties,is_artisan,is_creator')
+          .eq('id', id)
+          .maybeSingle();
+        data = result.data;
+        error = result.error;
+      }
       
       if (error) {
         console.error('Error fetching maker details:', error);
