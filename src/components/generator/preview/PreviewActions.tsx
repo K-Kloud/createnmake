@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download, Heart, Share2, Wand2 } from 'lucide-react';
 import { InpaintingDialog } from '@/components/inpainting/InpaintingDialog';
-import { AddToCollectionButton } from '@/components/collections/AddToCollectionButton';
+import { QuickAddToCollection } from '@/components/collections/QuickAddToCollection';
 
 interface PreviewActionsProps {
   imageUrl?: string;
@@ -68,7 +68,7 @@ export const PreviewActions: React.FC<PreviewActionsProps> = ({
               Edit Image
             </Button>
             
-            <AddToCollectionButton imageId={imageId} variant="outline" size="sm" />
+            <QuickAddToCollection imageId={imageId} imageUrl={imageUrl} variant="outline" size="sm" showLabel={true} />
           </>
         )}
         

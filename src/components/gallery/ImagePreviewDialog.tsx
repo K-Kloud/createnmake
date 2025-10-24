@@ -114,6 +114,8 @@ export const ImagePreviewDialog = ({
             onToggleMaximized={toggleMaximized}
             onTogglePrompt={togglePromptVisibility}
             onClose={() => onOpenChange(false)}
+            imageId={imageId}
+            imageUrl={imageUrl}
           />
           
           <PromptDisplay 

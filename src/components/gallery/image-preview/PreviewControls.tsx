@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { ZoomIn, ZoomOut, Maximize, Minimize, Eye, EyeOff, X, Download, Share2 } from "lucide-react";
 import { KeyboardShortcutsButton } from "./KeyboardShortcutsHelp";
+import { QuickAddToCollection } from "@/components/collections/QuickAddToCollection";
 
 interface PreviewControlsProps {
   isMaximized: boolean;
@@ -14,6 +15,8 @@ interface PreviewControlsProps {
   onDownload?: () => void;
   onShare?: () => void;
   hasDownloadActions?: boolean;
+  imageId?: number;
+  imageUrl?: string;
 }
 
 export const PreviewControls = ({
@@ -26,7 +29,9 @@ export const PreviewControls = ({
   onClose,
   onDownload,
   onShare,
-  hasDownloadActions = false
+  hasDownloadActions = false,
+  imageId,
+  imageUrl
 }: PreviewControlsProps) => {
   return (
     <div className="absolute top-2 right-2 flex flex-wrap gap-2">
@@ -47,6 +52,10 @@ export const PreviewControls = ({
         <span className="sr-only">{isPromptVisible ? 'Hide' : 'Show'} Prompt</span>
       </Button>
       <KeyboardShortcutsButton />
+      
+      {imageId && (
+        <QuickAddToCollection imageId={imageId} imageUrl={imageUrl} variant="ghost" size="icon" showLabel={false} />
+      )}
       
       {hasDownloadActions && (
         <>
