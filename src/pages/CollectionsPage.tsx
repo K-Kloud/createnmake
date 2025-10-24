@@ -1,6 +1,6 @@
 import React from 'react';
 import { MainLayout } from '@/components/layouts/MainLayout';
-import { SimpleCollections } from '@/components/collections/SimpleCollections';
+import { MyCollections } from '@/components/collections/MyCollections';
 
 const CollectionsPage = () => {
   return (
@@ -11,7 +11,7 @@ const CollectionsPage = () => {
       }}
     >
       <div className="container mx-auto px-4 py-8">
-        <SimpleCollections />
+        <MyCollections />
       </div>
     </MainLayout>
   );

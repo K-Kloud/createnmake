@@ -19,6 +19,7 @@ const OrderTracking = lazy(() => import("@/pages/OrderTracking"));
 const MakerDetail = lazy(() => import("@/pages/MakerDetail"));
 const CollectionsPage = lazy(() => import("@/pages/CollectionsPage"));
 const CollectionDetailPage = lazy(() => import("@/pages/CollectionDetailPage"));
+const ManageCollectionPage = lazy(() => import("@/pages/ManageCollectionPage"));
 
 export const AppRoutes = () => {
   return (
@@ -80,9 +81,23 @@ export const AppRoutes = () => {
               <CollectionsPage />
             </EnhancedErrorBoundary>
           } />
+          <Route path="/my-collections" element={
+            <EnhancedErrorBoundary>
+              <ProtectedRoute>
+                <CollectionsPage />
+              </ProtectedRoute>
+            </EnhancedErrorBoundary>
+          } />
           <Route path="/collections/:id" element={
             <EnhancedErrorBoundary>
               <CollectionDetailPage />
+            </EnhancedErrorBoundary>
+          } />
+          <Route path="/my-collections/:id" element={
+            <EnhancedErrorBoundary>
+              <ProtectedRoute>
+                <ManageCollectionPage />
+              </ProtectedRoute>
             </EnhancedErrorBoundary>
           } />
           

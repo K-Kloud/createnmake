@@ -177,6 +177,94 @@ export const useCollections = (userId?: string) => {
     },
   });
 
+  // Update collection details
+  const updateCollectionMutation = useMutation({
+    mutationFn: async (params: { collectionId: string; name?: string; description?: string; isPublic?: boolean }) => {
+      const updates: any = { updated_at: new Date().toISOString() };
+      if (params.name !== undefined) updates.name = params.name;
+      if (params.description !== undefined) updates.description = params.description;
+      if (params.isPublic !== undefined) updates.is_public = params.isPublic;
+
+      const { data, error } = await supabase
+        .from('image_collections')
+        .update(updates)
+        .eq('id', params.collectionId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['collections', userId] });
+      toast({
+        title: 'Collection updated',
+        description: 'Your collection has been updated successfully.',
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message || 'Failed to update collection',
+      });
+    },
+  });
+
+  // Delete collection
+  const deleteCollectionMutation = useMutation({
+    mutationFn: async (collectionId: string) => {
+      const { error } = await supabase
+        .from('image_collections')
+        .delete()
+        .eq('id', collectionId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['collections', userId] });
+      toast({
+        title: 'Collection deleted',
+        description: 'Your collection has been deleted successfully.',
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message || 'Failed to delete collection',
+      });
+    },
+  });
+
+  // Bulk remove images
+  const bulkRemoveMutation = useMutation({
+    mutationFn: async (params: { collectionId: string; imageIds: number[] }) => {
+      const { error } = await supabase
+        .from('collection_images')
+        .delete()
+        .eq('collection_id', params.collectionId)
+        .in('image_id', params.imageIds);
+
+      if (error) throw error;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['collections', userId] });
+      queryClient.invalidateQueries({ queryKey: ['collection-images', variables.collectionId] });
+      toast({
+        title: 'Images removed',
+        description: `${variables.imageIds.length} images removed from collection.`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message || 'Failed to remove images',
+      });
+    },
+  });
+
   return {
     collections,
     isLoading,
@@ -184,7 +272,12 @@ export const useCollections = (userId?: string) => {
     addToCollection: addToCollectionMutation.mutate,
     removeFromCollection: removeFromCollectionMutation.mutate,
     updateCoverImage: updateCoverImageMutation.mutate,
+    updateCollection: updateCollectionMutation.mutate,
+    deleteCollection: deleteCollectionMutation.mutate,
+    bulkRemove: bulkRemoveMutation.mutate,
     isAddingToCollection: addToCollectionMutation.isPending,
     isCreatingCollection: createCollectionMutation.isPending,
+    isUpdating: updateCollectionMutation.isPending,
+    isDeleting: deleteCollectionMutation.isPending,
   };
 };
