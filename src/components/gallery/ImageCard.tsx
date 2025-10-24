@@ -134,6 +134,7 @@ export const ImageCard = ({
             )}
             
             <ImageActions
+              imageId={image.id}
               metrics={image.metrics || { like: 0, comment: 0, view: 0 }}
               hasLiked={image.hasLiked}
               onLike={() => onLike(image.id)}

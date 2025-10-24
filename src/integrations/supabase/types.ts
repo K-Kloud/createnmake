@@ -2162,27 +2162,33 @@ export type Database = {
       }
       image_collections: {
         Row: {
+          cover_image_url: string | null
           created_at: string
           description: string | null
           id: string
+          image_count: number | null
           is_public: boolean | null
           name: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          cover_image_url?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          image_count?: number | null
           is_public?: boolean | null
           name: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          cover_image_url?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          image_count?: number | null
           is_public?: boolean | null
           name?: string
           updated_at?: string
@@ -3896,7 +3902,7 @@ export type Database = {
           ended_at: string | null
           id: string
           interactions_count: number | null
-          ip_address: unknown | null
+          ip_address: unknown
           is_active: boolean | null
           last_activity: string | null
           location: string | null
@@ -3919,7 +3925,7 @@ export type Database = {
           ended_at?: string | null
           id?: string
           interactions_count?: number | null
-          ip_address?: unknown | null
+          ip_address?: unknown
           is_active?: boolean | null
           last_activity?: string | null
           location?: string | null
@@ -3942,7 +3948,7 @@ export type Database = {
           ended_at?: string | null
           id?: string
           interactions_count?: number | null
-          ip_address?: unknown | null
+          ip_address?: unknown
           is_active?: boolean | null
           last_activity?: string | null
           location?: string | null
@@ -4121,26 +4127,14 @@ export type Database = {
         Args: { p_image_id: number; p_user_id: string }
         Returns: Json
       }
-      check_ai_agent_health: {
-        Args: { p_agent_id: number }
-        Returns: Json
-      }
+      check_ai_agent_health: { Args: { p_agent_id: number }; Returns: Json }
       check_user_admin_role_secure: {
         Args: { required_role?: string; target_user_id: string }
         Returns: boolean
       }
-      cleanup_expired_api_keys: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      cleanup_expired_sessions: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      enable_leaked_password_protection: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      cleanup_expired_api_keys: { Args: never; Returns: undefined }
+      cleanup_expired_sessions: { Args: never; Returns: undefined }
+      enable_leaked_password_protection: { Args: never; Returns: undefined }
       get_analytics_summary: {
         Args: { time_range_param?: string }
         Returns: Json
@@ -4218,14 +4212,8 @@ export type Database = {
           website: string
         }[]
       }
-      get_user_public_profile: {
-        Args: { user_uuid: string }
-        Returns: Json
-      }
-      get_user_stats: {
-        Args: { user_uuid: string }
-        Returns: Json
-      }
+      get_user_public_profile: { Args: { user_uuid: string }; Returns: Json }
+      get_user_stats: { Args: { user_uuid: string }; Returns: Json }
       handle_session_upsert: {
         Args: {
           p_browser?: string
@@ -4236,26 +4224,11 @@ export type Database = {
         }
         Returns: undefined
       }
-      increment_views: {
-        Args: { image_id: number }
-        Returns: undefined
-      }
-      is_admin_user: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_authenticated: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_authenticated_user: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_current_user_super_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      increment_views: { Args: { image_id: number }; Returns: undefined }
+      is_admin_user: { Args: never; Returns: boolean }
+      is_authenticated: { Args: never; Returns: boolean }
+      is_authenticated_user: { Args: never; Returns: boolean }
+      is_current_user_super_admin: { Args: never; Returns: boolean }
       queue_ai_agent_task: {
         Args: {
           p_agent_id: number
@@ -4266,26 +4239,16 @@ export type Database = {
         }
         Returns: string
       }
-      reset_monthly_image_counts: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      sanitize_text_input: {
-        Args: { input_text: string }
-        Returns: string
-      }
+      reset_monthly_image_counts: { Args: never; Returns: number }
+      sanitize_text_input: { Args: { input_text: string }; Returns: string }
       sync_image_likes_count: {
         Args: { p_image_id?: number }
         Returns: undefined
       }
-      trigger_ai_monitoring: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      validate_admin_operation: {
-        Args: Record<PropertyKey, never> | { operation_type: string }
-        Returns: boolean
-      }
+      trigger_ai_monitoring: { Args: never; Returns: Json }
+      validate_admin_operation:
+        | { Args: { operation_type: string }; Returns: boolean }
+        | { Args: never; Returns: boolean }
       validate_password_strength: {
         Args: { password: string }
         Returns: boolean

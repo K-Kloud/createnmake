@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download, Heart, Share2, Wand2 } from 'lucide-react';
 import { InpaintingDialog } from '@/components/inpainting/InpaintingDialog';
+import { AddToCollectionButton } from '@/components/collections/AddToCollectionButton';
 
 interface PreviewActionsProps {
   imageUrl?: string;
@@ -58,14 +58,18 @@ export const PreviewActions: React.FC<PreviewActionsProps> = ({
         </Button>
         
         {imageUrl && imageId && (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setInpaintingOpen(true)}
-          >
-            <Wand2 className="mr-2 h-4 w-4" />
-            Edit Image
-          </Button>
+          <>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setInpaintingOpen(true)}
+            >
+              <Wand2 className="mr-2 h-4 w-4" />
+              Edit Image
+            </Button>
+            
+            <AddToCollectionButton imageId={imageId} variant="outline" size="sm" />
+          </>
         )}
         
         <Button variant="outline" size="sm" onClick={handleLike}>

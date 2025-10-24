@@ -4,8 +4,10 @@ import { Heart, Eye, MessageSquare, Package } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { AddToCollectionButton } from "@/components/collections/AddToCollectionButton";
 
 interface ImageActionsProps {
+  imageId: number;
   metrics: {
     like: number;
     comment: number;
@@ -19,6 +21,7 @@ interface ImageActionsProps {
 }
 
 export const ImageActions = ({
+  imageId,
   metrics,
   hasLiked,
   onLike,
@@ -97,6 +100,7 @@ export const ImageActions = ({
           <Eye className="h-4 w-4 transition-transform hover:scale-110" />
           <span>{metrics.view || 0}</span>
         </Button>
+        <AddToCollectionButton imageId={imageId} variant="ghost" size="sm" showLabel={false} />
       </div>
       <Button 
         size="sm"
