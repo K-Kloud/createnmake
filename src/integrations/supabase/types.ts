@@ -1026,6 +1026,48 @@ export type Database = {
         }
         Relationships: []
       }
+      collection_activity: {
+        Row: {
+          activity_data: Json | null
+          activity_type: string
+          collection_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          activity_data?: Json | null
+          activity_type: string
+          collection_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          activity_data?: Json | null
+          activity_type?: string
+          collection_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_activity_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "image_collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_collection_activity"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "image_collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collection_followers: {
         Row: {
           collection_id: string
@@ -1087,6 +1129,45 @@ export type Database = {
             columns: ["image_id"]
             isOneToOne: false
             referencedRelation: "generated_images"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collection_views: {
+        Row: {
+          collection_id: string
+          id: string
+          session_id: string | null
+          user_id: string | null
+          viewed_at: string | null
+        }
+        Insert: {
+          collection_id: string
+          id?: string
+          session_id?: string | null
+          user_id?: string | null
+          viewed_at?: string | null
+        }
+        Update: {
+          collection_id?: string
+          id?: string
+          session_id?: string | null
+          user_id?: string | null
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_views_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "image_collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_collection"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "image_collections"
             referencedColumns: ["id"]
           },
         ]
@@ -4177,6 +4258,7 @@ export type Database = {
         Args: { time_range_param?: string }
         Returns: Json
       }
+      get_collection_stats: { Args: { p_collection_id: string }; Returns: Json }
       get_conversion_funnel_stats: {
         Args: {
           end_date?: string
@@ -4248,6 +4330,18 @@ export type Database = {
           location: string
           username: string
           website: string
+        }[]
+      }
+      get_trending_collections: {
+        Args: { limit_count?: number }
+        Returns: {
+          collection_id: string
+          collection_name: string
+          cover_image_url: string
+          follower_count: number
+          image_count: number
+          trending_score: number
+          view_count: number
         }[]
       }
       get_user_public_profile: { Args: { user_uuid: string }; Returns: Json }

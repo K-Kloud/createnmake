@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { CollectionImageGrid } from '@/components/collections/CollectionImageGrid';
 import { BulkActionsToolbar } from '@/components/collections/BulkActionsToolbar';
 import { EditCollectionDialog } from '@/components/collections/EditCollectionDialog';
+import { CollectionStats } from '@/components/collections/CollectionStats';
 
 export const ManageCollectionPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -106,6 +107,12 @@ export const ManageCollectionPage = () => {
             Settings
           </Button>
         </div>
+
+        {collection.is_public && (
+          <div className="mb-6">
+            <CollectionStats collectionId={collection.id} />
+          </div>
+        )}
 
         {selectedImages.size > 0 && (
           <BulkActionsToolbar

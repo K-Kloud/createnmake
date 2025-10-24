@@ -7,6 +7,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { CreateCollectionDialog } from './CreateCollectionDialog';
 import { MyCollectionCard } from './MyCollectionCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ActivityFeed } from './ActivityFeed';
+import { TrendingCollections } from './TrendingCollections';
 
 export const MyCollections = () => {
   const { user } = useAuth();
@@ -24,7 +26,14 @@ export const MyCollections = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <TrendingCollections />
+        </div>
+        <ActivityFeed />
+      </div>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">My Collections</h1>

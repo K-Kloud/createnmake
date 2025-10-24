@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Copy, Check, Facebook, Twitter, Link2 } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
+import { useCollectionAnalytics } from '@/hooks/useCollectionAnalytics';
 
 interface ShareCollectionDialogProps {
   open: boolean;
@@ -28,6 +29,7 @@ export const ShareCollectionDialog = ({
 }: ShareCollectionDialogProps) => {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
+  const { trackShare } = useCollectionAnalytics(collection.id);
 
   const shareUrl = `${window.location.origin}/collections/${collection.id}`;
   const shareText = `Check out this collection: ${collection.name}`;
@@ -36,6 +38,7 @@ export const ShareCollectionDialog = ({
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
+      trackShare(collection.id);
       toast({
         title: 'Link copied!',
         description: 'Share link has been copied to clipboard.',
@@ -59,6 +62,7 @@ export const ShareCollectionDialog = ({
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
     };
 
+    trackShare(collection.id);
     window.open(urls[platform], '_blank', 'noopener,noreferrer');
   };
 
@@ -115,6 +119,7 @@ export const ShareCollectionDialog = ({
               variant="secondary"
               className="w-full gap-2"
               onClick={() => {
+                trackShare(collection.id);
                 navigator.share({
                   title: collection.name,
                   text: shareText,

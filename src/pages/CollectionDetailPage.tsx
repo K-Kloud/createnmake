@@ -6,16 +6,17 @@ import { ArrowLeft, Heart, Images, Share2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ShareCollectionDialog } from '@/components/collections/ShareCollectionDialog';
-import { useToast } from '@/components/ui/use-toast';
+import { CollectionStats } from '@/components/collections/CollectionStats';
+import { useCollectionAnalytics } from '@/hooks/useCollectionAnalytics';
 
 export default function CollectionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [userId, setUserId] = useState<string | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [images, setImages] = useState<any[]>([]);
   const [loadingImages, setLoadingImages] = useState(true);
+  const { trackView } = useCollectionAnalytics(id);
 
   // Get current user
   useEffect(() => {
@@ -23,6 +24,13 @@ export default function CollectionDetailPage() {
       setUserId(session?.user?.id || null);
     });
   }, []);
+
+  // Track collection view
+  useEffect(() => {
+    if (id) {
+      trackView(id);
+    }
+  }, [id, trackView]);
 
   const {
     useCollectionDetail,
@@ -162,6 +170,11 @@ export default function CollectionDetailPage() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Collection Statistics */}
+      <div className="mb-8">
+        <CollectionStats collectionId={collection.id} />
       </div>
 
       {/* Images Grid */}
