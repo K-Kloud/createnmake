@@ -1026,6 +1026,35 @@ export type Database = {
         }
         Relationships: []
       }
+      collection_followers: {
+        Row: {
+          collection_id: string
+          followed_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          collection_id: string
+          followed_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          collection_id?: string
+          followed_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_followers_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "image_collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collection_images: {
         Row: {
           added_at: string
@@ -2162,35 +2191,44 @@ export type Database = {
       }
       image_collections: {
         Row: {
+          category: string | null
           cover_image_url: string | null
           created_at: string
           description: string | null
+          follower_count: number | null
           id: string
           image_count: number | null
           is_public: boolean | null
           name: string
+          tags: string[] | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          category?: string | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          follower_count?: number | null
           id?: string
           image_count?: number | null
           is_public?: boolean | null
           name: string
+          tags?: string[] | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          category?: string | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          follower_count?: number | null
           id?: string
           image_count?: number | null
           is_public?: boolean | null
           name?: string
+          tags?: string[] | null
           updated_at?: string
           user_id?: string
         }

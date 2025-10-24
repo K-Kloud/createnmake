@@ -5,6 +5,7 @@ import { CartProvider, ShoppingCart, CartButton } from '@/components/cart/Shoppi
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Palette, Shirt, Users } from 'lucide-react';
+import { FeaturedCollections } from '@/components/collections/FeaturedCollections';
 
 export const MarketplacePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -81,6 +82,9 @@ export const MarketplacePage: React.FC = () => {
             </div>
           </div>
         </section>
+
+        {/* Featured Collections */}
+        <FeaturedCollections />
 
         {/* Main Marketplace */}
         <section className="pb-20 px-4">
