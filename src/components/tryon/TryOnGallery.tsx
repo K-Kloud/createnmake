@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useVirtualTryOn } from "@/hooks/useVirtualTryOn";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, RefreshCw, Trash2, Download, Image as ImageIcon } from "lucide-react";
+import { Loader2, RefreshCw, Trash2, Download, Image as ImageIcon, Sparkles } from "lucide-react";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 import { TryOnResultDisplay } from "./TryOnResultDisplay";
+import { TryOnSettings } from "@/types/tryon";
 import {
   Dialog,
   DialogContent,
@@ -96,6 +97,23 @@ export const TryOnGallery = () => {
                     {formatDistanceToNow(new Date(session.created_at), { addSuffix: true })}
                   </span>
                 </div>
+
+                {/* Settings Badges */}
+                {session.settings && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {session.settings.fitAdjustment && (
+                      <Badge variant="outline" className="text-xs">
+                        {session.settings.fitAdjustment.charAt(0).toUpperCase()}{session.settings.fitAdjustment.slice(1)} Fit
+                      </Badge>
+                    )}
+                    {session.settings.enhanceQuality && (
+                      <Badge variant="outline" className="text-xs">
+                        <Sparkles className="w-2.5 h-2.5 mr-1" />
+                        HD
+                      </Badge>
+                    )}
+                  </div>
+                )}
                 
                 {session.status === "completed" && (
                   <div className="flex gap-2">
@@ -144,6 +162,7 @@ export const TryOnGallery = () => {
               <TryOnResultDisplay
                 originalImageUrl={selectedSession.body_reference_url}
                 resultImageUrl={selectedSession.tryon_result_url}
+                settings={selectedSession.settings}
               />
             ) : (
               <div className="text-center py-8">

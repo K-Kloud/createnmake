@@ -12,10 +12,12 @@ import { Loader2, Zap } from "lucide-react";
 import { VirtualTryOnUpload } from "./VirtualTryOnUpload";
 import { TryOnResultDisplay } from "./TryOnResultDisplay";
 import { SampleImageSelector } from "./SampleImageSelector";
+import { TryOnSettingsControl } from "./TryOnSettingsControl";
 import { useVirtualTryOn } from "@/hooks/useVirtualTryOn";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useToast } from "@/components/ui/use-toast";
+import { TryOnSettings, TRYON_PRESETS } from "@/types/tryon";
 
 interface VirtualTryOnDialogProps {
   open: boolean;
@@ -49,6 +51,24 @@ export const VirtualTryOnDialog = ({
   const [bodyImageUrl, setBodyImageUrl] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<number | null>(null);
+  const [settings, setSettings] = useState<TryOnSettings>(TRYON_PRESETS.balanced);
+
+  // Load settings from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('tryon-settings');
+    if (saved) {
+      try {
+        setSettings(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to parse saved settings:', e);
+      }
+    }
+  }, []);
+
+  // Save settings to localStorage
+  useEffect(() => {
+    localStorage.setItem('tryon-settings', JSON.stringify(settings));
+  }, [settings]);
 
   useEffect(() => {
     if (!open) {
@@ -127,28 +147,21 @@ export const VirtualTryOnDialog = ({
       const session = await createSession({
         bodyImageUrl: useBodyUrl,
         generatedImageId,
-        settings: {
-          fitAdjustment: "regular",
-          preserveBackground: true,
-          enhanceQuality: true,
-        },
+        settings,
       });
       setSessionId(session.id);
 
       // Step 3: Generate try-on result
+      const estimatedTime = getEstimatedTime(settings);
       toast({
         title: "Generating try-on...",
-        description: sampleBodyUrl ? "Step 2 of 2 - This may take 15-30 seconds" : "Step 3 of 3 - This may take 15-30 seconds",
+        description: sampleBodyUrl ? `Step 2 of 2 - Estimated time: ${estimatedTime}` : `Step 3 of 3 - Estimated time: ${estimatedTime}`,
       });
       const result = await generateTryOn({
         sessionId: session.id,
         bodyImageUrl: useBodyUrl,
         clothingImageUrl: generatedImageUrl,
-        settings: {
-          fitAdjustment: "regular",
-          preserveBackground: true,
-          enhanceQuality: true,
-        },
+        settings,
       });
 
       if (result.tryon_result_url) {
@@ -192,11 +205,7 @@ export const VirtualTryOnDialog = ({
         sessionId,
         bodyImageUrl,
         clothingImageUrl: generatedImageUrl,
-        settings: {
-          fitAdjustment: "regular",
-          preserveBackground: true,
-          enhanceQuality: true,
-        },
+        settings,
       });
 
       if (result.tryon_result_url) {
@@ -205,6 +214,11 @@ export const VirtualTryOnDialog = ({
     } catch (error) {
       console.error("Regeneration failed:", error);
     }
+  };
+
+  const getEstimatedTime = (settings: TryOnSettings): string => {
+    if (settings.enhanceQuality) return "30-45 seconds";
+    return "15-25 seconds";
   };
 
   const handleBack = () => {
@@ -259,6 +273,17 @@ export const VirtualTryOnDialog = ({
                       selectedUrl={sampleBodyUrl}
                     />
                   </div>
+
+                  <div className="pt-4 border-t">
+                    <TryOnSettingsControl
+                      settings={settings}
+                      onChange={setSettings}
+                      disabled={isProcessing}
+                    />
+                    <div className="mt-2 text-xs text-muted-foreground text-center">
+                      Estimated generation time: {getEstimatedTime(settings)}
+                    </div>
+                  </div>
                 </TabsContent>
                 
                 <TabsContent value="batch">
@@ -304,6 +329,7 @@ export const VirtualTryOnDialog = ({
                 resultImageUrl={resultUrl}
                 onRegenerate={handleRegenerate}
                 isRegenerating={isGenerating}
+                settings={settings}
               />
 
               <div className="flex gap-2 justify-end">

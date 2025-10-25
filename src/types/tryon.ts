@@ -43,3 +43,23 @@ export interface BatchTryOnResult {
   results: VirtualTryOnSession[];
   failedIndices: number[];
 }
+
+export const TRYON_PRESETS = {
+  quick: {
+    fitAdjustment: 'regular' as const,
+    preserveBackground: true,
+    enhanceQuality: false,
+  },
+  balanced: {
+    fitAdjustment: 'regular' as const,
+    preserveBackground: true,
+    enhanceQuality: true,
+  },
+  premium: {
+    fitAdjustment: 'tight' as const,
+    preserveBackground: true,
+    enhanceQuality: true,
+  },
+} as const;
+
+export type TryOnPreset = keyof typeof TRYON_PRESETS;

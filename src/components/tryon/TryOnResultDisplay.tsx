@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Download, RefreshCw, Maximize2 } from "lucide-react";
+import { Download, RefreshCw, Maximize2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { OptimizedImage } from "@/components/ui/optimized-image";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { TryOnSettings } from "@/types/tryon";
 
 interface TryOnResultDisplayProps {
   originalImageUrl: string;
@@ -11,6 +13,7 @@ interface TryOnResultDisplayProps {
   onRegenerate?: () => void;
   onDownload?: () => void;
   isRegenerating?: boolean;
+  settings?: TryOnSettings;
   className?: string;
 }
 
@@ -20,6 +23,7 @@ export const TryOnResultDisplay = ({
   onRegenerate,
   onDownload,
   isRegenerating,
+  settings,
   className,
 }: TryOnResultDisplayProps) => {
   const [sliderValue, setSliderValue] = useState([50]);
@@ -133,6 +137,27 @@ export const TryOnResultDisplay = ({
           </Button>
         )}
       </div>
+
+      {/* Settings Info */}
+      {settings && (
+        <div className="flex flex-wrap items-center justify-center gap-2 p-3 bg-muted/30 rounded-lg">
+          <span className="text-xs text-muted-foreground">Generated with:</span>
+          <Badge variant="secondary" className="text-xs">
+            {settings.fitAdjustment?.charAt(0).toUpperCase()}{settings.fitAdjustment?.slice(1)} Fit
+          </Badge>
+          {settings.enhanceQuality && (
+            <Badge variant="secondary" className="text-xs">
+              <Sparkles className="w-3 h-3 mr-1" />
+              HD Quality
+            </Badge>
+          )}
+          {settings.preserveBackground && (
+            <Badge variant="secondary" className="text-xs">
+              Original Background
+            </Badge>
+          )}
+        </div>
+      )}
 
       {/* Info */}
       <div className="text-xs text-muted-foreground text-center p-4 bg-muted/30 rounded-lg">
