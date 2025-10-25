@@ -30,3 +30,16 @@ export interface GenerateTryOnParams {
   clothingImageUrl: string;
   settings?: TryOnSettings;
 }
+
+export interface BatchTryOnParams {
+  bodyImageUrl: string;
+  clothingImageUrls: string[];
+  generatedImageIds: number[];
+  settings?: TryOnSettings;
+}
+
+export interface BatchTryOnResult {
+  sessionIds: number[];
+  results: VirtualTryOnSession[];
+  failedIndices: number[];
+}

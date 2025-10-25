@@ -40,6 +40,34 @@ serve(async (req) => {
       });
     }
 
+    // Check subscription limits
+    console.log(`[Virtual Try-On] Checking subscription limits for user ${user.id}`);
+    const { data: subscriptionData, error: subError } = await supabaseClient.functions.invoke(
+      "check-subscription"
+    );
+
+    if (subError) {
+      console.error("[Virtual Try-On] Failed to check subscription:", subError);
+      return new Response(
+        JSON.stringify({ error: "Failed to verify subscription status" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Check if user can generate images
+    if (!subscriptionData.can_generate_image) {
+      const remainingImages = subscriptionData.remaining_images || 0;
+      return new Response(
+        JSON.stringify({ 
+          error: `Monthly limit reached. You have ${remainingImages} virtual try-ons remaining this month. Upgrade your plan for more.`,
+          limit_reached: true
+        }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log(`[Virtual Try-On] User has ${subscriptionData.remaining_images} try-ons remaining`);
+
     // Update session status to processing
     console.log(`[Virtual Try-On] Updating session ${sessionId} to processing`);
     const { error: updateError } = await supabaseClient
@@ -63,25 +91,50 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
-    // Prepare the prompt for Gemini to composite the images
-    const prompt = `You are an expert fashion stylist and photo compositor. I'm providing you with two images:
-1. A full-body reference photo of a person
-2. A generated clothing design
+    // Prepare the enhanced prompt for Gemini to composite the images
+    const fitAdjustment = settings?.fitAdjustment || 'regular';
+    const preserveBackground = settings?.preserveBackground !== false;
+    const enhanceQuality = settings?.enhanceQuality !== false;
 
-Your task is to create a photorealistic composite showing the generated clothing ON the person from the reference photo. 
+    const prompt = `You are an expert Nigerian fashion stylist and advanced photo compositor specializing in African fashion and clothing design. 
 
-CRITICAL REQUIREMENTS:
-- Preserve the exact body pose, background, and lighting from the reference photo
-- Replace ONLY the clothing area with the generated design
-- Match the clothing to the body's perspective, shadows, and wrinkles
-- Maintain natural fabric drape and fit based on body shape
-- Keep the result photorealistic with consistent lighting
-- Preserve skin tones, hair, and all non-clothing elements from the reference
-- Ensure the clothing looks naturally worn, not pasted on
+INPUT IMAGES:
+1. Reference photo: A person whose body, pose, and environment must be preserved exactly
+2. Clothing design: A generated garment that needs to be realistically fitted onto the person
 
-Settings: ${JSON.stringify(settings || {})}
+TASK: Create a photorealistic composite showing the clothing design worn naturally by the person.
 
-Generate the final composite image showing this person wearing the generated clothing design.`;
+CRITICAL COMPOSITION REQUIREMENTS:
+• Body Preservation: Keep the exact body pose, proportions, and position from the reference photo
+• Background: ${preserveBackground ? 'Preserve the original background completely, including all environmental details' : 'You may adjust background for better composition'}
+• Lighting Match: Analyze and replicate the exact lighting direction, intensity, color temperature, and shadows from the reference photo
+• Skin & Features: Preserve all skin tones, facial features, hair, and non-clothing body parts exactly as they appear
+
+CLOTHING INTEGRATION (FIT: ${fitAdjustment.toUpperCase()}):
+• Fabric Drape: Simulate realistic fabric physics with natural folds, wrinkles, and movement based on body shape and pose
+• Fit Style: ${fitAdjustment === 'tight' ? 'Form-fitting with minimal wrinkles, showing body contours' : fitAdjustment === 'loose' ? 'Relaxed fit with generous drape and flowing movement' : 'Regular fit that follows body shape naturally with moderate drape'}
+• Perspective Match: Ensure clothing follows the same 3D perspective and viewing angle as the body
+• Shadows & Highlights: Cast realistic shadows from the clothing onto the body and vice versa
+• Seams & Details: Preserve all design details, patterns, textures, and embellishments from the clothing image
+• Edge Blending: Seamlessly blend clothing edges with skin at neckline, sleeves, hem - no harsh lines or pasting artifacts
+
+NIGERIAN FASHION CONTEXT:
+• Respect traditional fabric patterns like Ankara, Aso-Oke, George if present
+• Maintain cultural styling elements and proportions appropriate to Nigerian fashion
+• Ensure colors remain vibrant and authentic to African textile traditions
+• Consider how traditional garments typically drape and fit on Nigerian body types
+
+QUALITY REQUIREMENTS:
+• Photorealism: The final image must look like a real photograph, not a digital composite
+• Resolution: ${enhanceQuality ? 'Ultra high resolution with sharp details, 8K quality' : 'High quality output'}
+• Natural Integration: The clothing should look naturally worn, with appropriate tension, compression, and stretch
+• Color Consistency: Match color temperature and saturation across all elements
+• No Artifacts: Eliminate any visible seams, halos, unnatural edges, or AI generation artifacts
+
+SETTINGS APPLIED:
+${JSON.stringify(settings || {}, null, 2)}
+
+OUTPUT: Generate the final composite image showing this person wearing the clothing design with perfect photorealistic integration.`;
 
     // Call Gemini via Lovable AI Gateway for image composition
     console.log(`[Virtual Try-On] Calling AI Gateway for image composition`);

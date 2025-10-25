@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { virtualTryOnService } from "@/services/virtualTryOn";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/components/ui/use-toast";
-import { CreateTryOnSessionParams, GenerateTryOnParams } from "@/types/tryon";
+import { CreateTryOnSessionParams, GenerateTryOnParams, BatchTryOnParams } from "@/types/tryon";
 
 export const useVirtualTryOn = () => {
   const { user } = useAuth();
@@ -91,6 +91,60 @@ export const useVirtualTryOn = () => {
     },
   });
 
+  // Batch try-on
+  const batchTryOn = useMutation({
+    mutationFn: async (params: BatchTryOnParams) => {
+      if (!user) throw new Error("User not authenticated");
+      
+      const results = [];
+      const failedIndices = [];
+      const sessionIds = [];
+
+      for (let i = 0; i < params.clothingImageUrls.length; i++) {
+        try {
+          const session = await virtualTryOnService.createSession({
+            bodyImageUrl: params.bodyImageUrl,
+            generatedImageId: params.generatedImageIds[i],
+            settings: params.settings,
+          });
+          
+          sessionIds.push(session.id);
+          
+          const result = await virtualTryOnService.generateTryOn({
+            sessionId: session.id,
+            bodyImageUrl: params.bodyImageUrl,
+            clothingImageUrl: params.clothingImageUrls[i],
+            settings: params.settings,
+          });
+          
+          results.push(result);
+        } catch (error) {
+          console.error(`Batch try-on failed for item ${i}:`, error);
+          failedIndices.push(i);
+        }
+      }
+
+      return { sessionIds, results, failedIndices };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["tryon-history"] });
+      const successCount = data.results.length;
+      const failedCount = data.failedIndices.length;
+      
+      toast({
+        title: "Batch Try-On Complete!",
+        description: `${successCount} successful, ${failedCount} failed.`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        variant: "destructive",
+        title: "Batch Try-On Failed",
+        description: error.message,
+      });
+    },
+  });
+
   return {
     uploadBodyReference: uploadBodyReference.mutateAsync,
     isUploadingBody: uploadBodyReference.isPending,
@@ -98,6 +152,8 @@ export const useVirtualTryOn = () => {
     isCreatingSession: createSession.isPending,
     generateTryOn: generateTryOn.mutateAsync,
     isGenerating: generateTryOn.isPending,
+    batchTryOn: batchTryOn.mutateAsync,
+    isBatchProcessing: batchTryOn.isPending,
     history,
     isLoadingHistory,
     refetchHistory,
