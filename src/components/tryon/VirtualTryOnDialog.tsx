@@ -84,18 +84,30 @@ export const VirtualTryOnDialog = ({
     }
 
     try {
-      // Upload body reference image
+      // Step 1: Upload body reference image
+      toast({
+        title: "Uploading reference photo...",
+        description: "Step 1 of 3",
+      });
       const uploadedUrl = await uploadBodyReference(bodyFile);
       setBodyImageUrl(uploadedUrl);
 
-      // Create try-on session
+      // Step 2: Create try-on session
+      toast({
+        title: "Creating try-on session...",
+        description: "Step 2 of 3",
+      });
       const session = await createSession({
         bodyImageUrl: uploadedUrl,
         generatedImageId,
       });
       setSessionId(session.id);
 
-      // Generate try-on result
+      // Step 3: Generate try-on result
+      toast({
+        title: "Generating try-on...",
+        description: "Step 3 of 3 - This may take 15-30 seconds",
+      });
       const result = await generateTryOn({
         sessionId: session.id,
         bodyImageUrl: uploadedUrl,
@@ -105,12 +117,31 @@ export const VirtualTryOnDialog = ({
       if (result.tryon_result_url) {
         setResultUrl(result.tryon_result_url);
         setStep("result");
+        toast({
+          title: "Success!",
+          description: "Your virtual try-on is ready.",
+        });
       } else {
         throw new Error("No result URL generated");
       }
     } catch (error) {
       console.error("Try-on generation failed:", error);
-      // Error is already handled by the hook's onError
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      
+      let description = "Failed to generate virtual try-on. Please try again.";
+      if (errorMessage.includes("rate limit") || errorMessage.includes("429")) {
+        description = "Rate limit exceeded. Please try again in a few moments.";
+      } else if (errorMessage.includes("credits") || errorMessage.includes("402") || errorMessage.includes("Payment")) {
+        description = "Insufficient credits. Please add credits to continue.";
+      } else if (errorMessage.includes("body") || errorMessage.includes("reference") || errorMessage.includes("image")) {
+        description = "Could not process body image. Try a different photo with clear full-body visibility.";
+      }
+      
+      toast({
+        variant: "destructive",
+        title: "Try-On Failed",
+        description,
+      });
     }
   };
 
