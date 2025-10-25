@@ -12,6 +12,8 @@ import { useImageCard } from "./hooks/useImageCard";
 import { ImageZoom } from "./image-card/ImageZoom";
 import { ImagePrompt } from "./image-card/ImagePrompt";
 import { ImageProviderInfo } from "../generator/ImageProviderInfo";
+import { Badge } from "@/components/ui/badge";
+import { Sparkles } from "lucide-react";
 
 interface ImageCardProps {
   image: {
@@ -40,6 +42,8 @@ interface ImageCardProps {
     provider?: string;
     provider_version?: string;
     generation_settings?: Record<string, any>;
+    is_virtual_tryon?: boolean;
+    tryon_session_id?: number;
   };
   onLike: (imageId: number) => void;
   onView: (imageId: number) => void;
@@ -97,15 +101,26 @@ export const ImageCard = ({
     <>
       <Card className="overflow-hidden glass-card hover:scale-[1.02] transition-transform">
         <CardContent className="p-0">
-          <ImageZoom 
-            imageUrl={image.url}
-            alt={image.prompt}
-            onImageClick={openImagePreview}
-            onDoubleClick={handleDoubleClick}
-            canDelete={canDelete}
-            onDelete={handleDeleteClick}
-            isDeleting={isDeleting}
-          />
+          <div className="relative">
+            <ImageZoom 
+              imageUrl={image.url}
+              alt={image.prompt}
+              onImageClick={openImagePreview}
+              onDoubleClick={handleDoubleClick}
+              canDelete={canDelete}
+              onDelete={handleDeleteClick}
+              isDeleting={isDeleting}
+            />
+            {image.is_virtual_tryon && (
+              <Badge 
+                variant="secondary" 
+                className="absolute top-2 left-2 bg-primary/90 text-primary-foreground"
+              >
+                <Sparkles className="w-3 h-3 mr-1" />
+                Virtual Try-On
+              </Badge>
+            )}
+          </div>
           
           <div className="p-4 space-y-3">
             <ImageHeader 

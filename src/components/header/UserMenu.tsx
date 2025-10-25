@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/providers/CartProvider";
-import { LogIn, LogOut, Settings, User, ShoppingBag } from "lucide-react";
+import { LogIn, LogOut, Settings, User, ShoppingBag, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface UserMenuProps {
@@ -88,6 +88,10 @@ export const UserMenu = ({ onShowAuthDialog }: UserMenuProps) => {
           <DropdownMenuItem onClick={() => navigate("/cart")}>
             <ShoppingBag className="mr-2 h-4 w-4" />
             Cart ({totalItems})
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/try-on-history")}>
+            <Sparkles className="mr-2 h-4 w-4" />
+            Try-On History
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate("/settings")}>
             <Settings className="mr-2 h-4 w-4" />

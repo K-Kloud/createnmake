@@ -20,6 +20,7 @@ const MakerDetail = lazy(() => import("@/pages/MakerDetail"));
 const CollectionsPage = lazy(() => import("@/pages/CollectionsPage"));
 const CollectionDetailPage = lazy(() => import("@/pages/CollectionDetailPage"));
 const ManageCollectionPage = lazy(() => import("@/pages/ManageCollectionPage"));
+const TryOnHistoryPage = lazy(() => import("@/pages/TryOnHistoryPage").then(module => ({ default: module.TryOnHistoryPage })));
 
 export const AppRoutes = () => {
   return (
@@ -97,6 +98,13 @@ export const AppRoutes = () => {
             <EnhancedErrorBoundary>
               <ProtectedRoute>
                 <ManageCollectionPage />
+              </ProtectedRoute>
+            </EnhancedErrorBoundary>
+          } />
+          <Route path="/try-on-history" element={
+            <EnhancedErrorBoundary>
+              <ProtectedRoute>
+                <TryOnHistoryPage />
               </ProtectedRoute>
             </EnhancedErrorBoundary>
           } />
