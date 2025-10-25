@@ -2089,6 +2089,7 @@ export type Database = {
           image_url: string | null
           is_edited: boolean | null
           is_public: boolean | null
+          is_virtual_tryon: boolean | null
           item_type: string
           likes: number | null
           mask_data: string | null
@@ -2101,6 +2102,7 @@ export type Database = {
           status: string
           tags: string[] | null
           title: string | null
+          tryon_session_id: number | null
           updated_at: string | null
           user_id: string
           views: number | null
@@ -2117,6 +2119,7 @@ export type Database = {
           image_url?: string | null
           is_edited?: boolean | null
           is_public?: boolean | null
+          is_virtual_tryon?: boolean | null
           item_type: string
           likes?: number | null
           mask_data?: string | null
@@ -2129,6 +2132,7 @@ export type Database = {
           status?: string
           tags?: string[] | null
           title?: string | null
+          tryon_session_id?: number | null
           updated_at?: string | null
           user_id: string
           views?: number | null
@@ -2145,6 +2149,7 @@ export type Database = {
           image_url?: string | null
           is_edited?: boolean | null
           is_public?: boolean | null
+          is_virtual_tryon?: boolean | null
           item_type?: string
           likes?: number | null
           mask_data?: string | null
@@ -2157,6 +2162,7 @@ export type Database = {
           status?: string
           tags?: string[] | null
           title?: string | null
+          tryon_session_id?: number | null
           updated_at?: string | null
           user_id?: string
           views?: number | null
@@ -2181,6 +2187,13 @@ export type Database = {
             columns: ["original_image_id"]
             isOneToOne: false
             referencedRelation: "generated_images"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "generated_images_tryon_session_id_fkey"
+            columns: ["tryon_session_id"]
+            isOneToOne: false
+            referencedRelation: "virtual_tryon_sessions"
             referencedColumns: ["id"]
           },
           {
@@ -4148,6 +4161,56 @@ export type Database = {
           video_url?: string | null
         }
         Relationships: []
+      }
+      virtual_tryon_sessions: {
+        Row: {
+          body_mask_data: string | null
+          body_reference_url: string
+          created_at: string
+          error_message: string | null
+          generated_image_id: number | null
+          id: number
+          settings: Json | null
+          status: string | null
+          tryon_result_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body_mask_data?: string | null
+          body_reference_url: string
+          created_at?: string
+          error_message?: string | null
+          generated_image_id?: number | null
+          id?: number
+          settings?: Json | null
+          status?: string | null
+          tryon_result_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body_mask_data?: string | null
+          body_reference_url?: string
+          created_at?: string
+          error_message?: string | null
+          generated_image_id?: number | null
+          id?: number
+          settings?: Json | null
+          status?: string | null
+          tryon_result_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "virtual_tryon_sessions_generated_image_id_fkey"
+            columns: ["generated_image_id"]
+            isOneToOne: false
+            referencedRelation: "generated_images"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       workflow_executions: {
         Row: {

@@ -1,13 +1,14 @@
-
 import { Button } from "@/components/ui/button";
-import { Heart, Eye, MessageSquare, Package } from "lucide-react";
+import { Heart, Eye, MessageSquare, Package, Shirt } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { QuickAddToCollection } from "@/components/collections/QuickAddToCollection";
+import { VirtualTryOnDialog } from "@/components/tryon/VirtualTryOnDialog";
 
 interface ImageActionsProps {
   imageId: number;
+  imageUrl?: string;
   metrics: {
     like: number;
     comment: number;
@@ -22,6 +23,7 @@ interface ImageActionsProps {
 
 export const ImageActions = ({
   imageId,
+  imageUrl,
   metrics,
   hasLiked,
   onLike,
@@ -32,6 +34,7 @@ export const ImageActions = ({
   const { session } = useAuth();
   const { toast } = useToast();
   const [isLiking, setIsLiking] = useState(false);
+  const [tryOnDialogOpen, setTryOnDialogOpen] = useState(false);
 
   const handleLikeClick = () => {
     if (!session?.user) {
@@ -102,14 +105,33 @@ export const ImageActions = ({
         </Button>
         <QuickAddToCollection imageId={imageId} variant="ghost" size="sm" showLabel={false} />
       </div>
-      <Button 
-        size="sm"
-        onClick={onMakeClick}
-        className="gap-2 button-glow"
-      >
-        <Package className="h-4 w-4" />
-        Make This
-      </Button>
+      <div className="flex gap-2">
+        <Button 
+          variant="ghost"
+          size="sm"
+          onClick={() => setTryOnDialogOpen(true)}
+          className="gap-2 hover:text-primary"
+        >
+          <Shirt className="h-4 w-4 transition-transform hover:scale-110" />
+        </Button>
+        <Button 
+          size="sm"
+          onClick={onMakeClick}
+          className="gap-2 button-glow"
+        >
+          <Package className="h-4 w-4" />
+          Make This
+        </Button>
+      </div>
+      
+      {imageUrl && (
+        <VirtualTryOnDialog
+          open={tryOnDialogOpen}
+          onOpenChange={setTryOnDialogOpen}
+          generatedImageId={imageId}
+          generatedImageUrl={imageUrl}
+        />
+      )}
     </div>
   );
 };

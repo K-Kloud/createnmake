@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Heart, Share2, Wand2 } from 'lucide-react';
+import { Download, Heart, Share2, Wand2, Shirt } from 'lucide-react';
 import { InpaintingDialog } from '@/components/inpainting/InpaintingDialog';
 import { QuickAddToCollection } from '@/components/collections/QuickAddToCollection';
+import { VirtualTryOnDialog } from '@/components/tryon/VirtualTryOnDialog';
 
 interface PreviewActionsProps {
   imageUrl?: string;
@@ -20,6 +21,7 @@ export const PreviewActions: React.FC<PreviewActionsProps> = ({
   onImageEdited
 }) => {
   const [inpaintingOpen, setInpaintingOpen] = useState(false);
+  const [tryOnDialogOpen, setTryOnDialogOpen] = useState(false);
 
   const handleDownload = () => {
     if (!imageUrl) return;
@@ -68,6 +70,15 @@ export const PreviewActions: React.FC<PreviewActionsProps> = ({
               Edit Image
             </Button>
             
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setTryOnDialogOpen(true)}
+            >
+              <Shirt className="mr-2 h-4 w-4" />
+              Try On
+            </Button>
+            
             <QuickAddToCollection imageId={imageId} imageUrl={imageUrl} variant="outline" size="sm" showLabel={true} />
           </>
         )}
@@ -84,13 +95,22 @@ export const PreviewActions: React.FC<PreviewActionsProps> = ({
       </div>
 
       {imageUrl && imageId && (
-        <InpaintingDialog
-          open={inpaintingOpen}
-          onOpenChange={setInpaintingOpen}
-          imageUrl={imageUrl}
-          imageId={imageId}
-          onImageEdited={onImageEdited}
-        />
+        <>
+          <InpaintingDialog
+            open={inpaintingOpen}
+            onOpenChange={setInpaintingOpen}
+            imageUrl={imageUrl}
+            imageId={imageId}
+            onImageEdited={onImageEdited}
+          />
+          
+          <VirtualTryOnDialog
+            open={tryOnDialogOpen}
+            onOpenChange={setTryOnDialogOpen}
+            generatedImageId={imageId}
+            generatedImageUrl={imageUrl}
+          />
+        </>
       )}
     </>
   );

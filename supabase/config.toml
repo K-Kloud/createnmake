@@ -248,3 +248,6 @@ verify_jwt = false
 
 [functions.analytics-gateway]
 verify_jwt = true
+
+[functions.virtual-tryon]
+verify_jwt = true
