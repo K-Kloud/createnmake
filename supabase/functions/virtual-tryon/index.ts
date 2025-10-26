@@ -201,7 +201,7 @@ OUTPUT: Generate the final composite image showing this person wearing the cloth
 
     // Upload to Supabase storage
     const { data: uploadData, error: uploadError } = await supabaseClient.storage
-      .from("tryon-references")
+      .from("tryon-results")
       .upload(fileName, imageBlob, {
         contentType: "image/png",
         upsert: false,
@@ -214,7 +214,7 @@ OUTPUT: Generate the final composite image showing this person wearing the cloth
 
     // Get public URL
     const { data: urlData } = supabaseClient.storage
-      .from("tryon-references")
+      .from("tryon-results")
       .getPublicUrl(fileName);
 
     const resultUrl = urlData.publicUrl;
