@@ -31,6 +31,10 @@ serve(async (req) => {
       );
     }
 
+    // Extract JWT token from Bearer format
+    const token = authHeader.replace("Bearer ", "");
+    console.log("[Virtual Try-On] Token extracted:", token.substring(0, 20) + "...");
+
     // Initialize Supabase client with auth header
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -39,16 +43,21 @@ serve(async (req) => {
         global: {
           headers: { Authorization: authHeader },
         },
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+          detectSessionInUrl: false,
+        },
       }
     );
 
     console.log("[Virtual Try-On] Verifying user authentication...");
     
-    // Get user from auth header
+    // Get user from JWT token
     const {
       data: { user },
       error: userError,
-    } = await supabaseClient.auth.getUser();
+    } = await supabaseClient.auth.getUser(token);
 
     if (userError) {
       console.error("[Virtual Try-On] Authentication error:", userError.message);
