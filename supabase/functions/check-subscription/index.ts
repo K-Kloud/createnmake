@@ -64,11 +64,18 @@ serve(async (req) => {
     
     const actualMonthlyCount = monthlyCount || 0;
     
+    // Calculate generation eligibility
+    const monthlyLimit = profile.monthly_image_limit || 10;
+    const canGenerateImage = actualMonthlyCount < monthlyLimit;
+    const remainingImages = Math.max(0, monthlyLimit - actualMonthlyCount);
+    
     logStep("Profile retrieved", { 
       currentTier: profile.creator_tier,
       imagesGenerated: profile.images_generated_count,
       actualMonthlyCount: actualMonthlyCount,
-      limit: profile.monthly_image_limit
+      limit: profile.monthly_image_limit,
+      canGenerateImage,
+      remainingImages
     });
     
     // Initialize Stripe
@@ -137,7 +144,9 @@ serve(async (req) => {
             current_period_end: currentPeriodEnd,
             cancel_at_period_end: stripeSubscription.cancel_at_period_end,
             monthly_image_limit: subscription.subscription_plans.monthly_image_limit,
-            images_generated: actualMonthlyCount
+            images_generated: actualMonthlyCount,
+            can_generate_image: canGenerateImage,
+            remaining_images: remainingImages
           }), {
             status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -175,7 +184,9 @@ serve(async (req) => {
       tier: profile.creator_tier || "free",
       is_active: true, // Always active for image generation
       monthly_image_limit: profile.monthly_image_limit || 10,
-      images_generated: actualMonthlyCount
+      images_generated: actualMonthlyCount,
+      can_generate_image: canGenerateImage,
+      remaining_images: remainingImages
     }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
