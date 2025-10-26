@@ -16,29 +16,63 @@ serve(async (req) => {
 
     console.log("Virtual try-on request:", { sessionId, bodyImageUrl, clothingImageUrl, settings });
 
-    // Initialize Supabase client
+    // Check for Authorization header
+    const authHeader = req.headers.get("Authorization");
+    console.log("[Virtual Try-On] Authorization header present:", !!authHeader);
+    
+    if (!authHeader) {
+      console.error("[Virtual Try-On] Missing Authorization header");
+      return new Response(
+        JSON.stringify({ error: "Authentication required. Please sign in and try again." }), 
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Initialize Supabase client with auth header
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       {
         global: {
-          headers: { Authorization: req.headers.get("Authorization")! },
+          headers: { Authorization: authHeader },
         },
       }
     );
 
+    console.log("[Virtual Try-On] Verifying user authentication...");
+    
     // Get user from auth header
     const {
       data: { user },
       error: userError,
     } = await supabaseClient.auth.getUser();
 
-    if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (userError) {
+      console.error("[Virtual Try-On] Authentication error:", userError.message);
+      return new Response(
+        JSON.stringify({ error: `Authentication failed: ${userError.message}` }), 
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
     }
+
+    if (!user) {
+      console.error("[Virtual Try-On] No user found in token");
+      return new Response(
+        JSON.stringify({ error: "Invalid authentication token. Please sign in again." }), 
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    console.log(`[Virtual Try-On] User authenticated: ${user.id}`);
 
     // Check subscription limits
     console.log(`[Virtual Try-On] Checking subscription limits for user ${user.id}`);
