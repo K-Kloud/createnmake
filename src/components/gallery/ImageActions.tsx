@@ -109,10 +109,23 @@ export const ImageActions = ({
         <Button 
           variant="ghost"
           size="sm"
-          onClick={() => setTryOnDialogOpen(true)}
+          onClick={() => {
+            if (!imageUrl) {
+              toast({
+                title: "Image not available",
+                description: "Cannot open try-on for this image",
+                variant: "destructive",
+              });
+              return;
+            }
+            setTryOnDialogOpen(true);
+          }}
+          disabled={!imageUrl}
           className="gap-2 hover:text-primary"
+          title="Virtual Try-On"
         >
           <Shirt className="h-4 w-4 transition-transform hover:scale-110" />
+          <span className="hidden sm:inline">Try On</span>
         </Button>
         <Button 
           size="sm"
