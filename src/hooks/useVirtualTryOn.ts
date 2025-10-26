@@ -93,7 +93,9 @@ export const useVirtualTryOn = () => {
 
   // Batch try-on
   const batchTryOn = useMutation({
-    mutationFn: async (params: BatchTryOnParams) => {
+    mutationFn: async (params: BatchTryOnParams & {
+      onProgress?: (completed: number, total: number, currentUrl: string) => void;
+    }) => {
       if (!user) throw new Error("User not authenticated");
       
       const results = [];
@@ -101,6 +103,9 @@ export const useVirtualTryOn = () => {
       const sessionIds = [];
 
       for (let i = 0; i < params.clothingImageUrls.length; i++) {
+        // Report progress
+        params.onProgress?.(i, params.clothingImageUrls.length, params.clothingImageUrls[i]);
+
         try {
           const session = await virtualTryOnService.createSession({
             bodyImageUrl: params.bodyImageUrl,
@@ -123,6 +128,9 @@ export const useVirtualTryOn = () => {
           failedIndices.push(i);
         }
       }
+
+      // Final progress update
+      params.onProgress?.(params.clothingImageUrls.length, params.clothingImageUrls.length, "");
 
       return { sessionIds, results, failedIndices };
     },
