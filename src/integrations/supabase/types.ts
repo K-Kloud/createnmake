@@ -933,6 +933,48 @@ export type Database = {
           },
         ]
       }
+      artisan_reviews: {
+        Row: {
+          artisan_id: string
+          comment: string | null
+          communication_rating: number | null
+          craftsmanship_rating: number | null
+          created_at: string | null
+          delivery_rating: number | null
+          id: string
+          order_id: number
+          rating: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          artisan_id: string
+          comment?: string | null
+          communication_rating?: number | null
+          craftsmanship_rating?: number | null
+          created_at?: string | null
+          delivery_rating?: number | null
+          id?: string
+          order_id: number
+          rating: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          artisan_id?: string
+          comment?: string | null
+          communication_rating?: number | null
+          craftsmanship_rating?: number | null
+          created_at?: string | null
+          delivery_rating?: number | null
+          id?: string
+          order_id?: number
+          rating?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
@@ -2866,6 +2908,102 @@ export type Database = {
           menu_type?: string
           sort_order?: number | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      order_invoices: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string | null
+          due_at: string | null
+          id: string
+          invoice_data: Json | null
+          invoice_number: string
+          issued_at: string | null
+          maker_id: string
+          order_id: string
+          order_type: string
+          paid_at: string | null
+          status: string | null
+          tax_amount: number | null
+          total_amount: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: string | null
+          due_at?: string | null
+          id?: string
+          invoice_data?: Json | null
+          invoice_number: string
+          issued_at?: string | null
+          maker_id: string
+          order_id: string
+          order_type: string
+          paid_at?: string | null
+          status?: string | null
+          tax_amount?: number | null
+          total_amount: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string | null
+          due_at?: string | null
+          id?: string
+          invoice_data?: Json | null
+          invoice_number?: string
+          issued_at?: string | null
+          maker_id?: string
+          order_id?: string
+          order_type?: string
+          paid_at?: string | null
+          status?: string | null
+          tax_amount?: number | null
+          total_amount?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      order_status_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          new_status: string
+          notes: string | null
+          old_status: string | null
+          order_id: string
+          order_type: string
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          new_status: string
+          notes?: string | null
+          old_status?: string | null
+          order_id: string
+          order_type: string
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          new_status?: string
+          notes?: string | null
+          old_status?: string | null
+          order_id?: string
+          order_type?: string
         }
         Relationships: []
       }
