@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { ManufacturerOverview } from "./ManufacturerOverview";
 import { ManufacturerQuotes } from "./ManufacturerQuotes";
 import { ManufacturerNotifications } from "./ManufacturerNotifications";
+import { MakerPayoutsPanel } from "@/components/maker/MakerPayoutsPanel";
 
 interface ManufacturerDashboardProps {
   manufacturerId: string;
@@ -82,6 +83,7 @@ export const ManufacturerDashboard = ({ manufacturerId }: ManufacturerDashboardP
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="quotes">Quote Requests</TabsTrigger>
+          <TabsTrigger value="payouts">Payouts</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
         </TabsList>
 
@@ -91,6 +93,10 @@ export const ManufacturerDashboard = ({ manufacturerId }: ManufacturerDashboardP
 
         <TabsContent value="quotes">
           <ManufacturerQuotes manufacturerId={manufacturerId} toast={toast} />
+        </TabsContent>
+
+        <TabsContent value="payouts">
+          <MakerPayoutsPanel />
         </TabsContent>
 
         <TabsContent value="notifications">

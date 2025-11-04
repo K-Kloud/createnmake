@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArtisanQuotes } from "./ArtisanQuotes";
 import { ArtisanOverview } from "./ArtisanOverview";
+import { MakerPayoutsPanel } from "@/components/maker/MakerPayoutsPanel";
 
 interface ArtisanDashboardProps {
   artisanId: string;
@@ -51,6 +52,7 @@ export const ArtisanDashboard = ({ artisanId }: ArtisanDashboardProps) => {
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="quotes">Quote Requests</TabsTrigger>
+          <TabsTrigger value="payouts">Payouts</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -59,6 +61,10 @@ export const ArtisanDashboard = ({ artisanId }: ArtisanDashboardProps) => {
 
         <TabsContent value="quotes">
           <ArtisanQuotes artisanId={artisanId} />
+        </TabsContent>
+
+        <TabsContent value="payouts">
+          <MakerPayoutsPanel />
         </TabsContent>
       </Tabs>
     </main>

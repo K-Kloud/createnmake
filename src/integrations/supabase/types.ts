@@ -2479,6 +2479,114 @@ export type Database = {
         }
         Relationships: []
       }
+      maker_earnings: {
+        Row: {
+          commission_amount: number
+          commission_rate: number
+          created_at: string | null
+          id: string
+          maker_id: string
+          order_amount: number
+          order_date: string
+          order_id: number
+          order_type: string
+          payout_transaction_id: string | null
+          platform_fee: number
+          referral_bonus: number | null
+          status: string | null
+          total_earnings: number
+          updated_at: string | null
+        }
+        Insert: {
+          commission_amount: number
+          commission_rate: number
+          created_at?: string | null
+          id?: string
+          maker_id: string
+          order_amount: number
+          order_date: string
+          order_id: number
+          order_type: string
+          payout_transaction_id?: string | null
+          platform_fee: number
+          referral_bonus?: number | null
+          status?: string | null
+          total_earnings: number
+          updated_at?: string | null
+        }
+        Update: {
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string | null
+          id?: string
+          maker_id?: string
+          order_amount?: number
+          order_date?: string
+          order_id?: number
+          order_type?: string
+          payout_transaction_id?: string | null
+          platform_fee?: number
+          referral_bonus?: number | null
+          status?: string | null
+          total_earnings?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      maker_payout_settings: {
+        Row: {
+          bank_account_name: string | null
+          bank_account_number: string | null
+          bank_name: string | null
+          bank_routing_number: string | null
+          commission_rate: number
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          maker_id: string
+          minimum_payout_amount: number | null
+          payment_method: string | null
+          payout_frequency: string
+          paypal_email: string | null
+          stripe_account_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          bank_account_name?: string | null
+          bank_account_number?: string | null
+          bank_name?: string | null
+          bank_routing_number?: string | null
+          commission_rate?: number
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          maker_id: string
+          minimum_payout_amount?: number | null
+          payment_method?: string | null
+          payout_frequency?: string
+          paypal_email?: string | null
+          stripe_account_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          bank_account_name?: string | null
+          bank_account_number?: string | null
+          bank_name?: string | null
+          bank_routing_number?: string | null
+          commission_rate?: number
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          maker_id?: string
+          minimum_payout_amount?: number | null
+          payment_method?: string | null
+          payout_frequency?: string
+          paypal_email?: string | null
+          stripe_account_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       manufacturer_notifications: {
         Row: {
           created_at: string
@@ -3103,6 +3211,93 @@ export type Database = {
         }
         Relationships: []
       }
+      payout_schedules: {
+        Row: {
+          created_at: string | null
+          day_of_month: number | null
+          day_of_week: number | null
+          frequency: string
+          id: string
+          is_active: boolean | null
+          last_run_at: string | null
+          name: string
+          next_run_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          day_of_month?: number | null
+          day_of_week?: number | null
+          frequency: string
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          name: string
+          next_run_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          day_of_month?: number | null
+          day_of_week?: number | null
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          name?: string
+          next_run_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      payout_transactions: {
+        Row: {
+          amount: number
+          created_at: string | null
+          earnings_included: Json | null
+          failure_reason: string | null
+          id: string
+          maker_id: string
+          metadata: Json | null
+          payment_method: string
+          processed_date: string | null
+          scheduled_date: string
+          status: string | null
+          transaction_reference: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          earnings_included?: Json | null
+          failure_reason?: string | null
+          id?: string
+          maker_id: string
+          metadata?: Json | null
+          payment_method: string
+          processed_date?: string | null
+          scheduled_date: string
+          status?: string | null
+          transaction_reference?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          earnings_included?: Json | null
+          failure_reason?: string | null
+          id?: string
+          maker_id?: string
+          metadata?: Json | null
+          payment_method?: string
+          processed_date?: string | null
+          scheduled_date?: string
+          status?: string | null
+          transaction_reference?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       performance_metrics: {
         Row: {
           duration_ms: number
@@ -3564,6 +3759,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      referral_bonuses: {
+        Row: {
+          bonus_amount: number
+          bonus_type: string
+          created_at: string | null
+          earnings_id: string | null
+          id: string
+          order_id: number | null
+          referred_id: string
+          referrer_id: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          bonus_amount: number
+          bonus_type: string
+          created_at?: string | null
+          earnings_id?: string | null
+          id?: string
+          order_id?: number | null
+          referred_id: string
+          referrer_id: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          bonus_amount?: number
+          bonus_type?: string
+          created_at?: string | null
+          earnings_id?: string | null
+          id?: string
+          order_id?: number | null
+          referred_id?: string
+          referrer_id?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_bonuses_earnings_id_fkey"
+            columns: ["earnings_id"]
+            isOneToOne: false
+            referencedRelation: "maker_earnings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       search_analytics: {
         Row: {
@@ -4447,6 +4689,15 @@ export type Database = {
         Args: { p_image_id: number; p_user_id: string }
         Returns: Json
       }
+      calculate_maker_earnings: {
+        Args: {
+          p_maker_id: string
+          p_order_amount: number
+          p_order_id: number
+          p_order_type: string
+        }
+        Returns: string
+      }
       check_ai_agent_health: { Args: { p_agent_id: number }; Returns: Json }
       check_user_admin_role_secure: {
         Args: { required_role?: string; target_user_id: string }
@@ -4562,6 +4813,7 @@ export type Database = {
       is_authenticated: { Args: never; Returns: boolean }
       is_authenticated_user: { Args: never; Returns: boolean }
       is_current_user_super_admin: { Args: never; Returns: boolean }
+      process_maker_payout: { Args: { p_maker_id: string }; Returns: string }
       queue_ai_agent_task: {
         Args: {
           p_agent_id: number
