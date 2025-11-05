@@ -4,6 +4,7 @@ import { HeroActions } from "@/components/HeroActions";
 import { Suspense, lazy, useEffect } from "react";
 import { addStructuredData } from "@/utils/seo";
 import { MainLayout } from "@/components/layouts/MainLayout";
+import { ProductTour } from "@/components/tour/ProductTour";
 import { useTranslation } from "react-i18next";
 
 // Lazy load non-critical components
@@ -39,6 +40,8 @@ const Index = () => {
         ogImage: "https://openteknologies.com/lovable-uploads/8373b451-38a1-4ecb-8594-cf0c25ba20c4.png"
       }}
     >
+      <ProductTour />
+      
       <div className="py-6">
         <Suspense fallback={<div className="h-32 flex items-center justify-center text-muted-foreground">{t('common.loading')}</div>}>
           <ImageGenerator />
@@ -52,9 +55,11 @@ const Index = () => {
           <HeroActions />
         </div>
         
-        <Suspense fallback={<div className="h-16"></div>}>
-          <OpenMarketSection />
-        </Suspense>
+        <div data-tour="features-section">
+          <Suspense fallback={<div className="h-16"></div>}>
+            <OpenMarketSection />
+          </Suspense>
+        </div>
       </div>
       <Suspense fallback={null}>
         <ChatBot />

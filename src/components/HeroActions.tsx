@@ -11,6 +11,7 @@ export const HeroActions = () => {
   return (
     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
       <Button 
+        data-tour="create-button"
         size="lg" 
         className="bg-primary hover:bg-primary-hover text-lg" 
         onClick={() => document.querySelector(".image-generator")?.scrollIntoView({

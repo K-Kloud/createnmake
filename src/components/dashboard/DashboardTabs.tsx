@@ -19,7 +19,7 @@ export const DashboardTabs = ({ userId, userEmail, profile }: DashboardTabsProps
 
   return (
     <Tabs defaultValue="overview" className="space-y-6">
-      <TabsList className="bg-background/50 backdrop-blur-sm">
+      <TabsList data-tour="dashboard-tabs" className="bg-background/50 backdrop-blur-sm">
         <TabsTrigger value="overview">Dashboard</TabsTrigger>
         <TabsTrigger value="designs">Designs</TabsTrigger>
         <TabsTrigger value="products">Products</TabsTrigger>

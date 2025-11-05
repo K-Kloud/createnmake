@@ -8,7 +8,7 @@ export const Hero = () => {
   const {
     t
   } = useTranslation('common');
-  return <section className="relative min-h-[60vh] sm:min-h-[80vh] flex items-center justify-center overflow-hidden">
+  return <section data-tour="hero-section" className="relative min-h-[60vh] sm:min-h-[80vh] flex items-center justify-center overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-20 left-10 w-2 h-2 bg-neon-cyan rounded-full animate-neon-pulse"></div>

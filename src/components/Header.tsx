@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "./header/ThemeToggle";
 import { NotificationCenter } from "./customer/NotificationCenter";
+import { TourTriggerButton } from "@/components/tour/TourTriggerButton";
 import { UserMenu } from "./header/UserMenu";
 import { MainNavigationMenu } from "./navigation/NavigationMenu";
 import { MobileNavigationMenu } from "./navigation/MobileNavigationMenu";
@@ -112,6 +113,7 @@ export const Header = () => {
         {/* Right side controls */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
+            <TourTriggerButton />
             {session?.user && <NotificationCenter />}
             <LanguageSwitcher />
             <ThemeToggle />
