@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, ChevronDown, ChevronUp, CheckCircle2, Circle } from 'lucide-react';
+import { X, ChevronDown, ChevronUp, CheckCircle2, Circle, BarChart3 } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -52,6 +52,17 @@ export const OnboardingChecklist = () => {
       <Card className="border-2 border-primary/20 shadow-2xl bg-card/95 backdrop-blur-sm overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 px-3 text-xs"
+              onClick={() => navigate('/onboarding/progress')}
+            >
+              <BarChart3 className="h-4 w-4 mr-2" />
+              View Dashboard
+            </Button>
+          </div>
           <div className="flex items-start justify-between mb-3">
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
