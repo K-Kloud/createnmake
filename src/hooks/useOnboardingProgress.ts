@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import type { Profile } from '@/types/auth';
 
 export interface OnboardingTask {
   id: string;
@@ -10,29 +11,112 @@ export interface OnboardingTask {
   icon: string;
 }
 
-const ONBOARDING_TASKS: Omit<OnboardingTask, 'completed'>[] = [
+type UserRole = 'creator' | 'artisan' | 'manufacturer' | 'buyer';
+
+const CREATOR_TASKS: Omit<OnboardingTask, 'completed'>[] = [
   {
     id: 'setup_profile',
-    title: 'Set Up Your Profile',
-    description: 'Add your avatar and complete your profile information',
+    title: 'Complete Your Creator Profile',
+    description: 'Add your avatar, bio, and portfolio information',
     icon: 'User',
   },
   {
     id: 'create_design',
-    title: 'Create Your First Design',
-    description: 'Use our AI generator to create your first design',
+    title: 'Generate Your First Design',
+    description: 'Use AI to create your first unique design',
     icon: 'Sparkles',
   },
   {
-    id: 'browse_marketplace',
-    title: 'Browse the Marketplace',
-    description: 'Explore designs from talented creators',
+    id: 'list_design',
+    title: 'List Design on Marketplace',
+    description: 'Make your design available for purchase',
     icon: 'Store',
+  },
+  {
+    id: 'explore_tools',
+    title: 'Explore Creator Tools',
+    description: 'Check out virtual try-on and design variations',
+    icon: 'Wand2',
+  },
+];
+
+const ARTISAN_TASKS: Omit<OnboardingTask, 'completed'>[] = [
+  {
+    id: 'setup_profile',
+    title: 'Set Up Your Artisan Profile',
+    description: 'Add business details, specialties, and portfolio',
+    icon: 'User',
+  },
+  {
+    id: 'browse_orders',
+    title: 'Review Order Dashboard',
+    description: 'Learn how to manage incoming production requests',
+    icon: 'ClipboardList',
+  },
+  {
+    id: 'accept_quote',
+    title: 'Accept Your First Quote',
+    description: 'Review and accept a production quote request',
+    icon: 'CheckCircle',
+  },
+  {
+    id: 'update_status',
+    title: 'Update Order Status',
+    description: 'Keep customers informed with status updates',
+    icon: 'RefreshCw',
+  },
+];
+
+const MANUFACTURER_TASKS: Omit<OnboardingTask, 'completed'>[] = [
+  {
+    id: 'setup_profile',
+    title: 'Complete Company Profile',
+    description: 'Add business information and manufacturing capabilities',
+    icon: 'Building',
+  },
+  {
+    id: 'set_capacity',
+    title: 'Set Production Capacity',
+    description: 'Define your manufacturing capabilities and MOQ',
+    icon: 'Factory',
+  },
+  {
+    id: 'browse_orders',
+    title: 'Review Order Management',
+    description: 'Learn the bulk order fulfillment workflow',
+    icon: 'PackageOpen',
+  },
+  {
+    id: 'accept_quote',
+    title: 'Process First Quote',
+    description: 'Review and respond to a production quote',
+    icon: 'FileCheck',
+  },
+];
+
+const BUYER_TASKS: Omit<OnboardingTask, 'completed'>[] = [
+  {
+    id: 'setup_profile',
+    title: 'Set Up Your Profile',
+    description: 'Add your avatar and preferences',
+    icon: 'User',
+  },
+  {
+    id: 'browse_marketplace',
+    title: 'Explore the Marketplace',
+    description: 'Browse unique designs from talented creators',
+    icon: 'Store',
+  },
+  {
+    id: 'try_ai_generator',
+    title: 'Try AI Design Generator',
+    description: 'Create custom designs with AI assistance',
+    icon: 'Sparkles',
   },
   {
     id: 'make_purchase',
     title: 'Make Your First Purchase',
-    description: 'Buy a design or product from the marketplace',
+    description: 'Get a custom product made by artisans',
     icon: 'ShoppingCart',
   },
 ];
@@ -44,6 +128,7 @@ export const useOnboardingProgress = () => {
   const [tasks, setTasks] = useState<OnboardingTask[]>([]);
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<UserRole>('buyer');
 
   useEffect(() => {
     if (!user) {
@@ -54,38 +139,93 @@ export const useOnboardingProgress = () => {
     loadProgress();
   }, [user]);
 
+  const getUserRole = async (): Promise<UserRole> => {
+    if (!user) return 'buyer';
+
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      const typedProfile = profile as unknown as Profile;
+
+      if (typedProfile?.is_manufacturer) return 'manufacturer';
+      if (typedProfile?.is_artisan) return 'artisan';
+      if (typedProfile?.is_creator) return 'creator';
+      return 'buyer';
+    } catch (error) {
+      console.error('Error fetching user role:', error);
+      return 'buyer';
+    }
+  };
+
+  const getTasksForRole = (role: UserRole): Omit<OnboardingTask, 'completed'>[] => {
+    switch (role) {
+      case 'creator':
+        return CREATOR_TASKS;
+      case 'artisan':
+        return ARTISAN_TASKS;
+      case 'manufacturer':
+        return MANUFACTURER_TASKS;
+      case 'buyer':
+      default:
+        return BUYER_TASKS;
+    }
+  };
+
   const loadProgress = async () => {
     if (!user) return;
 
     try {
+      // Determine user role
+      const role = await getUserRole();
+      setUserRole(role);
+
+      // Get tasks for this role
+      const roleTasks = getTasksForRole(role);
+
       // Check database for actual progress
-      const [profile, designs, orders] = await Promise.all([
-        supabase.from('profiles').select('avatar_url, username').eq('id', user.id).single(),
+      const [profile, designs, orders, quotes] = await Promise.all([
+        supabase.from('profiles').select('avatar_url, username, bio, business_name').eq('id', user.id).single(),
         supabase.from('generated_images').select('id').eq('user_id', user.id).limit(1),
-        supabase.from('artisan_quotes').select('id').eq('customer_id', user.id).limit(1),
+        supabase.from('artisan_quotes').select('id, status').eq('customer_id', user.id).limit(1),
+        supabase.from('artisan_quotes').select('id, status').eq('artisan_id', user.id).limit(1),
       ]);
 
       // Get stored progress from localStorage
       const storedProgress = localStorage.getItem(`${STORAGE_KEY}_${user.id}`);
-      const browsedMarketplace = storedProgress ? JSON.parse(storedProgress).browse_marketplace : false;
+      const savedProgress = storedProgress ? JSON.parse(storedProgress) : {};
 
+      // Build progress based on role
       const progress: Record<string, boolean> = {
         setup_profile: !!(profile.data?.avatar_url && profile.data?.username),
         create_design: (designs.data?.length ?? 0) > 0,
-        browse_marketplace: browsedMarketplace,
+        browse_marketplace: savedProgress.browse_marketplace || false,
         make_purchase: (orders.data?.length ?? 0) > 0,
+        list_design: savedProgress.list_design || false,
+        explore_tools: savedProgress.explore_tools || false,
+        try_ai_generator: (designs.data?.length ?? 0) > 0,
+        browse_orders: savedProgress.browse_orders || false,
+        accept_quote: (quotes.data?.some(q => q.status === 'accepted') ?? false),
+        update_status: savedProgress.update_status || false,
+        set_capacity: !!(profile.data?.business_name),
       };
 
-      const tasksWithProgress = ONBOARDING_TASKS.map(task => ({
+      const tasksWithProgress = roleTasks.map(task => ({
         ...task,
         completed: progress[task.id] || false,
       }));
 
       setTasks(tasksWithProgress);
 
-      // Show checklist if not all tasks are completed
+      // Check if dismissed
+      const dismissed = localStorage.getItem(`${STORAGE_KEY}_${user.id}_dismissed`);
+      
+      // Show checklist if not all tasks are completed and not dismissed
       const allCompleted = tasksWithProgress.every(task => task.completed);
-      setIsVisible(!allCompleted);
+      setIsVisible(!allCompleted && !dismissed);
     } catch (error) {
       console.error('Error loading onboarding progress:', error);
     } finally {
@@ -99,9 +239,11 @@ export const useOnboardingProgress = () => {
         task.id === taskId ? { ...task, completed: true } : task
       );
 
-      // Store browse_marketplace in localStorage
-      if (taskId === 'browse_marketplace' && user) {
-        const progress = { browse_marketplace: true };
+      // Store progress in localStorage for tasks that need it
+      if (user) {
+        const storedProgress = localStorage.getItem(`${STORAGE_KEY}_${user.id}`);
+        const progress = storedProgress ? JSON.parse(storedProgress) : {};
+        progress[taskId] = true;
         localStorage.setItem(`${STORAGE_KEY}_${user.id}`, JSON.stringify(progress));
       }
 
@@ -132,6 +274,7 @@ export const useOnboardingProgress = () => {
     completedCount,
     totalCount: tasks.length,
     progressPercentage,
+    userRole,
     markTaskComplete,
     dismissChecklist,
     refreshProgress: loadProgress,

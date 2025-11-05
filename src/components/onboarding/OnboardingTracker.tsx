@@ -14,9 +14,18 @@ export const OnboardingTracker = () => {
   useEffect(() => {
     if (!user) return;
     
-    // Mark marketplace browsing as complete when user visits marketplace
-    if (location.pathname === '/marketplace') {
+    // Track task completion based on routes
+    const pathname = location.pathname;
+    
+    if (pathname === '/marketplace') {
       markTaskComplete('browse_marketplace');
+    } else if (pathname === '/create') {
+      markTaskComplete('explore_tools');
+      markTaskComplete('try_ai_generator');
+    } else if (pathname === '/artisan' || pathname === '/manufacturer') {
+      markTaskComplete('browse_orders');
+    } else if (pathname === '/settings') {
+      // Profile setup is tracked by actual data, not route
     }
   }, [location.pathname, markTaskComplete, user]);
 

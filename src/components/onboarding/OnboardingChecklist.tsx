@@ -13,6 +13,13 @@ const taskRoutes: Record<string, string> = {
   create_design: '/create',
   browse_marketplace: '/marketplace',
   make_purchase: '/marketplace',
+  list_design: '/marketplace',
+  explore_tools: '/create',
+  try_ai_generator: '/create',
+  browse_orders: '/artisan',
+  accept_quote: '/artisan',
+  update_status: '/artisan',
+  set_capacity: '/settings',
 };
 
 export const OnboardingChecklist = () => {
@@ -25,8 +32,16 @@ export const OnboardingChecklist = () => {
     completedCount,
     totalCount,
     progressPercentage,
+    userRole,
     dismissChecklist,
   } = useOnboardingProgress();
+
+  const roleLabels: Record<string, string> = {
+    creator: 'Creator',
+    artisan: 'Artisan',
+    manufacturer: 'Manufacturer',
+    buyer: 'Customer',
+  };
 
   if (loading || !isVisible || tasks.length === 0) return null;
 
@@ -47,7 +62,7 @@ export const OnboardingChecklist = () => {
                   </>
                 ) : (
                   <>
-                    Getting Started
+                    {roleLabels[userRole]} Getting Started
                     <span className="text-sm font-normal text-muted-foreground">
                       ({completedCount}/{totalCount})
                     </span>
