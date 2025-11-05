@@ -5,6 +5,7 @@ import { Suspense, lazy, useEffect } from "react";
 import { addStructuredData } from "@/utils/seo";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ProductTour } from "@/components/tour/ProductTour";
+import { OnboardingChecklist } from "@/components/onboarding/OnboardingChecklist";
 import { useTranslation } from "react-i18next";
 
 // Lazy load non-critical components
@@ -41,6 +42,7 @@ const Index = () => {
       }}
     >
       <ProductTour />
+      <OnboardingChecklist />
       
       <div className="py-6">
         <Suspense fallback={<div className="h-32 flex items-center justify-center text-muted-foreground">{t('common.loading')}</div>}>

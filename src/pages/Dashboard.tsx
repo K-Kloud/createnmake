@@ -14,6 +14,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { NotificationCenter } from "@/components/NotificationCenter";
+import { OnboardingChecklist } from "@/components/onboarding/OnboardingChecklist";
 
 const Dashboard = () => {
   const { isAuthenticated } = useAuthGuard();
@@ -74,6 +75,7 @@ const Dashboard = () => {
           </div>
         </div>
       </ErrorBoundary>
+      <OnboardingChecklist />
       <Footer />
     </div>
   );

@@ -9,6 +9,8 @@ import { AnalyticsProvider } from "@/providers/AnalyticsProvider"
 import { CartProvider } from "@/providers/CartProvider"
 import { RealtimeNotificationProvider } from "@/components/notifications/RealtimeNotificationProvider"
 import { EnhancementStatusPanel, PWAInstallPrompt } from "@/components/enhancement/ProgressiveEnhancement"
+import { OnboardingTracker } from "@/components/onboarding/OnboardingTracker"
+import { AuthProvider } from "@/hooks/useAuth"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,8 +31,10 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         disableTransitionOnChange
       >
         <BrowserRouter>
-          <CartProvider>
-            <RealtimeNotificationProvider>
+          <AuthProvider>
+            <OnboardingTracker />
+            <CartProvider>
+              <RealtimeNotificationProvider>
               <AnalyticsProvider>
                 <ErrorBoundary
                   FallbackComponent={ErrorFallback}
@@ -57,6 +61,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
               </AnalyticsProvider>
             </RealtimeNotificationProvider>
           </CartProvider>
+          </AuthProvider>
         </BrowserRouter>
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
