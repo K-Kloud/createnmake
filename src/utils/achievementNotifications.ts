@@ -16,8 +16,37 @@ interface AchievementNotification {
   };
 }
 
+// Create in-app notification
+const createInAppNotification = async (
+  userId: string,
+  title: string,
+  message: string,
+  type: string,
+  metadata?: Record<string, any>
+) => {
+  try {
+    const { error } = await supabase
+      .from('user_notifications')
+      .insert({
+        user_id: userId,
+        title,
+        message,
+        notification_type: type,
+        is_read: false,
+        metadata,
+      });
+
+    if (error) {
+      console.error('Error creating in-app notification:', error);
+    }
+  } catch (error) {
+    console.error('Failed to create in-app notification:', error);
+  }
+};
+
 export const sendAchievementNotification = async (notification: AchievementNotification) => {
   try {
+    // Send email notification
     const { data, error } = await supabase.functions.invoke('send-achievement-email', {
       body: notification,
     });
@@ -26,6 +55,15 @@ export const sendAchievementNotification = async (notification: AchievementNotif
       console.error('Error sending achievement notification:', error);
       throw error;
     }
+
+    // Create in-app notification
+    await createInAppNotification(
+      notification.userId,
+      notification.achievementTitle,
+      notification.achievementDescription,
+      notification.achievementType,
+      notification.achievementData
+    );
 
     console.log('Achievement notification sent successfully:', data);
     return data;

@@ -78,7 +78,7 @@ export const RealtimeNotificationProvider = ({ children }: { children: React.Rea
           setUnreadCount(prev => prev + 1);
           
           // Show toast for important notifications
-          if (['milestone', 'engagement', 'subscription'].includes(newNotification.notification_type)) {
+          if (['milestone', 'badge', 'leaderboard', 'engagement', 'subscription'].includes(newNotification.notification_type)) {
             toast({
               title: newNotification.title,
               description: newNotification.message,
