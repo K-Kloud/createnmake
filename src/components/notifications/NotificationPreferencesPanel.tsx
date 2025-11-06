@@ -5,6 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Bell, Mail, MessageSquare, Trophy, Shield, ShoppingCart, CreditCard, UserPlus, Heart, TrendingUp, Gift, Clock, Users } from 'lucide-react';
+import { EmailTemplatePreview } from './EmailTemplatePreview';
 
 interface NotificationChannel {
   email: boolean;
@@ -211,12 +212,19 @@ export const NotificationPreferencesPanel: React.FC<NotificationPreferencesPanel
                         <Icon className="h-4 w-4 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <Label className="text-base font-medium text-foreground">
-                          {type.label}
-                        </Label>
-                        <p className="text-sm text-muted-foreground mt-0.5">
-                          {type.description}
-                        </p>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label className="text-base font-medium text-foreground">
+                              {type.label}
+                            </Label>
+                            <p className="text-sm text-muted-foreground mt-0.5">
+                              {type.description}
+                            </p>
+                          </div>
+                          {(type.key === 'milestone' || type.key === 'badge' || type.key === 'leaderboard') && (
+                            <EmailTemplatePreview type={type.key} />
+                          )}
+                        </div>
                       </div>
                     </div>
                     
