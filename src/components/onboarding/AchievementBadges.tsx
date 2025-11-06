@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import { OnboardingTask } from '@/hooks/useOnboardingProgress';
 import { cn } from '@/lib/utils';
+import { SocialShare } from './SocialShare';
+import { generateBadgeShareText } from '@/utils/shareMessages';
 
 interface AchievementBadgesProps {
   tasks: OnboardingTask[];
@@ -191,15 +193,29 @@ export const AchievementBadges = ({
                     </p>
                   </div>
 
-                  <Badge
-                    variant={achievement.unlocked ? 'default' : 'secondary'}
-                    className={cn(
-                      'capitalize',
-                      achievement.unlocked && colors.text
+                  <div className="flex items-center justify-between gap-2">
+                    <Badge
+                      variant={achievement.unlocked ? 'default' : 'secondary'}
+                      className={cn(
+                        'capitalize',
+                        achievement.unlocked && colors.text
+                      )}
+                    >
+                      {achievement.rarity}
+                    </Badge>
+                    
+                    {achievement.unlocked && (
+                      <SocialShare
+                        title={achievement.title}
+                        text={generateBadgeShareText(
+                          achievement.title,
+                          achievement.description,
+                          userRole
+                        )}
+                        hashtags={['Achievement', userRole, achievement.rarity]}
+                      />
                     )}
-                  >
-                    {achievement.rarity}
-                  </Badge>
+                  </div>
                 </div>
               </div>
             );

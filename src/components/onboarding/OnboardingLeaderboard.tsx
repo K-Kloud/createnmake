@@ -12,6 +12,9 @@ import {
 } from 'lucide-react';
 import { useOnboardingLeaderboard, useTopAchievers } from '@/hooks/useOnboardingLeaderboard';
 import { cn } from '@/lib/utils';
+import { SocialShare } from './SocialShare';
+import { generateLeaderboardShareText } from '@/utils/shareMessages';
+import { useAuth } from '@/hooks/useAuth';
 
 const roleLabels: Record<string, string> = {
   creator: 'Creator',
@@ -35,6 +38,7 @@ interface LeaderboardTableProps {
 }
 
 const LeaderboardTable = ({ role, type }: LeaderboardTableProps) => {
+  const { user } = useAuth();
   const { data: speedData, isLoading: speedLoading } = useOnboardingLeaderboard(role);
   const { data: achievementData, isLoading: achievementLoading } = useTopAchievers(role);
 
@@ -130,6 +134,19 @@ const LeaderboardTable = ({ role, type }: LeaderboardTableProps) => {
               </div>
               <p className="text-xs text-muted-foreground">Achievements</p>
             </div>
+
+            {user?.id === entry.user_id && (
+              <SocialShare
+                title="My Leaderboard Achievement"
+                text={generateLeaderboardShareText(
+                  index + 1,
+                  entry.user_role,
+                  entry.completion_time_seconds,
+                  entry.achievement_count
+                )}
+                hashtags={['Leaderboard', roleLabels[entry.user_role], 'TopPerformer']}
+              />
+            )}
           </div>
         </div>
       ))}

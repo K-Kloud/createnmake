@@ -8,6 +8,8 @@ import { OnboardingStats } from '@/components/onboarding/OnboardingStats';
 import { AchievementBadges } from '@/components/onboarding/AchievementBadges';
 import { ProgressTimeline } from '@/components/onboarding/ProgressTimeline';
 import { OnboardingLeaderboard } from '@/components/onboarding/OnboardingLeaderboard';
+import { SocialShare } from '@/components/onboarding/SocialShare';
+import { generateAchievementShareText } from '@/utils/shareMessages';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Award, TrendingUp } from 'lucide-react';
@@ -99,6 +101,11 @@ export default function OnboardingDashboard() {
                 </div>
               </div>
             </Card>
+            <SocialShare
+              title="My Onboarding Achievement"
+              text={generateAchievementShareText(userRole, completedCount, totalCount)}
+              hashtags={['OnboardingSuccess', userRole]}
+            />
           </div>
         </div>
 
