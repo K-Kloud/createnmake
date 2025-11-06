@@ -7,6 +7,7 @@ import { Footer } from '@/components/Footer';
 import { OnboardingStats } from '@/components/onboarding/OnboardingStats';
 import { AchievementBadges } from '@/components/onboarding/AchievementBadges';
 import { ProgressTimeline } from '@/components/onboarding/ProgressTimeline';
+import { OnboardingLeaderboard } from '@/components/onboarding/OnboardingLeaderboard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Award, TrendingUp } from 'lucide-react';
@@ -119,6 +120,9 @@ export default function OnboardingDashboard() {
 
         {/* Progress Timeline */}
         <ProgressTimeline tasks={tasks} userRole={userRole} />
+
+        {/* Leaderboard */}
+        <OnboardingLeaderboard />
 
         {/* Next Steps */}
         <Card className="p-6 bg-gradient-to-br from-primary/5 to-background border-primary/20">

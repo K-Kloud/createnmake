@@ -251,6 +251,52 @@ export const useOnboardingProgress = () => {
       const allCompleted = updatedTasks.every(task => task.completed);
       if (allCompleted) {
         setTimeout(() => setIsVisible(false), 2000);
+
+        // Save completion to leaderboard database (async)
+        if (user) {
+          const startTime = localStorage.getItem(`onboarding_start_${user.id}`);
+          if (startTime) {
+            const completionTimeSeconds = Math.floor(
+              (Date.now() - parseInt(startTime)) / 1000
+            );
+
+            // Calculate achievement count based on completion percentage
+            const completedCount = updatedTasks.filter(t => t.completed).length;
+            const totalCount = updatedTasks.length;
+            const percentage = (completedCount / totalCount) * 100;
+            
+            const achievementCount = 
+              percentage === 100 ? 4 :
+              percentage >= 75 ? 3 :
+              percentage >= 50 ? 2 : 1;
+
+            // Save asynchronously without blocking
+            (async () => {
+              try {
+                // Check if completion already exists
+                const { data: existing } = await supabase
+                  .from('onboarding_completions')
+                  .select('id')
+                  .eq('user_id', user.id)
+                  .eq('user_role', userRole)
+                  .single();
+
+                if (!existing) {
+                  await supabase.from('onboarding_completions').insert({
+                    user_id: user.id,
+                    user_role: userRole,
+                    completion_time_seconds: completionTimeSeconds,
+                    tasks_completed: completedCount,
+                    total_tasks: totalCount,
+                    achievement_count: achievementCount,
+                  });
+                }
+              } catch (error) {
+                console.error('Error saving completion to leaderboard:', error);
+              }
+            })();
+          }
+        }
       }
 
       return updatedTasks;

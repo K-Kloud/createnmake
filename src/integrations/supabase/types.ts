@@ -3019,6 +3019,45 @@ export type Database = {
         }
         Relationships: []
       }
+      onboarding_completions: {
+        Row: {
+          achievement_count: number
+          completed_at: string
+          completion_time_seconds: number
+          created_at: string
+          id: string
+          tasks_completed: number
+          total_tasks: number
+          updated_at: string
+          user_id: string
+          user_role: string
+        }
+        Insert: {
+          achievement_count?: number
+          completed_at?: string
+          completion_time_seconds: number
+          created_at?: string
+          id?: string
+          tasks_completed: number
+          total_tasks: number
+          updated_at?: string
+          user_id: string
+          user_role: string
+        }
+        Update: {
+          achievement_count?: number
+          completed_at?: string
+          completion_time_seconds?: number
+          created_at?: string
+          id?: string
+          tasks_completed?: number
+          total_tasks?: number
+          updated_at?: string
+          user_id?: string
+          user_role?: string
+        }
+        Relationships: []
+      }
       order_invoices: {
         Row: {
           amount: number
