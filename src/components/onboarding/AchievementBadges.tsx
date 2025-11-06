@@ -14,6 +14,9 @@ import { OnboardingTask } from '@/hooks/useOnboardingProgress';
 import { cn } from '@/lib/utils';
 import { SocialShare } from './SocialShare';
 import { generateBadgeShareText } from '@/utils/shareMessages';
+import { useEffect, useRef } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { notifyBadgeUnlocked } from '@/utils/achievementNotifications';
 
 interface AchievementBadgesProps {
   tasks: OnboardingTask[];
@@ -35,8 +38,10 @@ export const AchievementBadges = ({
   userRole,
   progressPercentage,
 }: AchievementBadgesProps) => {
+  const { user } = useAuth();
   const completedCount = tasks.filter((t) => t.completed).length;
   const totalCount = tasks.length;
+  const notifiedBadges = useRef<Set<string>>(new Set());
 
   const roleLabels: Record<string, string> = {
     creator: 'Creator',
@@ -125,6 +130,30 @@ export const AchievementBadges = ({
   };
 
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
+
+  // Send email notifications for newly unlocked badges
+  useEffect(() => {
+    if (!user) return;
+
+    achievements.forEach((achievement) => {
+      if (achievement.unlocked && !notifiedBadges.current.has(achievement.id)) {
+        notifiedBadges.current.add(achievement.id);
+        
+        // Send notification for legendary and epic badges
+        if (['legendary', 'epic'].includes(achievement.rarity)) {
+          notifyBadgeUnlocked(
+            user.id,
+            achievement.title,
+            achievement.description,
+            achievement.rarity as 'legendary' | 'epic',
+            userRole
+          ).catch(error => {
+            console.error('Error sending badge notification:', error);
+          });
+        }
+      }
+    });
+  }, [achievements, user, userRole]);
 
   return (
     <Card className="p-6">

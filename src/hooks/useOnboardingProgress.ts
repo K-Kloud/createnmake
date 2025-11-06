@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import type { Profile } from '@/types/auth';
+import { notifyMilestoneAchievement, notifyLeaderboardAchievement } from '@/utils/achievementNotifications';
 
 export interface OnboardingTask {
   id: string;
@@ -247,6 +248,30 @@ export const useOnboardingProgress = () => {
         localStorage.setItem(`${STORAGE_KEY}_${user.id}`, JSON.stringify(progress));
       }
 
+      // Check for milestone achievements and send notifications
+      const completedCount = updatedTasks.filter(t => t.completed).length;
+      const totalCount = updatedTasks.length;
+      const percentage = (completedCount / totalCount) * 100;
+      
+      // Send milestone notifications at key percentages
+      if (user && [25, 50, 75, 100].includes(percentage)) {
+        const startTime = localStorage.getItem(`onboarding_start_${user.id}`);
+        const completionTime = startTime 
+          ? Math.floor((Date.now() - parseInt(startTime)) / 1000)
+          : undefined;
+        
+        // Send milestone notification asynchronously
+        notifyMilestoneAchievement(
+          user.id,
+          userRole,
+          completedCount,
+          totalCount,
+          completionTime
+        ).catch(error => {
+          console.error('Error sending milestone notification:', error);
+        });
+      }
+
       // Hide checklist if all tasks completed
       const allCompleted = updatedTasks.every(task => task.completed);
       if (allCompleted) {
@@ -260,11 +285,6 @@ export const useOnboardingProgress = () => {
               (Date.now() - parseInt(startTime)) / 1000
             );
 
-            // Calculate achievement count based on completion percentage
-            const completedCount = updatedTasks.filter(t => t.completed).length;
-            const totalCount = updatedTasks.length;
-            const percentage = (completedCount / totalCount) * 100;
-            
             const achievementCount = 
               percentage === 100 ? 4 :
               percentage >= 75 ? 3 :
@@ -282,14 +302,42 @@ export const useOnboardingProgress = () => {
                   .single();
 
                 if (!existing) {
-                  await supabase.from('onboarding_completions').insert({
-                    user_id: user.id,
-                    user_role: userRole,
-                    completion_time_seconds: completionTimeSeconds,
-                    tasks_completed: completedCount,
-                    total_tasks: totalCount,
-                    achievement_count: achievementCount,
-                  });
+                  const { data: inserted } = await supabase
+                    .from('onboarding_completions')
+                    .insert({
+                      user_id: user.id,
+                      user_role: userRole,
+                      completion_time_seconds: completionTimeSeconds,
+                      tasks_completed: completedCount,
+                      total_tasks: totalCount,
+                      achievement_count: achievementCount,
+                    })
+                    .select()
+                    .single();
+
+                  // Check leaderboard rank and notify if in top 10
+                  if (inserted) {
+                    const { data: rankings } = await supabase
+                      .from('onboarding_completions')
+                      .select('id')
+                      .eq('user_role', userRole)
+                      .order('completion_time_seconds', { ascending: true })
+                      .limit(10);
+
+                    const rank = rankings?.findIndex(r => r.id === inserted.id) + 1;
+                    
+                    if (rank && rank <= 10) {
+                      notifyLeaderboardAchievement(
+                        user.id,
+                        rank,
+                        userRole,
+                        completionTimeSeconds,
+                        achievementCount
+                      ).catch(error => {
+                        console.error('Error sending leaderboard notification:', error);
+                      });
+                    }
+                  }
                 }
               } catch (error) {
                 console.error('Error saving completion to leaderboard:', error);
