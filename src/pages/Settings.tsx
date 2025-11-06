@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AdminAccess } from "@/components/settings/AdminAccess";
 import { MFASettings } from "@/components/settings/MFASettings";
 import { useUserSettings } from "@/hooks/useUserSettings";
+import { NotificationPreferencesPanel } from "@/components/notifications/NotificationPreferencesPanel";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -50,15 +51,19 @@ const Settings = () => {
   const {
     profileData,
     preferences,
+    notificationPreferences,
     passwordData,
     handleProfileChange,
     handlePreferenceChange,
+    handleNotificationPreferenceChange,
     handlePasswordChange,
     handleProfileSubmit,
     handlePreferencesSubmit,
+    handleNotificationPreferencesSubmit,
     handlePasswordSubmit,
     isUpdatingProfile,
     isUpdatingPreferences,
+    isUpdatingNotificationPreferences,
     isChangingPassword,
   } = useUserSettings(session?.user?.id);
   
@@ -213,9 +218,9 @@ const Settings = () => {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="notifications">
+              <TabsContent value="notifications" className="space-y-6">
                 <Card className="glass-card p-6">
-                  <h2 className="text-xl font-bold mb-4">Notification Preferences</h2>
+                  <h2 className="text-xl font-bold mb-4">Basic Preferences</h2>
                   <form className="space-y-4" onSubmit={handlePreferencesSubmit}>
                     <div className="flex items-start space-x-2">
                       <Checkbox 
@@ -257,6 +262,13 @@ const Settings = () => {
                     </div>
                   </form>
                 </Card>
+
+                <NotificationPreferencesPanel
+                  preferences={notificationPreferences}
+                  onPreferenceChange={handleNotificationPreferenceChange}
+                  onSave={handleNotificationPreferencesSubmit}
+                  isSaving={isUpdatingNotificationPreferences}
+                />
               </TabsContent>
 
               <TabsContent value="admin">

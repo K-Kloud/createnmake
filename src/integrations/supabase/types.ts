@@ -4390,6 +4390,7 @@ export type Database = {
           email_marketing: boolean | null
           email_orders: boolean | null
           id: string
+          notification_preferences: Json | null
           updated_at: string | null
           user_id: string
         }
@@ -4399,6 +4400,7 @@ export type Database = {
           email_marketing?: boolean | null
           email_orders?: boolean | null
           id?: string
+          notification_preferences?: Json | null
           updated_at?: string | null
           user_id: string
         }
@@ -4408,6 +4410,7 @@ export type Database = {
           email_marketing?: boolean | null
           email_orders?: boolean | null
           id?: string
+          notification_preferences?: Json | null
           updated_at?: string | null
           user_id?: string
         }

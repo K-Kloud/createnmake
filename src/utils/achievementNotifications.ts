@@ -1,7 +1,31 @@
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
+
+// Fetch user notification preferences
+const getUserNotificationPreferences = async (userId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('user_preferences')
+      .select('notification_preferences')
+      .eq('user_id', userId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error fetching notification preferences:', error);
+      return null;
+    }
+
+    return data?.notification_preferences || null;
+  } catch (error) {
+    console.error('Failed to fetch notification preferences:', error);
+    return null;
+  }
+};
 
 interface AchievementNotification {
   userId: string;
+  userEmail?: string;
+  userName?: string;
   achievementType: 'milestone' | 'badge' | 'leaderboard';
   achievementTitle: string;
   achievementDescription: string;
@@ -13,6 +37,9 @@ interface AchievementNotification {
     rank?: number;
     completionTime?: number;
     badgeRarity?: string;
+    badgeLevel?: string;
+    totalUsers?: number;
+    progress?: number;
   };
 }
 
@@ -46,27 +73,42 @@ const createInAppNotification = async (
 
 export const sendAchievementNotification = async (notification: AchievementNotification) => {
   try {
-    // Send email notification
-    const { data, error } = await supabase.functions.invoke('send-achievement-email', {
-      body: notification,
-    });
+    // Get user notification preferences
+    const preferences = await getUserNotificationPreferences(notification.userId);
+    const typePrefs = preferences?.[notification.achievementType];
 
-    if (error) {
-      console.error('Error sending achievement notification:', error);
-      throw error;
+    // Send email notification if enabled
+    if (typePrefs?.email !== false) {
+      const { error } = await supabase.functions.invoke('send-achievement-email', {
+        body: notification,
+      });
+
+      if (error) {
+        console.error('Error sending achievement email:', error);
+      }
     }
 
-    // Create in-app notification
-    await createInAppNotification(
-      notification.userId,
-      notification.achievementTitle,
-      notification.achievementDescription,
-      notification.achievementType,
-      notification.achievementData
-    );
+    // Create in-app notification if enabled
+    if (typePrefs?.in_app !== false) {
+      await createInAppNotification(
+        notification.userId,
+        notification.achievementTitle,
+        notification.achievementDescription,
+        notification.achievementType,
+        notification.achievementData
+      );
+    }
 
-    console.log('Achievement notification sent successfully:', data);
-    return data;
+    // Show toast notification if enabled
+    if (typePrefs?.toast !== false) {
+      toast({
+        title: notification.achievementTitle,
+        description: notification.achievementDescription,
+      });
+    }
+
+    console.log('Achievement notification sent successfully');
+    return { success: true };
   } catch (error) {
     console.error('Failed to send achievement notification:', error);
     throw error;

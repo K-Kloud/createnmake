@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import type { NotificationPreferences } from "@/components/notifications/NotificationPreferencesPanel";
 
 interface ProfileData {
   first_name: string;
@@ -22,6 +23,26 @@ interface PasswordData {
   confirm_password: string;
 }
 
+const defaultNotificationPreferences: NotificationPreferences = {
+  milestone: { email: true, toast: true, in_app: true },
+  badge: { email: true, toast: true, in_app: true },
+  leaderboard: { email: true, toast: true, in_app: true },
+  engagement: { email: true, toast: true, in_app: true },
+  subscription: { email: true, toast: true, in_app: true },
+  welcome: { email: true, toast: true, in_app: true },
+  security: { email: true, toast: true, in_app: true },
+  verification: { email: true, toast: true, in_app: true },
+  order: { email: true, toast: true, in_app: true },
+  payment: { email: true, toast: true, in_app: true },
+  system: { email: true, toast: true, in_app: true },
+  re_engagement: { email: true, toast: false, in_app: true },
+  recommendation: { email: false, toast: true, in_app: true },
+  content_update: { email: false, toast: true, in_app: true },
+  deal: { email: true, toast: true, in_app: true },
+  make_reminder: { email: true, toast: true, in_app: true },
+  creator_activity: { email: false, toast: true, in_app: true },
+};
+
 export const useUserSettings = (userId?: string) => {
   const [profileData, setProfileData] = useState<ProfileData>({
     first_name: "",
@@ -35,6 +56,8 @@ export const useUserSettings = (userId?: string) => {
     email_marketing: false,
     browser_notifications: true
   });
+
+  const [notificationPreferences, setNotificationPreferences] = useState<NotificationPreferences>(defaultNotificationPreferences);
 
   const [passwordData, setPasswordData] = useState<PasswordData>({
     current_password: "",
@@ -93,6 +116,14 @@ export const useUserSettings = (userId?: string) => {
         email_marketing: userPrefs.email_marketing,
         browser_notifications: userPrefs.browser_notifications
       });
+      
+      // Load notification preferences
+      if (userPrefs.notification_preferences && typeof userPrefs.notification_preferences === 'object') {
+        setNotificationPreferences({
+          ...defaultNotificationPreferences,
+          ...(userPrefs.notification_preferences as Record<string, any>)
+        } as NotificationPreferences);
+      }
     }
   }, [userPrefs]);
 
@@ -159,6 +190,37 @@ export const useUserSettings = (userId?: string) => {
     },
   });
 
+  // Update notification preferences mutation
+  const updateNotificationPreferencesMutation = useMutation({
+    mutationFn: async (data: NotificationPreferences) => {
+      if (!userId) throw new Error('User not authenticated');
+      
+      const { error } = await supabase
+        .from('user_preferences')
+        .upsert({
+          user_id: userId,
+          notification_preferences: data as any
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Notification preferences saved successfully!",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to save notification preferences",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+      console.error('Notification preferences update error:', error);
+    },
+  });
+
   // Change password mutation
   const changePasswordMutation = useMutation({
     mutationFn: async (data: PasswordData) => {
@@ -200,6 +262,20 @@ export const useUserSettings = (userId?: string) => {
     setPreferences(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleNotificationPreferenceChange = (
+    type: keyof NotificationPreferences,
+    channel: 'email' | 'toast' | 'in_app',
+    value: boolean
+  ) => {
+    setNotificationPreferences(prev => ({
+      ...prev,
+      [type]: {
+        ...prev[type],
+        [channel]: value
+      }
+    }));
+  };
+
   const handlePasswordChange = (field: keyof PasswordData, value: string) => {
     setPasswordData(prev => ({ ...prev, [field]: value }));
   };
@@ -212,6 +288,10 @@ export const useUserSettings = (userId?: string) => {
   const handlePreferencesSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updatePreferencesMutation.mutate(preferences);
+  };
+
+  const handleNotificationPreferencesSubmit = () => {
+    updateNotificationPreferencesMutation.mutate(notificationPreferences);
   };
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
@@ -229,15 +309,19 @@ export const useUserSettings = (userId?: string) => {
   return {
     profileData,
     preferences,
+    notificationPreferences,
     passwordData,
     handleProfileChange,
     handlePreferenceChange,
+    handleNotificationPreferenceChange,
     handlePasswordChange,
     handleProfileSubmit,
     handlePreferencesSubmit,
+    handleNotificationPreferencesSubmit,
     handlePasswordSubmit,
     isUpdatingProfile: updateProfileMutation.isPending,
     isUpdatingPreferences: updatePreferencesMutation.isPending,
+    isUpdatingNotificationPreferences: updateNotificationPreferencesMutation.isPending,
     isChangingPassword: changePasswordMutation.isPending,
   };
 };
