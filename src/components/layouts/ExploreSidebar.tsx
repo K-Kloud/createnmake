@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { 
@@ -12,7 +13,9 @@ import {
   Bell,
   Moon,
   LogIn,
-  UserPlus
+  UserPlus,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -44,18 +47,32 @@ const bottomNavItems: NavItem[] = [
 export const ExploreSidebar = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const [collapsed, setCollapsed] = useState(false);
 
   const isActive = (href: string) => {
     return location.pathname === href;
   };
 
   return (
-    <div className="h-full bg-[#1a1a1a] dark:bg-[#0f0f0f] text-white flex flex-col w-52 border-r border-white/10">
-      {/* Logo */}
-      <div className="p-4 border-b border-white/10">
-        <Link to="/" className="text-xl font-bold">
-          Midjourney
-        </Link>
+    <div className={cn(
+      "h-full bg-[#1a1a1a] dark:bg-[#0f0f0f] text-white flex flex-col border-r border-white/10 transition-all duration-300",
+      collapsed ? "w-16" : "w-52"
+    )}>
+      {/* Logo and Toggle */}
+      <div className="p-4 border-b border-white/10 flex items-center justify-between">
+        {!collapsed && (
+          <Link to="/" className="text-xl font-bold">
+            Midjourney
+          </Link>
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setCollapsed(!collapsed)}
+          className="text-white/70 hover:text-white hover:bg-white/10"
+        >
+          {collapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+        </Button>
       </div>
 
       {/* Main Navigation */}
@@ -73,11 +90,13 @@ export const ExploreSidebar = () => {
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
                   active 
                     ? "bg-[#f04e45] text-white" 
-                    : "text-white/70 hover:text-white hover:bg-white/10"
+                    : "text-white/70 hover:text-white hover:bg-white/10",
+                  collapsed && "justify-center px-0"
                 )}
+                title={collapsed ? item.label : undefined}
               >
                 <Icon className="h-5 w-5" />
-                <span>{item.label}</span>
+                {!collapsed && <span>{item.label}</span>}
               </Link>
             );
           })}
@@ -99,20 +118,29 @@ export const ExploreSidebar = () => {
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
                   active 
                     ? "bg-white/20 text-white" 
-                    : "text-white/70 hover:text-white hover:bg-white/10"
+                    : "text-white/70 hover:text-white hover:bg-white/10",
+                  collapsed && "justify-center px-0"
                 )}
+                title={collapsed ? item.label : undefined}
               >
                 <Icon className="h-5 w-5" />
-                <span>{item.label}</span>
+                {!collapsed && <span>{item.label}</span>}
               </Link>
             );
           })}
 
           {/* Theme Toggle */}
-          <div className="flex items-center gap-3 px-3 py-2.5">
-            <Moon className="h-5 w-5 text-white/70" />
-            <span className="text-sm text-white/70">Dark Mode</span>
-            <div className="ml-auto">
+          <div className={cn(
+            "flex items-center gap-3 px-3 py-2.5",
+            collapsed && "justify-center px-0"
+          )}>
+            {!collapsed && (
+              <>
+                <Moon className="h-5 w-5 text-white/70" />
+                <span className="text-sm text-white/70">Dark Mode</span>
+              </>
+            )}
+            <div className={collapsed ? "" : "ml-auto"}>
               <ThemeToggle />
             </div>
           </div>
@@ -125,29 +153,41 @@ export const ExploreSidebar = () => {
               <Link to="/auth?mode=login">
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10"
+                  size={collapsed ? "icon" : "default"}
+                  className={cn(
+                    "w-full text-white/70 hover:text-white hover:bg-white/10",
+                    !collapsed && "justify-start"
+                  )}
+                  title={collapsed ? "Log In" : undefined}
                 >
-                  <LogIn className="h-5 w-5 mr-3" />
-                  Log In
+                  <LogIn className={cn("h-5 w-5", !collapsed && "mr-3")} />
+                  {!collapsed && "Log In"}
                 </Button>
               </Link>
               <Link to="/auth?mode=signup">
                 <Button 
+                  size={collapsed ? "icon" : "default"}
                   className="w-full bg-[#f04e45] hover:bg-[#d94339] text-white"
+                  title={collapsed ? "Sign Up" : undefined}
                 >
-                  <UserPlus className="h-5 w-5 mr-2" />
-                  Sign Up
+                  <UserPlus className={cn("h-5 w-5", !collapsed && "mr-2")} />
+                  {!collapsed && "Sign Up"}
                 </Button>
               </Link>
             </>
           ) : (
             <Link to="/dashboard">
               <Button 
-                variant="ghost" 
-                className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10"
+                variant="ghost"
+                size={collapsed ? "icon" : "default"}
+                className={cn(
+                  "w-full text-white/70 hover:text-white hover:bg-white/10",
+                  !collapsed && "justify-start"
+                )}
+                title={collapsed ? "Dashboard" : undefined}
               >
-                <User className="h-5 w-5 mr-3" />
-                Dashboard
+                <User className={cn("h-5 w-5", !collapsed && "mr-3")} />
+                {!collapsed && "Dashboard"}
               </Button>
             </Link>
           )}
