@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Bell, Mail, MessageSquare, Trophy, Shield, ShoppingCart, CreditCard, UserPlus, Heart, TrendingUp, Gift, Clock, Users } from 'lucide-react';
 import { EmailTemplatePreview } from './EmailTemplatePreview';
+import { ThemeToggle } from '@/components/header/ThemeToggle';
 
 interface NotificationChannel {
   email: boolean;
@@ -184,18 +185,21 @@ export const NotificationPreferencesPanel: React.FC<NotificationPreferencesPanel
   return (
     <Card className="glass-card border-border/50 shadow-lg dark:shadow-primary/5 dark:bg-gradient-to-br dark:from-card/95 dark:to-card/80">
       <CardHeader className="space-y-3 pb-8">
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 dark:from-primary/30 dark:to-accent/30 backdrop-blur-sm dark:shadow-lg dark:shadow-primary/10">
-            <Bell className="h-6 w-6 text-primary dark:drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]" />
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 dark:from-primary/30 dark:to-accent/30 backdrop-blur-sm dark:shadow-lg dark:shadow-primary/10">
+              <Bell className="h-6 w-6 text-primary dark:drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 dark:from-foreground dark:to-primary/90 bg-clip-text">
+                Notification Preferences
+              </CardTitle>
+              <CardDescription className="text-base mt-1 dark:text-muted-foreground/80">
+                Customize how you receive notifications for different types of events
+              </CardDescription>
+            </div>
           </div>
-          <div>
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 dark:from-foreground dark:to-primary/90 bg-clip-text">
-              Notification Preferences
-            </CardTitle>
-            <CardDescription className="text-base mt-1 dark:text-muted-foreground/80">
-              Customize how you receive notifications for different types of events
-            </CardDescription>
-          </div>
+          <ThemeToggle />
         </div>
       </CardHeader>
       <CardContent className="space-y-10">
