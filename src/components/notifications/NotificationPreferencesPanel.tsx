@@ -182,17 +182,17 @@ export const NotificationPreferencesPanel: React.FC<NotificationPreferencesPanel
   const groupedTypes = groupByCategory(notificationTypes);
 
   return (
-    <Card className="glass-card border-border/50 shadow-lg">
+    <Card className="glass-card border-border/50 shadow-lg dark:shadow-primary/5 dark:bg-gradient-to-br dark:from-card/95 dark:to-card/80">
       <CardHeader className="space-y-3 pb-8">
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-sm">
-            <Bell className="h-6 w-6 text-primary" />
+          <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 dark:from-primary/30 dark:to-accent/30 backdrop-blur-sm dark:shadow-lg dark:shadow-primary/10">
+            <Bell className="h-6 w-6 text-primary dark:drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]" />
           </div>
           <div>
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 dark:from-foreground dark:to-primary/90 bg-clip-text">
               Notification Preferences
             </CardTitle>
-            <CardDescription className="text-base mt-1">
+            <CardDescription className="text-base mt-1 dark:text-muted-foreground/80">
               Customize how you receive notifications for different types of events
             </CardDescription>
           </div>
@@ -207,8 +207,8 @@ export const NotificationPreferencesPanel: React.FC<NotificationPreferencesPanel
           >
             <div className="relative">
               <div className="flex items-center gap-3 mb-6">
-                <div className="h-8 w-1 bg-gradient-to-b from-primary to-accent rounded-full" />
-                <h3 className="text-xl font-bold text-foreground tracking-tight">
+                <div className="h-8 w-1 bg-gradient-to-b from-primary to-accent dark:from-primary/90 dark:to-accent/90 rounded-full dark:shadow-[0_0_12px_hsl(var(--primary)/0.4)]" />
+                <h3 className="text-xl font-bold text-foreground dark:text-foreground/95 tracking-tight">
                   {category}
                 </h3>
               </div>
@@ -222,13 +222,13 @@ export const NotificationPreferencesPanel: React.FC<NotificationPreferencesPanel
                 return (
                   <div 
                     key={type.key} 
-                    className="group relative p-5 rounded-xl border border-border/50 bg-card/30 backdrop-blur-sm hover:bg-card/50 hover:border-primary/30 transition-all duration-300 hover:shadow-md"
+                    className="group relative p-5 rounded-xl border border-border/50 bg-card/30 backdrop-blur-sm hover:bg-card/50 hover:border-primary/30 dark:bg-gradient-to-br dark:from-card/40 dark:to-card/20 dark:border-border/30 dark:hover:border-primary/50 dark:hover:shadow-[0_0_20px_hsl(var(--primary)/0.15)] transition-all duration-300 hover:shadow-md"
                     style={{ animationDelay: `${(categoryIndex * 100) + (typeIndex * 50)}ms` }}
                   >
                     <div className="space-y-4">
                       <div className="flex items-start gap-4">
-                        <div className="mt-0.5 p-2.5 rounded-lg bg-gradient-to-br from-primary/15 to-accent/10 group-hover:from-primary/25 group-hover:to-accent/20 transition-all duration-300">
-                          <Icon className="h-5 w-5 text-primary" />
+                        <div className="mt-0.5 p-2.5 rounded-lg bg-gradient-to-br from-primary/15 to-accent/10 group-hover:from-primary/25 group-hover:to-accent/20 dark:from-primary/25 dark:to-accent/20 dark:group-hover:from-primary/40 dark:group-hover:to-accent/30 dark:shadow-inner transition-all duration-300">
+                          <Icon className="h-5 w-5 text-primary dark:drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-3">
@@ -248,12 +248,12 @@ export const NotificationPreferencesPanel: React.FC<NotificationPreferencesPanel
                       </div>
                       
                       <div className="pl-14 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 dark:bg-muted/20 dark:hover:bg-muted/30 dark:hover:shadow-[0_0_12px_hsl(var(--primary)/0.1)] transition-all">
                           <div className="flex items-center gap-2.5">
-                            <div className="p-1.5 rounded-md bg-background/80">
-                              <Mail className="h-3.5 w-3.5 text-primary" />
+                            <div className="p-1.5 rounded-md bg-background/80 dark:bg-background/60 dark:shadow-inner">
+                              <Mail className="h-3.5 w-3.5 text-primary dark:drop-shadow-[0_0_4px_hsl(var(--primary)/0.5)]" />
                             </div>
-                            <Label htmlFor={`${type.key}-email`} className="text-sm font-medium cursor-pointer">
+                            <Label htmlFor={`${type.key}-email`} className="text-sm font-medium cursor-pointer dark:text-foreground/90">
                               Email
                             </Label>
                           </div>
@@ -264,12 +264,12 @@ export const NotificationPreferencesPanel: React.FC<NotificationPreferencesPanel
                           />
                         </div>
                         
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 dark:bg-muted/20 dark:hover:bg-muted/30 dark:hover:shadow-[0_0_12px_hsl(var(--accent)/0.1)] transition-all">
                           <div className="flex items-center gap-2.5">
-                            <div className="p-1.5 rounded-md bg-background/80">
-                              <MessageSquare className="h-3.5 w-3.5 text-accent" />
+                            <div className="p-1.5 rounded-md bg-background/80 dark:bg-background/60 dark:shadow-inner">
+                              <MessageSquare className="h-3.5 w-3.5 text-accent dark:drop-shadow-[0_0_4px_hsl(var(--accent)/0.5)]" />
                             </div>
-                            <Label htmlFor={`${type.key}-toast`} className="text-sm font-medium cursor-pointer">
+                            <Label htmlFor={`${type.key}-toast`} className="text-sm font-medium cursor-pointer dark:text-foreground/90">
                               Toast
                             </Label>
                           </div>
@@ -280,12 +280,12 @@ export const NotificationPreferencesPanel: React.FC<NotificationPreferencesPanel
                           />
                         </div>
                         
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 dark:bg-muted/20 dark:hover:bg-muted/30 dark:hover:shadow-[0_0_12px_hsl(var(--secondary)/0.1)] transition-all">
                           <div className="flex items-center gap-2.5">
-                            <div className="p-1.5 rounded-md bg-background/80">
-                              <Bell className="h-3.5 w-3.5 text-secondary" />
+                            <div className="p-1.5 rounded-md bg-background/80 dark:bg-background/60 dark:shadow-inner">
+                              <Bell className="h-3.5 w-3.5 text-secondary dark:drop-shadow-[0_0_4px_hsl(var(--secondary)/0.5)]" />
                             </div>
-                            <Label htmlFor={`${type.key}-in-app`} className="text-sm font-medium cursor-pointer">
+                            <Label htmlFor={`${type.key}-in-app`} className="text-sm font-medium cursor-pointer dark:text-foreground/90">
                               In-App
                             </Label>
                           </div>
@@ -311,7 +311,7 @@ export const NotificationPreferencesPanel: React.FC<NotificationPreferencesPanel
             onClick={onSave} 
             disabled={isSaving}
             size="lg"
-            className="min-w-[160px] bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300"
+            className="min-w-[160px] bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl dark:shadow-primary/20 dark:hover:shadow-primary/30 dark:hover:shadow-2xl transition-all duration-300"
           >
             {isSaving ? (
               <span className="flex items-center gap-2">
