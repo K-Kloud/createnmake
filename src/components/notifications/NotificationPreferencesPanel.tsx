@@ -182,93 +182,119 @@ export const NotificationPreferencesPanel: React.FC<NotificationPreferencesPanel
   const groupedTypes = groupByCategory(notificationTypes);
 
   return (
-    <Card className="glass-card">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Bell className="h-5 w-5" />
-          Notification Preferences
-        </CardTitle>
-        <CardDescription>
-          Customize how you receive notifications for different types of events
-        </CardDescription>
+    <Card className="glass-card border-border/50 shadow-lg">
+      <CardHeader className="space-y-3 pb-8">
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-sm">
+            <Bell className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+              Notification Preferences
+            </CardTitle>
+            <CardDescription className="text-base mt-1">
+              Customize how you receive notifications for different types of events
+            </CardDescription>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-8">
-        {Object.entries(groupedTypes).map(([category, types]) => (
-          <div key={category} className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold text-foreground mb-1">{category}</h3>
-              <Separator className="mb-4" />
+      <CardContent className="space-y-10">
+        {Object.entries(groupedTypes).map(([category, types], categoryIndex) => (
+          <div 
+            key={category} 
+            className="space-y-6 animate-fade-in"
+            style={{ animationDelay: `${categoryIndex * 100}ms` }}
+          >
+            <div className="relative">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-8 w-1 bg-gradient-to-b from-primary to-accent rounded-full" />
+                <h3 className="text-xl font-bold text-foreground tracking-tight">
+                  {category}
+                </h3>
+              </div>
             </div>
             
-            <div className="space-y-6">
-              {types.map((type) => {
+            <div className="space-y-5">
+              {types.map((type, typeIndex) => {
                 const Icon = type.icon;
                 const typePrefs = preferences[type.key];
                 
                 return (
-                  <div key={type.key} className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <div className="mt-1 p-2 rounded-lg bg-primary/10">
-                        <Icon className="h-4 w-4 text-primary" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Label className="text-base font-medium text-foreground">
-                              {type.label}
-                            </Label>
-                            <p className="text-sm text-muted-foreground mt-0.5">
-                              {type.description}
-                            </p>
+                  <div 
+                    key={type.key} 
+                    className="group relative p-5 rounded-xl border border-border/50 bg-card/30 backdrop-blur-sm hover:bg-card/50 hover:border-primary/30 transition-all duration-300 hover:shadow-md"
+                    style={{ animationDelay: `${(categoryIndex * 100) + (typeIndex * 50)}ms` }}
+                  >
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-4">
+                        <div className="mt-0.5 p-2.5 rounded-lg bg-gradient-to-br from-primary/15 to-accent/10 group-hover:from-primary/25 group-hover:to-accent/20 transition-all duration-300">
+                          <Icon className="h-5 w-5 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1">
+                              <Label className="text-base font-semibold text-foreground cursor-pointer">
+                                {type.label}
+                              </Label>
+                              <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                                {type.description}
+                              </p>
+                            </div>
+                            {(type.key === 'milestone' || type.key === 'badge' || type.key === 'leaderboard') && (
+                              <EmailTemplatePreview type={type.key} />
+                            )}
                           </div>
-                          {(type.key === 'milestone' || type.key === 'badge' || type.key === 'leaderboard') && (
-                            <EmailTemplatePreview type={type.key} />
-                          )}
                         </div>
-                      </div>
-                    </div>
-                    
-                    <div className="ml-14 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <div className="flex items-center justify-between space-x-2">
-                        <div className="flex items-center gap-2">
-                          <Mail className="h-4 w-4 text-muted-foreground" />
-                          <Label htmlFor={`${type.key}-email`} className="text-sm font-normal">
-                            Email
-                          </Label>
-                        </div>
-                        <Switch
-                          id={`${type.key}-email`}
-                          checked={typePrefs?.email ?? true}
-                          onCheckedChange={(checked) => onPreferenceChange(type.key, 'email', checked)}
-                        />
                       </div>
                       
-                      <div className="flex items-center justify-between space-x-2">
-                        <div className="flex items-center gap-2">
-                          <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                          <Label htmlFor={`${type.key}-toast`} className="text-sm font-normal">
-                            Toast
-                          </Label>
+                      <div className="pl-14 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+                          <div className="flex items-center gap-2.5">
+                            <div className="p-1.5 rounded-md bg-background/80">
+                              <Mail className="h-3.5 w-3.5 text-primary" />
+                            </div>
+                            <Label htmlFor={`${type.key}-email`} className="text-sm font-medium cursor-pointer">
+                              Email
+                            </Label>
+                          </div>
+                          <Switch
+                            id={`${type.key}-email`}
+                            checked={typePrefs?.email ?? true}
+                            onCheckedChange={(checked) => onPreferenceChange(type.key, 'email', checked)}
+                          />
                         </div>
-                        <Switch
-                          id={`${type.key}-toast`}
-                          checked={typePrefs?.toast ?? true}
-                          onCheckedChange={(checked) => onPreferenceChange(type.key, 'toast', checked)}
-                        />
-                      </div>
-                      
-                      <div className="flex items-center justify-between space-x-2">
-                        <div className="flex items-center gap-2">
-                          <Bell className="h-4 w-4 text-muted-foreground" />
-                          <Label htmlFor={`${type.key}-in-app`} className="text-sm font-normal">
-                            In-App
-                          </Label>
+                        
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+                          <div className="flex items-center gap-2.5">
+                            <div className="p-1.5 rounded-md bg-background/80">
+                              <MessageSquare className="h-3.5 w-3.5 text-accent" />
+                            </div>
+                            <Label htmlFor={`${type.key}-toast`} className="text-sm font-medium cursor-pointer">
+                              Toast
+                            </Label>
+                          </div>
+                          <Switch
+                            id={`${type.key}-toast`}
+                            checked={typePrefs?.toast ?? true}
+                            onCheckedChange={(checked) => onPreferenceChange(type.key, 'toast', checked)}
+                          />
                         </div>
-                        <Switch
-                          id={`${type.key}-in-app`}
-                          checked={typePrefs?.in_app ?? true}
-                          onCheckedChange={(checked) => onPreferenceChange(type.key, 'in_app', checked)}
-                        />
+                        
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+                          <div className="flex items-center gap-2.5">
+                            <div className="p-1.5 rounded-md bg-background/80">
+                              <Bell className="h-3.5 w-3.5 text-secondary" />
+                            </div>
+                            <Label htmlFor={`${type.key}-in-app`} className="text-sm font-medium cursor-pointer">
+                              In-App
+                            </Label>
+                          </div>
+                          <Switch
+                            id={`${type.key}-in-app`}
+                            checked={typePrefs?.in_app ?? true}
+                            onCheckedChange={(checked) => onPreferenceChange(type.key, 'in_app', checked)}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -278,9 +304,23 @@ export const NotificationPreferencesPanel: React.FC<NotificationPreferencesPanel
           </div>
         ))}
         
-        <div className="flex justify-end pt-4">
-          <Button onClick={onSave} disabled={isSaving}>
-            {isSaving ? 'Saving...' : 'Save Preferences'}
+        <Separator className="my-8" />
+        
+        <div className="flex justify-end pt-2">
+          <Button 
+            onClick={onSave} 
+            disabled={isSaving}
+            size="lg"
+            className="min-w-[160px] bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            {isSaving ? (
+              <span className="flex items-center gap-2">
+                <div className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                Saving...
+              </span>
+            ) : (
+              'Save Preferences'
+            )}
           </Button>
         </div>
       </CardContent>

@@ -88,20 +88,29 @@ export const EmailTemplatePreview: React.FC<EmailTemplatePreviewProps> = ({ type
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-          <Eye className="h-4 w-4" />
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="h-9 w-9 p-0 rounded-lg hover:bg-primary/10 hover:text-primary transition-all duration-300 group"
+        >
+          <Eye className="h-4 w-4 group-hover:scale-110 transition-transform" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Email Preview - {data.achievementTitle}</DialogTitle>
-          <DialogDescription>
-            This is how your achievement notification email will appear
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto border-border/50 shadow-2xl">
+        <DialogHeader className="space-y-3 pb-4">
+          <DialogTitle className="text-xl font-bold flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Eye className="h-5 w-5 text-primary" />
+            </div>
+            Email Preview
+          </DialogTitle>
+          <DialogDescription className="text-base">
+            Preview how <span className="font-semibold text-foreground">{data.achievementTitle}</span> notification will appear in your inbox
           </DialogDescription>
         </DialogHeader>
         
         {/* Email Preview */}
-        <div className="border rounded-lg overflow-hidden">
+        <div className="border-2 border-border/50 rounded-xl overflow-hidden shadow-inner bg-muted/20">
           <div style={{
             backgroundColor: '#f6f9fc',
             fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
