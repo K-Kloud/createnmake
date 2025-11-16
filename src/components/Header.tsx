@@ -65,14 +65,14 @@ export const Header = () => {
         .from('manufacturers')
         .select('id')
         .eq('id', session.user.id)
-        .single();
+        .maybeSingle();
 
       // Check if user is an admin
       const { data: adminData } = await supabase
         .from('admin_roles')
         .select('role')
         .eq('user_id', session.user.id)
-        .single();
+        .maybeSingle();
 
       return {
         ...profileData,
