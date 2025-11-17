@@ -8,7 +8,7 @@ const getUserNotificationPreferences = async (userId: string) => {
       .from('user_preferences')
       .select('notification_preferences')
       .eq('user_id', userId)
-      .maybeSingle();
+      .single();
 
     if (error && error.code !== 'PGRST116') {
       console.error('Error fetching notification preferences:', error);

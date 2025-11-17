@@ -102,7 +102,7 @@ const ExploreGallery = () => {
       <ExploreSidebar />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden transition-all duration-300">
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
         <div className="h-16 border-b border-border flex items-center justify-between px-6 bg-card">
           <div className="flex items-center gap-4 flex-1 max-w-2xl">
@@ -129,9 +129,9 @@ const ExploreGallery = () => {
         </div>
 
         {/* Gallery Grid */}
-        <div className="flex-1 overflow-y-auto bg-muted/30 p-6 transition-all duration-300">
+        <div className="flex-1 overflow-y-auto bg-muted/30 p-6">
           {isLoading ? (
-            <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4 transition-all duration-300">
+            <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                 <div
                   key={i}
@@ -140,7 +140,7 @@ const ExploreGallery = () => {
               ))}
             </div>
           ) : (
-            <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4 transition-all duration-300">
+            <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
               {images.map((image) => (
                 <div key={image.id} className="break-inside-avoid">
                   <MasonryImageCard

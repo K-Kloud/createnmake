@@ -39,7 +39,7 @@ export const useSystemMonitoring = () => {
         const [dbHealth, userCount, errorCount] = await Promise.all([
           supabase.from('profiles').select('id', { count: 'exact', head: true }),
           supabase.from('profiles').select('id', { count: 'exact', head: true }),
-          supabase.from('error_logs').select('error_id', { count: 'exact', head: true })
+          supabase.from('error_logs').select('id', { count: 'exact', head: true })
             .gte('occurred_at', new Date(Date.now() - 60 * 60 * 1000).toISOString())
         ]);
 

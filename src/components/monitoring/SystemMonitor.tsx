@@ -39,7 +39,7 @@ export const SystemMonitor: React.FC = () => {
         const [usersResult, imagesResult, errorsResult] = await Promise.all([
           supabase.from('profiles').select('id', { count: 'exact', head: true }),
           supabase.from('generated_images').select('id', { count: 'exact', head: true }),
-          supabase.from('error_logs').select('error_id', { count: 'exact', head: true }).gte('occurred_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+          supabase.from('error_logs').select('id', { count: 'exact', head: true }).gte('occurred_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
         ]);
 
         const totalUsers = usersResult.count || 0;

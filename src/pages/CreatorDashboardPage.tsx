@@ -40,14 +40,14 @@ const CreatorDashboardPage = () => {
         .from('manufacturers')
         .select('id')
         .eq('id', session.user.id)
-        .maybeSingle();
+        .single();
 
       // Check if user is an admin
       const { data: adminData } = await supabase
         .from('admin_roles')
         .select('role')
         .eq('user_id', session.user.id)
-        .maybeSingle();
+        .single();
 
       return {
         ...profileData,

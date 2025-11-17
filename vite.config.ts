@@ -41,95 +41,51 @@ export default defineConfig(({ mode }) => ({
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
-        passes: 2
-      },
-      mangle: {
-        safari10: true
+        drop_console: true,  // Remove console logs in production
+        drop_debugger: true
       }
     },
-    // Improve code splitting and chunk size handling
-    chunkSizeWarningLimit: 1000,
+    // Improve code splitting
     commonjsOptions: {
       transformMixedEsModules: true,
     },
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // Vendor chunking - split large libraries separately
-          if (id.includes('node_modules')) {
-            // Core React
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'react-vendor';
-            }
-            
-            // Router
-            if (id.includes('react-router-dom')) {
-              return 'router';
-            }
-            
-            // Data fetching
-            if (id.includes('@tanstack/react-query')) {
-              return 'data-fetching';
-            }
-            
-            // Supabase and Auth (split separately due to size)
-            if (id.includes('@supabase/supabase-js')) {
-              return 'supabase-core';
-            }
-            if (id.includes('@supabase/auth')) {
-              return 'supabase-auth';
-            }
-            
-            // Radix UI components (split into smaller chunks)
-            if (id.includes('@radix-ui/react-dialog') || 
-                id.includes('@radix-ui/react-alert-dialog') ||
-                id.includes('@radix-ui/react-dropdown-menu') ||
-                id.includes('@radix-ui/react-context-menu') ||
-                id.includes('@radix-ui/react-menubar')) {
-              return 'radix-overlays';
-            }
-            if (id.includes('@radix-ui/react-select') || 
-                id.includes('@radix-ui/react-checkbox') ||
-                id.includes('@radix-ui/react-radio-group') ||
-                id.includes('@radix-ui/react-switch') ||
-                id.includes('@radix-ui/react-slider')) {
-              return 'radix-forms';
-            }
-            if (id.includes('@radix-ui')) {
-              return 'radix-other';
-            }
-            
-            // Icons and assets
-            if (id.includes('lucide-react')) {
-              return 'icons';
-            }
-            
-            // Charts and visualization
-            if (id.includes('recharts')) {
-              return 'charts';
-            }
-            
-            // Form handling
-            if (id.includes('react-hook-form') || id.includes('@hookform')) {
-              return 'forms';
-            }
-            
-            // i18n
-            if (id.includes('i18next') || id.includes('react-i18next')) {
-              return 'i18n';
-            }
-            
-            // Date handling
-            if (id.includes('date-fns')) {
-              return 'date-utils';
-            }
-            
-            // Other vendor libraries
-            return 'vendor-other';
-          }
+        manualChunks: {
+          // Core React and framework
+          'react-vendor': ['react', 'react-dom'],
+          
+          // Routing and navigation
+          'router': ['react-router-dom'],
+          
+          // Data fetching and state management
+          'data-fetching': ['@tanstack/react-query'],
+          
+          // UI component library
+          'ui-components': [
+            '@radix-ui/react-aspect-ratio',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast'
+          ],
+          
+          // Authentication and Supabase
+          'auth-supabase': [
+            '@supabase/supabase-js',
+            '@supabase/auth-helpers-react',
+            '@supabase/auth-ui-react'
+          ],
+          
+          // Utilities and helpers
+          'utils': ['@/lib/utils', '@/utils/seo'],
+          
+          // Route-specific chunks (will be loaded only when needed)
+          'admin-routes': ['@/pages/Admin', '@/pages/AdminScheduledJobs', '@/pages/AdminAIAgents'],
+          'crm-routes': ['@/pages/CRMDashboard', '@/pages/CRMContacts', '@/pages/CRMTasks'],
+          'creator-routes': ['@/pages/CreatorDashboardPage', '@/pages/CreatorOnboardingPage'],
+          'artisan-routes': ['@/pages/Artisan', '@/pages/ArtisanOnboarding', '@/pages/ArtisanOrders'],
+          'manufacturer-routes': ['@/pages/Manufacturer', '@/pages/ManufacturerOnboarding']
         }
       }
     }
