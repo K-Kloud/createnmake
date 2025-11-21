@@ -4,7 +4,6 @@ import { HeroActions } from "@/components/HeroActions";
 import { Suspense, lazy, useEffect } from "react";
 import { addStructuredData } from "@/utils/seo";
 import { MainLayout } from "@/components/layouts/MainLayout";
-import { ProductTour } from "@/components/tour/ProductTour";
 import { OnboardingChecklist } from "@/components/onboarding/OnboardingChecklist";
 import { useTranslation } from "react-i18next";
 
@@ -41,7 +40,6 @@ const Index = () => {
         ogImage: "https://openteknologies.com/lovable-uploads/8373b451-38a1-4ecb-8594-cf0c25ba20c4.png"
       }}
     >
-      <ProductTour />
       <OnboardingChecklist />
       
       <div className="py-6">
