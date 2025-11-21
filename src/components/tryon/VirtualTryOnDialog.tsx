@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ScanIcon, GridOverlayIcon, DataPointIcon } from "@/components/ui/fashion-icons";
 import {
   Dialog,
   DialogContent,
@@ -357,28 +358,62 @@ export const VirtualTryOnDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            {step === "upload" ? "Virtual Try-On" : 
-             step === "batch-processing" ? "Processing Batch Try-On" :
-             step === "batch-results" ? "Batch Try-On Results" :
-             "Try-On Result"}
-            {step === "upload" && (
-              <span className="text-xs text-muted-foreground font-normal">
-                ({remainingImages} remaining this month)
-              </span>
-            )}
-          </DialogTitle>
-          <DialogDescription>
-            {step === "upload"
-              ? "Upload a full-body photo or use a sample to see how designs look"
-              : step === "batch-processing"
-              ? "Processing multiple try-ons, please wait..."
-              : step === "batch-results"
-              ? "View all your batch try-on results"
-              : "Compare the original photo with your virtual try-on result"}
-          </DialogDescription>
+      <DialogContent className="sm:max-w-6xl max-h-[95vh] overflow-hidden bg-background/95 backdrop-blur-xl border-primary/20">
+        {/* Technical Background Grid Overlay */}
+        <div className="absolute inset-0 pointer-events-none opacity-5">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
+        </div>
+        
+        <DialogHeader className="relative border-b border-border/50 pb-4">
+          <div className="flex items-start justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary/10 rounded flex items-center justify-center">
+                  <ScanIcon className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <DialogTitle className="text-xl font-mono">
+                    {step === "upload" ? "SIMULATION_LAB_v2" : 
+                     step === "batch-processing" ? "BATCH_PROCESSOR" :
+                     step === "batch-results" ? "RESULTS_ARCHIVE" :
+                     "RENDER_COMPLETE"}
+                  </DialogTitle>
+                  <DialogDescription className="text-xs font-mono text-muted-foreground">
+                    {step === "upload"
+                      ? "VIRTUAL_TRY_ON // AI_ASSISTED_FITTING"
+                      : step === "batch-processing"
+                      ? "PROCESSING_QUEUE // MULTI_ASSET"
+                      : step === "batch-results"
+                      ? "BATCH_RESULTS // COMPLETED_RENDERS"
+                      : "RENDER_OUTPUT // QUALITY_VERIFIED"}
+                  </DialogDescription>
+                </div>
+              </div>
+              <div className="flex gap-2 mt-2">
+                <div className="h-1 w-12 bg-primary/60" />
+                <div className="h-1 w-8 bg-primary/40" />
+                <div className="h-1 w-6 bg-primary/20" />
+              </div>
+            </div>
+            
+            {/* Status Indicators */}
+            <div className="flex flex-col items-end gap-2">
+              {step === "upload" && (
+                <div className="px-2 py-1 bg-primary/10 rounded border border-primary/20">
+                  <span className="text-[10px] font-mono text-primary">
+                    CREDITS: {remainingImages}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center gap-2 text-[10px] font-mono text-muted-foreground">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                <span>SYSTEM_{isProcessing ? "RENDERING" : "READY"}</span>
+              </div>
+              <div className="text-[10px] font-mono text-muted-foreground">
+                SESSION_{new Date().getTime().toString().slice(-6)}
+              </div>
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="space-y-6">
