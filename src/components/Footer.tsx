@@ -60,18 +60,18 @@ export const Footer = () => {
   ];
 
   return (
-    <footer className="bg-background border-t mt-auto">
+    <footer className="bg-card border-t border-border/40 mt-auto backdrop-blur-sm">
       <div className="container mx-auto px-4 py-12 max-w-7xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {footerSections.map((section) => (
             <div key={section.title}>
-              <Typography variant="h5" className="mb-4">{section.title}</Typography>
-              <ul className="space-y-2">
+              <Typography variant="h5" className="mb-4 font-semibold text-foreground">{section.title}</Typography>
+              <ul className="space-y-2.5">
                 {section.links.map((link) => (
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="text-muted-foreground hover:text-foreground transition-colors text-sm"
+                      className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium"
                     >
                       {link.title}
                     </Link>
@@ -82,15 +82,15 @@ export const Footer = () => {
           ))}
         </div>
         
-        <div className="border-t mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center">
-          <Typography variant="body-small">
+        <div className="border-t border-border/40 pt-8 flex flex-col sm:flex-row justify-between items-center">
+          <Typography variant="body-small" className="text-muted-foreground font-medium">
             © 2025 Openteknologies Ltd. All rights reserved.
           </Typography>
-          <div className="flex space-x-4 mt-4 sm:mt-0">
-            <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <div className="flex space-x-6 mt-4 sm:mt-0">
+            <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">
               Privacy Policy
             </Link>
-            <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">
               Terms of Service
             </Link>
           </div>

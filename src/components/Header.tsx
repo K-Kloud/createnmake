@@ -89,15 +89,17 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
           <button 
-            className="bg-transparent text-primary border border-primary px-4 py-2 text-lg font-semibold rounded-lg hover:bg-primary hover:text-primary-foreground transition-all duration-200 shadow-sm active:scale-95" 
+            className="group relative bg-transparent text-foreground px-5 py-2.5 text-lg font-bold rounded-xl hover:text-primary transition-all duration-300 active:scale-95 flex items-center gap-2" 
             onClick={handleLogoClick}
           >
-            openteknologies
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <span className="relative bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">open</span>
+            <span className="relative">teknologies</span>
           </button>
         </div>
         
@@ -111,14 +113,14 @@ export const Header = () => {
         </div>
         
         {/* Right side controls */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <TourTriggerButton />
             {session?.user && <NotificationCenter />}
             <LanguageSwitcher />
             <ThemeToggle />
             
-            {/* Always render UserMenu - it handles both authenticated and non-authenticated states */}
+            {/* Always render UserMenu */}
             <div className={isAtLeast('sm') ? 'block' : 'hidden'}>
               <UserMenu 
                 onShowAuthDialog={() => setShowAuthDialog(true)} 
