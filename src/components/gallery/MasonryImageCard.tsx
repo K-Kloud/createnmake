@@ -45,78 +45,78 @@ export const MasonryImageCard = ({
 
   return (
     <Card 
-      className="group relative overflow-hidden cursor-pointer transition-transform hover:scale-[1.02]"
+      className="group relative overflow-hidden cursor-pointer rounded-2xl border-0 shadow-none transition-all duration-300 hover:shadow-xl"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
     >
       {/* Image */}
-      <div className="relative w-full">
+      <div className="relative w-full overflow-hidden rounded-2xl">
         <img 
           src={image.url} 
           alt={image.prompt}
-          className="w-full h-auto object-cover"
+          className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
         
         {/* Hover Overlay */}
         <div className={cn(
-          "absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity duration-300",
+          "absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20 backdrop-blur-sm transition-all duration-500",
           isHovered ? "opacity-100" : "opacity-0"
         )}>
           {/* Creator Info - Top */}
-          <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8 border-2 border-white/20">
+          <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-9 w-9 border-2 border-white/30 ring-2 ring-white/10">
                 <AvatarImage src={image.creator.avatar} alt={image.creator.name} />
-                <AvatarFallback>{image.creator.name[0]}</AvatarFallback>
+                <AvatarFallback className="bg-primary/20 text-white text-xs">{image.creator.name[0]}</AvatarFallback>
               </Avatar>
               <div className="text-white">
-                <p className="text-sm font-medium">{image.creator.name}</p>
-                <p className="text-xs text-white/70">{image.timeAgo}</p>
+                <p className="text-sm font-semibold tracking-tight">{image.creator.name}</p>
+                <p className="text-xs text-white/60 font-medium">{image.timeAgo}</p>
               </div>
             </div>
           </div>
 
           {/* Actions - Bottom */}
-          <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
+          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
                 size="sm"
                 className={cn(
-                  "text-white hover:text-red-500 hover:bg-white/10 transition-colors",
-                  image.hasLiked && "text-red-500"
+                  "h-9 px-3 rounded-full backdrop-blur-md bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all duration-300",
+                  image.hasLiked && "bg-red-500/20 border-red-400/40 text-red-300"
                 )}
                 onClick={handleLike}
               >
-                <Heart className={cn("h-4 w-4", image.hasLiked && "fill-current")} />
-                <span className="ml-1 text-xs">{image.likes}</span>
+                <Heart className={cn("h-4 w-4 transition-all", image.hasLiked && "fill-current scale-110")} />
+                <span className="ml-1.5 text-xs font-medium">{image.likes}</span>
               </Button>
               
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-white hover:bg-white/10"
+                className="h-9 px-3 rounded-full backdrop-blur-md bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all duration-300"
               >
                 <MessageCircle className="h-4 w-4" />
-                <span className="ml-1 text-xs">{image.comments.length}</span>
+                <span className="ml-1.5 text-xs font-medium">{image.comments.length}</span>
               </Button>
               
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-white hover:bg-white/10"
+                className="h-9 px-3 rounded-full backdrop-blur-md bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all duration-300"
               >
                 <Eye className="h-4 w-4" />
-                <span className="ml-1 text-xs">{image.views}</span>
+                <span className="ml-1.5 text-xs font-medium">{image.views}</span>
               </Button>
             </div>
 
             <Button
               variant="ghost"
-              size="sm"
-              className="text-white hover:bg-white/10"
+              size="icon"
+              className="h-9 w-9 rounded-full backdrop-blur-md bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all duration-300"
               onClick={(e) => e.stopPropagation()}
             >
               <Share2 className="h-4 w-4" />
@@ -124,8 +124,8 @@ export const MasonryImageCard = ({
           </div>
 
           {/* Prompt - Middle (truncated) */}
-          <div className="absolute bottom-16 left-3 right-3">
-            <p className="text-white/90 text-xs line-clamp-2">{image.prompt}</p>
+          <div className="absolute bottom-16 left-4 right-4">
+            <p className="text-white text-sm line-clamp-2 font-medium tracking-tight leading-relaxed">{image.prompt}</p>
           </div>
         </div>
       </div>
