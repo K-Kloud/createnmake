@@ -30,7 +30,8 @@ export const IndustrialProductCard = ({
       className={cn(
         "group relative overflow-hidden bg-background/40 backdrop-blur-sm border-muted/30",
         "transition-all duration-500 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10",
-        "cursor-pointer"
+        "cursor-pointer tech-border animate-fade-in",
+        isHovered && "glow-effect"
       )}
       onMouseEnter={() => {
         setIsHovered(true);

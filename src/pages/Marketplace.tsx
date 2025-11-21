@@ -1,8 +1,6 @@
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { MarketplaceTabs } from "@/components/marketplace/MarketplaceTabs";
-import { FeaturedCollections } from "@/components/marketplace/FeaturedCollections";
 import { Typography } from "@/components/ui/responsive-text";
 import { useTranslation } from "react-i18next";
 import { TechnicalControlDeck } from "@/components/marketplace/TechnicalControlDeck";
@@ -13,6 +11,8 @@ import { useMarketplaceFilters } from "@/components/marketplace/hooks/useMarketp
 import { ProductDetail } from "@/components/marketplace/ProductDetail";
 import { GalleryImage } from "@/types/gallery";
 import { DataPointIcon } from "@/components/ui/fashion-icons";
+import { TechnicalFeaturedCollections } from "@/components/marketplace/TechnicalFeaturedCollections";
+import { TechnicalTabs } from "@/components/marketplace/TechnicalTabs";
 
 const Marketplace = () => {
   const { t } = useTranslation(['marketplace', 'navigation']);
@@ -62,23 +62,36 @@ const Marketplace = () => {
       
       <div className="container px-4 py-12 flex-grow relative">
         {/* Archive Header */}
-        <div className="mb-12 text-center space-y-4">
-          <div className="inline-flex items-center gap-3 px-4 py-2 bg-primary/5 border border-primary/20 rounded-full mb-4">
-            <DataPointIcon className="w-4 h-4 text-primary" />
+        <div className="mb-12 text-center space-y-4 animate-fade-in">
+          <div className="inline-flex items-center gap-3 px-4 py-2 bg-primary/5 border border-primary/20 rounded-full mb-4 glow-effect">
+            <DataPointIcon className="w-4 h-4 text-primary animate-pulse" />
             <span className="text-xs font-mono text-primary">TECHNICAL_ARCHIVE</span>
           </div>
           
-          <Typography variant="h1" className="font-mono bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+          <Typography variant="h1" className="font-mono gradient-text glow-text animate-scale-in">
             DIGITAL_ASSET_MARKETPLACE
           </Typography>
           
           <Typography variant="body-large" color="muted" className="max-w-2xl mx-auto font-mono text-sm">
             {t('marketplace:title')} // BLOCKCHAIN_SECURED // AI_VERIFIED
           </Typography>
+          
+          {/* Animated accent lines */}
+          <div className="flex justify-center gap-2 mt-6">
+            <div className="h-0.5 w-16 bg-gradient-to-r from-transparent via-primary to-transparent animate-pulse" />
+            <div className="h-0.5 w-12 bg-gradient-to-r from-transparent via-primary/60 to-transparent animate-pulse delay-150" />
+            <div className="h-0.5 w-8 bg-gradient-to-r from-transparent via-primary/40 to-transparent animate-pulse delay-300" />
+          </div>
         </div>
 
+        {/* Technical Tabs */}
+        <TechnicalTabs />
+
+        {/* Featured Collections */}
+        <TechnicalFeaturedCollections />
+
         {/* Technical Control Deck */}
-        <div className="mb-8">
+        <div className="mb-8 animate-fade-in">
           <TechnicalControlDeck
             onSearch={setSearchTerm}
             onCategoryChange={setSelectedCategory}
@@ -87,14 +100,19 @@ const Marketplace = () => {
         </div>
 
         {/* Asset Grid */}
-        <div className="space-y-8">
+        <div className="space-y-8 animate-fade-in">
           {isLoading && filteredAndSortedImages.length === 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                 <div
                   key={i}
-                  className="aspect-[3/4] bg-muted/20 rounded-lg animate-pulse border border-border/30"
-                />
+                  className="aspect-[3/4] bg-muted/20 rounded-lg animate-pulse border border-border/30 data-stream"
+                >
+                  <div className="p-4 space-y-3">
+                    <div className="h-4 bg-primary/10 rounded w-3/4 animate-pulse" />
+                    <div className="h-3 bg-primary/5 rounded w-1/2 animate-pulse delay-150" />
+                  </div>
+                </div>
               ))}
             </div>
           ) : filteredAndSortedImages.length > 0 ? (
