@@ -16,6 +16,7 @@ const ArtisanRoutes = () => {
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           <Route path="/" element={<Artisan />} />
+          <Route path="/dashboard" element={<Artisan />} />
           <Route path="/onboarding" element={<ArtisanOnboarding />} />
           <Route path="/orders" element={<ArtisanOrders />} />
           <Route path="/profile" element={<ArtisanProfile />} />

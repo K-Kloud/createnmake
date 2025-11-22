@@ -18,6 +18,7 @@ export const AdminRoutes: React.FC = () => {
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
         <Route path="/" element={<AdminPage />} />
+        <Route path="/dashboard" element={<AdminPage />} />
         <Route path="/providers" element={<AdminDashboard />} />
         <Route path="/scheduled-jobs" element={<AdminScheduledJobsPage />} />
         <Route path="/ai-agents" element={<AdminAIAgentsPage />} />
