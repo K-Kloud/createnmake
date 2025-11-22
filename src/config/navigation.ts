@@ -108,7 +108,7 @@ export const roleNavigation: NavigationSection[] = [
     items: [
       {
         title: "Creator Dashboard",
-        href: "/creator/dashboard",
+        href: "/creator",
         description: "Manage your creative business"
       },
       {
@@ -123,13 +123,18 @@ export const roleNavigation: NavigationSection[] = [
     items: [
       {
         title: "Artisan Dashboard",
-        href: "/artisan/dashboard",
+        href: "/artisan",
         description: "Manage your artisan services"
       },
       {
         title: "Artisan Orders",
         href: "/artisan/orders",
         description: "View and fulfill custom orders"
+      },
+      {
+        title: "Artisan Profile",
+        href: "/artisan/profile",
+        description: "Manage your artisan profile"
       }
     ]
   },
@@ -138,13 +143,18 @@ export const roleNavigation: NavigationSection[] = [
     items: [
       {
         title: "Manufacturer Dashboard",
-        href: "/manufacturer/dashboard",
+        href: "/manufacturer",
         description: "Manage bulk production orders"
       },
       {
-        title: "Production Queue",
-        href: "/manufacturer/production",
-        description: "View and manage production pipeline"
+        title: "Manufacturer Orders",
+        href: "/manufacturer/orders",
+        description: "View and manage production orders"
+      },
+      {
+        title: "Manufacturer Profile",
+        href: "/manufacturer/profile",
+        description: "Manage your manufacturer profile"
       }
     ]
   }
@@ -154,13 +164,18 @@ export const roleNavigation: NavigationSection[] = [
 export const adminNavigation: NavigationItem[] = [
   {
     title: "Admin Dashboard",
-    href: "/admin/dashboard",
+    href: "/admin",
     description: "System administration overview"
   },
   {
-    title: "User Management",
-    href: "/admin/users",
-    description: "Manage user accounts and roles"
+    title: "AI Agents",
+    href: "/admin/ai-agents",
+    description: "Monitor and manage AI agents"
+  },
+  {
+    title: "Scheduled Jobs",
+    href: "/admin/scheduled-jobs",
+    description: "Manage automated tasks and jobs"
   },
   {
     title: "System Monitoring",
@@ -171,6 +186,11 @@ export const adminNavigation: NavigationItem[] = [
     title: "Analytics",
     href: "/admin/analytics",
     description: "View detailed system analytics"
+  },
+  {
+    title: "System Management",
+    href: "/admin/system",
+    description: "Manage system settings and configurations"
   }
 ];
 

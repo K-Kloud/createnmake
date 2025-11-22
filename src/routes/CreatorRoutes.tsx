@@ -14,6 +14,7 @@ const CreatorRoutes = () => {
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           <Route path="/" element={<CreatorDashboardPage />} />
+          <Route path="/dashboard" element={<CreatorDashboardPage />} />
           <Route path="/onboarding" element={<CreatorOnboardingPage />} />
         </Routes>
       </Suspense>

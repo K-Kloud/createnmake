@@ -17,6 +17,7 @@ const ManufacturerRoutes = () => {
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           <Route path="/" element={<Manufacturer />} />
+          <Route path="/dashboard" element={<Manufacturer />} />
           <Route path="/directory" element={<ManufacturerDirectoryPage />} />
           <Route path="/onboarding" element={<ManufacturerOnboarding />} />
           <Route path="/orders" element={<ManufacturerOrders />} />
