@@ -33,7 +33,7 @@ export default {
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",
-          hover: "hsl(var(--primary) / 0.8)", // Using opacity for hover
+          hover: "hsl(var(--primary) / 0.8)",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
@@ -55,20 +55,32 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        // Custom futuristic colors using CSS variables
-        neon: {
-          cyan: "hsl(var(--accent))", // Using accent for cyan
-          purple: "hsl(157 100% 50%)", // Purple fallback
-          green: "hsl(var(--primary))", // Using primary for green
-          red: "hsl(var(--destructive))", // Using destructive for red
+        // Technical Industrial Palette
+        void: {
+          DEFAULT: "hsl(0, 0%, 2%)", // #050505
+          light: "hsl(0, 0%, 4%)", // #0A0A0A
         },
-        glass: "hsl(var(--card))", // Using card background for glass
+        acid: {
+          DEFAULT: "hsl(72, 100%, 50%)", // #D4FF00
+          glow: "hsl(72, 100%, 50%, 0.2)",
+        },
+        ghost: {
+          border: "hsla(0, 0%, 100%, 0.1)",
+          divider: "hsla(0, 0%, 100%, 0.05)",
+        },
+        neon: {
+          cyan: "hsl(var(--accent))",
+          purple: "hsl(157 100% 50%)",
+          green: "hsl(var(--primary))",
+          red: "hsl(var(--destructive))",
+        },
+        glass: "hsl(var(--card))",
       },
       fontFamily: {
-        // Professional typography
-        'inter': ['Inter', 'sans-serif'], // Primary font
-        'roboto': ['Roboto', 'sans-serif'], // Headings
-        sans: ['Inter', 'system-ui', 'sans-serif'], // Default
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        inter: ['Inter', 'ui-sans-serif', 'system-ui'],
+        mono: ['JetBrains Mono', 'Roboto Mono', 'monospace'],
+        roboto: ['Roboto', 'ui-sans-serif', 'system-ui'],
       },
       fontSize: {
         'hero': ['3.5rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
