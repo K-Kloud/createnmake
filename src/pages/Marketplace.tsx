@@ -63,25 +63,13 @@ const Marketplace = () => {
       <div className="container px-4 py-12 flex-grow relative">
         {/* Archive Header */}
         <div className="mb-12 text-center space-y-4 animate-fade-in">
-          <div className="inline-flex items-center gap-3 px-4 py-2 bg-primary/5 border border-primary/20 rounded-full mb-4 glow-effect">
-            <DataPointIcon className="w-4 h-4 text-primary animate-pulse" />
-            <span className="text-xs font-mono text-primary">TECHNICAL_ARCHIVE</span>
-          </div>
-          
-          <Typography variant="h1" className="font-mono gradient-text glow-text animate-scale-in">
-            DIGITAL_ASSET_MARKETPLACE
+          <Typography variant="h1" className="gradient-text glow-text animate-scale-in">
+            Marketplace
           </Typography>
           
-          <Typography variant="body-large" color="muted" className="max-w-2xl mx-auto font-mono text-sm">
-            {t('marketplace:title')} // BLOCKCHAIN_SECURED // AI_VERIFIED
+          <Typography variant="body-large" color="muted" className="max-w-2xl mx-auto">
+            {t('marketplace:title')}
           </Typography>
-          
-          {/* Animated accent lines */}
-          <div className="flex justify-center gap-2 mt-6">
-            <div className="h-0.5 w-16 bg-gradient-to-r from-transparent via-primary to-transparent animate-pulse" />
-            <div className="h-0.5 w-12 bg-gradient-to-r from-transparent via-primary/60 to-transparent animate-pulse delay-150" />
-            <div className="h-0.5 w-8 bg-gradient-to-r from-transparent via-primary/40 to-transparent animate-pulse delay-300" />
-          </div>
         </div>
 
         {/* Technical Tabs */}
@@ -118,8 +106,8 @@ const Marketplace = () => {
           ) : filteredAndSortedImages.length > 0 ? (
             <>
               <div className="flex items-center justify-between mb-4">
-                <div className="text-xs font-mono text-muted-foreground">
-                  DISPLAYING {filteredAndSortedImages.length} DIGITAL_ASSETS
+                <div className="text-sm text-muted-foreground">
+                  {filteredAndSortedImages.length} {filteredAndSortedImages.length === 1 ? 'product' : 'products'}
                 </div>
               </div>
               
@@ -140,11 +128,11 @@ const Marketplace = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-muted/20 rounded-full mb-4">
                 <DataPointIcon className="w-8 h-8 text-muted-foreground" />
               </div>
-              <Typography variant="h3" className="mb-2 font-mono">
-                NO_ASSETS_FOUND
+              <Typography variant="h3" className="mb-2">
+                No products found
               </Typography>
-              <Typography variant="body" color="muted" className="font-mono text-sm">
-                ADJUST_FILTER_PARAMETERS
+              <Typography variant="body" color="muted">
+                Try adjusting your filters
               </Typography>
             </div>
           )}
