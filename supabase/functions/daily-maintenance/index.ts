@@ -91,7 +91,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("Daily maintenance error:", error);
     return new Response(
-      JSON.stringify({ error: "Maintenance failed", details: error.message }),
+      JSON.stringify({ error: "Maintenance failed", details: getErrorMessage(error) }),
       { 
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" }
