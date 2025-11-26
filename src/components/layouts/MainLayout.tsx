@@ -19,8 +19,8 @@ export const MainLayout = ({ children, seo }: MainLayoutProps) => {
       {seo && <SEO {...seo} />}
       <Header />
       <main className="flex-grow pt-16 sm:pt-20">
-        <ResponsiveContainer padding="none">
-          <div className="container mx-auto px-4 py-2">
+        <ResponsiveContainer padding="none" className="space-y-8 sm:space-y-12">
+          <div className="container mx-auto px-4 py-3 sm:py-4">
             <Breadcrumbs />
           </div>
           {children}

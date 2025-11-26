@@ -10,11 +10,11 @@ export const Hero = () => {
   const { t } = useTranslation('common');
   
   return (
-    <section data-tour="hero-section" className="relative min-h-[70vh] sm:min-h-[85vh] flex items-center justify-center overflow-hidden">
+    <section data-tour="hero-section" className="relative min-h-[70vh] sm:min-h-[85vh] flex items-center justify-center overflow-hidden py-12 sm:py-16">
       {/* Subtle Background Pattern */}
       <div className="absolute inset-0 z-0 opacity-20">
-        <div className="absolute top-20 left-[10%] w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-32 right-[15%] w-96 h-96 bg-accent/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-20 left-[10%] w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-32 right-[15%] w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl"></div>
       </div>
 
@@ -39,24 +39,24 @@ export const Hero = () => {
 
         {/* Stats */}
         <ResponsiveGrid cols={{ default: 3 }} gap="md" className="mt-10 sm:mt-14 max-w-3xl mx-auto animate-fade-in delay-200">
-          <div className="group text-center p-6 rounded-2xl bg-card/50 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:scale-105">
-            <Typography variant="h3" className="mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <div className="group text-center p-6 sm:p-8 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 hover:bg-card/70 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/10">
+            <Typography variant="h3" className="mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent group-hover:scale-110 transition-transform">
               15K+
             </Typography>
             <Typography variant="body-small" color="muted" className="font-medium">
               Designs Created
             </Typography>
           </div>
-          <div className="group text-center p-6 rounded-2xl bg-card/50 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:scale-105">
-            <Typography variant="h3" className="mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <div className="group text-center p-6 sm:p-8 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 hover:bg-card/70 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/10">
+            <Typography variant="h3" className="mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent group-hover:scale-110 transition-transform">
               800+
             </Typography>
             <Typography variant="body-small" color="muted" className="font-medium">
               Expert Artisans
             </Typography>
           </div>
-          <div className="group text-center p-6 rounded-2xl bg-card/50 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:scale-105">
-            <Typography variant="h3" className="mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <div className="group text-center p-6 sm:p-8 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 hover:bg-card/70 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/10">
+            <Typography variant="h3" className="mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent group-hover:scale-110 transition-transform">
               98%
             </Typography>
             <Typography variant="body-small" color="muted" className="font-medium">

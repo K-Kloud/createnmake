@@ -9,11 +9,11 @@ export const HeroActions = () => {
   const { t } = useTranslation('common');
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center animate-fade-in delay-300">
       <Button 
         data-tour="create-button"
         size="lg" 
-        className="bg-primary hover:bg-primary-hover text-lg" 
+        className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground text-lg font-semibold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:scale-105 transition-all" 
         onClick={() => document.querySelector(".image-generator")?.scrollIntoView({
           behavior: "smooth"
         })}
@@ -23,7 +23,7 @@ export const HeroActions = () => {
       <Button 
         size="lg" 
         variant="outline" 
-        className="text-lg" 
+        className="w-full sm:w-auto text-lg font-semibold border-2 hover:bg-accent/10 hover:border-accent hover:scale-105 transition-all" 
         onClick={() => navigate("/marketplace")}
       >
         {t('buttons.viewOpenMarket')}
@@ -31,7 +31,7 @@ export const HeroActions = () => {
       <Button 
         size="lg" 
         variant="ghost" 
-        className="text-lg group" 
+        className="w-full sm:w-auto text-lg font-semibold group hover:bg-muted hover:scale-105 transition-all" 
         onClick={() => navigate("/features")}
       >
         {t('buttons.exploreFeatures')}

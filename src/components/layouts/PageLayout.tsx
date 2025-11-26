@@ -35,29 +35,31 @@ export const PageLayout = ({
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       
-      <main className={`flex-grow pt-20 sm:pt-24 ${className}`}>
+      <main className={`flex-grow pt-20 sm:pt-24 space-y-8 sm:space-y-12 ${className}`}>
         {showBreadcrumbs && (
-          <ResponsiveContainer padding="md" className="py-3 sm:py-4">
+          <ResponsiveContainer padding="md" className="py-3 sm:py-4 bg-card/30 border-b border-border/40">
             <Breadcrumbs customItems={breadcrumbs} />
           </ResponsiveContainer>
         )}
         
         {(title || description) && (
-          <ResponsiveContainer padding="md" className="py-4 sm:py-6">
+          <ResponsiveContainer padding="md" className="py-6 sm:py-8 bg-gradient-to-b from-card/20 to-transparent">
             {title && (
-              <ResponsiveText variant="h1" className="mb-2 gradient-text">
+              <ResponsiveText variant="h1" className="mb-3 sm:mb-4 gradient-text">
                 {title}
               </ResponsiveText>
             )}
             {description && (
-              <ResponsiveText variant="body" className="text-muted-foreground">
+              <ResponsiveText variant="body" className="text-muted-foreground max-w-3xl">
                 {description}
               </ResponsiveText>
             )}
           </ResponsiveContainer>
         )}
         
-        {children}
+        <div className="space-y-8 sm:space-y-12">
+          {children}
+        </div>
       </main>
       
       <Footer />
