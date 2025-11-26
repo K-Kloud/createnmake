@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
+import { getErrorMessage } from '../_shared/error-utils.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -173,8 +174,8 @@ serve(async (req) => {
     
     return new Response(
       JSON.stringify({ 
-        error: error.message || 'An unexpected error occurred',
-        details: error.toString()
+        error: getErrorMessage(error),
+        details: String(error)
       }),
       { 
         status: 500,
@@ -225,7 +226,7 @@ async function createEnhancedPrompt(prompt: string, itemType: string, referenceI
   }
   
   // Fallback to category-based enhancement
-  const itemTypePrompts = {
+  const itemTypePrompts: Record<string, string> = {
     'tops': 'fashion clothing top, shirt, blouse, or sweater',
     'bottoms': 'fashion clothing bottom, pants, jeans, or skirt',
     'dresses': 'elegant dress or gown',
@@ -238,7 +239,7 @@ async function createEnhancedPrompt(prompt: string, itemType: string, referenceI
     'styles': 'fashion style or outfit'
   };
 
-  const baseType = (itemTypePrompts as Record<string, string>)[itemType] || 'clothing item';
+  const baseType = itemTypePrompts[itemType] || 'clothing item';
   
   const basePrompt = `Create a professional, high-quality studio photograph of a ${baseType}: ${prompt}. 
 Studio lighting, clean white background, detailed fabric texture, commercial product photography style, 

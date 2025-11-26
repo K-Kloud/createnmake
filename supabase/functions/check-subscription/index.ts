@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.0";
 import Stripe from "https://esm.sh/stripe@12.0.0";
+import { getErrorMessage } from '../_shared/error-utils.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -174,7 +175,7 @@ serve(async (req) => {
           logStep("Subscription inactive, reset to free tier");
         }
       } catch (stripeError) {
-        logStep("Error verifying Stripe subscription", { error: stripeError.message });
+        logStep("Error verifying Stripe subscription", { error: getErrorMessage(stripeError) });
         // If Stripe verification fails, proceed with local data
       }
     }
