@@ -5,6 +5,7 @@ import { Suspense, lazy, useEffect } from "react";
 import { addStructuredData } from "@/utils/seo";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { OnboardingChecklist } from "@/components/onboarding/OnboardingChecklist";
+import { WelcomeWizard } from "@/components/onboarding/WelcomeWizard";
 import { useTranslation } from "react-i18next";
 
 // Lazy load non-critical components
@@ -40,27 +41,28 @@ const Index = () => {
         ogImage: "https://openteknologies.com/lovable-uploads/8373b451-38a1-4ecb-8594-cf0c25ba20c4.png"
       }}
     >
+      <WelcomeWizard />
       <OnboardingChecklist />
       
-      <div className="py-6">
+      <section className="py-8 sm:py-12 bg-gradient-to-b from-background to-card/20">
         <Suspense fallback={<div className="h-32 flex items-center justify-center text-muted-foreground">{t('common.loading')}</div>}>
           <ImageGenerator />
         </Suspense>
-      </div>
+      </section>
 
       <Hero />
       
-      <div className="py-6">        
-        <div className="text-center mb-6">
+      <section className="py-8 sm:py-12 bg-gradient-to-b from-transparent to-card/10">        
+        <div className="text-center mb-8 sm:mb-12">
           <HeroActions />
         </div>
         
-        <div data-tour="features-section">
+        <div data-tour="features-section" className="mt-12 sm:mt-16">
           <Suspense fallback={<div className="h-16"></div>}>
             <OpenMarketSection />
           </Suspense>
         </div>
-      </div>
+      </section>
       <Suspense fallback={null}>
         <ChatBot />
       </Suspense>
