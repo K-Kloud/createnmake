@@ -4748,6 +4748,7 @@ export type Database = {
       cleanup_expired_api_keys: { Args: never; Returns: undefined }
       cleanup_expired_sessions: { Args: never; Returns: undefined }
       enable_leaked_password_protection: { Args: never; Returns: undefined }
+      generate_username_from_email: { Args: { email: string }; Returns: string }
       get_analytics_summary: {
         Args: { time_range_param?: string }
         Returns: Json
