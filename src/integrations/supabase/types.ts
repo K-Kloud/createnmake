@@ -47,6 +47,33 @@ export type Database = {
         }
         Relationships: []
       }
+      activity_feed: {
+        Row: {
+          activity_data: Json
+          activity_type: string
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          user_id: string
+        }
+        Insert: {
+          activity_data: Json
+          activity_type: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          user_id: string
+        }
+        Update: {
+          activity_data?: Json
+          activity_type?: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       activity_metrics: {
         Row: {
           metric_id: number
@@ -1995,6 +2022,80 @@ export type Database = {
           },
         ]
       }
+      faq_articles: {
+        Row: {
+          answer: string
+          category_id: string
+          created_at: string | null
+          display_order: number | null
+          helpful_count: number | null
+          id: string
+          not_helpful_count: number | null
+          question: string
+          updated_at: string | null
+          view_count: number | null
+        }
+        Insert: {
+          answer: string
+          category_id: string
+          created_at?: string | null
+          display_order?: number | null
+          helpful_count?: number | null
+          id?: string
+          not_helpful_count?: number | null
+          question: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          answer?: string
+          category_id?: string
+          created_at?: string | null
+          display_order?: number | null
+          helpful_count?: number | null
+          id?: string
+          not_helpful_count?: number | null
+          question?: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faq_articles_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "faq_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      faq_categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          icon: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       feature_flags: {
         Row: {
           conditions: Json | null
@@ -2322,6 +2423,39 @@ export type Database = {
           viewport_width?: number
           x_coordinate?: number
           y_coordinate?: number
+        }
+        Relationships: []
+      }
+      help_tooltips: {
+        Row: {
+          created_at: string | null
+          element_selector: string
+          id: string
+          is_active: boolean | null
+          page_path: string
+          position: string | null
+          priority: number | null
+          tooltip_text: string
+        }
+        Insert: {
+          created_at?: string | null
+          element_selector: string
+          id?: string
+          is_active?: boolean | null
+          page_path: string
+          position?: string | null
+          priority?: number | null
+          tooltip_text: string
+        }
+        Update: {
+          created_at?: string | null
+          element_selector?: string
+          id?: string
+          is_active?: boolean | null
+          page_path?: string
+          position?: string | null
+          priority?: number | null
+          tooltip_text?: string
         }
         Relationships: []
       }
@@ -3457,6 +3591,53 @@ export type Database = {
         }
         Relationships: []
       }
+      product_reviews: {
+        Row: {
+          created_at: string | null
+          helpful_count: number | null
+          id: string
+          image_id: number
+          rating: number
+          review_text: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string
+          verified_purchase: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          helpful_count?: number | null
+          id?: string
+          image_id: number
+          rating: number
+          review_text?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+          verified_purchase?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          helpful_count?: number | null
+          id?: string
+          image_id?: number
+          rating?: number
+          review_text?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+          verified_purchase?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_reviews_image_id_fkey"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "generated_images"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string | null
@@ -3846,6 +4027,38 @@ export type Database = {
           },
         ]
       }
+      review_votes: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_helpful: boolean
+          review_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_helpful: boolean
+          review_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_helpful?: boolean
+          review_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_votes_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "product_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       search_analytics: {
         Row: {
           clicked_result_position: number | null
@@ -3933,6 +4146,57 @@ export type Database = {
         }
         Relationships: []
       }
+      seller_profiles: {
+        Row: {
+          avg_response_time_hours: number | null
+          badge_tier: string | null
+          bio: string | null
+          business_name: string | null
+          created_at: string | null
+          featured_work: string[] | null
+          id: string
+          response_rate: number | null
+          specialties: string[] | null
+          total_sales: number | null
+          updated_at: string | null
+          user_id: string
+          verified: boolean | null
+          years_experience: number | null
+        }
+        Insert: {
+          avg_response_time_hours?: number | null
+          badge_tier?: string | null
+          bio?: string | null
+          business_name?: string | null
+          created_at?: string | null
+          featured_work?: string[] | null
+          id?: string
+          response_rate?: number | null
+          specialties?: string[] | null
+          total_sales?: number | null
+          updated_at?: string | null
+          user_id: string
+          verified?: boolean | null
+          years_experience?: number | null
+        }
+        Update: {
+          avg_response_time_hours?: number | null
+          badge_tier?: string | null
+          bio?: string | null
+          business_name?: string | null
+          created_at?: string | null
+          featured_work?: string[] | null
+          id?: string
+          response_rate?: number | null
+          specialties?: string[] | null
+          total_sales?: number | null
+          updated_at?: string | null
+          user_id?: string
+          verified?: boolean | null
+          years_experience?: number | null
+        }
+        Relationships: []
+      }
       smart_automation_rules: {
         Row: {
           actions: Json
@@ -3974,6 +4238,50 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      smart_recommendations: {
+        Row: {
+          clicked: boolean | null
+          created_at: string | null
+          id: string
+          reason: string | null
+          recommendation_type: string
+          recommended_image_id: number | null
+          score: number
+          shown_at: string | null
+          user_id: string
+        }
+        Insert: {
+          clicked?: boolean | null
+          created_at?: string | null
+          id?: string
+          reason?: string | null
+          recommendation_type: string
+          recommended_image_id?: number | null
+          score: number
+          shown_at?: string | null
+          user_id: string
+        }
+        Update: {
+          clicked?: boolean | null
+          created_at?: string | null
+          id?: string
+          reason?: string | null
+          recommendation_type?: string
+          recommended_image_id?: number | null
+          score?: number
+          shown_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_recommendations_recommended_image_id_fkey"
+            columns: ["recommended_image_id"]
+            isOneToOne: false
+            referencedRelation: "generated_images"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sso_providers: {
         Row: {
@@ -4634,6 +4942,41 @@ export type Database = {
           },
         ]
       }
+      workflow_completions: {
+        Row: {
+          completed_at: string | null
+          feedback: string | null
+          id: string
+          rating: number | null
+          template_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          feedback?: string | null
+          id?: string
+          rating?: number | null
+          template_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          feedback?: string | null
+          id?: string
+          rating?: number | null
+          template_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_completions_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workflow_executions: {
         Row: {
           created_at: string
@@ -4710,6 +5053,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      workflow_templates: {
+        Row: {
+          category: string
+          completion_count: number | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          difficulty_level: string | null
+          estimated_time_minutes: number | null
+          featured: boolean | null
+          id: string
+          steps: Json
+          title: string
+          tools_required: string[] | null
+          updated_at: string | null
+          view_count: number | null
+        }
+        Insert: {
+          category: string
+          completion_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          estimated_time_minutes?: number | null
+          featured?: boolean | null
+          id?: string
+          steps: Json
+          title: string
+          tools_required?: string[] | null
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          category?: string
+          completion_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          estimated_time_minutes?: number | null
+          featured?: boolean | null
+          id?: string
+          steps?: Json
+          title?: string
+          tools_required?: string[] | null
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Relationships: []
       }
     }
     Views: {
