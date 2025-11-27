@@ -6,9 +6,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { GeneratingState } from "./preview/GeneratingState";
+import { LoadingState } from "./preview/LoadingState";
 import { EmptyPreview } from "./preview/EmptyPreview";
 import { ImagePreview } from "./preview/ImagePreview";
+import { ErrorState } from "./preview/ErrorState";
+import { SuccessState } from "./preview/SuccessState";
 import { useEffect, useState } from "react";
 import { PreviewActions } from "./preview/PreviewActions";
 import { ImageProviderInfo } from "./ImageProviderInfo";
@@ -24,6 +26,9 @@ interface PreviewDialogProps {
   prompt: string;
   provider?: string;
   onLike?: (imageId: number) => void;
+  error?: string;
+  suggestions?: string[];
+  onRetry?: () => void;
 }
 
 export const PreviewDialog = ({
@@ -35,15 +40,31 @@ export const PreviewDialog = ({
   generatedImageId,
   prompt,
   provider,
-  onLike
+  onLike,
+  error,
+  suggestions,
+  onRetry
 }: PreviewDialogProps) => {
   const [currentImageUrl, setCurrentImageUrl] = useState<string | undefined>(generatedImageUrl);
   const [currentImageId, setCurrentImageId] = useState<number | undefined>(generatedImageId);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [generationStartTime, setGenerationStartTime] = useState<number>();
+
+  // Track generation start time
+  useEffect(() => {
+    if (isGenerating) {
+      setGenerationStartTime(Date.now());
+      setShowSuccess(false);
+    }
+  }, [isGenerating]);
 
   // Update current image when generated image changes
   useEffect(() => {
-    setCurrentImageUrl(generatedImageUrl);
-    setCurrentImageId(generatedImageId);
+    if (generatedImageUrl && generatedImageUrl !== currentImageUrl) {
+      setCurrentImageUrl(generatedImageUrl);
+      setCurrentImageId(generatedImageId);
+      setShowSuccess(true);
+    }
   }, [generatedImageUrl, generatedImageId]);
 
   const handleImageEdited = (newImageUrl: string, newImageId: number) => {
@@ -76,13 +97,22 @@ export const PreviewDialog = ({
           <div className="relative border border-border/20 rounded-lg overflow-hidden bg-muted/30">
             <AspectRatio ratio={getRatio(selectedRatio)}>
               {isGenerating ? (
-                <GeneratingState selectedRatio={selectedRatio} />
-              ) : currentImageUrl ? (
-                <ImagePreview 
-                  imageUrl={currentImageUrl} 
-                  prompt={prompt} 
-                  onLike={onLike || (() => {})}
+                <LoadingState selectedRatio={selectedRatio} startTime={generationStartTime} />
+              ) : error ? (
+                <ErrorState 
+                  error={error} 
+                  suggestions={suggestions}
+                  onRetry={onRetry}
                 />
+              ) : currentImageUrl ? (
+                <>
+                  <ImagePreview 
+                    imageUrl={currentImageUrl} 
+                    prompt={prompt} 
+                    onLike={onLike || (() => {})}
+                  />
+                  {showSuccess && <SuccessState onDismiss={() => setShowSuccess(false)} />}
+                </>
               ) : (
                 <EmptyPreview selectedRatio={selectedRatio} />
               )}

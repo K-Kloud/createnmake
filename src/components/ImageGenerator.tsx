@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useImageGeneration } from "./generator/useImageGeneration";
 import { GenerationForm } from "./generator/GenerationForm";
 import { PreviewDialog } from "./generator/PreviewDialog";
@@ -7,7 +7,12 @@ import { Card } from "./ui/card";
 import { ResponsiveContainer } from "./ui/responsive-container";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
-export const ImageGenerator = () => {
+
+interface ImageGeneratorProps {
+  initialTemplate?: { prompt: string; itemType: string } | null;
+}
+
+export const ImageGenerator = ({ initialTemplate }: ImageGeneratorProps) => {
   // Keep using the same hook which internally uses the refactored hooks
   const {
     prompt,
@@ -43,6 +48,14 @@ export const ImageGenerator = () => {
   const [useMultipleReferences, setUseMultipleReferences] = useState(false);
   const [outputSize, setOutputSize] = useState("512x512");
 
+  // Apply template when selected
+  useEffect(() => {
+    if (initialTemplate) {
+      setPrompt(initialTemplate.prompt);
+      setSelectedItem(initialTemplate.itemType);
+    }
+  }, [initialTemplate, setPrompt, setSelectedItem]);
+
   // Add function to handle liking images if needed
   const handleLikeImage = (imageId: number) => {
     console.log("Image liked:", imageId);
@@ -64,7 +77,19 @@ export const ImageGenerator = () => {
 
         <GenerationForm prompt={prompt} onPromptChange={setPrompt} selectedItem={selectedItem} onItemChange={setSelectedItem} selectedRatio={selectedRatio} onRatioChange={setSelectedRatio} outputSize={outputSize} onOutputSizeChange={setOutputSize} referenceImage={referenceImage} onReferenceImageUpload={handleReferenceImageUpload} referenceImages={referenceImages} onReferenceImagesChange={handleReferenceImagesChange} onGenerate={handleGenerate} isGenerating={isGenerating} isSignedIn={!!session?.user} remainingImages={remainingImages} showItemPreviews={true} provider={provider} uploadingReference={uploadingReference} onProviderChange={setProvider} useMultipleReferences={useMultipleReferences} />
 
-        <PreviewDialog open={previewOpen} onOpenChange={setPreviewOpen} isGenerating={isGenerating} selectedRatio={selectedRatio} generatedImageUrl={generatedImageUrl} generatedImageId={generatedImageId} prompt={prompt} onLike={handleLikeImage} />
+        <PreviewDialog 
+          open={previewOpen} 
+          onOpenChange={setPreviewOpen} 
+          isGenerating={isGenerating} 
+          selectedRatio={selectedRatio} 
+          generatedImageUrl={generatedImageUrl} 
+          generatedImageId={generatedImageId} 
+          prompt={prompt} 
+          onLike={handleLikeImage}
+          error={undefined}
+          suggestions={undefined}
+          onRetry={handleGenerate}
+        />
       </Card>
 
       <AuthDialog isOpen={authDialogOpen} onClose={() => setAuthDialogOpen(false)} />
