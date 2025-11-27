@@ -23,6 +23,7 @@ export interface GalleryImage {
   price?: string;
   title?: string;
   item_type?: string;
+  tags?: string[];
 }
 
 export interface ImageLike {

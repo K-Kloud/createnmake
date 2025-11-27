@@ -30,6 +30,9 @@ export const OpenMarketSection = () => {
     setSelectedCategory,
     sortBy,
     setSortBy,
+    selectedTags,
+    setSelectedTags,
+    availableTags,
     filteredAndSortedImages
   } = useMarketplaceFilters(
     images?.pages?.flatMap(page => page) || [], 
@@ -73,6 +76,8 @@ export const OpenMarketSection = () => {
         onStyleChange={setDesignStyle}
         onCreatorChange={setCreatorFilter}
         onPriceRangeChange={setPriceRange}
+        onTagsChange={setSelectedTags}
+        availableTags={availableTags}
       />
       
       <MarketplaceContent

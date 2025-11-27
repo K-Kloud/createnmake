@@ -8,6 +8,7 @@ export const useMarketplaceFilters = (images: any[], session: Session | null) =>
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const filteredAndSortedImages = useMemo(() => {
     if (!images?.length) return [];
@@ -31,7 +32,21 @@ export const useMarketplaceFilters = (images: any[], session: Session | null) =>
     if (selectedCategory !== "all") {
       filtered = filtered.filter(image => {
         const prompt = image.prompt || '';
-        return prompt.toLowerCase().includes(selectedCategory.toLowerCase());
+        const itemType = image.item_type || '';
+        return prompt.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+               itemType.toLowerCase().includes(selectedCategory.toLowerCase());
+      });
+    }
+
+    // Apply tag filter
+    if (selectedTags.length > 0) {
+      filtered = filtered.filter(image => {
+        const imageTags = image.tags || [];
+        const prompt = image.prompt || '';
+        return selectedTags.some(tag => 
+          imageTags.includes(tag) || 
+          prompt.toLowerCase().includes(tag.toLowerCase())
+        );
       });
     }
 
@@ -59,6 +74,17 @@ export const useMarketplaceFilters = (images: any[], session: Session | null) =>
     });
   }, [images, searchTerm, selectedCategory, sortBy, session?.user?.id]);
 
+  // Extract unique tags from all images
+  const availableTags = useMemo(() => {
+    const tags = new Set<string>();
+    images.forEach(img => {
+      if (img.tags && Array.isArray(img.tags)) {
+        img.tags.forEach((tag: string) => tags.add(tag));
+      }
+    });
+    return Array.from(tags);
+  }, [images]);
+
   return {
     searchTerm,
     setSearchTerm,
@@ -66,6 +92,9 @@ export const useMarketplaceFilters = (images: any[], session: Session | null) =>
     setSelectedCategory,
     sortBy,
     setSortBy,
+    selectedTags,
+    setSelectedTags,
+    availableTags,
     filteredAndSortedImages
   };
 };

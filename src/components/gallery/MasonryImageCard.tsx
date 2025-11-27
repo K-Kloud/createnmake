@@ -7,6 +7,9 @@ import { cn } from "@/lib/utils";
 import { useImagePermissions } from "./image-preview/useImagePermissions";
 import { useImageDeletion } from "./image-preview/useImageDeletion";
 import { useToast } from "@/hooks/use-toast";
+import { ProductRating } from "@/components/marketplace/ProductRating";
+import { useProductRatings } from "@/hooks/useProductRatings";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 interface MasonryImageCardProps {
   image: {
@@ -23,6 +26,7 @@ interface MasonryImageCardProps {
     timeAgo: string;
     hasLiked: boolean;
     user_id: string;
+    price?: string;
   };
   onLike: (imageId: number) => void;
   onView: (imageId: number) => void;
@@ -39,6 +43,9 @@ export const MasonryImageCard = ({
 }: MasonryImageCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const { toast } = useToast();
+  
+  const { data: ratings } = useProductRatings([image.id]);
+  const productRating = ratings?.[image.id];
   
   // Permission and deletion hooks
   const { canDelete } = useImagePermissions(image.user_id);
@@ -87,12 +94,33 @@ export const MasonryImageCard = ({
     >
       {/* Image */}
       <div className="relative w-full overflow-hidden rounded-2xl">
-        <img 
+        <OptimizedImage 
           src={image.url} 
           alt={image.prompt}
           className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
+          fallbackSrc="/placeholder.svg"
         />
+        
+        {/* Price tag */}
+        {image.price && (
+          <div className="absolute top-2 left-2 px-2 py-1 rounded-sm bg-black/80 backdrop-blur-sm border border-[hsl(var(--acid-lime))]/30">
+            <span className="text-xs font-mono font-semibold text-[hsl(var(--acid-lime))]">
+              {image.price}
+            </span>
+          </div>
+        )}
+        
+        {/* Rating badge */}
+        {productRating && productRating.reviewCount > 0 && (
+          <div className="absolute top-2 right-2 px-2 py-1 rounded-sm bg-black/80 backdrop-blur-sm">
+            <ProductRating 
+              rating={productRating.averageRating}
+              reviewCount={productRating.reviewCount}
+              className="scale-90"
+            />
+          </div>
+        )}
         
         {/* Hover Overlay */}
         <div className={cn(
