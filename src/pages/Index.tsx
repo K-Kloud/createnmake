@@ -12,6 +12,9 @@ import { useTranslation } from "react-i18next";
 const ImageGenerator = lazy(() => import("@/components/ImageGenerator").then(module => ({ default: module.ImageGenerator })));
 const OpenMarketSection = lazy(() => import("@/components/OpenMarketSection").then(module => ({ default: module.OpenMarketSection })));
 const ChatBot = lazy(() => import("@/components/ChatBot").then(module => ({ default: module.ChatBot })));
+const FeaturedArtisans = lazy(() => import("@/components/dashboard/FeaturedArtisans").then(module => ({ default: module.FeaturedArtisans })));
+const SuccessStories = lazy(() => import("@/components/dashboard/SuccessStories").then(module => ({ default: module.SuccessStories })));
+const LiveChatWidget = lazy(() => import("@/components/support/LiveChatWidget").then(module => ({ default: module.LiveChatWidget })));
 
 const Index = () => {
   const { t } = useTranslation('common');
@@ -57,14 +60,29 @@ const Index = () => {
           <HeroActions />
         </div>
         
+        <div className="container mx-auto px-4">
+          <Suspense fallback={<div className="h-48 flex items-center justify-center"><div className="animate-spin h-8 w-8 border-2 border-[hsl(var(--acid-lime))] border-t-transparent rounded-full" /></div>}>
+            <FeaturedArtisans />
+          </Suspense>
+          
+          <Suspense fallback={<div className="h-48 flex items-center justify-center mt-8"><div className="animate-spin h-8 w-8 border-2 border-[hsl(var(--acid-lime))] border-t-transparent rounded-full" /></div>}>
+            <SuccessStories />
+          </Suspense>
+        </div>
+        
         <div data-tour="features-section" className="mt-12 sm:mt-16">
           <Suspense fallback={<div className="h-16"></div>}>
             <OpenMarketSection />
           </Suspense>
         </div>
       </section>
+      
       <Suspense fallback={null}>
         <ChatBot />
+      </Suspense>
+      
+      <Suspense fallback={null}>
+        <LiveChatWidget />
       </Suspense>
     </MainLayout>
   );

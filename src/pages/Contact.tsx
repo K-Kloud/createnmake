@@ -26,6 +26,25 @@ const Contact = () => {
           <Card className="glass-card">
             <CardContent className="p-6">
               <h2 className="text-2xl font-semibold mb-6">Get in Touch</h2>
+              
+              <div className="mb-4 p-3 bg-[hsl(var(--acid-lime))]/10 border border-[hsl(var(--acid-lime))]/20 rounded-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-2 h-2 rounded-full bg-[hsl(var(--acid-lime))] animate-pulse" />
+                  <p className="text-xs font-mono uppercase tracking-wider text-[hsl(var(--acid-lime))]">
+                    Response Time Estimate
+                  </p>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-semibold text-foreground">General Inquiries:</span> 24-48 hours
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-semibold text-foreground">Technical Support:</span> 2-4 hours
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-semibold text-foreground">Order Issues:</span> 1-2 hours
+                </p>
+              </div>
+              
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
                   <Input 
