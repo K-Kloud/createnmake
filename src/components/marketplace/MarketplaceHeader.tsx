@@ -31,6 +31,8 @@ interface MarketplaceHeaderProps {
   onStyleChange?: (value: string) => void;
   onCreatorChange?: (value: string) => void;
   onPriceRangeChange?: (range: [number, number]) => void;
+  onTagsChange?: (tags: string[]) => void;
+  availableTags?: string[];
 }
 
 export const MarketplaceHeader = ({ 
@@ -39,12 +41,15 @@ export const MarketplaceHeader = ({
   onCategoryChange,
   onStyleChange,
   onCreatorChange,
-  onPriceRangeChange
+  onPriceRangeChange,
+  onTagsChange,
+  availableTags = []
 }: MarketplaceHeaderProps) => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [openFilters, setOpenFilters] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const { t } = useTranslation(['common', 'marketplace']);
   
   // Use URL parameters for better SEO and user experience
@@ -310,6 +315,33 @@ export const MarketplaceHeader = ({
                   </div>
                 </RadioGroup>
               </div>
+
+              {availableTags.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Keywords & Tags</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {availableTags.slice(0, 12).map(tag => (
+                      <button
+                        key={tag}
+                        onClick={() => {
+                          const newTags = selectedTags.includes(tag)
+                            ? selectedTags.filter(t => t !== tag)
+                            : [...selectedTags, tag];
+                          setSelectedTags(newTags);
+                          if (onTagsChange) onTagsChange(newTags);
+                        }}
+                        className={`px-3 py-1 text-xs font-mono uppercase tracking-wider rounded-sm border transition-colors ${
+                          selectedTags.includes(tag)
+                            ? 'bg-[hsl(var(--acid-lime))] text-black border-[hsl(var(--acid-lime))]'
+                            : 'bg-background border-border hover:border-[hsl(var(--acid-lime))]'
+                        }`}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
             <SheetFooter>
               <Button variant="outline" onClick={clearAllFilters}>{t('common:marketplace.clearAll')}</Button>

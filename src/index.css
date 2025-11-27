@@ -19,6 +19,7 @@
     /* Acid Lime Accent */
     --primary: 72 100% 50%; /* #D4FF00 */
     --primary-foreground: 0 0% 2%;
+    --acid-lime: 72 100% 50%; /* #D4FF00 */
     
     --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 98%;
@@ -52,6 +53,7 @@
     --popover-foreground: 0 0% 98%;
     --primary: 72 100% 50%;
     --primary-foreground: 0 0% 2%;
+    --acid-lime: 72 100% 50%;
     --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 15%;
