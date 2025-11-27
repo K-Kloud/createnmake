@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Heart, MessageCircle, Eye, Share2 } from "lucide-react";
+import { Heart, MessageCircle, Eye, Share2, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useImagePermissions } from "./image-preview/useImagePermissions";
+import { useImageDeletion } from "./image-preview/useImageDeletion";
+import { useToast } from "@/hooks/use-toast";
 
 interface MasonryImageCardProps {
   image: {
@@ -19,19 +22,31 @@ interface MasonryImageCardProps {
     };
     timeAgo: string;
     hasLiked: boolean;
+    user_id: string;
   };
   onLike: (imageId: number) => void;
   onView: (imageId: number) => void;
   onClick: () => void;
+  onImageDeleted?: (id: number) => void;
 }
 
 export const MasonryImageCard = ({ 
   image, 
   onLike,
   onView,
-  onClick
+  onClick,
+  onImageDeleted
 }: MasonryImageCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const { toast } = useToast();
+  
+  // Permission and deletion hooks
+  const { canDelete } = useImagePermissions(image.user_id);
+  const { isDeleting, handleDelete: performDelete } = useImageDeletion(() => {
+    if (onImageDeleted) {
+      onImageDeleted(image.id);
+    }
+  });
 
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -41,6 +56,26 @@ export const MasonryImageCard = ({
   const handleClick = () => {
     onView(image.id);
     onClick();
+  };
+
+  const handleDeleteClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!window.confirm('Are you sure you want to delete this image? This action cannot be undone.')) {
+      return;
+    }
+    
+    await performDelete(image.id, image.user_id, canDelete);
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const shareUrl = window.location.origin + `/gallery/${image.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast({
+      title: "Link copied!",
+      description: "Share link copied to clipboard",
+    });
   };
 
   return (
@@ -113,14 +148,28 @@ export const MasonryImageCard = ({
               </Button>
             </div>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-full backdrop-blur-md bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all duration-300"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Share2 className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 rounded-full backdrop-blur-md bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all duration-300"
+                onClick={handleShare}
+              >
+                <Share2 className="h-4 w-4" />
+              </Button>
+              
+              {canDelete && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleDeleteClick}
+                  disabled={isDeleting}
+                  className="h-9 w-9 rounded-full backdrop-blur-md bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 transition-all duration-300 disabled:opacity-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
 
           {/* Prompt - Middle (truncated) */}

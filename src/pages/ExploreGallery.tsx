@@ -148,6 +148,9 @@ const ExploreGallery = () => {
                   onLike={onLike}
                   onView={onView}
                   onClick={() => handleImageClick(image)}
+                  onImageDeleted={(id) => {
+                    setImages(prev => prev.filter(img => img.id !== id));
+                  }}
                 />
               </div>
             ))}
