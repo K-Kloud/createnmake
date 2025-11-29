@@ -87,10 +87,10 @@ export const Footer = () => {
             © 2025 Openteknologies Ltd. All rights reserved.
           </Typography>
           <div className="flex space-x-6 mt-4 sm:mt-0">
-            <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">
+            <Link to="/legal/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">
               Privacy Policy
             </Link>
-            <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">
+            <Link to="/legal/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">
               Terms of Service
             </Link>
           </div>

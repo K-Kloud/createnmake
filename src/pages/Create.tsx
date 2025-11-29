@@ -1,10 +1,13 @@
 
 import { ImageGenerator } from "@/components/ImageGenerator";
 import { MainLayout } from "@/components/layouts/MainLayout";
-import { TemplateGallery } from "@/components/templates/TemplateGallery";
-import { CreditEarning } from "@/components/credits/CreditEarning";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
+import { Loader2 } from "lucide-react";
+
+// Lazy load heavy components for better performance
+const TemplateGallery = lazy(() => import("@/components/templates/TemplateGallery").then(m => ({ default: m.TemplateGallery })));
+const CreditEarning = lazy(() => import("@/components/credits/CreditEarning").then(m => ({ default: m.CreditEarning })));
 
 const Create = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<{ prompt: string; itemType: string } | null>(null);
@@ -51,12 +54,16 @@ const Create = () => {
             </TabsContent>
             
             <TabsContent value="templates" className="mt-8">
-              <TemplateGallery onSelectTemplate={handleSelectTemplate} />
+              <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="size-8 animate-spin text-primary" /></div>}>
+                <TemplateGallery onSelectTemplate={handleSelectTemplate} />
+              </Suspense>
             </TabsContent>
             
             <TabsContent value="credits" className="mt-8">
               <div className="max-w-2xl mx-auto">
-                <CreditEarning />
+                <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="size-8 animate-spin text-primary" /></div>}>
+                  <CreditEarning />
+                </Suspense>
               </div>
             </TabsContent>
           </Tabs>
