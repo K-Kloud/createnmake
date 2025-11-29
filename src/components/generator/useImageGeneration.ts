@@ -168,11 +168,13 @@ export const useImageGeneration = () => {
 
       console.log(`🎨 Starting image generation with ${provider}...`);
       
+      // Open preview dialog BEFORE generation starts
+      setPreviewOpen(true);
+      
       // Try providers with smart fallback logic
       const providers = providerOrder;
       
       let lastError = null;
-      let result = null;
       
       for (const currentProvider of providers) {
         try {
@@ -188,92 +190,39 @@ export const useImageGeneration = () => {
             multipleReferences: referenceImages.length > 0,
           };
           
+          // Call the appropriate provider
           if (currentProvider === 'gemini') {
             createImageGemini(params);
-            // Wait for result
-            await new Promise(resolve => setTimeout(resolve, 100));
-            if (geminiResult?.success) {
-              result = { imageUrl: geminiResult.imageUrl, imageId: geminiResult.imageId };
-            }
           } else if (currentProvider === 'xai') {
             createImageXAI(params);
-            // Wait for result  
-            await new Promise(resolve => setTimeout(resolve, 100));
-            if (xaiResult?.imageUrl) {
-              result = { imageUrl: xaiResult.imageUrl, imageId: xaiResult.imageId };
-            }
           } else if (currentProvider === 'huggingface') {
             // Call Hugging Face API directly
-            try {
-              const { data, error } = await supabase.functions.invoke('generate-image-huggingface', {
-                body: params,
-              });
-              
-              if (data?.success) {
-                result = { imageUrl: data.imageUrl, imageId: data.imageId };
-              } else {
-                throw new Error(data?.error || 'Hugging Face generation failed');
-              }
-            } catch (hfError) {
-              console.error(`❌ Hugging Face error:`, hfError);
-              throw hfError;
+            const { data, error } = await supabase.functions.invoke('generate-image-huggingface', {
+              body: params,
+            });
+            
+            if (!data?.success) {
+              throw new Error(data?.error || 'Hugging Face generation failed');
             }
           } else {
             // Default to OpenAI
             createImageOpenAI(params);
-            // Wait for result
-            await new Promise(resolve => setTimeout(resolve, 100));
-            if (generatedImageUrlOpenAI) {
-              result = { imageUrl: generatedImageUrlOpenAI, imageId: generatedImageIdOpenAI };
-            }
           }
 
-          // If successful, break out of loop
-          if (result?.imageUrl) {
-            console.log(`✅ Generation successful with provider: ${currentProvider}`);
-            
-            // Record metrics
-            const endTime = Date.now();
-            recordGenerationTime(currentProvider, startTime, endTime, true);
-            
-            // Learn from successful generation
-            learnFromGeneration(prompt, selectedItem, true, 5); // Assume high rating for successful generations
-            
-            // Add to generation history
-            addGeneration({
-              prompt: prompt,
-              itemType: selectedItem,
-              imageUrl: result.imageUrl,
-              referenceImageUrl: referenceImage ? URL.createObjectURL(referenceImage) : undefined,
-              provider: currentProvider,
-              settings: {
-                aspectRatio: selectedRatio,
-                model: currentProvider,
-                quality: 'high'
-              },
-              metadata: {
-                processingTime: endTime - startTime,
-                enhancedPrompt: prompt, // Could be enhanced version if available
-                confidence: 0.9, // Could be calculated based on provider response
-                tags: [selectedItem]
-              },
-              rating: 5,
-              isFavorite: false
-            });
-            
-            toast({
-              title: "Success!",
-              description: `Image generated successfully with ${currentProvider}`,
-            });
-            
-            // Open preview dialog
-            setPreviewOpen(true);
-            
-            // Refresh subscription status
-            refetchStatus();
-            
-            return; // Success, exit function
-          }
+          // Record metrics and learning on success
+          const endTime = Date.now();
+          recordGenerationTime(currentProvider, startTime, endTime, true);
+          learnFromGeneration(prompt, selectedItem, true, 5);
+          
+          toast({
+            title: "Success!",
+            description: `Image generated successfully with ${currentProvider}`,
+          });
+          
+          // Refresh subscription status
+          refetchStatus();
+          
+          return; // Success, exit function
           
         } catch (error) {
           console.error(`❌ Provider ${currentProvider} failed:`, error);
@@ -282,8 +231,6 @@ export const useImageGeneration = () => {
           // Record failed generation
           const endTime = Date.now();
           recordGenerationTime(currentProvider, startTime, endTime, false);
-          
-          // Learn from failed generation
           learnFromGeneration(prompt, selectedItem, false, 1);
           
           // Continue to next provider

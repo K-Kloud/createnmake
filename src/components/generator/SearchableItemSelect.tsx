@@ -101,10 +101,10 @@ export const SearchableItemSelect = ({ value, onChange, disabled = false }: Sear
             <div className="flex flex-wrap items-center gap-1 flex-1 text-left">
               {selectedItem ? (
                 <div className="flex items-center gap-2 flex-1">
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="default" className="text-xs font-semibold">
                     {clothingCategories[selectedItem.category as keyof typeof clothingCategories]}
                   </Badge>
-                  <span className="truncate">{selectedItem.label}</span>
+                  <span className="truncate font-medium text-foreground">{selectedItem.label}</span>
                   <Button
                     variant="ghost"
                     size="sm"

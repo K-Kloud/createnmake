@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Maximize2, Minimize2 } from "lucide-react";
+import { ImageLoadingFix } from "./ImageLoadingFix";
 
 interface ImagePreviewProps {
   imageUrl: string;
@@ -43,8 +44,8 @@ export const ImagePreview = ({ imageUrl, prompt, onLike }: ImagePreviewProps) =>
         </Button>
       </div>
 
-      <img
-        src={imageUrl}
+      <ImageLoadingFix
+        imageUrl={imageUrl}
         alt={prompt}
         className={`rounded-lg transition-all duration-300 ${
           viewMode === 'fit' 
