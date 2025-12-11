@@ -23,6 +23,7 @@ const ManageCollectionPage = lazy(() => import("@/pages/ManageCollectionPage"));
 const TryOnHistoryPage = lazy(() => import("@/pages/TryOnHistoryPage").then(module => ({ default: module.TryOnHistoryPage })));
 const OnboardingDashboard = lazy(() => import("@/pages/OnboardingDashboard"));
 const ExploreGallery = lazy(() => import("@/pages/ExploreGallery"));
+const Legal = lazy(() => import("@/pages/Legal"));
 
 export const AppRoutes = () => {
   return (
@@ -120,6 +121,18 @@ export const AppRoutes = () => {
           <Route path="/explore-gallery" element={
             <EnhancedErrorBoundary>
               <ExploreGallery />
+            </EnhancedErrorBoundary>
+          } />
+          
+          {/* Legal Routes */}
+          <Route path="/legal/:page" element={
+            <EnhancedErrorBoundary>
+              <Legal />
+            </EnhancedErrorBoundary>
+          } />
+          <Route path="/legal" element={
+            <EnhancedErrorBoundary>
+              <Legal />
             </EnhancedErrorBoundary>
           } />
           

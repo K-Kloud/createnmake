@@ -63,17 +63,22 @@ const componentMap = {
   'ContentPage': lazy(() => import('./templates/ContentPage')),
   
   // Dashboard and Analytics Pages
-  'RealtimeDashboard': lazy(() => import('@/pages/Dashboard')),
-  'AdvancedAI': lazy(() => import('@/pages/Create')),
+  'RealtimeDashboard': lazy(() => import('@/pages/RealtimeDashboard')),
+  'AdvancedAI': lazy(() => import('@/pages/AdvancedAI')),
   'UserInsights': lazy(() => import('@/pages/Dashboard')),
-  'APIDocumentation': lazy(() => import('@/pages/Integrations')),
+  'APIDocumentation': lazy(() => import('@/pages/Documentation')),
   
   // Additional navigation pages
   'About': lazy(() => import('@/pages/About')),
   'Terms': lazy(() => import('@/pages/Terms')),
   'Privacy': lazy(() => import('@/pages/Privacy')),
   'Support': lazy(() => import('@/pages/Support')),
-  'Documentation': lazy(() => import('@/pages/Documentation'))
+  'Documentation': lazy(() => import('@/pages/Documentation')),
+  'Legal': lazy(() => import('@/pages/Legal')),
+  'Messages': lazy(() => import('@/pages/Messages')),
+  'WorkflowDemo': lazy(() => import('@/pages/WorkflowDemo')),
+  'PreferencesPage': lazy(() => import('@/pages/PreferencesPage')),
+  'RecommendationsPage': lazy(() => import('@/pages/RecommendationsPage'))
 };
 
 interface ComponentRegistryProps {

@@ -95,11 +95,15 @@ export const useNavigationConfig = () => {
   const footerNavigation: NavigationItem[] = [
     {
       label: "Privacy Policy",
-      href: "/privacy",
+      href: "/legal/privacy",
     },
     {
       label: "Terms of Service", 
-      href: "/terms",
+      href: "/legal/terms",
+    },
+    {
+      label: "Cookies",
+      href: "/legal/cookies",
     },
     {
       label: "Support",

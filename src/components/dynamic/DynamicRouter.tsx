@@ -28,10 +28,6 @@ export const DynamicRouter = () => {
   const { user } = useAuth();
   const { data: profile } = useProfile();
 
-  // Debug logging
-  console.log('DynamicRouter - Pages:', pages);
-  console.log('DynamicRouter - isLoading:', isLoading);
-
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -99,11 +95,8 @@ export const DynamicRouter = () => {
           
           {/* Dynamic routes from database (excluding nested routes) */}
           {pages?.filter(page => page.is_active && !excludedPaths.some(excluded => page.route_path.startsWith(excluded))).map((page) => {
-            console.log('DynamicRouter - Processing page:', page.route_path, page.component_name);
-            
             // Special handling for home route to avoid dynamic loading issues
             if (page.route_path === '/') {
-              console.log('DynamicRouter - Rendering home page with IndexPage component');
               return (
                 <Route
                   key={page.id}
