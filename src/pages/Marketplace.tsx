@@ -68,7 +68,7 @@ const Marketplace = () => {
           </Typography>
           
           <Typography variant="body-large" color="muted" className="max-w-2xl mx-auto">
-            {t('marketplace:title')}
+            Discover unique AI-generated designs from talented creators worldwide
           </Typography>
         </div>
 

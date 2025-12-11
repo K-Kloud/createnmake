@@ -88,12 +88,12 @@ const Legal = () => {
   const Icon = content.icon;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-void-black via-void-black to-slate-900 py-12">
+    <div className="min-h-screen bg-background py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <Link to="/">
           <Button
             variant="ghost"
-            className="mb-8 text-slate-400 hover:text-acid-lime"
+            className="mb-8 text-muted-foreground hover:text-primary"
             aria-label="Back to home"
           >
             <ChevronLeft className="h-4 w-4 mr-2" aria-hidden="true" />
@@ -101,17 +101,17 @@ const Legal = () => {
           </Button>
         </Link>
 
-        <article className="border border-ghost-white/10 rounded-none bg-void-black/50 backdrop-blur-xl p-8 md:p-12 space-y-8">
+        <article className="border border-border rounded-none bg-card/50 backdrop-blur-xl p-8 md:p-12 space-y-8">
           <header className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className="p-3 border border-acid-lime/20 rounded-none bg-acid-lime/5">
-                <Icon className="h-8 w-8 text-acid-lime" aria-hidden="true" />
+              <div className="p-3 border border-primary/20 rounded-none bg-primary/5">
+                <Icon className="h-8 w-8 text-primary" aria-hidden="true" />
               </div>
               <div>
-                <h1 className="text-3xl font-mono uppercase tracking-widest text-ghost-white">
+                <h1 className="text-3xl font-mono uppercase tracking-widest text-foreground">
                   {content.title}
                 </h1>
-                <p className="text-sm text-slate-400 font-mono mt-2">
+                <p className="text-sm text-muted-foreground font-mono mt-2">
                   Last Updated: {content.lastUpdated}
                 </p>
               </div>
@@ -121,21 +121,21 @@ const Legal = () => {
           <div className="prose prose-invert max-w-none space-y-8">
             {content.sections.map((section, index) => (
               <section key={index} className="space-y-3">
-                <h2 className="text-xl font-semibold text-ghost-white">{section.heading}</h2>
-                <p className="text-slate-300 leading-relaxed">{section.content}</p>
+                <h2 className="text-xl font-semibold text-foreground">{section.heading}</h2>
+                <p className="text-muted-foreground leading-relaxed">{section.content}</p>
               </section>
             ))}
           </div>
 
-          <footer className="pt-8 border-t border-ghost-white/10">
-            <div className="flex items-start gap-3 p-4 border border-acid-lime/20 rounded-none bg-acid-lime/5">
-              <Shield className="h-5 w-5 text-acid-lime flex-shrink-0 mt-0.5" aria-hidden="true" />
-              <div className="text-sm text-slate-300">
-                <p className="font-semibold text-ghost-white mb-2">Questions or Concerns?</p>
+          <footer className="pt-8 border-t border-border">
+            <div className="flex items-start gap-3 p-4 border border-primary/20 rounded-none bg-primary/5">
+              <Shield className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" aria-hidden="true" />
+              <div className="text-sm text-muted-foreground">
+                <p className="font-semibold text-foreground mb-2">Questions or Concerns?</p>
                 <p>
                   If you have any questions about this {content.title.toLowerCase()}, please contact us at{" "}
-                  <a href="mailto:legal@create2make.com" className="text-acid-lime hover:underline">
-                    legal@create2make.com
+                  <a href="mailto:legal@openteknologies.com" className="text-primary hover:underline">
+                    legal@openteknologies.com
                   </a>
                 </p>
               </div>
@@ -154,14 +154,14 @@ const Legal = () => {
                   to={`/legal/${key}`}
                   className={`p-4 border rounded-none transition-colors ${
                     key === page
-                      ? "border-acid-lime/30 bg-acid-lime/10"
-                      : "border-ghost-white/10 bg-void-black/30 hover:border-acid-lime/20"
+                      ? "border-primary/30 bg-primary/10"
+                      : "border-border bg-card/30 hover:border-primary/20"
                   }`}
                   aria-current={key === page ? "page" : undefined}
                 >
                   <div className="flex items-center gap-3">
-                    <DocIcon className="h-5 w-5 text-acid-lime" aria-hidden="true" />
-                    <span className="text-sm font-mono uppercase tracking-wider text-ghost-white">
+                    <DocIcon className="h-5 w-5 text-primary" aria-hidden="true" />
+                    <span className="text-sm font-mono uppercase tracking-wider text-foreground">
                       {doc.title}
                     </span>
                   </div>
