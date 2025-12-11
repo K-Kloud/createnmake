@@ -5269,8 +5269,8 @@ export type Database = {
       }
       trigger_ai_monitoring: { Args: never; Returns: Json }
       validate_admin_operation:
-        | { Args: { operation_type: string }; Returns: boolean }
         | { Args: never; Returns: boolean }
+        | { Args: { operation_type: string }; Returns: boolean }
       validate_password_strength: {
         Args: { password: string }
         Returns: boolean
