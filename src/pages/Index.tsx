@@ -1,24 +1,29 @@
-
-import { Hero } from "@/components/Hero";
-import { HeroActions } from "@/components/HeroActions";
 import { Suspense, lazy, useEffect } from "react";
 import { addStructuredData } from "@/utils/seo";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { OnboardingChecklist } from "@/components/onboarding/OnboardingChecklist";
 import { WelcomeWizard } from "@/components/onboarding/WelcomeWizard";
-import { useTranslation } from "react-i18next";
+import { HeroSection } from "@/components/home/HeroSection";
+import { TrustSignals } from "@/components/home/TrustSignals";
+import { FeaturesGrid } from "@/components/home/FeaturesGrid";
+import { SocialProof } from "@/components/home/SocialProof";
+import { CTASection } from "@/components/home/CTASection";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
-// Lazy load non-critical components
+// Lazy load heavy components
 const ImageGenerator = lazy(() => import("@/components/ImageGenerator").then(module => ({ default: module.ImageGenerator })));
 const OpenMarketSection = lazy(() => import("@/components/OpenMarketSection").then(module => ({ default: module.OpenMarketSection })));
 const ChatBot = lazy(() => import("@/components/ChatBot").then(module => ({ default: module.ChatBot })));
 const FeaturedArtisans = lazy(() => import("@/components/dashboard/FeaturedArtisans").then(module => ({ default: module.FeaturedArtisans })));
-const SuccessStories = lazy(() => import("@/components/dashboard/SuccessStories").then(module => ({ default: module.SuccessStories })));
 const LiveChatWidget = lazy(() => import("@/components/support/LiveChatWidget").then(module => ({ default: module.LiveChatWidget })));
 
-const Index = () => {
-  const { t } = useTranslation('common');
+const SectionLoader = () => (
+  <div className="h-48 flex items-center justify-center">
+    <LoadingSpinner size="lg" />
+  </div>
+);
 
+const Index = () => {
   // Add structured data for SEO
   useEffect(() => {
     const cleanup = addStructuredData('Organization', {
@@ -39,44 +44,61 @@ const Index = () => {
   return (
     <MainLayout
       seo={{
-        title: "OpenTeknologies | Bring Custom Designs to Life",
-        description: "Connect with skilled artisans and manufacturers to bring your custom designs to life with our AI-powered design generator.",
+        title: "OpenTeknologies | AI-Powered Fashion Design & Manufacturing",
+        description: "Generate stunning fashion designs with AI and connect with skilled artisans to manufacture your creations. Free to start.",
         ogImage: "https://openteknologies.com/lovable-uploads/8373b451-38a1-4ecb-8594-cf0c25ba20c4.png"
       }}
     >
       <WelcomeWizard />
       <OnboardingChecklist />
       
-      <section className="py-8 sm:py-12 bg-gradient-to-b from-background to-card/20">
-        <Suspense fallback={<div className="h-32 flex items-center justify-center text-muted-foreground">{t('common.loading')}</div>}>
-          <ImageGenerator />
-        </Suspense>
+      {/* Hero Section - Above the fold */}
+      <HeroSection />
+      
+      {/* Trust Signals */}
+      <TrustSignals />
+      
+      {/* AI Generator Section */}
+      <section data-section="generator" className="py-16 bg-gradient-to-b from-card/30 to-background">
+        <div className="container px-4 mx-auto max-w-5xl">
+          <div className="text-center mb-10">
+            <span className="text-technical text-primary mb-2 block">AI DESIGN STUDIO</span>
+            <h2 className="text-h2 mb-4">Create Your Design</h2>
+            <p className="text-body text-muted-foreground max-w-xl mx-auto">
+              Describe your vision and let our AI bring it to life. Generate unique fashion designs in seconds.
+            </p>
+          </div>
+          
+          <Suspense fallback={<SectionLoader />}>
+            <ImageGenerator />
+          </Suspense>
+        </div>
       </section>
 
-      <Hero />
-      
-      <section className="py-8 sm:py-12 bg-gradient-to-b from-transparent to-card/10">        
-        <div className="text-center mb-8 sm:mb-12">
-          <HeroActions />
-        </div>
-        
-        <div className="container mx-auto px-4">
-          <Suspense fallback={<div className="h-48 flex items-center justify-center"><div className="animate-spin h-8 w-8 border-2 border-[hsl(var(--acid-lime))] border-t-transparent rounded-full" /></div>}>
+      {/* Features Grid */}
+      <FeaturesGrid />
+
+      {/* Featured Artisans */}
+      <section className="py-16 bg-gradient-to-b from-background to-card/20">
+        <div className="container px-4 mx-auto">
+          <Suspense fallback={<SectionLoader />}>
             <FeaturedArtisans />
-          </Suspense>
-          
-          <Suspense fallback={<div className="h-48 flex items-center justify-center mt-8"><div className="animate-spin h-8 w-8 border-2 border-[hsl(var(--acid-lime))] border-t-transparent rounded-full" /></div>}>
-            <SuccessStories />
-          </Suspense>
-        </div>
-        
-        <div data-tour="features-section" className="mt-12 sm:mt-16">
-          <Suspense fallback={<div className="h-16"></div>}>
-            <OpenMarketSection />
           </Suspense>
         </div>
       </section>
+
+      {/* Open Market Preview */}
+      <Suspense fallback={<SectionLoader />}>
+        <OpenMarketSection />
+      </Suspense>
+
+      {/* Social Proof */}
+      <SocialProof />
+
+      {/* CTA Section */}
+      <CTASection />
       
+      {/* Chat widgets */}
       <Suspense fallback={null}>
         <ChatBot />
       </Suspense>
