@@ -1,41 +1,41 @@
-import { Sparkles, Palette, Users, Truck, MessageSquare, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ArrowUpRight } from "lucide-react";
 
 const features = [
   {
-    icon: Sparkles,
-    title: "AI Design Generation",
-    description: "Create unique fashion designs instantly using advanced AI models tailored for clothing and accessories.",
+    id: "01",
+    title: "AI Generation",
+    description: "Create unique fashion designs instantly using advanced AI models.",
     link: "/create"
   },
   {
-    icon: Palette,
-    title: "Style Customization",
-    description: "Fine-tune colors, patterns, materials, and details to match your exact vision.",
+    id: "02",
+    title: "Customization",
+    description: "Fine-tune colors, patterns, materials to match your vision.",
     link: "/create"
   },
   {
-    icon: Users,
+    id: "03",
     title: "Artisan Network",
-    description: "Connect with 800+ verified craftspeople specializing in various techniques and materials.",
+    description: "Connect with 800+ verified craftspeople across specializations.",
     link: "/marketplace"
   },
   {
-    icon: MessageSquare,
+    id: "04",
     title: "Direct Messaging",
-    description: "Communicate directly with artisans to discuss requirements and get custom quotes.",
+    description: "Communicate directly with artisans for quotes and requirements.",
     link: "/messages"
   },
   {
-    icon: Truck,
+    id: "05",
     title: "Production Tracking",
-    description: "Monitor your orders from design approval through manufacturing to delivery.",
+    description: "Monitor orders from approval through manufacturing to delivery.",
     link: "/manage"
   },
   {
-    icon: BarChart3,
-    title: "Analytics Dashboard",
-    description: "Track your designs' performance, orders, and engagement with detailed insights.",
+    id: "06",
+    title: "Analytics",
+    description: "Track performance, orders, and engagement with detailed insights.",
     link: "/dashboard"
   }
 ];
@@ -44,30 +44,32 @@ export const FeaturesGrid = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="py-20 bg-gradient-to-b from-background to-card/30">
+    <section className="py-24">
       <div className="container px-4 mx-auto max-w-6xl">
         {/* Section Header */}
-        <div className="text-center mb-14">
-          <span className="text-technical text-primary mb-2 block">CAPABILITIES</span>
-          <h2 className="text-h2 mb-4">Everything You Need</h2>
-          <p className="text-body-large text-muted-foreground max-w-2xl mx-auto">
-            From AI-powered design to production and delivery — a complete platform for bringing fashion ideas to life.
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12 pb-6 border-b border-border/50">
+          <div>
+            <span className="text-label mb-2 block">CAPABILITIES</span>
+            <h2 className="text-h2">Platform Features</h2>
+          </div>
+          <p className="text-body text-muted-foreground max-w-md">
+            End-to-end tooling for fashion design, production, and delivery.
           </p>
         </div>
 
         {/* Features Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border/50">
+          {features.map((feature) => (
             <div
-              key={feature.title}
+              key={feature.id}
               onClick={() => navigate(feature.link)}
-              className="group p-6 rounded-lg bg-card/50 border border-border/50 hover:border-primary/30 hover:bg-card cursor-pointer transition-all duration-300 animate-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className="group p-6 bg-background hover:bg-card cursor-pointer transition-colors"
             >
-              <div className="w-10 h-10 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:scale-110 transition-all">
-                <feature.icon className="w-5 h-5 text-primary" />
+              <div className="flex items-start justify-between mb-4">
+                <span className="text-metadata text-muted-foreground">{feature.id}</span>
+                <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+              <h3 className="text-lg font-medium text-foreground mb-2 group-hover:text-primary transition-colors">
                 {feature.title}
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">

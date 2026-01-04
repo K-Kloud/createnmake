@@ -59,13 +59,15 @@ const Index = () => {
       <TrustSignals />
       
       {/* AI Generator Section */}
-      <section data-section="generator" className="py-16 bg-gradient-to-b from-card/30 to-background">
+      <section data-section="generator" className="py-24 border-y border-border/50">
         <div className="container px-4 mx-auto max-w-5xl">
-          <div className="text-center mb-10">
-            <span className="text-technical text-primary mb-2 block">AI DESIGN STUDIO</span>
-            <h2 className="text-h2 mb-4">Create Your Design</h2>
-            <p className="text-body text-muted-foreground max-w-xl mx-auto">
-              Describe your vision and let our AI bring it to life. Generate unique fashion designs in seconds.
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10 pb-6 border-b border-border/30">
+            <div>
+              <span className="text-label mb-2 block">DESIGN STUDIO</span>
+              <h2 className="text-h2">Generate Your Design</h2>
+            </div>
+            <p className="text-body text-muted-foreground max-w-sm">
+              Describe your vision. AI generates unique fashion concepts in seconds.
             </p>
           </div>
           
@@ -79,7 +81,7 @@ const Index = () => {
       <FeaturesGrid />
 
       {/* Featured Artisans */}
-      <section className="py-16 bg-gradient-to-b from-background to-card/20">
+      <section className="py-24">
         <div className="container px-4 mx-auto">
           <Suspense fallback={<SectionLoader />}>
             <FeaturedArtisans />
