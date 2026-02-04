@@ -10,8 +10,8 @@ services:
       - "8080:8080"
     environment:
       - NODE_ENV=production
-      - VITE_SUPABASE_URL=${SUPABASE_URL:-https://igkiffajkpfwdfxwokwg.supabase.co}
-      - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlna2lmZmFqa3Bmd2RmeHdva3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM3NTU4MzAsImV4cCI6MjA0OTMzMTgzMH0.k41hYubjGJvzwcBT9fAg0jYljd2OR7spM1msxtQ9tZM}
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
     security_opt:
       - no-new-privileges:true
     read_only: true
