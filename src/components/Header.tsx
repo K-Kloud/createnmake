@@ -88,59 +88,57 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/75 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
-          <button 
-            className="group relative bg-transparent text-foreground px-5 py-2.5 text-lg font-bold rounded-xl hover:text-primary transition-all duration-300 active:scale-95 flex items-center gap-2" 
+          <button
+            className="group flex items-center gap-2 px-1 py-1.5 transition-colors hover:text-primary"
             onClick={handleLogoClick}
+            aria-label="Openteknologies — Home"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <span className="relative bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">open</span>
-            <span className="relative">teknologies</span>
+            <span
+              aria-hidden
+              className="w-5 h-5 bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.6)] transition-transform duration-300 group-hover:rotate-45"
+            />
+            <span className="font-mono text-sm tracking-[0.2em] uppercase text-foreground">
+              openteknologies
+            </span>
           </button>
         </div>
-        
+
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-center flex-1">
-          <MainNavigationMenu 
+          <MainNavigationMenu
             user={session?.user || null}
             profile={profile}
             onShowAuthDialog={() => setShowAuthDialog(true)}
           />
         </div>
-        
+
         {/* Right side controls */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            {session?.user && <NotificationCenter />}
-            <LanguageSwitcher />
-            <ThemeToggle />
-            
-            {/* Always render UserMenu */}
-            <div className={isAtLeast('sm') ? 'block' : 'hidden'}>
-              <UserMenu 
-                onShowAuthDialog={() => setShowAuthDialog(true)} 
-              />
-            </div>
-            
-            {/* Mobile navigation */}
-            <div className="md:hidden">
-              <MobileNavigationMenu 
-                user={session?.user || null}
-                profile={profile}
-                onShowAuthDialog={() => setShowAuthDialog(true)}
-              />
-            </div>
+        <div className="flex items-center gap-2">
+          {session?.user && <NotificationCenter />}
+          <LanguageSwitcher />
+          <ThemeToggle />
+
+          <div className={isAtLeast('sm') ? 'block' : 'hidden'}>
+            <UserMenu onShowAuthDialog={() => setShowAuthDialog(true)} />
+          </div>
+
+          <div className="md:hidden">
+            <MobileNavigationMenu
+              user={session?.user || null}
+              profile={profile}
+              onShowAuthDialog={() => setShowAuthDialog(true)}
+            />
           </div>
         </div>
       </div>
 
-      {/* AuthDialog - always available but only opens when triggered */}
-      <AuthDialog 
-        isOpen={showAuthDialog} 
-        onClose={() => setShowAuthDialog(false)} 
+      <AuthDialog
+        isOpen={showAuthDialog}
+        onClose={() => setShowAuthDialog(false)}
       />
     </header>
   );
