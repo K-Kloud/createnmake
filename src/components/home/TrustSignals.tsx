@@ -1,23 +1,36 @@
 const signals = [
-  { label: "PAYMENTS", value: "Escrow Protected" },
-  { label: "TURNAROUND", value: "48hr Quotes" },
-  { label: "ARTISANS", value: "Verified Only" },
-  { label: "SUPPORT", value: "Direct Access" }
+  "ESCROW PROTECTED",
+  "48HR QUOTE TURNAROUND",
+  "VERIFIED ARTISANS ONLY",
+  "DIRECT MESSAGING",
+  "PRODUCTION TRACKING",
+  "GLOBAL SHIPPING",
 ];
 
 export const TrustSignals = () => {
   return (
-    <section className="py-6 border-y border-border/50 bg-card/30">
-      <div className="container px-4 mx-auto">
-        <div className="flex flex-wrap justify-center md:justify-between items-center gap-6 md:gap-4">
-          {signals.map((signal) => (
-            <div key={signal.label} className="flex items-center gap-3">
-              <span className="text-label">{signal.label}</span>
-              <span className="text-data text-foreground">{signal.value}</span>
-            </div>
-          ))}
-        </div>
+    <section
+      aria-label="Platform guarantees"
+      className="py-4 border-y border-border/50 bg-card/30 overflow-hidden"
+    >
+      <div
+        className="flex gap-12 whitespace-nowrap animate-[marquee_40s_linear_infinite] hover:[animation-play-state:paused]"
+        style={{ willChange: "transform" }}
+      >
+        {[...signals, ...signals].map((signal, i) => (
+          <div key={i} className="flex items-center gap-3 shrink-0">
+            <span className="w-1 h-1 bg-primary rounded-full" />
+            <span className="text-label text-muted-foreground">{signal}</span>
+          </div>
+        ))}
       </div>
+
+      <style>{`
+        @keyframes marquee {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+      `}</style>
     </section>
   );
 };
