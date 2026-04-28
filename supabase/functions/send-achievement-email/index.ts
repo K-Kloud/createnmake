@@ -33,10 +33,23 @@ serve(async (req) => {
   }
 
   try {
-    const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    
+    const resendKey = Deno.env.get('RESEND_API_KEY');
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    if (!resendKey || !supabaseUrl || !supabaseServiceKey) {
+      console.error('Missing required env vars', {
+        hasResend: !!resendKey,
+        hasUrl: !!supabaseUrl,
+        hasKey: !!supabaseServiceKey,
+      });
+      return new Response(
+        JSON.stringify({ success: false, skipped: true, reason: 'email_service_not_configured' }),
+        { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+      );
+    }
+
+    const resend = new Resend(resendKey);
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const {

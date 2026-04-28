@@ -77,14 +77,18 @@ export const sendAchievementNotification = async (notification: AchievementNotif
     const preferences = await getUserNotificationPreferences(notification.userId);
     const typePrefs = preferences?.[notification.achievementType];
 
-    // Send email notification if enabled
+    // Send email notification if enabled (non-blocking, fault-tolerant)
     if (typePrefs?.email !== false) {
-      const { error } = await supabase.functions.invoke('send-achievement-email', {
-        body: notification,
-      });
-
-      if (error) {
-        console.error('Error sending achievement email:', error);
+      try {
+        const { error } = await supabase.functions.invoke('send-achievement-email', {
+          body: notification,
+        });
+        if (error) {
+          // Swallow edge function errors (e.g. 503 degraded) so UI flow isn't broken
+          console.warn('Achievement email skipped:', error.message || error);
+        }
+      } catch (err) {
+        console.warn('Achievement email invocation failed:', err);
       }
     }
 
