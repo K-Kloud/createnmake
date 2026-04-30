@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useImageGeneration } from "./generator/useImageGeneration";
 import { GenerationForm } from "./generator/GenerationForm";
 import { PreviewDialog } from "./generator/PreviewDialog";
@@ -7,6 +7,8 @@ import { Card } from "./ui/card";
 import { ResponsiveContainer } from "./ui/responsive-container";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
+import { StylePreset, STYLE_PRESETS } from "./generator/AdvancedSettingsPanel";
+import { useToast } from "./ui/use-toast";
 
 interface ImageGeneratorProps {
   initialTemplate?: { prompt: string; itemType: string } | null;
