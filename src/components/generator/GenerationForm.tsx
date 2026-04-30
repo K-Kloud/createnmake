@@ -11,6 +11,7 @@ import { MultipleReferenceUpload } from "./MultipleReferenceUpload";
 import { ReferenceTypeSelector, ReferenceType } from "./ReferenceTypeSelector";
 import { ReferenceProcessingOptionsComponent, ReferenceProcessingOptions } from "./ReferenceProcessingOptions";
 import { AdvancedFeaturesInfo } from "./AdvancedFeaturesInfo";
+import { AdvancedSettingsPanel, StylePreset } from "./AdvancedSettingsPanel";
 import { useReferenceImageAnalysis } from "@/hooks/useReferenceImageAnalysis";
 import { useSmartProviderFallback } from "@/hooks/useSmartProviderFallback";
 import { generateEnhancedPromptFromAnalysis } from "@/services/imageAnalysis";
@@ -56,6 +57,10 @@ interface GenerationFormProps {
   uploadingReference?: boolean;
   onProviderChange?: (provider: string) => void;
   useMultipleReferences?: boolean;
+  stylePreset?: StylePreset;
+  onStylePresetChange?: (preset: StylePreset) => void;
+  batchSize?: number;
+  onBatchSizeChange?: (size: number) => void;
 }
 export const GenerationForm = ({
   prompt,
@@ -78,7 +83,11 @@ export const GenerationForm = ({
   provider = "openai",
   uploadingReference = false,
   onProviderChange,
-  useMultipleReferences = false
+  useMultipleReferences = false,
+  stylePreset = "none",
+  onStylePresetChange,
+  batchSize = 1,
+  onBatchSizeChange,
 }: GenerationFormProps) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(true);
@@ -140,6 +149,19 @@ export const GenerationForm = ({
         
         </CollapsibleContent>
       </Collapsible>
+
+      {/* Advanced Generator Settings (aspect ratio, resolution, style preset, batch size) */}
+      <AdvancedSettingsPanel
+        selectedRatio={selectedRatio}
+        onRatioChange={onRatioChange}
+        outputSize={outputSize}
+        onOutputSizeChange={onOutputSizeChange}
+        stylePreset={stylePreset}
+        onStylePresetChange={onStylePresetChange || (() => {})}
+        batchSize={batchSize}
+        onBatchSizeChange={onBatchSizeChange || (() => {})}
+        disabled={isGenerating}
+      />
 
       {/* Advanced Options Toggle */}
       <div className="flex justify-center">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useImageGeneration } from "./generator/useImageGeneration";
 import { GenerationForm } from "./generator/GenerationForm";
 import { PreviewDialog } from "./generator/PreviewDialog";
@@ -7,6 +7,8 @@ import { Card } from "./ui/card";
 import { ResponsiveContainer } from "./ui/responsive-container";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
+import { StylePreset, STYLE_PRESETS } from "./generator/AdvancedSettingsPanel";
+import { useToast } from "./ui/use-toast";
 
 interface ImageGeneratorProps {
   initialTemplate?: { prompt: string; itemType: string } | null;
@@ -47,6 +49,39 @@ export const ImageGenerator = ({ initialTemplate }: ImageGeneratorProps) => {
   // State for UI mode switching
   const [useMultipleReferences, setUseMultipleReferences] = useState(false);
   const [outputSize, setOutputSize] = useState("512x512");
+  const [stylePreset, setStylePreset] = useState<StylePreset>("none");
+  const [batchSize, setBatchSize] = useState(1);
+  const { toast } = useToast();
+
+  // Wrapped generate: applies style preset modifier and runs N times for batch
+  const handleGenerateWithSettings = useCallback(async () => {
+    const presetMeta = STYLE_PRESETS.find((p) => p.value === stylePreset);
+    const originalPrompt = prompt;
+    const enhancedPrompt =
+      stylePreset !== "none" && presetMeta
+        ? `${originalPrompt}, ${presetMeta.hint}`
+        : originalPrompt;
+
+    if (enhancedPrompt !== originalPrompt) {
+      setPrompt(enhancedPrompt);
+    }
+
+    if (batchSize > 1) {
+      toast({
+        title: `Batch generation: ${batchSize} images`,
+        description: "Images will be generated sequentially.",
+      });
+    }
+
+    for (let i = 0; i < batchSize; i++) {
+      await handleGenerate();
+    }
+
+    // Restore the original prompt so the user's input isn't permanently mutated
+    if (enhancedPrompt !== originalPrompt) {
+      setPrompt(originalPrompt);
+    }
+  }, [prompt, stylePreset, batchSize, handleGenerate, setPrompt, toast]);
 
   // Apply template when selected
   useEffect(() => {
@@ -75,7 +110,7 @@ export const ImageGenerator = ({ initialTemplate }: ImageGeneratorProps) => {
         {/* Mode Toggle */}
         
 
-        <GenerationForm prompt={prompt} onPromptChange={setPrompt} selectedItem={selectedItem} onItemChange={setSelectedItem} selectedRatio={selectedRatio} onRatioChange={setSelectedRatio} outputSize={outputSize} onOutputSizeChange={setOutputSize} referenceImage={referenceImage} onReferenceImageUpload={handleReferenceImageUpload} referenceImages={referenceImages} onReferenceImagesChange={handleReferenceImagesChange} onGenerate={handleGenerate} isGenerating={isGenerating} isSignedIn={!!session?.user} remainingImages={remainingImages} showItemPreviews={true} provider={provider} uploadingReference={uploadingReference} onProviderChange={setProvider} useMultipleReferences={useMultipleReferences} />
+        <GenerationForm prompt={prompt} onPromptChange={setPrompt} selectedItem={selectedItem} onItemChange={setSelectedItem} selectedRatio={selectedRatio} onRatioChange={setSelectedRatio} outputSize={outputSize} onOutputSizeChange={setOutputSize} referenceImage={referenceImage} onReferenceImageUpload={handleReferenceImageUpload} referenceImages={referenceImages} onReferenceImagesChange={handleReferenceImagesChange} onGenerate={handleGenerateWithSettings} isGenerating={isGenerating} isSignedIn={!!session?.user} remainingImages={remainingImages} showItemPreviews={true} provider={provider} uploadingReference={uploadingReference} onProviderChange={setProvider} useMultipleReferences={useMultipleReferences} stylePreset={stylePreset} onStylePresetChange={setStylePreset} batchSize={batchSize} onBatchSizeChange={setBatchSize} />
 
         <PreviewDialog 
           open={previewOpen} 
