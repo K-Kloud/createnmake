@@ -49,6 +49,39 @@ export const ImageGenerator = ({ initialTemplate }: ImageGeneratorProps) => {
   // State for UI mode switching
   const [useMultipleReferences, setUseMultipleReferences] = useState(false);
   const [outputSize, setOutputSize] = useState("512x512");
+  const [stylePreset, setStylePreset] = useState<StylePreset>("none");
+  const [batchSize, setBatchSize] = useState(1);
+  const { toast } = useToast();
+
+  // Wrapped generate: applies style preset modifier and runs N times for batch
+  const handleGenerateWithSettings = useCallback(async () => {
+    const presetMeta = STYLE_PRESETS.find((p) => p.value === stylePreset);
+    const originalPrompt = prompt;
+    const enhancedPrompt =
+      stylePreset !== "none" && presetMeta
+        ? `${originalPrompt}, ${presetMeta.hint}`
+        : originalPrompt;
+
+    if (enhancedPrompt !== originalPrompt) {
+      setPrompt(enhancedPrompt);
+    }
+
+    if (batchSize > 1) {
+      toast({
+        title: `Batch generation: ${batchSize} images`,
+        description: "Images will be generated sequentially.",
+      });
+    }
+
+    for (let i = 0; i < batchSize; i++) {
+      await handleGenerate();
+    }
+
+    // Restore the original prompt so the user's input isn't permanently mutated
+    if (enhancedPrompt !== originalPrompt) {
+      setPrompt(originalPrompt);
+    }
+  }, [prompt, stylePreset, batchSize, handleGenerate, setPrompt, toast]);
 
   // Apply template when selected
   useEffect(() => {
