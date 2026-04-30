@@ -150,6 +150,19 @@ export const GenerationForm = ({
         </CollapsibleContent>
       </Collapsible>
 
+      {/* Advanced Generator Settings (aspect ratio, resolution, style preset, batch size) */}
+      <AdvancedSettingsPanel
+        selectedRatio={selectedRatio}
+        onRatioChange={onRatioChange}
+        outputSize={outputSize}
+        onOutputSizeChange={onOutputSizeChange}
+        stylePreset={stylePreset}
+        onStylePresetChange={onStylePresetChange || (() => {})}
+        batchSize={batchSize}
+        onBatchSizeChange={onBatchSizeChange || (() => {})}
+        disabled={isGenerating}
+      />
+
       {/* Advanced Options Toggle */}
       <div className="flex justify-center">
         <Button variant="ghost" size="sm" onClick={() => setShowAdvanced(!showAdvanced)} className="text-white/60 hover:text-white">
