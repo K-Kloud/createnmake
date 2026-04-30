@@ -110,7 +110,7 @@ export const ImageGenerator = ({ initialTemplate }: ImageGeneratorProps) => {
         {/* Mode Toggle */}
         
 
-        <GenerationForm prompt={prompt} onPromptChange={setPrompt} selectedItem={selectedItem} onItemChange={setSelectedItem} selectedRatio={selectedRatio} onRatioChange={setSelectedRatio} outputSize={outputSize} onOutputSizeChange={setOutputSize} referenceImage={referenceImage} onReferenceImageUpload={handleReferenceImageUpload} referenceImages={referenceImages} onReferenceImagesChange={handleReferenceImagesChange} onGenerate={handleGenerate} isGenerating={isGenerating} isSignedIn={!!session?.user} remainingImages={remainingImages} showItemPreviews={true} provider={provider} uploadingReference={uploadingReference} onProviderChange={setProvider} useMultipleReferences={useMultipleReferences} />
+        <GenerationForm prompt={prompt} onPromptChange={setPrompt} selectedItem={selectedItem} onItemChange={setSelectedItem} selectedRatio={selectedRatio} onRatioChange={setSelectedRatio} outputSize={outputSize} onOutputSizeChange={setOutputSize} referenceImage={referenceImage} onReferenceImageUpload={handleReferenceImageUpload} referenceImages={referenceImages} onReferenceImagesChange={handleReferenceImagesChange} onGenerate={handleGenerateWithSettings} isGenerating={isGenerating} isSignedIn={!!session?.user} remainingImages={remainingImages} showItemPreviews={true} provider={provider} uploadingReference={uploadingReference} onProviderChange={setProvider} useMultipleReferences={useMultipleReferences} stylePreset={stylePreset} onStylePresetChange={setStylePreset} batchSize={batchSize} onBatchSizeChange={setBatchSize} />
 
         <PreviewDialog 
           open={previewOpen} 
