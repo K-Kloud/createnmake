@@ -57,6 +57,10 @@ interface GenerationFormProps {
   uploadingReference?: boolean;
   onProviderChange?: (provider: string) => void;
   useMultipleReferences?: boolean;
+  stylePreset?: StylePreset;
+  onStylePresetChange?: (preset: StylePreset) => void;
+  batchSize?: number;
+  onBatchSizeChange?: (size: number) => void;
 }
 export const GenerationForm = ({
   prompt,
