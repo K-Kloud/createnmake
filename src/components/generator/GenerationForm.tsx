@@ -11,6 +11,7 @@ import { MultipleReferenceUpload } from "./MultipleReferenceUpload";
 import { ReferenceTypeSelector, ReferenceType } from "./ReferenceTypeSelector";
 import { ReferenceProcessingOptionsComponent, ReferenceProcessingOptions } from "./ReferenceProcessingOptions";
 import { AdvancedFeaturesInfo } from "./AdvancedFeaturesInfo";
+import { AdvancedSettingsPanel, StylePreset } from "./AdvancedSettingsPanel";
 import { useReferenceImageAnalysis } from "@/hooks/useReferenceImageAnalysis";
 import { useSmartProviderFallback } from "@/hooks/useSmartProviderFallback";
 import { generateEnhancedPromptFromAnalysis } from "@/services/imageAnalysis";
