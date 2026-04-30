@@ -83,7 +83,11 @@ export const GenerationForm = ({
   provider = "openai",
   uploadingReference = false,
   onProviderChange,
-  useMultipleReferences = false
+  useMultipleReferences = false,
+  stylePreset = "none",
+  onStylePresetChange,
+  batchSize = 1,
+  onBatchSizeChange,
 }: GenerationFormProps) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(true);
