@@ -216,8 +216,7 @@ serve(async (req) => {
     
     return new Response(
       JSON.stringify({ 
-        error: getErrorMessage(error),
-        details: String(error)
+        error: 'Image generation failed. Please try again.'
       }),
       { 
         status: 500,
@@ -426,7 +425,6 @@ function handleOpenAIError(errorData: any): Response {
   return new Response(
     JSON.stringify({
       error: errorMessage,
-      details: errorData.error,
       suggestions: [
         "Try using more specific, descriptive terms",
         "Avoid potentially sensitive content",

@@ -10,6 +10,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { sanitizeHtml } from "@/utils/security";
 
 export const FAQSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -113,7 +114,7 @@ export const FAQSection = () => {
                       <span className="font-semibold text-ghost-white pr-4">{article.question}</span>
                     </AccordionTrigger>
                     <AccordionContent className="text-slate-300 leading-relaxed space-y-4">
-                      <div dangerouslySetInnerHTML={{ __html: article.answer }} />
+                      <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.answer) }} />
                       <div className="flex items-center gap-4 pt-4 border-t border-ghost-white/10">
                         <p className="text-sm text-slate-400">Was this helpful?</p>
                         <div className="flex gap-2">
