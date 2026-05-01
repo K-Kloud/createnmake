@@ -1,71 +1,82 @@
 ## Goal
 
-Tighten the site into a simple, sleek, modern product: cleaner hero, quieter chrome, consistent components, and real interactions (search, filters, loading states) that feel responsive. Keep the existing "Void & Acid" technical aesthetic but reduce visual noise and standardize patterns across pages.
+Add a single, dedicated server-side admin authorization check that all financial / payout edge functions reuse, instead of each function rolling its own auth logic (or none at all).
 
-## 1. Global shell & chrome
+## Scope
 
-- **Header**: Replace the gradient-text "open|teknologies" logo with a single, confident wordmark paired with a small acid-lime glyph. Tighten height to `h-14`, add a subtle underline on active nav route, and a keyboard-accessible command palette button (`⌘K`) that opens global search (routes + marketplace).
-- **Footer**: Keep the 4-column structure, add social icons row (lucide icons only, no brand gradients), newsletter email capture (no backend wiring — submits to existing edge function if present, otherwise toast "Subscribed"), and a small build/version tag in mono for the technical feel.
-- **MainLayout**: Drop the forced `space-y-8` between sections (causes uneven rhythm with section-level padding). Sections own their own vertical spacing.
+**Financial / payout endpoints that must require admin (or a valid CRON_SECRET):**
+- `process-maker-payouts` — triggers real maker payouts
+- `payment-automation` — bulk payments, reconciliation, invoicing, retries via Stripe
 
-## 2. Homepage refinement
+**Endpoints that must require an authenticated user (the caller themselves), not admin:**
+- `create-checkout` — caller buys for themselves
+- `create-quote-payment` — caller pays their own quote
+- `customer-portal` — caller manages own billing
+- `check-subscription` — caller checks own sub
 
-- **HeroSection**: Keep the typography system but:
-  - Remove four corner markers (too busy at this scale); keep one top-left marker + status dot.
-  - Add a thin animated scanline across the headline block (reuse `.scanline`).
-  - Replace hard-coded metrics with a `<LiveMetrics/>` component that reads counts from Supabase (`designs`, `artisans`, with graceful fallback to current static numbers).
-  - Add a secondary "See how it works" ghost link that opens a short lightbox with 3 steps.
-- **TrustSignals**: Convert to a quiet single-row marquee of partner/press names in mono caps, auto-pausing on hover.
-- **Featured Artisans / Marketplace preview**: Unify card styling (sharp corners, hairline border, hover = acid border + subtle lift). Add skeleton loaders.
-- **SocialProof**: Reduce to 3 testimonials in a peek-carousel with snap scrolling.
-- **CTASection**: Single full-bleed band, left-aligned copy, right-aligned primary + ghost CTAs. Remove nested gradients.
-- Remove `OnboardingChecklist` from the homepage for signed-out users (it's empty noise); show only when authenticated and incomplete.
+**Endpoints that stay public (signature-verified):**
+- `webhook-stripe` — verified via Stripe signature, not JWT (no change)
 
-## 3. Shared components standardization
+**Database:**
+- `process_maker_payout(p_maker_id)` is `SECURITY DEFINER` and currently callable by any authenticated user. Lock it down so only admins (or the service role) can execute it, defense-in-depth in case the edge layer is ever bypassed.
 
-- **Buttons**: Audit `src/components/ui/button.tsx` — ensure one canonical set: `default` (acid), `outline` (hairline), `ghost`, `destructive`. Remove any one-off classnames in pages and route through variants.
-- **Cards**: `Card` currently has `rounded-lg` + shadow hover — override with `rounded-none`, hairline border, and `hover:border-primary/40` to match the aesthetic. Shadow removed.
-- **Inputs / Select / Textarea**: Sharp corners, hairline border, focus ring in acid. Add consistent left-icon slot.
-- **Loading**: Replace scattered spinners with a single `PageSkeleton` + `CardSkeleton` pair; use across Create, Marketplace, Designs, Dashboard.
-- **Empty states**: One `EmptyState` component (icon, title, description, CTA) used on Orders, Designs, Messages, Notifications.
+## Design
 
-## 4. Key page upgrades
+### 1. Shared auth helper
 
-- **Create page**: Two-column layout (prompt/controls left, live preview right) that collapses to stacked on mobile. Add prompt presets chip row sourced from the project-knowledge prompt library (Tops, Bottoms, Dresses, Outerwear, Nigerian Contemporary, Global Styles, Accessories). Clicking a chip fills the prompt. Add "recent generations" strip below preview.
-- **Marketplace**: Sticky filter bar (category, price range, artisan, sort). URL-synced filters via `useSearchParams`. Grid→list toggle. Skeleton cards while loading.
-- **Designs (My Designs)**: Tabs for `All / Drafts / Published`, bulk select + delete, share link button.
-- **Dashboard**: Replace any debug-looking widgets with 4 KPI cards (Designs, Orders, Revenue, Messages) + a recent activity list. Mono numerics, hairline dividers.
-- **Auth**: Tidy spacing, single-column, add social sign-in row (only if providers already configured — detect and conditionally render), real-time validation.
-- **Legal/Privacy/Terms**: Long-form readable typography (`prose prose-invert`), sticky TOC on desktop.
-- **NotFound**: Redesign as a terminal-style 404 with quick links back to key routes.
+Create `supabase/functions/_shared/adminAuth.ts` exporting:
 
-## 5. Functional upgrades
+- `requireAdmin(req, supabase)` → returns `{ ok: true, userId, viaCron }` or a ready-to-return `Response` with 401/403.
+  - Reads `Authorization: Bearer <token>`.
+  - If `token === Deno.env.get('CRON_SECRET')` → ok via cron.
+  - Else verifies the JWT via `supabase.auth.getUser(token)`, then checks `admin_roles` for role in (`admin`, `super_admin`).
+  - On failure returns a sanitized 401/403 JSON response with `corsHeaders` already merged.
+- `requireAuthenticatedUser(req, supabase)` → same flow but only requires a valid JWT (no admin check), returns `{ userId }`.
+- Logs every denial to `audit_logs` (action: `admin_endpoint_denied`) with the function name and reason — without leaking token contents.
 
-- **Global command palette (`⌘K`)**: Using `cmdk` (already common in shadcn). Routes + search designs/artisans. Keyboard shortcut registered in `App.tsx`.
-- **Toasts**: Standardize on the existing `useToast`; remove any `alert()` usage. Add success/error/info variants with acid accent for success.
-- **Route transitions**: Add a 150ms fade on route change via a small wrapper in `AppRoutes`.
-- **Image handling**: Add `<SmartImage/>` wrapper with blur-up placeholder, lazy loading, and error fallback. Use in marketplace and designs grids.
-- **SEO**: Ensure every top-level page passes `seo` to `MainLayout`; fill gaps found in audit.
-- **Accessibility pass**: Focus rings on all interactive elements, `aria-label` on icon-only buttons, color contrast check on muted text (bump `--muted-foreground` to 70% if needed).
-- **Performance**: Keep lazy-loading on Index; add `react-query` `staleTime` defaults in `AppProviders` to reduce refetch flicker.
+This replaces the inline auth blocks added previously to `process-maker-payouts` and `payment-automation`.
 
-## 6. Out of scope (for this pass)
+### 2. Apply the helper
 
-- New backend tables, auth providers, or payment changes.
-- Mobile app (Capacitor) changes.
-- i18n string additions beyond existing keys.
+- `process-maker-payouts/index.ts` — replace inline auth with `requireAdmin`.
+- `payment-automation/index.ts` — replace inline auth with `requireAdmin`.
+- `create-checkout`, `create-quote-payment`, `customer-portal`, `check-subscription` — wrap with `requireAuthenticatedUser` if any are missing JWT validation today (verify per-file during implementation; only add where absent).
 
-## Technical notes
+### 3. Database: lock down `process_maker_payout`
 
-- Files likely touched: `src/components/Header.tsx`, `src/components/Footer.tsx`, `src/components/layouts/MainLayout.tsx`, `src/components/home/*`, `src/components/ui/{button,card,input,select,textarea}.tsx`, `src/pages/{Index,Create,Marketplace,Designs,Dashboard,Auth,Legal,Privacy,Terms,NotFound}.tsx`, `src/routes/AppRoutes.tsx`, `src/providers/AppProviders.tsx`.
-- New files: `src/components/common/{EmptyState,PageSkeleton,CardSkeleton,SmartImage,LiveMetrics}.tsx`, `src/components/common/CommandPalette.tsx`, `src/components/home/PromptPresets.tsx`.
-- No schema changes. `LiveMetrics` uses `select('*', { count: 'exact', head: true })` on existing tables with fallbacks.
+Migration:
 
-## Deliverable order
+```text
+REVOKE EXECUTE ON FUNCTION public.process_maker_payout(uuid) FROM PUBLIC, anon, authenticated;
+GRANT  EXECUTE ON FUNCTION public.process_maker_payout(uuid) TO service_role;
 
-1. Shared primitives (button, card, input, skeletons, empty state).
-2. Header + Footer + MainLayout.
-3. Homepage sections.
-4. Create, Marketplace, Designs, Dashboard.
-5. Auth, Legal, NotFound.
-6. Command palette + route transitions + SmartImage + accessibility pass.
+-- Wrap with an admin-checking caller for any UI use
+CREATE OR REPLACE FUNCTION public.admin_process_maker_payout(p_maker_id uuid)
+RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM public.admin_roles
+    WHERE user_id = auth.uid() AND role IN ('admin','super_admin')
+  ) THEN
+    RAISE EXCEPTION 'Access denied: admin required';
+  END IF;
+  RETURN public.process_maker_payout(p_maker_id);
+END;
+$$;
+REVOKE EXECUTE ON FUNCTION public.admin_process_maker_payout(uuid) FROM PUBLIC, anon;
+GRANT  EXECUTE ON FUNCTION public.admin_process_maker_payout(uuid) TO authenticated;
+```
+
+Edge functions (which use the service role) continue calling `process_maker_payout` directly. Any direct UI call must use `admin_process_maker_payout`.
+
+### 4. Secret
+
+Requires `CRON_SECRET` to be set as an edge function secret so scheduled jobs can call payout endpoints. After approval I will request it via the secrets tool.
+
+## Outcome
+
+- One canonical admin check used everywhere; no per-function reinvention.
+- Anonymous and regular authenticated users get a clean 401/403 from financial endpoints.
+- Even if an attacker reached the DB layer with a normal user JWT, `process_maker_payout` is no longer executable by them.
+- Self-service billing endpoints still work for the signed-in customer.
+- Stripe webhook stays open but signature-verified.
