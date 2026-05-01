@@ -20,7 +20,36 @@ Deno.serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const cronSecret = Deno.env.get('CRON_SECRET');
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Authentication: allow either an authenticated admin user or a valid CRON_SECRET
+    const authHeader = req.headers.get('Authorization') ?? '';
+    const token = authHeader.replace('Bearer ', '').trim();
+
+    let authorized = false;
+    if (cronSecret && token && token === cronSecret) {
+      authorized = true;
+    } else if (token) {
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+      if (!authError && user) {
+        const { data: roleRow } = await supabase
+          .from('admin_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (roleRow && (roleRow.role === 'admin' || roleRow.role === 'super_admin')) {
+          authorized = true;
+        }
+      }
+    }
+
+    if (!authorized) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     const { maker_id, schedule_id, force = false }: PayoutRequest = await req.json();
 
