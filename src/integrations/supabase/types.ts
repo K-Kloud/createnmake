@@ -5114,6 +5114,10 @@ export type Database = {
         Args: { admin_role: string; target_user_id: string }
         Returns: undefined
       }
+      admin_process_maker_payout: {
+        Args: { p_maker_id: string }
+        Returns: string
+      }
       analyze_user_activity: {
         Args: { lookback_days?: number; usage_threshold?: number }
         Returns: {
